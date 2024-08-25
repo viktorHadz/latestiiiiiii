@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoicing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="./app.js" defer></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    <link rel="stylesheet" href="./public/css/style.css">
+</head>
+<body>
+    <div x-cloak x-data="tabManager" x-init="init()" class="flex h-screen">
+        <div class="flex flex-col items-center bg-gray-800 w-56 h-screen p-4">
+            <button @click="tabButtonClicked('clients')" :class="{ 'bg-gray-700': tabContentActive('clients') }" class="flex items-center px-4 py-2 mb-2 mt-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                <i class="fas fa-users"></i> Clients
+            </button>
+            <button @click="tabButtonClicked('styles')" :class="{ 'bg-gray-700': tabContentActive('styles') }" class="flex items-center px-4 py-2 mb-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                <i class="fas fa-solid fa-box-open"></i> Styles
+            </button>
+            <button @click="tabButtonClicked('invoices')" :class="{ 'bg-gray-700': tabContentActive('invoices') }" class="flex items-center px-4 py-2 mb-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                <i class="fas fa-file-invoice-dollar"></i> Invoices
+            </button>
+        </div>
+        <div class="p-5 w-full flex flex-col bg-gray-300 overflow-auto">
+            <div x-html="tabContent"></div>
+        </div>
+    </div>
+</body>
+</html>

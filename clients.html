@@ -1,0 +1,96 @@
+<div x-data="clientManager" class="relative w-full">
+    <div>
+        <button @click="showAddClientModal = true" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">
+            Add New
+        </button>
+    </div>
+    <!-- Clients Table -->
+    <table class="min-w-full divide-y divide-gray-200 mt-4 bg-slate-800 text-slate-100">
+        <thead>
+            <tr>
+                <th class="hidden w-1/12">ID</th>
+                <th id="sortNameClients" class="border p-2 w-2/12">Name</th>
+                <th class="border p-2 w-2/12">Company Name</th>
+                <th class="border p-2 w-3/12">Address</th>
+                <th class="border p-2 w-1/12">Email</th>
+                <th class="border p-2 w-2/12">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template x-for="client in clients" :key="client.id">
+                <tr>
+                    <td class="hidden p-2 border" x-text="client.id"></td>
+                    <td class="p-2 border">
+                        <template x-if="client.isEditing">
+                            <input type="text" x-model="client.name" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                        </template>
+                        <template x-if="!client.isEditing">
+                            <span x-text="client.name"></span>
+                        </template>
+                    </td>
+                    <td class="p-2 border">
+                        <template x-if="client.isEditing">
+                            <input type="text" x-model="client.company_name" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                        </template>
+                        <template x-if="!client.isEditing">
+                            <span x-text="client.company_name"></span>
+                        </template>
+                    </td>
+                    <td class="p-2 border">
+                        <template x-if="client.isEditing">
+                            <input type="text" x-model="client.address" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                        </template>
+                        <template x-if="!client.isEditing">
+                            <span x-text="client.address"></span>
+                        </template>
+                    </td>
+                    <td class="p-2 border">
+                        <template x-if="client.isEditing">
+                            <input type="text" x-model="client.email" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                        </template>
+                        <template x-if="!client.isEditing">
+                            <span x-text="client.email"></span>
+                        </template>
+                    </td>
+                    <td class="flex p-2 border justify-center">
+                        <template x-if="client.isEditing">
+                            <div>
+                                <button @click="saveClient(client)" class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
+                                <button @click="cancelEdit(client)" class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
+                            </div>
+                        </template>
+                        <template x-if="!client.isEditing">
+                            <div>
+                                <button @click="editClient(client)" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
+                                <button @click="removeClient(client.id)" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
+                            </div>
+                        </template>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+    <!-- Add Client Modal -->
+    <div x-show="showAddClientModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto h-full w-full z-50" id="my-modal">
+        <!-- Modal content -->
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-gray-800 text-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-2xl leading-6 font-medium text-white">Add Client</h3>
+                <div class="mt-2 px-7 py-3">
+                    <form @submit.prevent="addClient">
+                        <input x-model="newClient.name" name="name" type="text" placeholder="Name" class="w-full mb-2 p-2 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <input x-model="newClient.company_name" name="company_name" type="text" placeholder="Company Name" class="w-full mb-2 p-2 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <input x-model="newClient.address" name="address" type="text" placeholder="Address" class="w-full mb-2 p-2 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <input x-model="newClient.email" name="email" type="email" placeholder="Email" class="w-full mb-2 p-2 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Client</button>
+                    </form>
+                    <div class="items-center mt-2">
+                        <button @click="showAddClientModal = false" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

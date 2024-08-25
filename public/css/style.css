@@ -1,0 +1,138 @@
+/* Toggle button text styling */
+.status-text {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 0.75rem;
+    margin-right: 0.9rem;
+    margin-bottom: 1rem;
+    /* Adjust size as needed */
+}
+
+.status-text.paid {
+    color: green;
+    /* Or any color you prefer for 'paid' status */
+}
+
+.status-text.unpaid {
+    color: red;
+    /* Or any color you prefer for 'unpaid' status */
+}
+
+
+/* Style the scrollbar track */
+.invoice-list::-webkit-scrollbar-track {
+    background-color: #f5f5f5; /* Light grey track */
+    border-radius: 10px;
+  }
+  
+  /* Style the scrollbar thumb */
+  .invoice-list::-webkit-scrollbar-thumb {
+    background-color: #a7a7a7; /* Dark grey thumb */
+    border-radius: 10px;
+  }
+  
+  /* Handle hover and active states */
+  .invoice-list::-webkit-scrollbar-thumb:hover {
+    background: #7e7e7e; /* Darker grey on hover */
+  }
+
+  /* Adjust the width here */
+  .invoice-list::-webkit-scrollbar {
+    width: 10px; 
+  }
+
+  .modal-overlay {
+    position: fixed; /* Fixed position to cover the entire viewport */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+    display: flex; /* Flexbox to center the modal */
+    justify-content: center;
+    align-items: center;
+    z-index: 50; /* High z-index to overlay on top of other content */
+}
+
+.modal-content {
+    /* Your modal content styles */
+    
+    z-index: 51; /* Higher than overlay to appear on top */
+}
+
+/* Style the scrollbar track */
+.preview-catch-thumb::-webkit-scrollbar-track {
+    background-color: #f5f5f5; /* Light grey track */
+    border-radius: 10px;
+  }
+  
+  /* Style the scrollbar thumb */
+  .preview-catch-thumb::-webkit-scrollbar-thumb {
+    background-color: #a7a7a7; /* Dark grey thumb */
+    border-radius: 10px;
+  }
+  
+  /* Handle hover and active states */
+  .preview-catch-thumb::-webkit-scrollbar-thumb:hover {
+    background: #7e7e7e; /* Darker grey on hover */
+  }
+
+  /* Adjust the width here */
+  .preview-catch-thumb::-webkit-scrollbar {
+    width: 10px; 
+  }
+  .selected-invoice {
+    background-color: #d7d7d7; /* Or any color you prefer */
+    border-radius: 0.375rem;
+  }
+
+
+
+/* B Invoicing */
+
+#invoicingTableSearchBarDiv {
+    position: sticky;
+    top: 0px;
+    padding-top: 4px;
+    z-index: 11; /* Higher z-index than the table headers */
+    background-color: white;
+}
+#invoiceStylesTableRow {
+    margin: top 8px;
+}
+
+#stylesTableSearchBarDiv {
+    position: sticky;
+    top: 0px;
+    padding-top: 4px; /* Adjust this if you need some space above the search bar */
+    z-index: 20; /* Higher z-index than the table headers */
+    background-color: white;
+}
+/* Sticky Table Header */
+.sticky-th {
+    position: sticky;
+    top: 28px; /* Pull the header up */
+    background-color: white;
+    z-index: 10; /* Keep it above other content */
+    margin-top: -20px; /* Negative margin to pull the content up */
+    padding-top: 20px; /* Add padding to compensate for the negative margin */
+}
+
+    /* For Webkit browsers */
+    ::-webkit-scrollbar {
+        width: 8px; /* Adjust the width of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1; /* The track (progress bar) of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888; /* The draggable scrolling handle */
+        border-radius: 10px; /* Roundness of the scrollbar handle */
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555; /* Hover effect */
+    }
