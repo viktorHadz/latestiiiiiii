@@ -8,22 +8,26 @@ export default function invoiceManager() {
         samples: [],
         filteredSamples: [],
         selectedClient: null,
+        // Invoice items
         invoiceItems: [],
+        // Price forming menu
         discountPercent: 0,
         discountFlat: 0,
-        vatPercent: 20, // Default VAT percentage
+        vatPercent: 20,
         subtotal: 0,
         discount: 0,
         vat: 0,
+        deposit: 0,
         total: 0,
+        // Search Bar
         styleSearch: '',
         sampleSearch: '',
-        // Add style for client
+        // Add new style for client
         showAddStyleModal: false,
-        newStyle: { name: '', price: '' },
-        // Add sample for client
+        newStyle: { name: '', price: null },
+        // Add new sample for client
         showAddSampleModal: false,
-        newSample: { name: '', time: '', price: '' },
+        newSample: { name: '', time: null, price: null },
 
         init() {
             this.fetchClients();
@@ -37,14 +41,6 @@ export default function invoiceManager() {
             } catch (error) {
                 console.error('Error fetching clients:', error);
             }
-        },
-
-        openModal() {
-            this.showClientModal = true;
-        },
-
-        toggleDropdown() {
-            this.showDropdown = !this.showDropdown;
         },
 
         selectClient(client) {
@@ -68,7 +64,15 @@ export default function invoiceManager() {
                 this.fetchSamples(client.id);
             }
         },
-
+        openModal() {
+            this.showClientModal = true;
+        },
+        closeModal() {
+            this.showClientModal = false;
+        },
+        toggleDropdown() {
+            this.showDropdown = !this.showDropdown;
+        },
         async fetchStyles(clientId) {
             try {
                 const response = await fetch(`/api/styles/client/${clientId}`);
@@ -88,7 +92,7 @@ export default function invoiceManager() {
                 console.error('Error fetching samples:', error);
             }
         },
-        // Probably need a post route too
+        // Adds new style/sample in DB and updates UI
         async invoAddStyle() {
             const style = { ...this.newStyle, client_id: this.selectedClient.id };
             try {
@@ -102,6 +106,7 @@ export default function invoiceManager() {
                 this.styles.push({ ...newStyle});
                 this.filteredStyles = this.styles;
                 this.showAddStyleModal = false;
+                this.newStyle = { name: '', price: null };
             } catch (error) {
                 console.error('Error adding style:', error);
             }
@@ -119,20 +124,62 @@ export default function invoiceManager() {
                 this.samples.push({ ...newSample, isEditing: false });
                 this.filteredSamples = this.samples;
                 this.showAddSampleModal = false;
+                this.newSample = {name: '', style: null, price: null}
             } catch (error) {
                 console.error('Error adding sample:', error);
             }
         },
-
         // TODO: Add localstorage to set state? Maybe after fetch styles/client
-
+        
         addItemToInvoice(item, type) {
-            const newItem = { ...item, type, uniqueId: `${type}-${item.id}-${Date.now()}` };
-            if (type === 'sample') {
-                newItem.price = parseFloat(item.price) * parseFloat(item.time); // Calculate total price for sample
+            console.log("Adding item to invoice")
+            const uniqueId = `${type}-${item.id}`
+            let qty = 1
+            let itemExists = false
+            // Map over the invoiceItems
+            this.invoiceItems = this.invoiceItems.map(invoiceItem => {
+                // if the item exists is in the lsit 
+                if (invoiceItem.uniqueId === uniqueId) {
+                    itemExists = true;
+                    if (invoiceItem.type === 'sample') {
+                        return {
+                            ...invoiceItem,
+                            quantity: invoiceItem.quantity + qty,
+                            price: parseFloat(item.price) * parseFloat(item.time)
+                        }
+                    } else {
+                        return {
+                            ...invoiceItem,
+                            quantity: invoiceItem.quantity + qty
+                        }
+                    }
+                } else {
+                    // returns the invoiceItem unchanged
+                    return invoiceItem
+                }
+            })
+            // If the item does not exist, add it to the invoiceItems array
+            if (!itemExists) {
+                if (type === "sample") {
+                    this.invoiceItems.push({
+                        ...item,
+                        type,
+                        uniqueId,
+                        quantity: qty,
+                        price: parseFloat(item.price) * parseFloat(item.time) 
+                    })
+                } else {
+                    this.invoiceItems.push({
+                        ...item,
+                        type,
+                        uniqueId,
+                        quantity: qty,
+                        price: parseFloat(item.price)
+                    })
+                }
             }
-            this.invoiceItems.push(newItem);
-            this.calculateTotals();
+            // update the discounts section
+            // add invoice items to localstorage by calling a function bellow
         },
 
         removeItemFromInvoice(item) {
@@ -174,7 +221,7 @@ export default function invoiceManager() {
                     const invoice = await response.json();
                     this.generatePDF(invoice.id);
                 } else {
-                    console.error('Error generating invoice:', await response.json());
+                    console.error('Error generating invoice, data sent from invoiceData was shit:', await response.json());
                 }
             } catch (error) {
                 console.error('Error generating invoice:', error);
@@ -184,11 +231,16 @@ export default function invoiceManager() {
         async generatePDF(invoiceId) {
             try {
                 const response = await fetch(`/api/invoices/${invoiceId}/pdf`, { method: 'GET' });
+                console.log("Invoice id is:" + invoiceId)
+
+                console.log(response)
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Invoice-${invoiceId}.pdf`;
+                console.log(url)
+                // PDF Filename - set by Content-Disposition in backend.
+                a.download = `S.A.M.Creations-${invoiceId}.pdf`;
                 a.click();
                 window.URL.revokeObjectURL(url);
             } catch (error) {
@@ -196,9 +248,7 @@ export default function invoiceManager() {
             }
         },
 
-        closeModal() {
-            this.showClientModal = false;
-        },
+        
 
         searchStyles() {
             this.filteredStyles = this.styles.filter(style => 
@@ -211,5 +261,8 @@ export default function invoiceManager() {
                 sample.sampleName.toLowerCase().includes(this.sampleSearch.toLowerCase())
             )
         },
+        // create a counter each time an item/sample gets added in the added items table
+        // Remove each item getting added in its own row. Instead another item with the same name needs to be counted 
+        // Price then needs to properly update 
     };
 }

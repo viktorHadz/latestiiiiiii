@@ -38,8 +38,8 @@
             </div>
 
             <div class="overflow-y-auto" style="max-height: 700px;">
-                <table class="min-w-full divide-y divide-gray-200 bg-slate-800 text-slate-100">
-                    <thead>
+                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100" style="max-height: 700px;">
+                    <thead class="sticky top-0 bg-slate-800">
                         <tr>
                             <th class="py-2 px-4 border">Style Name</th>
                             <th class="py-2 px-4 border">Price</th>
@@ -59,7 +59,7 @@
                                 </td>
                                 <td class="py-2 px-4 border">
                                     <template x-if="style.isEditing">
-                                        <input type="text" x-model="style.price" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="number" x-model="style.price" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!style.isEditing">
                                         <span x-text="style.price"></span>
@@ -93,8 +93,8 @@
                 <button @click="showAddSampleModal = true" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add Sample</button>
             </div>
             <div class="overflow-y-auto" style="max-height: 700px;">
-                <table class="min-w-full divide-y divide-gray-200 bg-slate-800 text-slate-100">
-                    <thead>
+                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100">
+                    <thead class="sticky top-0 bg-slate-800">
                         <tr>
                             <th class="py-2 px-4 border">Sample Name</th>
                             <th class="py-2 px-4 border">Time</th>
@@ -115,7 +115,7 @@
                                 </td>
                                 <td class="py-2 px-4 border">
                                     <template x-if="sample.isEditing">
-                                        <input type="text" x-model="sample.time" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="number" step="0.1" x-model="sample.time" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!sample.isEditing">
                                         <span x-text="sample.time"></span>
@@ -123,7 +123,7 @@
                                 </td>
                                 <td class="py-2 px-4 border">
                                     <template x-if="sample.isEditing">
-                                        <input type="text" x-model="sample.price" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="number" x-model="sample.price" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!sample.isEditing">
                                         <span x-text="sample.price"></span>
@@ -159,7 +159,7 @@
                 <div class="mt-2 px-7 py-3">
                     <form @submit.prevent="addStyle">
                         <input x-model="newStyle.name" name="name" type="text" placeholder="Style Name" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <input x-model="newStyle.price" name="price" type="text" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <input x-model="newStyle.price" name="price" type="number" step="any" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
                         <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Style</button>
                     </form>
                     <div class="items-center mt-2">
@@ -180,8 +180,8 @@
                 <div class="mt-2 px-7 py-3">
                     <form @submit.prevent="addSample">
                         <input x-model="newSample.name" name="name" type="text" placeholder="Sample Name" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <input x-model="newSample.time" name="time" type="text" placeholder="Time" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <input x-model="newSample.price" name="price" type="text" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <input x-model="newSample.time" name="time" type="number" step="any" placeholder="Time" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
+                        <input x-model="newSample.price" name="price" type="number" step="any" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
                         <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Sample</button>
                     </form>
                     <div class="items-center mt-2">

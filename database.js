@@ -43,12 +43,14 @@ function getDb() {
           FOREIGN KEY (client_id) REFERENCES clients(id)
         )`);
 
+        // NOTE!!! ---- Might have problems with time as text as it should be set to REAL for float instead of TEXT -- editing now and adding quantity
         db.run(`CREATE TABLE IF NOT EXISTS invoice_items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT,
           price REAL,
           type TEXT,
-          time TEXT,
+          time REAL,
+          quantity REAL,
           invoice_id INTEGER,
           FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
         )`);
@@ -56,7 +58,7 @@ function getDb() {
         db.run(`CREATE TABLE IF NOT EXISTS samples (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
-          time TEXT NOT NULL,
+          time REAL NOT NULL,
           price REAL NOT NULL,
           client_id INTEGER,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE

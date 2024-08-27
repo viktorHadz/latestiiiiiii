@@ -11,8 +11,8 @@ export default function stylesManager() {
         samples: [],
         filteredSamples: [],
         selectedClient: null,
-        newStyle: { name: '', price: '' },
-        newSample: { name: '', time: '', price: '' },
+        newStyle: { name: null, price: null },
+        newSample: { name: '', time: null, price: null },
         styleSearch: '',
         sampleSearch: '',
 
@@ -94,7 +94,7 @@ export default function stylesManager() {
                 this.styles.push({ ...newStyle, isEditing: false });
                 this.filteredStyles = this.styles;
                 this.showAddStyleModal = false;
-                this.newStyle = { name: '', price: '' }; // Clear the form
+                this.newStyle = { name: '', price: null }; // Clear the form
             } catch (error) {
                 console.error('Error adding style:', error);
             }
@@ -112,7 +112,7 @@ export default function stylesManager() {
                 this.samples.push({ ...newSample, isEditing: false });
                 this.filteredSamples = this.samples;
                 this.showAddSampleModal = false;
-                this.newSample = { name: '', time: '', price: '' }; // Clear the form
+                this.newSample = { name: '', time: null, price: null }; // Clear the form
             } catch (error) {
                 console.error('Error adding sample:', error);
             }
