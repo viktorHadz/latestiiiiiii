@@ -11,13 +11,13 @@ export default function invoiceManager() {
         // Invoice items
         invoiceItems: [],
         // Price forming menu
+        subtotal: 0,
+        vat: 0,
+        deposit: 0,
+        discount: 0,
         discountPercent: 0,
         discountFlat: 0,
         vatPercent: 20,
-        subtotal: 0,
-        discount: 0,
-        vat: 0,
-        deposit: 0,
         total: 0,
         // Search Bar
         styleSearch: '',
@@ -50,6 +50,9 @@ export default function invoiceManager() {
             this.saveSelectedClient(client);
             this.fetchStyles(client.id);
             this.fetchSamples(client.id);
+            // Empty out the Invoice Items Table | You need to ensure that styles are saved for the client youre clearing them out of and load them when selected
+            this.invoiceItems = []
+            
         },
 
         saveSelectedClient(client) {
@@ -178,6 +181,7 @@ export default function invoiceManager() {
                     })
                 }
             }
+            this.calculateTotals()
             // update the discounts section
             // add invoice items to localstorage by calling a function bellow
         },
@@ -185,14 +189,6 @@ export default function invoiceManager() {
         removeItemFromInvoice(item) {
             this.invoiceItems = this.invoiceItems.filter(i => i.uniqueId !== item.uniqueId);
             this.calculateTotals();
-        },
-
-        calculateTotals() {
-            this.subtotal = this.invoiceItems.reduce((total, item) => total + parseFloat(item.price), 0);
-            this.discount = (this.subtotal * this.discountPercent / 100) + parseFloat(this.discountFlat);
-            const subtotalAfterDiscount = this.subtotal - this.discount;
-            this.vat = (subtotalAfterDiscount * this.vatPercent / 100);
-            this.total = subtotalAfterDiscount + this.vat;
         },
 
         async generateInvoice() {
@@ -248,7 +244,38 @@ export default function invoiceManager() {
             }
         },
 
+        calculateSubTotal() {
+            let samplePriceEl = []
+            samplePriceEl = this.invoiceItems
+            .filter(item => item.type === "sample")
+            .map(item => ({
+                price: item.price,
+                quantity: item.quantity,
+                total: (item.price * item.quantity) 
+            }))
+            console.log("Sample: ")
+            console.log(samplePriceEl)
+            
+            // console.log("samplePriceTotal is:")
+            // console.log(samplePrice)
+            
+
+            // Loop each sample to get all of them and sum them together 
+            // Loop each item too then sum both of those together (maybe get all of them together)
+            // Sample price = (time * price) * quantity
+            // Style price = price * quantity 
         
+        },
+        calculateTotals() {
+            this.calculateSubTotal()
+            //this.subtotal = this.invoiceItems.reduce((total, item) => total + parseFloat(item.price), 0);
+
+            
+            this.discount = (this.subtotal * this.discountPercent / 100) + parseFloat(this.discountFlat);
+            const subtotalAfterDiscount = this.subtotal - this.discount;
+            this.vat = (subtotalAfterDiscount * this.vatPercent / 100);
+            this.total = subtotalAfterDiscount + this.vat;
+        },
 
         searchStyles() {
             this.filteredStyles = this.styles.filter(style => 
