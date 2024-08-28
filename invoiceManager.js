@@ -257,7 +257,7 @@ export default function invoiceManager() {
             console.log(sampleTotal)
             let styleTotal = []
             styleTotal = this.invoiceItems
-                .filter(item.type === "style")
+                .filter(item => item.type === "style")
                 .map(item => ({
                     price: item.price,
                     quantity: item.quantity,
@@ -266,6 +266,10 @@ export default function invoiceManager() {
             console.log("Style: ")
             console.log(styleTotal)
             
+            let subTotal = sampleTotal + styleTotal
+            console.log("Subtotal: ")
+            console.log(this.subTotal)
+            return subTotal
             // console.log("samplePriceTotal is:")
             // console.log(samplePrice)
             
