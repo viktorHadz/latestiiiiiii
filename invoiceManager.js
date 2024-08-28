@@ -245,16 +245,26 @@ export default function invoiceManager() {
         },
 
         calculateSubTotal() {
-            let samplePriceEl = []
-            samplePriceEl = this.invoiceItems
-            .filter(item => item.type === "sample")
-            .map(item => ({
-                price: item.price,
-                quantity: item.quantity,
-                total: (item.price * item.quantity) 
-            }))
+            let sampleTotal = []
+            sampleTotal = this.invoiceItems
+                .filter(item => item.type === "sample")
+                .map(item => ({
+                    price: item.price,
+                    quantity: item.quantity,
+                    total: (item.price * item.quantity) 
+                }))
             console.log("Sample: ")
-            console.log(samplePriceEl)
+            console.log(sampleTotal)
+            let styleTotal = []
+            styleTotal = this.invoiceItems
+                .filter(item.type === "style")
+                .map(item => ({
+                    price: item.price,
+                    quantity: item.quantity,
+                    total: (price * quantity)
+                }))
+            console.log("Style: ")
+            console.log(styleTotal)
             
             // console.log("samplePriceTotal is:")
             // console.log(samplePrice)
