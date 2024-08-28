@@ -245,43 +245,36 @@ export default function invoiceManager() {
         },
 
         calculateSubTotal() {
-            let sampleTotal = []
-            sampleTotal = this.invoiceItems
-                .filter(item => item.type === "sample")
-                .map(item => ({
-                    price: item.price,
-                    quantity: item.quantity,
-                    total: (item.price * item.quantity) 
-                }))
-            console.log("Sample: ")
-            console.log(sampleTotal)
-            let styleTotal = []
-            styleTotal = this.invoiceItems
-                .filter(item => item.type === "style")
-                .map(item => ({
-                    price: item.price,
-                    quantity: item.quantity,
-                    total: (price * quantity)
-                }))
-            console.log("Style: ")
-            console.log(styleTotal)
-            
-            let subTotal = sampleTotal + styleTotal
-            console.log("Subtotal: ")
-            console.log(this.subTotal)
-            return subTotal
-            // console.log("samplePriceTotal is:")
-            // console.log(samplePrice)
-            
-
-            // Loop each sample to get all of them and sum them together 
-            // Loop each item too then sum both of those together (maybe get all of them together)
-            // Sample price = (time * price) * quantity
-            // Style price = price * quantity 
+            try {
+                // Calculate the subtotal for samples
+                let sampleTotal = this.invoiceItems
+                    .filter(item => item.type === "sample")
+                    .reduce((total, item) => total + (item.price * item.quantity), 0);
         
+                // Calculate the subtotal for styles
+                let styleTotal = this.invoiceItems
+                    .filter(item => item.type === "style")
+                    .reduce((total, item) => total + (item.price * item.quantity), 0);
+        
+                // Calculate the overall subtotal by summing both
+                let subTotal = sampleTotal + styleTotal;
+        
+                console.log("Sample Total: ", sampleTotal);
+                console.log("Style Total: ", styleTotal);
+                console.log("Subtotal: ", subTotal);
+        
+                return subTotal;
+        
+            } catch (error) {
+                console.error("Error calculating subtotal:", error);
+                throw new Error("Failed to calculate subtotal. Please check the input data.");
+            }
         },
+        
         calculateTotals() {
-            this.calculateSubTotal()
+            // Is it safe to use the array directly?
+            this.subtotal = this.calculateSubTotal()
+            console.log(this.subtotal)
             //this.subtotal = this.invoiceItems.reduce((total, item) => total + parseFloat(item.price), 0);
 
             
