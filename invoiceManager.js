@@ -28,11 +28,16 @@ export default function invoiceManager() {
         // Add new sample for client
         showAddSampleModal: false,
         newSample: { name: '', time: null, price: null },
+        // Popovers
+        popoverOpen: false,
+        
+        
 
         init() {
             this.fetchClients();
             this.loadSelectedClient();
         },
+        
 
         async fetchClients() {
             try {
@@ -249,22 +254,18 @@ export default function invoiceManager() {
                 // Calculate the subtotal for samples
                 let sampleTotal = this.invoiceItems
                     .filter(item => item.type === "sample")
-                    .reduce((total, item) => total + (item.price * item.quantity), 0);
-        
+                    .reduce((total, item) => total + (item.price * item.quantity), 0)
                 // Calculate the subtotal for styles
                 let styleTotal = this.invoiceItems
                     .filter(item => item.type === "style")
-                    .reduce((total, item) => total + (item.price * item.quantity), 0);
-        
+                    .reduce((total, item) => total + (item.price * item.quantity), 0)
                 // Calculate the overall subtotal by summing both
-                let subTotal = sampleTotal + styleTotal;
-        
-                console.log("Sample Total: ", sampleTotal);
-                console.log("Style Total: ", styleTotal);
-                console.log("Subtotal: ", subTotal);
-        
+                let subTotal = sampleTotal + styleTotal
+                console.log("Samples: ", sampleTotal)
+                console.log("Styles: ", styleTotal)
+                console.log("Subtotal: ", subTotal)
+
                 return subTotal;
-        
             } catch (error) {
                 console.error("Error calculating subtotal:", error);
                 throw new Error("Failed to calculate subtotal. Please check the input data.");
@@ -272,16 +273,25 @@ export default function invoiceManager() {
         },
         
         calculateTotals() {
-            // Is it safe to use the array directly?
-            this.subtotal = this.calculateSubTotal()
-            console.log(this.subtotal)
-            //this.subtotal = this.invoiceItems.reduce((total, item) => total + parseFloat(item.price), 0);
+            // Use let and const to not directly mutate the original arrays
+            // Step 1: Calculate subtotal (sum of all items)
+            // Step 2: Calculate discount on subtotal(standard) THEN calculate subtotal again 
+                // Then add any aditional discounts that you require and recalculate subtotal again
+            // Step 3: Only then do you calculate VAT 
+            // Step 4: Calculate total
+            // Step 5: Optional: add discount to total if needed.
+            // Step 6: Calculate Deposit - independednt from other sums (client expected to pay)
+            // Step 7: Only then assign values to the arrays 
 
-            
+            this.subtotal = this.calculateSubTotal()
+
+            //this.vat = (subtotalAfterDiscount * this.vatPercent / 100);
+            this.vat = (20 / 100) * this.subtotal
+            // placed last 
             this.discount = (this.subtotal * this.discountPercent / 100) + parseFloat(this.discountFlat);
             const subtotalAfterDiscount = this.subtotal - this.discount;
-            this.vat = (subtotalAfterDiscount * this.vatPercent / 100);
-            this.total = subtotalAfterDiscount + this.vat;
+            this.total = this.subtotal + this.vat;
+            // Need Deposit 
         },
 
         searchStyles() {

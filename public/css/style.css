@@ -140,3 +140,31 @@
     .max-height-table {
       max-height: 700px !important;
     }
+
+  .popover-container {
+    display: grid;
+    place-items: center; /* Center items in the container */
+    position: absolute;
+    top: -10px; /* Adjust this value to position above the button */
+    left: 50%;
+    transform: translate(-50%, -100%); /* Moves the container up above the button */
+    margin-bottom: 10px; /* Space between the button and the container */
+    z-index: 20;
+  }
+
+  .popover {
+    position: relative; /* Positioned relative to the arrow */
+  }
+
+  .arrow {
+    position: absolute;
+    bottom: -5px; /* Adjust to position arrow below the popover */
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: white;
+    z-index: 10; /* Keeps arrow under the popover */
+  }
+  
+  
