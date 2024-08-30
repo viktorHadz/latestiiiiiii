@@ -1,119 +1,157 @@
 <div x-data="invoiceManager" class="relative w-full">
     <button @click="openModal"
-        class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Select Client</button>
-
-    <div x-show="showClientModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20" @keydown.escape.window="showClientModal = false">
+        class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Select
+        Client</button>
+    <div x-show="showClientModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20"
+        @keydown.escape.window="showClientModal = false">
         <!-- Select Client Modal -->
-        <div class="bg-gray-800 border border-l-gray-300 p-4 rounded-lg shadow-lg w-full max-w-md mx-auto z-30 text-white">
+        <div
+            class="bg-gray-800 border border-l-gray-300 p-4 rounded-lg shadow-lg w-full max-w-md mx-auto z-30 text-white">
             <h2 class="text-xl font-medium text-center mb-6">Select Client</h2>
             <div class="relative mb-6">
-                <button @click="toggleDropdown" class="w-full p-2 border border-gray-600 rounded focus:outline-none">Select Client</button>
-                <div x-show="showDropdown" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="transform scale-y-0 opacity-0" x-transition:enter-end="transform scale-y-100 opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="transform scale-y-100 opacity-100" x-transition:leave-end="transform scale-y-0 opacity-0" class="absolute w-full border border-gray-200 rounded mt-1 bg-white shadow-lg max-h-[300px] overflow-auto z-10" style="transform-origin: top;">
+                <button @click="toggleDropdown"
+                    class="w-full p-2 border border-gray-600 rounded focus:outline-none">Select Client</button>
+                <div x-show="showDropdown" x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="transform scale-y-0 opacity-0"
+                    x-transition:enter-end="transform scale-y-100 opacity-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="transform scale-y-100 opacity-100"
+                    x-transition:leave-end="transform scale-y-0 opacity-0"
+                    class="absolute w-full border border-gray-200 rounded mt-1 bg-white shadow-lg max-h-[300px] overflow-auto z-10"
+                    style="transform-origin: top;">
                     <ul>
                         <template x-for="client in clients" :key="client.id">
-                            <li @click="selectClient(client)" class="p-2 cursor-pointer hover:bg-gray-200 text-gray-700" x-text="client.name"></li>
+                            <li @click="selectClient(client)" class="p-2 cursor-pointer hover:bg-gray-200 text-gray-700"
+                                x-text="client.name"></li>
                         </template>
                     </ul>
                 </div>
             </div>
             <div class="flex justify-center">
-                <button @click="closeModal" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200">Close</button>
+                <button @click="closeModal"
+                    class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200">Close</button>
             </div>
         </div>
     </div>
 
     <!-- Add Style Modal -->
-    <div x-show="showAddStyleModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+    <div x-show="showAddStyleModal"
+        class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
         <div class="bg-gray-800 p-5 border w-96 shadow-lg rounded-md text-white">
             <h3 class="text-2xl leading-6 font-medium text-white text-center">Add Style</h3>
             <form @submit.prevent="invoAddStyle" class="mt-3 text-center">
-                <input x-model="newStyle.name" name="name" type="text" placeholder="Style Name" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                <input x-model="newStyle.price" name="price" type="number" step="any" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Style</button>
+                <input x-model="newStyle.name" name="name" type="text" placeholder="Style Name"
+                    class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    required>
+                <input x-model="newStyle.price" name="price" type="number" step="any" placeholder="Price"
+                    class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    required>
+                <button type="submit"
+                    class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add
+                    Style</button>
             </form>
-            <button @click="showAddStyleModal = false" class="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Close</button>
+            <button @click="showAddStyleModal = false"
+                class="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Close</button>
         </div>
     </div>
 
     <!-- Add Sample Modal -->
-    <div x-show="showAddSampleModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+    <div x-show="showAddSampleModal"
+        class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
         <div class="bg-gray-800 p-5 border w-96 shadow-lg rounded-md text-white">
             <h3 class="text-2xl leading-6 font-medium text-white text-center">Add Sample</h3>
             <form @submit.prevent="invoAddSample" class="mt-3 text-center">
-                <input x-model="newSample.name" name="name" type="text" placeholder="Sample Name" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                <input x-model="newSample.time" name="time" type="number" step="any" placeholder="Time" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                <input x-model="newSample.price" name="price" type="number" step="any" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Sample</button>
+                <input x-model="newSample.name" name="name" type="text" placeholder="Sample Name"
+                    class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    required>
+                <input x-model="newSample.time" name="time" type="number" step="any" placeholder="Time"
+                    class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    required>
+                <input x-model="newSample.price" name="price" type="number" step="any" placeholder="Price"
+                    class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    required>
+                <button type="submit"
+                    class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add
+                    Sample</button>
             </form>
-            <button @click="showAddSampleModal = false" class="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Close</button>
+            <button @click="showAddSampleModal = false"
+                class="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Close</button>
         </div>
     </div>
 
     <!-- Conditional display for when a client is selected -->
     <template x-if="selectedClient">
         <div class="mt-6">
-            <h2 class="text-xl font-medium text-gray-700 mb-4" x-text="'Items and Samples for ' + selectedClient.name"></h2>
+            <h2 class="text-xl font-medium text-gray-700 mb-4" x-text="'Items and Samples for ' + selectedClient.name">
+            </h2>
 
             <div class="flex justify-between py-2">
                 <!-- Styles Search Input -->
-                <input type="text" placeholder="Search Styles..." class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300" x-model="styleSearch" @input="searchStyles">
-                <button @click="showAddStyleModal = true" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add Style</button>
+                <input type="text" placeholder="Search Styles..."
+                    class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    x-model="styleSearch" @input="searchStyles">
+                <button @click="showAddStyleModal = true"
+                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
+                    Style</button>
             </div>
-                <div class="overflow-y-auto" style="max-height: 700px;">
-                    <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100 mb-6 max-height-table">
-                        <thead class="sticky top-0 bg-slate-800">
+            <div class="overflow-y-auto" style="max-height: 700px;">
+                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100 mb-6 max-height-table">
+                    <thead class="sticky top-0 bg-slate-800">
+                        <tr>
+                            <th class="py-2 px-4 border">Style Name</th>
+                            <th class="py-2 px-4 border">Price</th>
+                            <th class="py-2 px-4 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="style in filteredStyles" :key="style.id">
                             <tr>
-                                <th class="py-2 px-4 border">Style Name</th>
-                                <th class="py-2 px-4 border">Price</th>
-                                <th class="py-2 px-4 border">Actions</th>
+                                <td class="py-2 px-4 border" x-text="style.name"></td>
+                                <td class="py-2 px-4 border" x-text="style.price"></td>
+                                <td class="py-2 px-4 border flex justify-center">
+                                    <button @click="addItemToInvoice(style, 'style')"
+                                        class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Add</button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="style in filteredStyles" :key="style.id">
-                                <tr>
-                                    <td class="py-2 px-4 border" x-text="style.name"></td>
-                                    <td class="py-2 px-4 border" x-text="style.price"></td>
-                                    <td class="py-2 px-4 border flex justify-center">
-                                        <button @click="addItemToInvoice(style, 'style')" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Add</button>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex justify-between py-2">
-                    <!-- Sample Search Input -->
-                    <input type="text" placeholder="Search Samples..." class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300" x-model="sampleSearch" @input="searchSamples">
-                    <button @click="showAddSampleModal = true" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add Sample</button>
-                </div>
-                <div class="overflow-y-auto" style="max-height: 700px;">
-                    <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100" style="max-height: 700px;">
-                        <thead class="sticky top-0 bg-slate-800">
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-between py-2">
+                <!-- Sample Search Input -->
+                <input type="text" placeholder="Search Samples..."
+                    class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    x-model="sampleSearch" @input="searchSamples">
+                <button @click="showAddSampleModal = true"
+                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
+                    Sample</button>
+            </div>
+            <div class="overflow-y-auto" style="max-height: 700px;">
+                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100"
+                    style="max-height: 700px;">
+                    <thead class="sticky top-0 bg-slate-800">
+                        <tr>
+                            <th class="py-2 px-4 border">Sample Name</th>
+                            <th class="py-2 px-4 border">Time</th>
+                            <th class="py-2 px-4 border">Price/Hour</th>
+                            <th class="py-2 px-4 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="sample in filteredSamples" :key="sample.id">
                             <tr>
-                                <th class="py-2 px-4 border">Sample Name</th>
-                                <th class="py-2 px-4 border">Time</th>
-                                <th class="py-2 px-4 border">Price/Hour</th>
-                                <th class="py-2 px-4 border">Actions</th>
+                                <td class="py-2 px-4 border" x-text="sample.name"></td>
+                                <td class="py-2 px-4 border" x-text="sample.time"></td>
+                                <td class="py-2 px-4 border" x-text="sample.price"></td>
+                                <td class="py-2 px-4 border flex justify-center">
+                                    <button @click="addItemToInvoice(sample, 'sample')"
+                                        class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Add</button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="sample in filteredSamples" :key="sample.id">
-                                <tr>
-                                    <td class="py-2 px-4 border" x-text="sample.name"></td>
-                                    <td class="py-2 px-4 border" x-text="sample.time"></td>
-                                    <td class="py-2 px-4 border" x-text="sample.price"></td>
-                                    <td class="py-2 px-4 border flex justify-center">
-                                        <button @click="addItemToInvoice(sample, 'sample')" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Add</button>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-            
-
-
-
+                        </template>
+                    </tbody>
+                </table>
+            </div>
 
 
 
@@ -140,7 +178,8 @@
                                     <td class="py-2 px-4 border" x-text="item.price"></td>
                                     <td class="py-2 px-4 border" x-text="item.quantity"></td>
                                     <td class="py-2 px-4 border flex justify-center">
-                                        <button @click="removeItemFromInvoice(item)" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Remove</button>
+                                        <button @click="removeItemFromInvoice(item)"
+                                            class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Remove</button>
                                     </td>
                                 </tr>
                             </template>
@@ -151,46 +190,91 @@
                 <div class="flex items-center justify-center">
                     <div x-data="{ open: false }" class="relative inline-block">
                         <div x-show="open" @click.outside="open = false"
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0"
-                            x-transition:enter-end="opacity-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100"
-                            x-transition:leave-end="opacity-0"
+                            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                             class="popover-container shadow-lg">
-                            <div class="popover bg-white p-4 rounded z-20">
-                                <form action="submit">
-                                    <input type="text" placeholder="Put something1...">
-                                    <input type="text" placeholder="Put something2...">
-                                    <input type="text" placeholder="Put something3...">
-                                </form>
+                            <div class="popover bg-gray-800 p-4 w-96 shadow-lg rounded-md text-white z-20">
+                                <h1 class="text-center font-bold text-2xl mb-4">Discounts</h1>
+                                <hr>
+
+                                <!-- Discount Type -->
+                                 <div class="flex mt-2">
+                                    <div class="flex justify-items-stretch">
+                                        <p class="text-lg font-semibold mr-6">
+                                            Discount type:  
+                                        </p>
+                                    </div>
+                                    <div class="flex justify-items-stretch">
+                                        <p x-text="symbol" class="text-lg font-bold"></p>
+                                    </div>
+                                 </div>
+
+                                 <div class="flex mt-2 p-4">
+                                     <!-- Input Value Discount -->
+                                     
+                                     <input type="number" placeholder="Enter discount"
+                                         class="rounded p-2 bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 focus:ring focus:border-blue-500 transition duration-300 focus:outline-none mr-2 h-auto-"/>
+     
+                                    
+                                        <!-- Change Discount -->
+                                        <button id="toggle-discount-btn"
+                                            @click="switchOpen = !switchOpen; rotateIconChangeDiscount()"
+                                            :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold' : ' rounded bg-blue-800 text-white text-sm hover:bg-blue-900 transition duration-300 font-bold'"
+                                            class="transition duration-300 p-2 ml-8">
+                                            <svg id="rotateIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-rotate-cw">
+                                                <polyline points="23 4 23 10 17 10"></polyline>
+                                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                            </svg>
+                                        </button>
+                                   
+                                 </div>
+                                <div class="flex-row p-4 ml-1">
+                                    <h1 class="text-lg font-semibold mb-2">Subtotal: </h1>
+                                    <h1 class="text-lg font-semibold mb-2">VAT: </h1>
+                                    <h1 class="text-lg font-semibold">Total: </h1>
+                                </div>
                             </div>
                             <!-- Arrow -->
                             <div class="arrow"></div>
                         </div>
 
-                        <button @click="open = !open" class="border rounded bg-gray-600 text-white hover:bg-gray-700 transition duration-300 font-bold px-4 mt-4">
+                        <button @click="open = !open"
+                            class="border rounded bg-gray-600 text-white hover:bg-gray-700 transition duration-300 font-bold px-4 mt-1">
                             Discounts
                         </button>
+
                     </div>
                 </div>
 
+                <div class="m-4">
 
-                
+                </div>
+
+
 
                 <!-- Discount and VAT Section -->
                 <div class="flex space-x-4">
-                    <input x-model="discountPercent" type="number" steep="any" placeholder="Discount %" class="w-full p-2 rounded bg-slate-600 text-white">
-                    <input x-model="discountFlat" type="number" step="any" placeholder="Discount $" class="w-full p-2 rounded bg-slate-600 text-white">
+                    <input x-model="discountPercent" type="number" steep="any" placeholder="Discount %"
+                        class="w-full p-2 rounded bg-slate-600 text-white">
+                    <input x-model="discountFlat" type="number" step="any" placeholder="Discount $"
+                        class="w-full p-2 rounded bg-slate-600 text-white">
                 </div>
-                <input x-model="vatPercent" type="number" step="any" placeholder="VAT %" class="w-full mt-4 p-2 rounded bg-slate-600 text-white">
+                <input x-model="vatPercent" type="number" step="any" placeholder="VAT %"
+                    class="w-full mt-4 p-2 rounded bg-slate-600 text-white">
                 <div class="mt-4">
                     <h3 class="text-lg font-medium text-gray-700">Subtotal: <span x-text="subtotal"></span></h3>
+                    <h3 class="text-lg font-medium text-gray-700">Discount: <span x-text="discount"></span></h3>
                     <h3 class="text-lg font-medium text-gray-700">VAT: <span x-text="vat"></span></h3>
                     <h3 class="text-xl font-bold text-gray-700">Total: <span x-text="total"></span></h3>
-                    <h3 class="text-lg font-medium text-gray-700 mt-2">Discount: <span x-text="discount"></span></h3>
+                    <h3 class="mt-2">DEPOSITS HERE</h3>
                 </div>
-                <button @click="generateInvoice" class="mt-4 w-full bg-green-500 text-white text-base font-medium p-2 rounded hover:bg-green-600">Generate Invoice</button>
+                <button @click="generateInvoice"
+                    class="mt-4 w-full bg-green-500 text-white text-base font-medium p-2 rounded hover:bg-green-600">Generate
+                    Invoice</button>
             </div>
         </div>
     </template>

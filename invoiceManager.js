@@ -28,9 +28,32 @@ export default function invoiceManager() {
         // Add new sample for client
         showAddSampleModal: false,
         newSample: { name: '', time: null, price: null },
-        // Popovers
+        // Popovers - does nothing rn
         popoverOpen: false,
+        // Discount section
+        switchOpen: false,
+        symbol: 'Percent(%)',
         
+        rotateIconChangeDiscount() {
+            const icon = document.getElementById('rotateIcon');
+            const buttonToggler = document.getElementById('toggle-discount-btn');
+            icon.classList.add('spin'); // Add animation class
+        
+            // Remove class after animation to reset for future clicks
+            icon.addEventListener(
+              'animationend',
+              () => {
+                icon.classList.remove('spin');
+              },
+              { once: true }
+            );
+
+            if (this.switchOpen) {
+                this.symbol = 'Flat(£)'
+            } else {
+                this.symbol = 'Percent(%)'
+            }
+        },
         
 
         init() {
@@ -276,7 +299,6 @@ export default function invoiceManager() {
             // Use let and const to not directly mutate the original arrays
             // Step 1: Calculate subtotal (sum of all items)
             // Step 2: Calculate discount on subtotal(standard) THEN calculate subtotal again 
-                // Then add any aditional discounts that you require and recalculate subtotal again
             // Step 3: Only then do you calculate VAT 
             // Step 4: Calculate total
             // Step 5: Optional: add discount to total if needed.

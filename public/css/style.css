@@ -119,52 +119,74 @@
     padding-top: 20px; /* Add padding to compensate for the negative margin */
 }
 
-    /* For Webkit browsers */
-    ::-webkit-scrollbar {
-        width: 8px; /* Adjust the width of the scrollbar */
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1; /* The track (progress bar) of the scrollbar */
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #888; /* The draggable scrolling handle */
-        border-radius: 10px; /* Roundness of the scrollbar handle */
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555; /* Hover effect */
-    }
-
-    .max-height-table {
-      max-height: 700px !important;
-    }
-
-  .popover-container {
-    display: grid;
-    place-items: center; /* Center items in the container */
-    position: absolute;
-    top: -10px; /* Adjust this value to position above the button */
-    left: 50%;
-    transform: translate(-50%, -100%); /* Moves the container up above the button */
-    margin-bottom: 10px; /* Space between the button and the container */
-    z-index: 20;
+  /* For Webkit browsers */
+  ::-webkit-scrollbar {
+      width: 8px; /* Adjust the width of the scrollbar */
   }
 
-  .popover {
-    position: relative; /* Positioned relative to the arrow */
+  ::-webkit-scrollbar-track {
+      background: #f1f1f1; /* The track (progress bar) of the scrollbar */
   }
 
-  .arrow {
-    position: absolute;
-    bottom: -5px; /* Adjust to position arrow below the popover */
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 12px;
-    height: 12px;
-    background: white;
-    z-index: 10; /* Keeps arrow under the popover */
+  ::-webkit-scrollbar-thumb {
+      background: #888888; /* The draggable scrolling handle */
+      border-radius: 10px; /* Roundness of the scrollbar handle */
   }
+
+  ::-webkit-scrollbar-thumb:hover {
+      background: #555; /* Hover effect */
+  }
+
+  .max-height-table {
+    max-height: 700px !important;
+  }
+
+  /* Popover */
+.popover-container {
+  display: grid;
+  place-items: center; /* Center items in the container */
+  position: absolute;
+  top: -10px; /* Adjust this value to position above the button */
+  left: 50%;
+  transform: translate(-50%, -100%); /* Moves the container up above the button */
+  z-index: 20;
+}
+
+.popover {
+  position: relative; /* Positioned relative to the arrow */
+}
+
+.arrow {
+  position: absolute;
+  bottom: -5px; /* Adjust to position arrow below the popover */
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: #1f2937 ;
+  z-index: 10; /* Keeps arrow under the popover */
+}
   
-  
+/* Rotateable icon  */
+#rotateIcon {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Spin animation */
+.spin {
+  animation: spin 0.6s ease-in-out forwards;
+}
+
+/* Keyframes for spin and rebound effect */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  80% {
+    transform: rotate(360deg) scale(1.05); 
+  }
+  100% {
+    transform: rotate(360deg) scale(1); 
+  }
+}
+
