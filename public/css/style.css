@@ -141,6 +141,19 @@
     max-height: 700px !important;
   }
 
+/* Removing number input arrows  */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
   /* Popover */
 .popover-container {
   display: grid;
@@ -190,3 +203,31 @@
   }
 }
 
+
+/* CSS for the revolve and change color animations */
+.revolve {
+  animation: revolve 0.5s ease-in-out; /* Duration of revolve*/
+  /* change color here */
+
+}
+
+/* Keyframes for revolving and changing color */
+@keyframes revolve {
+  0% {
+    transform: rotateY(0deg);
+    font-weight:normal;
+    color: #4b5563 ; /* Original color */
+  }
+
+  50% {
+    transform: rotateY(180deg);
+    font-weight: bold;
+    color: #3b82f6 ; /* Color during animation (e.g., red) */
+  }
+
+  100% {
+    transform: rotateY(360deg);
+    font-weight:normal;
+    color: #4b5563 ; /* Revert to original color */
+  }
+}
