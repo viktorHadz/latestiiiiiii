@@ -91,8 +91,9 @@
                     class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
                     x-model="styleSearch" @input="searchStyles">
                 <button @click="showAddStyleModal = true"
-                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
-                    Style</button>
+                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">
+                    Add Style
+                </button>
             </div>
             <div class="overflow-y-auto" style="max-height: 700px;">
                 <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100 mb-6 max-height-table">
@@ -194,67 +195,106 @@
                             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                             class="popover-container shadow-lg">
                             <div class="popover bg-gray-800 p-4 w-96 shadow-lg rounded-md text-white z-20">
-                                <h1 class="text-center font-bold text-2xl mb-4">Discounts</h1>
+                                <div class="grid grid-cols-3 mb-4">
+                                    <div>
+                                        <span></span>
+                                    </div>
+                                    <div>
+                                        <h1 class="text-center font-bold text-2xl">Discounts</h1>
+                                    </div>
+                                    <div class="flex justify-end mr-10">
+                                        <div class="circle">
+                                            <div class="tick"></div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <hr>
-                                 <div class="grid grid-cols-2 my-4">
-                                        <div>
-                                            <!-- Input Value Discount -->
-                                            <div class="relative h-full ml-8">
-                                                <input
-                                                    x-ref="inputDiscount"
-                                                    x-model.number="discount"
-                                                    id="discount-input"
-                                                    type="number"
-                                                    class="w-full pl-12 pr-4 py-2 border bg-gray-200 hover:bg-gray-100 border-gray-300 rounded focus:bg-gray-100 focus:outline-none focus:ring focus:border-blue-500 transition duration-300 text-gray-600 text-md p-0.5"
-                                                    :value="discount === 0 ? '' : discount"
-                                                    :placeholder="discount === 0 ? 'Enter value' : ''"
-                                                    @input="handleDiscountInput(event)"
-                                                />
-                                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                    <span x-text="symbol" id="symbolId" class="text-gray-600 text-lg"></span>
-                                                    <!-- Vertical line separator -->
-                                                    <span class="h-7 border-l border-gray-300 mx-2"></span>
-                                                </div>
+                                <div class="grid grid-cols-2 my-4">
+                                    <div>
+                                        <!-- Input Value Discount -->
+                                        <div class="relative h-full ml-8">
+                                            <input x-model.number="temporaryDiscount" id="discount-input" type="number"
+                                                class="w-full pl-12 pr-4 py-2 border bg-gray-200 hover:bg-gray-100 border-gray-300 rounded focus:bg-gray-100 focus:outline-none focus:ring focus:border-blue-500 transition duration-300 text-gray-600 text-md p-0.5"
+                                                :value="temporaryDiscount === 0 ? '' : temporaryDiscount"
+                                                :placeholder="temporaryDiscount === 0 ? 'Enter value' : ''" @input="
+                                                            handleTemporaryDiscountInput(event); 
+                                                            calculateTemporaryValues()
+                                                            showTemporarySubtotalAndDiscount()
+                                                            " />
+                                            <div
+                                                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span x-text="symbol" id="symbolId"
+                                                    class="text-gray-600 text-lg"></span>
+                                                <!-- Vertical line separator -->
+                                                <span class="h-7 border-l border-gray-300 mx-2"></span>
                                             </div>
                                         </div>
-                                        <div class="flex ml-8 align-middle">
-                                            <button id="toggle-discount-btn mr-4"
-                                                @click="
-                                                switchOpen = !switchOpen;
-                                                
-                                                changeDiscount()"
-                                                :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold' : ' rounded bg-blue-800 text-white text-sm hover:bg-blue-900 transition duration-300 font-bold'"
-                                                class="transition duration-300 px-3 py-2">
-                                                <svg id="rotateIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                    stroke-linecap="round" stroke-linejoin="round"
-                                                    class="feather feather-rotate-cw">
-                                                    <polyline points="23 4 23 10 17 10"></polyline>
-                                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                                </svg>
-                                            </button>
-                                            <button id="confirm-discount"
-                                                @click="sho"
-                                                class="rounded ml-4 px-3 py-2 bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" 
-                                                viewBox="0 0 24 24" fill="none" 
-                                                stroke="currentColor" stroke-width="2" 
-                                                stroke-linecap="round" 
-                                                stroke-linejoin="round" 
+                                    </div>
+                                    <div class="flex ml-8 align-middle">
+                                        <button id="toggle-discount-btn mr-4" @click="
+                                                    switchOpen = !switchOpen;
+                                                    changeDiscount();
+                                                    calculateTemporaryValues()
+                                                    "
+                                            :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold' : ' rounded bg-blue-800 text-white text-sm hover:bg-blue-900 transition duration-300 font-bold'"
+                                            class="transition duration-300 px-3 py-2">
+                                            <svg id="rotateIcon" xmlns="http://www.w3.org/2000/svg" width="20"
+                                                height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-rotate-cw">
+                                                <polyline points="23 4 23 10 17 10"></polyline>
+                                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                            </svg>
+                                        </button>
+                                        <button id="confirm-discount" @click="confirmDiscount()"
+                                            class="rounded ml-4 px-3 py-2 bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
                                                 class="feather feather-check">
                                                 <polyline points="20 6 9 17 4 12"></polyline>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                 </div>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                                 <hr>
-                                 <!-- PRICE DISPLAY -->
-                                <div class="flex-row p-4 ml-6">
-                                    <h1 class="text-lg font-semibold mb-2">Subtotal: <span x-text="subtotal"></span></h1>
-                                    <h1 class="text-lg font-semibold mb-2">Discount: <span x-text="discount"></span></h1>
+                                <!-- Temporary Discount Menu Popover -->
+                                <div class="flex justify-between align-bottom p-4 ml-4">
+                                    <div class="flex-row mt-1">
+                                        <h1 id="subtotal-discount-buble" class="text-lg font-semibold mb-2">
+                                            Subtotal: <span x-text="subtotal"></span>
+                                        </h1>
+                                        <h1 x-show="showNewSubtotal" x-transition class="text-lg font-semibold mb-2">
+                                            Subtotal: <span x-text="temporarySubtotal" x-transition></span>
+                                        </h1>
+                                        <!-- can remove this later -->
+                                        <h1 class="text-lg font-semibold mb-2">
+                                            Discount: <span x-text="temporaryDiscount"></span>
+                                        </h1>
 
-                                    <h1 class="text-lg font-semibold mb-2">VAT: <span x-text="vat"></span></h1>
-                                    <h1 class="text-lg font-semibold">Total: <span x-text="total"></span></h1>
+                                        <h1 class="text-lg font-semibold mb-2">
+                                            VAT: <span x-text="temporaryVat"></span>
+                                        </h1>
+                                        <h1 class="text-lg font-semibold">
+                                            Total: <span x-text="temporaryTotal"></span>
+                                        </h1>
+                                    </div>
+
+                                    <div class="flex-col mr-5">
+
+
+                                        <div>
+                                            <button @click="resetTemporaryDiscounts()"
+                                                class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300">Reset</button>
+                                        </div>
+
+                                        <div class="flex-col justify-end mt-12">
+                                            <div id="success-circle" class="circle">
+                                                <div id="success-circle" class="tick"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
                             <!-- Arrow -->
@@ -269,13 +309,35 @@
                     </div>
                 </div>
 
-                <!-- Discount and VAT Section -->
+
+                <!-- Main price menu -->
                 <div class="mt-4">
                     <h3 class="text-lg font-medium text-gray-700">Subtotal: <span x-text="subtotal"></span></h3>
                     <!-- Add an x to remove discount -->
-                    <h3 class="text-lg font-medium text-gray-700">Discount: <span x-text="discount"></span></h3>
+                    <div class="flex justify-items-start">
+
+                        <h3 class="text-lg font-medium text-gray-700">
+
+                            Discount: <span x-text="symbol === '%' ? discount + '%' : '£' + discount"></span>
+                            <span x-effect="console.log('wooooo ' + discount)"></span>
+                        </h3>
+                        <button x-show="discount != 0" @click="resetDiscounts();"
+                            class="text-red-500 hover:text-red-700 transition duration-300 ml-4">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-x-circle">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </button>
+                    </div>
                     <h3 class="text-lg font-medium text-gray-700">VAT: <span x-text="vat"></span></h3>
-                    <h3 class="text-xl font-bold text-gray-700">Total: <span x-text="total"></span></h3>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-700">Total: <span x-text="total"></span></h3>
+                        <h3 class="text-md ml-4 font-light text-gray-700">Originally: <span x-text="total"></span></h3>
+                    </div>
                     <h3 class="mt-2">DEPOSITS HERE</h3>
                 </div>
                 <button @click="generateInvoice"

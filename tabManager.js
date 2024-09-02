@@ -28,11 +28,11 @@ export default function tabManager() {
 
         initTabComponent(tabName) {
             if (tabName === 'styles') {
-                Alpine.data('stylesManager', window.stylesManager);
+                Alpine.data('stylesManager', window.stylesManager); 
             } else if (tabName === 'clients') {
-                Alpine.data('clientManager', window.clientManager);
+                Alpine.data('clientManager', window.clientManager); 
             } else if (tabName === 'invoices') {
-                Alpine.data('invoiceManager', window.invoiceManager);
+                Alpine.data('invoiceManager', window.invoiceManager); 
             }
         }
     };

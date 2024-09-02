@@ -58,8 +58,10 @@ export default function clientManager() {
                 this.showAddClientModal = false;
                 // Clear the form
                 this.newClient = { name: '', company_name: '', address: '', email: '' };
+                this.callSuccessToast()
             } catch (error) {
                 console.error('Error adding client:', error);
+                this.callDangerToast()
             }
         },
 
@@ -72,6 +74,31 @@ export default function clientManager() {
                 body: JSON.stringify(body)
             });
             return await response.json();
+        },
+
+
+        // Examples - need further customization. dont wanna be creating ones for each and every scenario.
+        callToast() {
+            window.toast('MASDA', {type: 'success', description: 'Wawawewa description', })
+            console.log("clicked")
+        },
+
+        callSuccessToast() {
+            window.dispatchEvent(new CustomEvent('toast-show', { 
+                detail: { type: 'success', message: 'Success!', description: 'Client added successfully.' }
+            }));
+        },
+
+        callDangerToast() {
+            window.dispatchEvent(new CustomEvent('toast-show', { 
+                detail: { type: 'danger', message: 'Error!', description: 'Failed to add client.' }
+            }));
+        },
+
+        callWarningToastDelete() {
+            window.dispatchEvent(new CustomEvent('toast-show', { 
+                detail: { type: 'warning', message: 'O.K.', description: 'Client removed.' }
+            }));
         }
     };
 }

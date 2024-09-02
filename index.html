@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,26 +10,73 @@
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="./public/componentsLibrary/vik-tooltip.js"></script>
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
     <link rel="stylesheet" href="./public/css/style.css">
 </head>
+
 <body>
     <div x-cloak x-data="tabManager" x-init="init()" class="flex h-screen">
         <div class="flex flex-col items-center bg-gray-800 w-56 h-screen p-4">
-            <button @click="tabButtonClicked('clients')" :class="{ 'bg-gray-700': tabContentActive('clients') }" class="flex items-center px-4 py-2 mb-2 mt-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+            <button @click="tabButtonClicked('clients')" :class="{ 'bg-gray-700': tabContentActive('clients') }"
+                class="flex items-center px-4 py-2 mb-2 mt-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                 <i class="fas fa-users"></i> Clients
             </button>
-            <button @click="tabButtonClicked('styles')" :class="{ 'bg-gray-700': tabContentActive('styles') }" class="flex items-center px-4 py-2 mb-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+            <button @click="tabButtonClicked('styles')" :class="{ 'bg-gray-700': tabContentActive('styles') }"
+                class="flex items-center px-4 py-2 mb-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                 <i class="fas fa-solid fa-box-open"></i> Styles
             </button>
-            <button @click="tabButtonClicked('invoices')" :class="{ 'bg-gray-700': tabContentActive('invoices') }" class="flex items-center px-4 py-2 mb-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+            <button @click="tabButtonClicked('invoices')" :class="{ 'bg-gray-700': tabContentActive('invoices') }"
+                class="flex items-center px-4 py-2 mb-2 text-white hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                 <i class="fas fa-file-invoice-dollar"></i> Invoices
             </button>
         </div>
         <div class="p-5 w-full flex flex-col bg-gray-300 overflow-auto">
             <div x-html="tabContent"></div>
         </div>
+
+        <!-- Our template -->
+        <template x-teleport="body">
+            <ul x-data="toastManager" class="fixed z-[99] right-0 top-0 m-4" @toast-show.window="addToast($event.detail)">
+                <template x-for="toast in toasts" :key="toast.id">
+                    <li :id="toast.id" class="p-4 mb-2 text-white rounded shadow"
+                        :class="{
+                            'bg-green-500': toast.type === 'success',
+                            'bg-red-500': toast.type === 'danger',
+                            'bg-blue-500': toast.type === 'info',
+                            'bg-yellow-500': toast.type === 'warning'
+                        }">
+                        <div class="flex items-center">
+                            <svg x-show="toast.type === 'success'" class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                <!-- Success Icon -->
+                                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"/>
+                            </svg>
+                            <svg x-show="toast.type === 'danger'" class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                <!-- Danger Icon -->
+                                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                            </svg>
+                            <svg x-show="toast.type === 'info'" class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                <!-- Info Icon -->
+                                <path fill="currentColor" d="M11 7h2v2h-2V7zm1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-6h2v6z"/>
+                            </svg>
+                            <svg x-show="toast.type === 'warning'" class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                <!-- Warning Icon -->
+                                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                            </svg>
+                            <div>
+                                <p class="font-bold" x-text="toast.message"></p>
+                                <p x-text="toast.description" class="text-sm opacity-75"></p>
+                            </div>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+        </template>
+        
+
     </div>
 </body>
+
 </html>
