@@ -19,8 +19,6 @@ export default function invoiceManager() {
     // Add new sample for client
     showAddSampleModal: false,
     newSample: { name: "", time: null, price: null },
-    
-
     // Price forming menu - final values after all operations have been added to them
     subtotal: 0,
     vat: 0,
@@ -28,7 +26,6 @@ export default function invoiceManager() {
     totalBeforeDiscount: 0,
     total: 0,
     deposit: 0,
-
     // Use for deposits popover menu. Not YET added.  
     popoverOpenDeposit: false,
     // Discount section
@@ -48,236 +45,64 @@ export default function invoiceManager() {
     // This is discount in  the main price forming meny. ultimate Discount value - x-model.number in the html controls the type
     discount: 0,
     
+    invoiceValues:[
+      // Array with objects to send over to the backend - items and prices - not sure if appropriate - Maybe get them separately though having an array would be nice :D 
+    ],
+
     init() {
       this.fetchClients();
       this.loadSelectedClient();
     },
 
-    /**  
-     * 
-     * RIGHT NOW IT CANT ADD ITEMS IN INVOICE AFTER DISCOUNT HAS BEEN ADDED - NOT SURE WHY! BEFORE IT JUST BUGGED - HANDLE IT GRACEFULY        
-     !!!!!!!!!!!BIG TODO - 
-    1. WHEN CONFIRMING DISCOUNT IT RESETS MY SUBTOTALS - AVOID THIS
-    2. WHAT TO DO IF THE USER TRIES MORE THAN ONE DISCOUNT
-    -------
+    /**         
+        
+     TO DO LIST: 
+    ------------
+    Saving/Reseting/Deleting Invoice State - How will this work. 
+    ---------------------------------------------------------------
+      Saving
+        1. When user adds a new item to the invoice list to keep track of invoice items and discounts
+      Reseting
+        1.
+      Deleting
+        1. When user changes clients - or should I save the user progress
+        2. When user generates an invoice - Yes
 
+    Selecting client needs to empty all totals - Or does it? 
+      Check if there is any subtotal or not if not ...do not accept anything
 
-    Selecting client needs to empty all totals
-            Check if there is any subtotal or not if not ...do not accept anything
-
-              wHEN 
-                close the discounts menu 
-                create a cross next to discount append it with a symbol % or £ depending on invoice value
-
-            Conditionals:
-                If user presses confirm with no input throw error toast and return
-                If user inputs negative value do not calculate 
-                If user inputs negative value and presses confirm throw error   
+      Conditionals:
+          If user presses confirm with no input throw error toast and return
+          If user inputs negative value do not calculate 
+          If user inputs negative value and presses confirm throw error   
     */
 
-    
-    calculateSubTotal() {
-      try {
-        // Calculate the subtotal for samples
-        let sampleTotal = this.invoiceItems
-          .filter((item) => item.type === "sample")
-          .reduce((total, item) => total + item.price * item.quantity, 0);
-        // Calculate the subtotal for styles
-        let styleTotal = this.invoiceItems
-          .filter((item) => item.type === "style")
-          .reduce((total, item) => total + item.price * item.quantity, 0);
-        // Calculate the overall subtotal by summing both
-        let subTotal = sampleTotal + styleTotal;
-        console.log("Samples: ", sampleTotal);
-        console.log("Styles: ", styleTotal);
-        console.log("Subtotal: ", subTotal);
-        return subTotal;
-      } catch (error) {
-        console.error("Error calculating subtotal:", error);
-        throw new Error(
-          "Failed to calculate subtotal. Please check the input data."
-        );
-      }
-    },
-
-    calculateTotals(recalculateDiscount = false) {
-      // recalculate prices if there already is a discount present
-      if (recalculateDiscount || this.discount != 0) {
-        
-        let subtotal = this.calculateSubTotal()
-        let discount = this.discount
-        let recalcSubtotal = 0
-
-        if(this.isDiscountPercent === true) {
-          recalcSubtotal = subtotal - (discount/100) * subtotal
-        }
-        else if (this.isDiscountFlat === true) {
-          recalcSubtotal = subtotal - discount 
-        }
-        let recalcVat = (this.vatPercent / 100) * recalcSubtotal
-        let recalcTotal = recalcSubtotal + recalcVat
-
-        this.subtotal = recalcSubtotal
-        this.vat = recalcVat
-        this.total = recalcTotal
-
-        return
-      }
-      
-      this.subtotal = this.calculateSubTotal();
-      this.vat = (this.vatPercent / 100) * this.subtotal;
-      this.total = this.subtotal + this.vat; 
-       
-    },
-
-
-    handleTemporaryDiscountInput(event) {
-      const inputValue = event.target.value;
-      if (inputValue === "" || isNaN(inputValue)) {
-        // Keep discount at 0 and allow the placeholder to show
-        this.temporaryDiscount = 0;
-      } else {
-        // Update discount normally based on input
-        this.temporaryDiscount = parseFloat(inputValue);
-      }
-    },
-
-    // YUU NEED LOGIC TO HANDLE WHAT HAPPENS IF USER ADS MORE DISCOUNT
-    // Calculates temporary subtotal and VAT 
-    calculateTemporaryValues() {
-      if(this.isDiscountPercent === true) {
-        this.temporarySubtotal = this.subtotal - (this.temporaryDiscount/100) * this.subtotal
-      } else if(this.isDiscountFlat === true) {
-        this.temporarySubtotal = this.subtotal - this.temporaryDiscount
-      }
-      this.temporaryVat = this.vatPercent/100 * this.temporarySubtotal
-      this.temporaryTotal = this.temporarySubtotal + this.temporaryVat
-    },
-    // Confirms all prices to send to main screen Prices menu 
-    confirmDiscount() {
-      // if you confirm while temp discount is 0 it will delete your things MAYBE RETURN AND DO NOTHING? 
-      if(this.temporaryDiscount === 0) {
-        alert("Discount is already applied! Can't add multiple discounts.")
-        return
-      }
-      // Pass temporary values to main price forming menu
-      this.total = this.totalBeforeDiscount // reference to the total before calculations
-      this.subtotal = this.temporarySubtotal
-      this.discount = this.temporaryDiscount
-      this.vat = this.temporaryVat
-      this.total = this.temporaryTotal 
-
-      // Reset temporary discount values
-      this.resetTemporaryDiscounts()
-      this.callSuccessToast()
-      console.log("Subtotal: " + this.subtotal)
-      console.log("Vat: " + this.vat)
-      console.log("Discount: " + this.discount)
-      console.log("Total: " + this.total)
-      console.log("Total before discount: " + this.totalBeforeDiscount)
-    },
-
-    resetTemporaryDiscounts() {
-      const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
-      this.temporaryDiscount = 0
-      this.showNewSubtotal = false
-      discBubbleSubTotal.classList.remove('text-md', 'line-through', 'text-gray-500')
-      discBubbleSubTotal.classList.add('text-lg', 'text-white')
-      this.callSuccessToast()
-    },
-
-    resetDiscounts() {
-      let tempDiscount = this.discount 
-      let tempSubtotal = this.subtotal
-      let tempVat = this.vat
-      let tempTotal = this.total
-      
-      // put htis invoice items [] to reset properly everything 
-      
-      this.discount = 0
-      console.log("reset Discounts called")
-      console.log("---------------------------------------")
-      console.log("These are the values before totals get calculated:")
-      console.log("---------------------------------------")
-      console.log(this.subtotal + " " + "is type:" + (typeof this.subtotal))
-      console.log(this.vat + " " + "is type:" + (typeof this.vat))
-      console.log(this.total + " " + "is type:" + (typeof this.total))
-      console.log(this.discount + " " + "is type:" + (typeof this.discount))
-      console.log("---------------------------------------")
-      this.calculateTotals()
-      console.log("This is after totals get recalculated")
-      console.log("---------------------------------------")
-      console.log(this.subtotal + " " + "is type:" + (typeof this.subtotal))
-      console.log(this.vat + " " + "is type:" + (typeof this.vat))
-      console.log(this.total + " " + "is type:" + (typeof this.total))
-      console.log(this.discount + " " + "is type:" + (typeof this.discount))
-      this.callSuccessToast
-    },
-
-    showTemporarySubtotalAndDiscount() {
-      const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
-      
-      if (this.temporaryDiscount != 0 && !isNaN(this.temporaryDiscount)) {
-        this.showNewSubtotal = true
-        discBubbleSubTotal.classList.add('line-through', 'text-md', 'text-gray-500')
-      } else if(this.temporaryDiscount === '' || isNaN(this.temporaryDiscount)) {
-        alert("There is a problem with the discount. Contact your tech support.")
-      } else {
-        this.showNewSubtotal = false
-        discBubbleSubTotal.classList.remove('line-through', 'text-gray-500', 'text-md')
-        discBubbleSubTotal.classList.add('text-white', 'text-lg')
-      }
-      console.log("Discount is:" + this.temporaryDiscount)
-    },
-
-    // TODO: Add localstorage to set state? Maybe after fetch styles/client
-    changeDiscount() {
-      this.resetTemporaryDiscounts()
-      this.resetDiscounts()
-      this.callWarningToastDelete()
-      const icon = document.getElementById("rotateIcon");
-
-      icon.classList.add("spin"); // Add animation class
-      // Remove class after animation to reset for future clicks
-      icon.addEventListener(
-        "animationend",
-        () => {
-          icon.classList.remove("spin");
-        },
-        { once: true }
-      );
-
-      if (this.switchOpen === true) {
-        this.symbol = "£";
-        this.isDiscountPercent = false;
-        this.isDiscountFlat = true;
-        this.revolveSymbol();
-      } 
-      if (this.switchOpen === false) {
-        this.symbol = "%";
-        this.isDiscountPercent = true;
-        this.isDiscountFlat = false;
-        this.revolveSymbol();
-      }
-      console.log("Our discount:");
-      console.log(this.temporaryDiscount);
-      console.log("Our discount type:");
-      console.log(typeof this.temporaryDiscount);
-    }, 
-
-    
-
-
+    /*-----------------------------CLIENT FETCHING LOGIC--------------------------------------*/
     async fetchClients() {
       try {
         const response = await fetch("/api/clients");
         this.clients = await response.json();
       } catch (error) {
         console.error("Error fetching clients:", error);
+        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot get client. Try again, restart program or call support.', position: 'top-center', html: '' })
       }
     },
-
     selectClient(client) {
+      let selectedClient = this.selectedClient.name
+      if (this.subtotal != 0) {
+        let result = confirm(`You are working on ${selectedClient}'s invoice. Changing clients now will erase current invoice progress. Are you sure you want to continue?`)
+        if (result === false) {
+          this.showDropdown = false;
+          this.showClientModal = false;
+          return
+        }
+      }
+      // Reset prices and discounts
+      this.invoiceItems = [];
+      this.resetDiscounts()
+      this.resetTemporaryDiscounts()
+      this.calculateTotals()
+      // Select new client
       this.selectedClient = client;
       this.showDropdown = false;
       this.showClientModal = false;
@@ -285,7 +110,8 @@ export default function invoiceManager() {
       this.fetchStyles(client.id);
       this.fetchSamples(client.id);
       // Empty out the Invoice Items Table | You need to ensure that styles are saved for the client youre clearing them out of and load them when selected
-      this.invoiceItems = [];
+      callToast({ type: 'success', message: 'Clients:', description: `Client changed to ${selectedClient}.`, position: 'top-center', html: '' })
+      
     },
 
     saveSelectedClient(client) {
@@ -316,9 +142,10 @@ export default function invoiceManager() {
         this.filteredStyles = this.styles;
       } catch (error) {
         console.error("Error fetching styles:", error);
+        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot get styles. Try again, restart program or call support.', position: 'top-center', html: '' })
+
       }
     },
-
     async fetchSamples(clientId) {
       try {
         const response = await fetch(`/api/samples/client/${clientId}`);
@@ -329,57 +156,25 @@ export default function invoiceManager() {
         this.filteredSamples = this.samples;
       } catch (error) {
         console.error("Error fetching samples:", error);
-      }
-    },
-    // Adds new style/sample in DB and updates UI
-    async invoAddStyle() {
-      const style = { ...this.newStyle, client_id: this.selectedClient.id };
-      try {
-        const response = await fetch("/styles", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(style),
-        });
-        const newStyle = await response.json();
-        newStyle.name = newStyle.name;
-        this.styles.push({ ...newStyle });
-        this.filteredStyles = this.styles;
-        this.showAddStyleModal = false;
-        this.newStyle = { name: "", price: null };
-      } catch (error) {
-        console.error("Error adding style:", error);
-      }
-    },
-
-    async invoAddSample() {
-      const sample = { ...this.newSample, client_id: this.selectedClient.id };
-      try {
-        const response = await fetch("/samples", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(sample),
-        });
-        const newSample = await response.json();
-        this.samples.push({ ...newSample, isEditing: false });
-        this.filteredSamples = this.samples;
-        this.showAddSampleModal = false;
-        this.newSample = { name: "", style: null, price: null };
-      } catch (error) {
-        console.error("Error adding sample:", error);
+        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot get samples. Try again, restart program or call support.', position: 'top-center', html: '' })
       }
     },
     
-
+    /*-----------------------------PRICE FORMING LOGIC--------------------------------------*/
     addItemToInvoice(item, type) {
       console.log("Adding item to invoice");
+      // Disables adding items to invoice if discount is applied
       if (this.discount != 0) {
         this.calculateTotals()
-        this.callSuccessToast()
+        callToast({ type: 'danger', message: 'Error!', description: 'Cannot add items when a discount is present. Remove discount and try again.', position: 'top-center', html: '' })
+
         console.log("I am totals if there was a discount!")
         console.log(`Subtotal: ${this.subtotal}`)
         console.log(`Vat: ${this.vat}`)
         console.log(`Total: ${this.total}`)
         console.log(`Discount${this.symbol}: ${this.discount}`)
+        console.log(`Your invoiceItems array:`)
+        console.log(this.invoiceItems)
         return
       }
       // 1. Unique id to identify items by an id - TODO: THIS SHOULD BE STORED TOO
@@ -415,7 +210,7 @@ export default function invoiceManager() {
       
       if (this.discount === 0) {
         this.calculateTotals()
-        this.callSuccessToast()
+        // this.callSuccessToast()
         console.log("I am totals when there is no previous discount!")
         console.log(`Subtotal: ${this.subtotal}`)
         console.log(`Vat: ${this.vat}`)
@@ -423,25 +218,266 @@ export default function invoiceManager() {
         console.log(`Discount${this.symbol}: ${this.discount}`)
         return 
       } else {
-        this.callDangerToast()
-        console.log("I am error in no previous discount!")
+        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Error in adding item to invoice list.', position: 'top-center', html: '' })
+        console.log("I am error if no previous discount!")
         return
       }
       // add invoice items to localstorage by calling a function bellow
     },
     
     removeItemFromInvoice(item) {
+      if (this.discount != 0 ) {
+        this.resetDiscounts()
+        this.resetTemporaryDiscounts()
+        // console.log(this.invoiceItems)
+        // console.log(this.invoiceItems.length)
+      }
       this.invoiceItems = this.invoiceItems.filter(
         (i) => i.uniqueId !== item.uniqueId
       );
       this.calculateTotals();
-      
-      // THis is great but removing for now to debug
-      // if (this.invoiceItems.length === 0) {
-      //   this.resetDiscounts()
-      // }
+      // SEE WHAT HAPPENS TO DISCOUNT IF YOU TRY TO REMOVE ITEM WHILST DISCOUNT APPLIED PUT THIS AT THE TOP OTHERWISE CONDITION WONT TRIGGER  
     },
 
+
+    // Rounds numbers to two decimal spaces. Only use after all math ops. are done. 
+    roundToTwo(value) {
+      return Math.round((value + Number.EPSILON) * 100) / 100
+    },
+    calculateSubTotal() {
+      try {
+        // Calculate the subtotal for samples
+        let sampleTotal = this.invoiceItems
+          .filter((item) => item.type === "sample")
+          .reduce((total, item) => total + item.price * item.quantity, 0);
+        // Calculate the subtotal for styles
+        let styleTotal = this.invoiceItems
+          .filter((item) => item.type === "style")
+          .reduce((total, item) => total + item.price * item.quantity, 0);
+        // Calculate the overall subtotal by summing both
+        let subTotal = sampleTotal + styleTotal;
+        console.log("Samples: ", sampleTotal);
+        console.log("Styles: ", styleTotal);
+        console.log("Subtotal: ", subTotal);
+        return this.roundToTwo(subTotal);
+      } catch (error) {
+        console.error("Error calculating subtotal:", error);
+        throw new Error(
+          "Failed to calculate subtotal. Please check the input data."
+        );
+      }
+    },
+    calculateTotals() {
+      // recalculate prices if there already is a discount present
+      if (this.discount != 0) {
+        let subtotal = this.calculateSubTotal()
+        let discount = this.discount
+        let recalcSubtotal = 0
+
+        if(this.isDiscountPercent === true) {
+          recalcSubtotal = subtotal - (discount/100) * subtotal
+        }
+        else if (this.isDiscountFlat === true) {
+          recalcSubtotal = subtotal - discount 
+        }
+        let recalcVat = (this.vatPercent / 100) * recalcSubtotal
+        let recalcTotal = recalcSubtotal + recalcVat
+
+        this.subtotal = this.roundToTwo(recalcSubtotal)
+        this.vat = this.roundToTwo(recalcVat)
+        this.total = this.roundToTwo(recalcTotal)
+
+        return
+      }
+      this.subtotal = this.calculateSubTotal();
+      let noDiscountVat = (this.vatPercent / 100) * this.subtotal
+      this.vat = this.roundToTwo(noDiscountVat);
+      let noDiscountTotal = this.subtotal + this.vat 
+      this.total = this.roundToTwo(noDiscountTotal)
+       
+    },
+    // Helps keep discount input value to 0 
+    handleTemporaryDiscountInput(event) {
+      const inputValue = event.target.value;
+      if (inputValue === "" || isNaN(inputValue)) {
+        // Keep discount at 0 and allow the placeholder to show - does not work but function does
+        this.temporaryDiscount = 0;
+      } else {
+        // Update discount normally based on input
+        this.temporaryDiscount = parseFloat(inputValue);
+      }
+    },
+    // Calculates temporary subtotal and VAT and Total
+    calculateTemporaryValues() {
+      if(this.isDiscountPercent === true) {
+        this.temporarySubtotal = this.subtotal - (this.temporaryDiscount/100) * this.subtotal
+      } else if(this.isDiscountFlat === true) {
+        this.temporarySubtotal = this.subtotal - this.temporaryDiscount
+      }
+      this.temporaryVat = this.vatPercent/100 * this.temporarySubtotal
+      this.temporaryTotal = this.temporarySubtotal + this.temporaryVat
+    },
+    // Confirms all prices to send to main screen Prices menu 
+    confirmDiscount() {
+      // if confirming discount when discount is 0 or subtotal is 0 or the discount > subtotal
+      if(this.temporaryDiscount === 0) {
+        callToast({ type: 'danger', message: 'Error!', description: 'Discount cannot be empty.', position: 'top-center', html: '' })
+        return
+      } else if (this.subtotal === 0 ) {
+        callToast({ type: 'danger', message: 'Error!', description: 'Cannot apply discount when the subtotal is zero.', position: 'top-center', html: '' })
+        return
+      } else if (this.temporaryDiscount > this.subtotal) {
+        callToast({ type: 'danger', message: 'Error!', description: 'Cannot apply discount bigger than the subtotal.', position: 'top-center', html: '' })
+        return
+      }
+      // Pass temporary values to main price forming menu
+      this.total = this.totalBeforeDiscount // reference to the total before calculations
+      this.subtotal = this.roundToTwo(this.temporarySubtotal)
+      this.discount = this.roundToTwo(this.temporaryDiscount)
+      this.vat = this.roundToTwo(this.temporaryVat)
+      this.total = this.roundToTwo(this.temporaryTotal) 
+      // Reset temporary discount values
+      this.resetTemporaryDiscounts()
+      //this.callSuccessToast()
+      callToast({ type: 'success', message: 'Discount Menu:', description: 'Discount applied successfully!', position: 'top-center', html: '' })
+      console.log("Subtotal: " + this.subtotal)
+      console.log("Vat: " + this.vat)
+      console.log("Discount: " + this.discount)
+      console.log("Total: " + this.total)
+      console.log("Total before discount: " + this.totalBeforeDiscount)
+      // HANDLE ERROR HERE
+    },
+    revolveSymbol() {
+      const symbol = document.getElementById("symbolId");
+      symbol.classList.add("revolve");
+
+      symbol.addEventListener(
+        "animationend",
+        () => {
+          symbol.classList.remove("revolve");
+        },
+        { once: true }
+      );
+    },
+    // Important handlers for reseting discount
+    resetTemporaryDiscounts() {
+      const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
+      this.temporaryDiscount = 0
+      this.showNewSubtotal = false
+      discBubbleSubTotal.classList.remove('text-md', 'line-through', 'text-gray-500')
+      discBubbleSubTotal.classList.add('text-lg', 'text-white')
+    },
+    resetDiscounts() {
+      this.discount = 0
+      this.resetTemporaryDiscounts()
+      this.temporaryVat = this.vat
+      this.temporaryTotal = this.total
+
+      callToast({ type: 'success', message: 'Main menu:', description: 'Discount reset successfully!', position: 'top-center', html: '' })
+    },
+    showTemporarySubtotalAndDiscount() {
+      const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
+      
+      if (this.temporaryDiscount != 0 && !isNaN(this.temporaryDiscount)) {
+        this.showNewSubtotal = true
+        discBubbleSubTotal.classList.add('line-through', 'text-md', 'text-gray-500')
+      } else if(this.temporaryDiscount === '' || isNaN(this.temporaryDiscount)) {
+        alert("There is a problem with the discount. Contact your tech support.")
+      } else {
+        this.showNewSubtotal = false
+        discBubbleSubTotal.classList.remove('line-through', 'text-gray-500', 'text-md')
+        discBubbleSubTotal.classList.add('text-white', 'text-lg')
+      }
+      console.log("Discount is:" + this.temporaryDiscount)
+    },
+    // TODO: Add localstorage to set state? Maybe after fetch styles/client
+    changeDiscount() {
+      if (this.discount != 0) {
+        this.resetTemporaryDiscounts()
+        this.resetDiscounts()
+        callToast({ type: 'info', message: 'Discount & Main Menu:', description: 'Cannot change discount type if it has been set. All discounts reset.', position: 'top-center', html: '' })
+      }
+      const icon = document.getElementById("rotateIcon");
+      icon.classList.add("spin"); // Add animation class
+      // Remove class after animation to reset for future clicks
+      icon.addEventListener(
+        "animationend",
+        () => {
+          icon.classList.remove("spin");
+        },
+        { once: true }
+      );
+      if (this.switchOpen === true) {
+        this.symbol = "£";
+        this.isDiscountPercent = false;
+        this.isDiscountFlat = true;
+        this.revolveSymbol();
+      } 
+      if (this.switchOpen === false) {
+        this.symbol = "%";
+        this.isDiscountPercent = true;
+        this.isDiscountFlat = false;
+        this.revolveSymbol();
+      }
+    }, 
+
+    /*-------------------------------ADD STYLES AND SAMPLES LOGIC----------------------------*/
+    // Adds new style/sample in DB and updates UI
+    async invoAddStyle() {
+      const style = { ...this.newStyle, client_id: this.selectedClient.id };
+      try {
+        const response = await fetch("/styles", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(style),
+        });
+        const newStyle = await response.json();
+        newStyle.name = newStyle.name;
+        this.styles.push({ ...newStyle });
+        this.filteredStyles = this.styles;
+        this.showAddStyleModal = false;
+        this.newStyle = { name: "", price: null };
+        callToast({ type: 'success', message: 'Main menu:', description: 'Successfully added style!', position: 'top-center', html: '' })
+      } catch (error) {
+        console.error("Error adding style:", error);
+        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot add style. Try again, restart program or call support.', position: 'top-center', html: '' })
+      }
+    },
+    async invoAddSample() {
+      const sample = { ...this.newSample, client_id: this.selectedClient.id };
+      try {
+        const response = await fetch("/samples", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sample),
+        });
+        const newSample = await response.json();
+        this.samples.push({ ...newSample, isEditing: false });
+        this.filteredSamples = this.samples;
+        this.showAddSampleModal = false;
+        this.newSample = { name: "", style: null, price: null };
+        callToast({ type: 'success', message: 'Main menu:', description: 'Successfully added sample!', position: 'top-center', html: '' })
+
+      } catch (error) {
+        console.error("Error adding sample:", error);
+        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot add sample. Try again, restart program or call support.', position: 'top-center', html: '' })
+      }
+    },
+    searchStyles() {
+      this.filteredStyles = this.styles.filter((style) =>
+        style.name.toLowerCase().includes(this.styleSearch.toLowerCase())
+      );
+    },
+
+    searchSamples() {
+      this.filteredSamples = this.samples.filter((sample) =>
+        sample.sampleName
+          .toLowerCase()
+          .includes(this.sampleSearch.toLowerCase())
+      );
+    }, 
+
+    /*-----------------------------GENERATE INVOICE LOGIC--------------------------------------*/
     async generateInvoice() {
       const invoiceData = {
         clientId: this.selectedClient.id,
@@ -470,12 +506,16 @@ export default function invoiceManager() {
           this.generatePDF(invoice.id);
         } else {
           console.error(
+            
             "Error generating invoice, data sent from invoiceData was shit:",
             await response.json()
           );
+          callToast({ type: 'danger', message: 'Server Error!', description: 'Error in generating invoice. Try again restart program or call support.', position: 'top-center', html: '' })
         }
       } catch (error) {
         console.error("Error generating invoice:", error);
+        callToast({ type: 'danger', message: 'Invoice Error!', description: 'Error in generating invoice. Try again restart program or call support.', position: 'top-center', html: '' })
+
       }
     },
 
@@ -496,155 +536,17 @@ export default function invoiceManager() {
         a.download = `S.A.M.Creations-${invoiceId}.pdf`;
         a.click();
         window.URL.revokeObjectURL(url);
+        callToast({ type: 'success', message: 'PDF: Success!', description: `PDF generated successfully.`, position: 'top-center', html: '' })
+
       } catch (error) {
         console.error("Error generating PDF:", error);
+        callToast({ type: 'danger', message: 'PDF Generator: Error!', description: 'Error in generating PDF. Try again restart program or call support.', position: 'top-center', html: '' })
+
       }
     },
 
-    revolveSymbol() {
-      const symbol = document.getElementById("symbolId");
-      symbol.classList.add("revolve");
 
-      symbol.addEventListener(
-        "animationend",
-        () => {
-          symbol.classList.remove("revolve");
-        },
-        { once: true }
-      );
-    },
 
-    searchStyles() {
-      this.filteredStyles = this.styles.filter((style) =>
-        style.name.toLowerCase().includes(this.styleSearch.toLowerCase())
-      );
-    },
-
-    searchSamples() {
-      this.filteredSamples = this.samples.filter((sample) =>
-        sample.sampleName
-          .toLowerCase()
-          .includes(this.sampleSearch.toLowerCase())
-      );
-    },
-    // toasts 
-    callToast() {
-            window.toast('MASDA', {type: 'success', description: 'Wawawewa description', })
-            console.log("clicked")
-        },
-
-    callSuccessToast() {
-        window.dispatchEvent(new CustomEvent('toast-show', { 
-            detail: { type: 'success', message: 'Success!', description: 'Client added successfully.' }
-        }));
-    },
-
-    callDangerToast() {
-        window.dispatchEvent(new CustomEvent('toast-show', { 
-            detail: { type: 'danger', message: 'Error!', description: 'Error adding item. Call IT support.' }
-        }));
-    },
-
-    callWarningToastDelete() {
-        window.dispatchEvent(new CustomEvent('toast-show', { 
-            detail: { type: 'warning', message: 'Warning', description: 'XXXX XXXX.' }
-        }));
-    }
-    // create a counter each time an item/sample gets added in the added items table
-    // Remove each item getting added in its own row. Instead another item with the same name needs to be counted
-    // Price then needs to properly update
+   
   };
 }
-
-
-/**
-
-<!-- DISCOUNTS SECTION -->
-                <div class="flex items-center justify-center">
-                    <div class="relative inline-block">
-                        <div x-show="popoverOpen" @click.outside="popoverOpen = false"
-                            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
-                            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                            class="popover-container shadow-lg">
-                            <div class="popover bg-gray-800 p-4 w-96 shadow-lg rounded-md text-white z-20">
-                                <div class="grid grid-cols-3 mb-4">
-                                    <div>
-                                        <span></span>
-                                    </div>
-                                    <div>
-                                        <h1 class="text-center font-bold text-2xl">Discounts</h1>
-                                    </div>
-                                    <div class="flex justify-end mr-10">
-                                        <div class="circle">
-                                            <div class="tick"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="grid grid-cols-2 my-4">
-                                    <div>
-                                        <!-- Input Value Discount -->
-                                        <div class="relative h-full ml-8">
-                                            <input x-model.number="temporaryDiscount" id="discount-input" type="number"
-                                                class="w-full pl-12 pr-4 py-2 border bg-gray-200 hover:bg-gray-100 border-gray-300 rounded focus:bg-gray-100 focus:outline-none focus:ring focus:border-blue-500 transition duration-300 text-gray-600 text-md p-0.5"
-                                                :value="temporaryDiscount === 0 ? '' : temporaryDiscount"
-                                                :placeholder="temporaryDiscount === 0 ? 'Enter value' : ''" @input="
-                                                            handleDiscountInput(event); 
-                                                            calculatetemporaryValues()
-                                                            showtemporarySubtotalAndDiscount()
-                                                            " />
-                                            <div
-                                                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <span x-text="symbol" id="symbolId"
-                                                    class="text-gray-600 text-lg"></span>
-                                                <!-- Vertical line separator -->
-                                                <span class="h-7 border-l border-gray-300 mx-2"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex ml-8 align-middle">
-                                        <button id="toggle-discount-btn mr-4" @click="
-                                                    switchOpen = !switchOpen;
-                                                    changeDiscount();
-                                                    calculatetemporaryValues()
-                                                    "
-                                            :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold' : ' rounded bg-blue-800 text-white text-sm hover:bg-blue-900 transition duration-300 font-bold'"
-                                            class="transition duration-300 px-3 py-2">
-                                            <svg id="rotateIcon" xmlns="http://www.w3.org/2000/svg" width="20"
-                                                height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                class="feather feather-rotate-cw">
-                                                <polyline points="23 4 23 10 17 10"></polyline>
-                                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                            </svg>
-                                        </button>
-                                        <button id="confirm-discount" @click="confirmDiscount()"
-                                            class="rounded ml-4 px-3 py-2 bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-bold">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round"
-                                                class="feather feather-check">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <!-- Bubble price menu -->
-                                <div class="flex justify-between align-bottom p-4 ml-4">
-
-                                </div>
-                            </div>
-                            <!-- Arrow -->
-                            <div class="arrow"></div>
-                        </div>
-
-                        <button @click="popoverOpenDeposit = !popoverOpenDeposit"
-                            class="border rounded bg-gray-600 text-white hover:bg-gray-700 transition duration-300 font-bold px-4 mt-1">
-                            Discounts
-                        </button>
-
-                    </div>
-                </div>
- */

@@ -202,18 +202,14 @@
                                     <div>
                                         <h1 class="text-center font-bold text-2xl">Discounts</h1>
                                     </div>
-                                    <div class="flex justify-end mr-10">
-                                        <div class="circle">
-                                            <div class="tick"></div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <hr>
                                 <div class="grid grid-cols-2 my-4">
                                     <div>
                                         <!-- Input Value Discount -->
                                         <div class="relative h-full ml-8">
-                                            <input x-model.number="temporaryDiscount" id="discount-input" type="number"
+                                            <input x-model.number="temporaryDiscount" x-ref="discountInput"
+                                                id="discount-input" type="number"
                                                 class="w-full pl-12 pr-4 py-2 border bg-gray-200 hover:bg-gray-100 border-gray-300 rounded focus:bg-gray-100 focus:outline-none focus:ring focus:border-blue-500 transition duration-300 text-gray-600 text-md p-0.5"
                                                 :value="temporaryDiscount === 0 ? '' : temporaryDiscount"
                                                 :placeholder="temporaryDiscount === 0 ? 'Enter value' : ''" @input="
@@ -259,8 +255,9 @@
                                 </div>
                                 <hr>
                                 <!-- Temporary Discount Menu Popover -->
-                                <div class="flex justify-between align-bottom p-4 ml-4">
-                                    <div class="flex-row mt-1">
+                                <div class="grid grid-cols-2 justify-items-center gap-12 p-4">
+                                    <!-- Col 1 -->
+                                    <div class="flex-row">
                                         <h1 id="subtotal-discount-buble" class="text-lg font-semibold mb-2">
                                             Subtotal: <span x-text="subtotal"></span>
                                         </h1>
@@ -279,29 +276,22 @@
                                             Total: <span x-text="temporaryTotal"></span>
                                         </h1>
                                     </div>
-
-                                    <div class="flex-col mr-5">
-
-
-                                        <div>
-                                            <button @click="resetTemporaryDiscounts()"
-                                                class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300">Reset</button>
-                                        </div>
-
-                                        <div class="flex-col justify-end mt-12">
-                                            <div id="success-circle" class="circle">
-                                                <div id="success-circle" class="tick"></div>
-                                            </div>
-                                        </div>
-
+                                    <!-- Col 2 -->
+                                    <div>
+                                        <button @click="resetTemporaryDiscounts()"
+                                            class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 ml-8">
+                                            Reset
+                                        </button>
                                     </div>
+
                                 </div>
                             </div>
                             <!-- Arrow -->
                             <div class="arrow"></div>
                         </div>
 
-                        <button @click="popoverOpen = !popoverOpen"
+                        <button
+                            @click="popoverOpen = !popoverOpen; calculateTemporaryValues(); if(popoverOpen) $nextTick(() => $refs.discountInput.focus())"
                             class="border rounded bg-gray-600 text-white hover:bg-gray-700 transition duration-300 font-bold px-4 mt-1">
                             Discounts
                         </button>

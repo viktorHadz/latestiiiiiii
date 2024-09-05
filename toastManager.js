@@ -1,60 +1,44 @@
 export default function toastManager() {
-    return {
+    // Define the window.toast function to dispatch events
+    window.toast = function (message, options = {}) {
+        let description = options.description || '';
+        let type = options.type || 'info'; // Default to 'info' if no type is specified
+        let position = options.position || 'top-center';
+        let layout = 'stacked'; // Adjusted to indicate stacked layout
+        let html = options.html || '';
 
+        // Dispatch a custom event to show the toast
+        window.dispatchEvent(new CustomEvent('toast-show', {
+            detail: { type, message, description, position, layout, html }
+        }));
+    };
+
+    return {
         toasts: [],
-    
-        // Method to show a general toast
+
+        // Method to add a toast with details
         addToast(toastDetail) {
-            this.toasts.push({
-                id: 'toast-' + Math.random().toString(36).substring(2, 15),
-                ...toastDetail
-            });
-            setTimeout(() => this.removeToast(this.toasts[0].id), 4000); // Auto-remove after 4 seconds
+            const id = 'toast-' + Math.random().toString(36).substring(2, 15);
+            this.toasts.push({ id, ...toastDetail });
+            setTimeout(() => this.removeToast(id), 4500); // Auto-remove after 4.5 seconds
         },
-        
+
         // Method to remove toast by ID
         removeToast(id) {
-            this.toasts = this.toasts.filter(toast => toast.id !== id);
+            const toastElement = document.getElementById(id);
+            if (toastElement) {
+                toastElement.classList.add('opacity-0', '-translate-y-full');
+                setTimeout(() => {
+                    this.toasts = this.toasts.filter(toast => toast.id !== id);
+                }, 300); // Delay to allow for transition effect
+            } else {
+                this.toasts = this.toasts.filter(toast => toast.id !== id);
+            }
         },
-    
-        // Predefined templates
-        showSuccess(message, description = '') {
-            this.addToast({
-                type: 'success',
-                message: message,
-                description: description,
-                html: '',
-            });
-        },
-    
-        showDanger(message, description = '') {
-            this.addToast({
-                type: 'danger',
-                message: message,
-                description: description,
-                html: '',
-            });
-        },
-    
-        showInfo(message, description = '') {
-            this.addToast({
-                type: 'info',
-                message: message,
-                description: description,
-                html: '',
-            });
-        },
-    
-        showWarning(message, description = '') {
-            this.addToast({
-                type: 'warning',
-                message: message,
-                description: description,
-                html: '',
-            });
-        }
-
-
         
-    }
+        // Unified toast interface
+        callToast({ type = 'info', message = '', description = '', position = 'top-center', html = '' }) {
+            window.toast(message, { type, description, position, html });
+        },
+    };
 }
