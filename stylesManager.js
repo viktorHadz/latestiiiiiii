@@ -90,7 +90,6 @@ export default function stylesManager() {
                     body: JSON.stringify(style)
                 });
                 const newStyle = await response.json();
-                newStyle.name = newStyle.name; 
                 this.styles.push({ ...newStyle, isEditing: false });
                 this.filteredStyles = this.styles;
                 this.showAddStyleModal = false;

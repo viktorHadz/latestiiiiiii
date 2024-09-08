@@ -1,24 +1,38 @@
 <div x-data="stylesManager" class="relative w-full">
-    <button @click="openModal" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Select Client</button>
+    <button @click="openModal"
+        class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Select
+        Client</button>
 
-    <div x-show="showClientModal" class="client-modal fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20" @keydown.escape.window="showClientModal = false">
+    <div x-show="showClientModal"
+        class="client-modal fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20"
+        @keydown.escape.window="showClientModal = false">
         <!-- Select Client Modal -->
-        <div class="modal-content bg-gray-800 border border-l-gray-300 p-4 rounded-lg shadow-lg w-full max-w-md mx-auto z-30 text-white">
+        <div
+            class="modal-content bg-gray-800 border border-l-gray-300 p-4 rounded-lg shadow-lg w-full max-w-md mx-auto z-30 text-white">
             <h2 class="text-xl font-medium text-center mb-6">Select Client</h2>
             <div class="relative mb-6">
                 <button @click="toggleDropdown" class="w-full p-2 border border-gray-600 rounded focus:outline-none">
                     Clients...
                 </button>
-                <div x-show="showDropdown" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="transform scale-y-0 opacity-0" x-transition:enter-end="transform scale-y-100 opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="transform scale-y-100 opacity-100" x-transition:leave-end="transform scale-y-0 opacity-0" class="dropdown absolute w-full border border-gray-200 rounded mt-1 bg-white shadow-lg max-h-[300px] overflow-auto z-10" style="transform-origin: top;">
+                <div x-show="showDropdown" x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="transform scale-y-0 opacity-0"
+                    x-transition:enter-end="transform scale-y-100 opacity-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="transform scale-y-100 opacity-100"
+                    x-transition:leave-end="transform scale-y-0 opacity-0"
+                    class="dropdown absolute w-full border border-gray-200 rounded mt-1 bg-white shadow-lg max-h-[300px] overflow-auto z-10"
+                    style="transform-origin: top;">
                     <ul>
                         <template x-for="client in clients" :key="client.id">
-                            <li @click="selectClient(client)" class="p-2 cursor-pointer hover:bg-gray-200 text-gray-700" x-text="client.name"></li>
+                            <li @click="selectClient(client)" class="p-2 cursor-pointer hover:bg-gray-200 text-gray-700"
+                                x-text="client.name"></li>
                         </template>
                     </ul>
                 </div>
             </div>
             <div class="flex justify-center items-center">
-                <button @click="closeModal" class="close-modal-button px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 submit-button">
+                <button @click="closeModal"
+                    class="close-modal-button px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 submit-button">
                     Close
                 </button>
             </div>
@@ -32,13 +46,18 @@
 
             <div class="flex justify-between py-2">
                 <!-- Style Search Input -->
-                <input type="text" placeholder="Search Styles..." class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300" x-model="styleSearch" @input="searchStyles">
+                <input type="text" placeholder="Search Styles..."
+                    class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    x-model="styleSearch" @input="searchStyles">
 
-                <button @click="showAddStyleModal = true" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add Style</button>
+                <button @click="showAddStyleModal = true"
+                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
+                    Style</button>
             </div>
 
             <div class="overflow-y-auto" style="max-height: 700px;">
-                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100" style="max-height: 700px;">
+                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100"
+                    style="max-height: 700px;">
                     <thead class="sticky top-0 bg-slate-800">
                         <tr>
                             <th class="py-2 px-4 border">Style Name</th>
@@ -51,7 +70,8 @@
                             <tr>
                                 <td class="py-2 px-4 border">
                                     <template x-if="style.isEditing">
-                                        <input type="text" x-model="style.name" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="text" x-model="style.name"
+                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!style.isEditing">
                                         <span x-text="style.name"></span>
@@ -59,7 +79,8 @@
                                 </td>
                                 <td class="py-2 px-4 border">
                                     <template x-if="style.isEditing">
-                                        <input type="number" x-model="style.price" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="number" x-model="style.price"
+                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!style.isEditing">
                                         <span x-text="style.price"></span>
@@ -68,14 +89,18 @@
                                 <td class="py-2 px-4 border flex justify-center">
                                     <template x-if="style.isEditing">
                                         <div>
-                                            <button @click="saveStyle(style)" class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
-                                            <button @click="cancelEditStyle(style)" class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
+                                            <button @click="saveStyle(style)"
+                                                class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
+                                            <button @click="cancelEditStyle(style)"
+                                                class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
                                         </div>
                                     </template>
                                     <template x-if="!style.isEditing">
                                         <div>
-                                            <button @click="editStyle(style)" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
-                                            <button @click="deleteStyle(style.id)" class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
+                                            <button @click="editStyle(style)"
+                                                class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
+                                            <button @click="deleteStyle(style.id)"
+                                                class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
                                         </div>
                                     </template>
                                 </td>
@@ -88,9 +113,13 @@
             <h2 class="text-xl font-medium text-gray-700 mb-4 mt-8" x-text="'Samples for ' + selectedClient.name"></h2>
             <div class="flex justify-between py-2">
                 <!-- Sample Search Input -->
-                <input type="text" placeholder="Search Samples..." class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300" x-model="sampleSearch" @input="searchSamples">
-                
-                <button @click="showAddSampleModal = true" class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add Sample</button>
+                <input type="text" placeholder="Search Samples..."
+                    class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                    x-model="sampleSearch" @input="searchSamples">
+
+                <button @click="showAddSampleModal = true"
+                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
+                    Sample</button>
             </div>
             <div class="overflow-y-auto" style="max-height: 700px;">
                 <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100">
@@ -107,7 +136,8 @@
                             <tr>
                                 <td class="py-2 px-4 border">
                                     <template x-if="sample.isEditing">
-                                        <input type="text" x-model="sample.name" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="text" x-model="sample.name"
+                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!sample.isEditing">
                                         <span x-text="sample.name"></span>
@@ -115,7 +145,8 @@
                                 </td>
                                 <td class="py-2 px-4 border">
                                     <template x-if="sample.isEditing">
-                                        <input type="number" step="0.1" x-model="sample.time" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="number" min="0" step="0.01" x-model="sample.time"
+                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!sample.isEditing">
                                         <span x-text="sample.time"></span>
@@ -123,7 +154,8 @@
                                 </td>
                                 <td class="py-2 px-4 border">
                                     <template x-if="sample.isEditing">
-                                        <input type="number" x-model="sample.price" class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                        <input type="number" x-model="sample.price"
+                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                                     </template>
                                     <template x-if="!sample.isEditing">
                                         <span x-text="sample.price"></span>
@@ -132,14 +164,18 @@
                                 <td class="py-2 px-4 border flex justify-center">
                                     <template x-if="sample.isEditing">
                                         <div>
-                                            <button @click="saveSample(sample)" class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
-                                            <button @click="cancelEditSample(sample)" class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
+                                            <button @click="saveSample(sample)"
+                                                class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
+                                            <button @click="cancelEditSample(sample)"
+                                                class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
                                         </div>
                                     </template>
                                     <template x-if="!sample.isEditing">
                                         <div>
-                                            <button @click="editSample(sample)" class="border rounded bg-gray-600 text-white p-1 text-sm hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
-                                            <button @click="deleteSample(sample.id)" class="border rounded bg-gray-600 text-white p-1 text-sm hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
+                                            <button @click="editSample(sample)"
+                                                class="border rounded bg-gray-600 text-white p-1 text-sm hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
+                                            <button @click="deleteSample(sample.id)"
+                                                class="border rounded bg-gray-600 text-white p-1 text-sm hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
                                         </div>
                                     </template>
                                 </td>
@@ -158,12 +194,20 @@
                 <h3 class="text-2xl leading-6 font-medium text-white">Add Style</h3>
                 <div class="mt-2 px-7 py-3">
                     <form @submit.prevent="addStyle">
-                        <input x-model="newStyle.name" name="name" type="text" placeholder="Style Name" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <input x-model="newStyle.price" name="price" type="number" step="any" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Style</button>
+                        <input x-model="newStyle.name" name="name" type="text" placeholder="Style Name"
+                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                            required>
+                        <input x-model="newStyle.price" name="price" type="number" min="0" step="0.01"
+                            placeholder="Price"
+                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                            required>
+                        <button type="submit"
+                            class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add
+                            Style</button>
                     </form>
                     <div class="items-center mt-2">
-                        <button @click="showAddStyleModal = false" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                        <button @click="showAddStyleModal = false"
+                            class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                             Close
                         </button>
                     </div>
@@ -179,13 +223,23 @@
                 <h3 class="text-2xl leading-6 font-medium text-white">Add Sample</h3>
                 <div class="mt-2 px-7 py-3">
                     <form @submit.prevent="addSample">
-                        <input x-model="newSample.name" name="name" type="text" placeholder="Sample Name" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <input x-model="newSample.time" name="time" type="number" step="any" placeholder="Time" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <input x-model="newSample.price" name="price" type="number" step="any" placeholder="Price" class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300" required>
-                        <button type="submit" class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add Sample</button>
+                        <input x-model="newSample.name" name="name" type="text" placeholder="Sample Name"
+                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                            required>
+                        <input x-model="newSample.time" name="time" type="number" min="0" step="0.01" placeholder="Time"
+                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                            required>
+                        <input x-model="newSample.price" name="price" type="number" min="0" step="0.01"
+                            placeholder="Price"
+                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
+                            required>
+                        <button type="submit"
+                            class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add
+                            Sample</button>
                     </form>
                     <div class="items-center mt-2">
-                        <button @click="showAddSampleModal = false" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                        <button @click="showAddSampleModal = false"
+                            class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                             Close
                         </button>
                     </div>

@@ -25,7 +25,6 @@ export default function invoiceManager() {
     vatPercent: 20,
     totalBeforeDiscount: 0,
     total: 0,
-    deposit: 0,
     // Use for deposits popover menu. Not YET added.  
     popoverOpenDeposit: false,
     // Discount section
@@ -42,16 +41,70 @@ export default function invoiceManager() {
     temporaryDiscount: 0,
     temporaryVat: 0,
     temporaryTotal: 0,    
-    // This is discount in  the main price forming meny. ultimate Discount value - x-model.number in the html controls the type
+    // This is discount in  the main price forming meny
     discount: 0,
+    // Deposit popover menu
+    trigger: 'click',
+    depositOpen: false,
+    isDepositPercent: true,
+    tempDeposit: 0,
+    tempDepoTotal: 0,
+    depositSymbol: '%',
+    deposit: 0,
+
+
+
+    resetDeposit() {
+      this.tempDeposit = 0;
+      this.deposit = 0;
+    },
+
+    handleDepositType() {
+      if (this.isDepositPercent) {
+        this.depositSymbol = '';
+        this.depositSymbol = '%';
+      } else {
+        this.depositSymbol = '';
+        this.depositSymbol = '£';
+      }
+    },
     
-    invoiceValues:[
-      // Array with objects to send over to the backend - items and prices - not sure if appropriate - Maybe get them separately though having an array would be nice :D 
-    ],
+    calculateDeposit() {
+      // is there a discount. Do we add deposi first or second it doesnt matter as theyre independent 
+      let tempDeposit = this.tempDeposit
+      let tempTotal = this.total
+      let deposit = this.deposit
+
+      if (!this.isDepositPercent) {
+        deposit = tempTotal - tempDeposit
+      } else if (this.isDepositPercent) {
+        deposit = tempDeposit/100 * tempTotal
+      }
+
+      this.deposit = this.roundToTwo(deposit)
+      
+    },
+
+
+    handleDepositInput(event) {
+      const inputValue = event.target.value;
+      if (inputValue === "" || isNaN(inputValue)) {
+        this.tempDeposit = 0;
+      } else {
+        // Update discount normally based on input
+        this.tempDeposit = parseFloat(inputValue);
+      }
+    },
+
+
+
 
     init() {
       this.fetchClients();
       this.loadSelectedClient();
+      
+
+      
     },
 
     /**         
@@ -77,7 +130,7 @@ export default function invoiceManager() {
           If user inputs negative value and presses confirm throw error   
     */
 
-    /*-----------------------------CLIENT FETCHING LOGIC--------------------------------------*/
+    /*------------------------------CLIENT FETCHING LOGIC------------------------*/
     async fetchClients() {
       try {
         const response = await fetch("/api/clients");
@@ -87,31 +140,37 @@ export default function invoiceManager() {
         callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot get client. Try again, restart program or call support.', position: 'top-center', html: '' })
       }
     },
+
     selectClient(client) {
       let selectedClient = this.selectedClient.name
+      let beforeSelect = this.selectedClient.name
       if (this.subtotal != 0) {
-        let result = confirm(`You are working on ${selectedClient}'s invoice. Changing clients now will erase current invoice progress. Are you sure you want to continue?`)
+        let result = confirm(`You are working on ${selectedClient}'s invoice. Switching clients will reset unsaved progress. Continue?`
+)
         if (result === false) {
-          this.showDropdown = false;
-          this.showClientModal = false;
+          this.showDropdown = false
+          this.showClientModal = false
           return
         }
       }
+      // Select new client
+      this.selectedClient = client
+      this.showDropdown = false
+      this.showClientModal = false
+      this.saveSelectedClient(client)
+      this.fetchStyles(client.id)
+      this.fetchSamples(client.id)
       // Reset prices and discounts
       this.invoiceItems = [];
       this.resetDiscounts()
       this.resetTemporaryDiscounts()
       this.calculateTotals()
-      // Select new client
-      this.selectedClient = client;
-      this.showDropdown = false;
-      this.showClientModal = false;
-      this.saveSelectedClient(client);
-      this.fetchStyles(client.id);
-      this.fetchSamples(client.id);
-      // Empty out the Invoice Items Table | You need to ensure that styles are saved for the client youre clearing them out of and load them when selected
-      callToast({ type: 'success', message: 'Clients:', description: `Client changed to ${selectedClient}.`, position: 'top-center', html: '' })
-      
+      let afterSelect = this.selectedClient.name
+      if (beforeSelect != afterSelect) {
+        callToast({ type: 'success', message: `Client changed to ${this.selectedClient.name}.`, position: 'top-center', html: '' })
+      } else {
+        callToast({ type: 'success', message: `Client remains ${this.selectedClient.name}.`, position: 'top-center' })
+      }
     },
 
     saveSelectedClient(client) {
@@ -142,8 +201,7 @@ export default function invoiceManager() {
         this.filteredStyles = this.styles;
       } catch (error) {
         console.error("Error fetching styles:", error);
-        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot get styles. Try again, restart program or call support.', position: 'top-center', html: '' })
-
+        callToast({ type: 'danger', message: 'Error fetching styles.', description: 'Please try again or contact support.', position: 'top-center' })
       }
     },
     async fetchSamples(clientId) {
@@ -156,18 +214,16 @@ export default function invoiceManager() {
         this.filteredSamples = this.samples;
       } catch (error) {
         console.error("Error fetching samples:", error);
-        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot get samples. Try again, restart program or call support.', position: 'top-center', html: '' })
+        callToast({ type: 'danger', message: 'Error fetching samples.', description: 'Please try again or contact support.', position: 'top-center' })
       }
     },
-    
     /*-----------------------------PRICE FORMING LOGIC--------------------------------------*/
     addItemToInvoice(item, type) {
       console.log("Adding item to invoice");
       // Disables adding items to invoice if discount is applied
       if (this.discount != 0) {
         this.calculateTotals()
-        callToast({ type: 'danger', message: 'Error!', description: 'Cannot add items when a discount is present. Remove discount and try again.', position: 'top-center', html: '' })
-
+        callToast({ type: 'danger', message: 'Cannot add items.', description: 'Remove discount and try again.', position: 'top-center' })
         console.log("I am totals if there was a discount!")
         console.log(`Subtotal: ${this.subtotal}`)
         console.log(`Vat: ${this.vat}`)
@@ -207,7 +263,6 @@ export default function invoiceManager() {
           price: parseFloat(item.price) * (type === "sample" ? parseFloat(item.time) : 1 )
         })
       }
-      
       if (this.discount === 0) {
         this.calculateTotals()
         // this.callSuccessToast()
@@ -218,7 +273,7 @@ export default function invoiceManager() {
         console.log(`Discount${this.symbol}: ${this.discount}`)
         return 
       } else {
-        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Error in adding item to invoice list.', position: 'top-center', html: '' })
+        callToast({ type: 'danger', message: 'Error adding item.', description: 'Failed to add item to the invoice.', position: 'top-center' })
         console.log("I am error if no previous discount!")
         return
       }
@@ -229,14 +284,11 @@ export default function invoiceManager() {
       if (this.discount != 0 ) {
         this.resetDiscounts()
         this.resetTemporaryDiscounts()
-        // console.log(this.invoiceItems)
-        // console.log(this.invoiceItems.length)
       }
       this.invoiceItems = this.invoiceItems.filter(
         (i) => i.uniqueId !== item.uniqueId
       );
       this.calculateTotals();
-      // SEE WHAT HAPPENS TO DISCOUNT IF YOU TRY TO REMOVE ITEM WHILST DISCOUNT APPLIED PUT THIS AT THE TOP OTHERWISE CONDITION WONT TRIGGER  
     },
 
 
@@ -297,10 +349,9 @@ export default function invoiceManager() {
        
     },
     // Helps keep discount input value to 0 
-    handleTemporaryDiscountInput(event) {
+    handleDiscountInput(event) {
       const inputValue = event.target.value;
       if (inputValue === "" || isNaN(inputValue)) {
-        // Keep discount at 0 and allow the placeholder to show - does not work but function does
         this.temporaryDiscount = 0;
       } else {
         // Update discount normally based on input
@@ -319,17 +370,21 @@ export default function invoiceManager() {
     },
     // Confirms all prices to send to main screen Prices menu 
     confirmDiscount() {
-      // if confirming discount when discount is 0 or subtotal is 0 or the discount > subtotal
-      if(this.temporaryDiscount === 0) {
-        callToast({ type: 'danger', message: 'Error!', description: 'Discount cannot be empty.', position: 'top-center', html: '' })
+      // if confirming discount when discount is 0 or subtotal is 0 or the discount > subtotal, 
+      if (this.discount != 0) {
+        callToast({ type: 'danger', message: 'Discount already applied.', description: 'Only one discount can be applied.', position: 'top-center' })
+        return
+      } else if (this.temporaryDiscount === 0) {
+        callToast({ type: 'danger', message: 'Invalid discount.', description: 'Discount cannot be empty.', position: 'top-center' })
         return
       } else if (this.subtotal === 0 ) {
-        callToast({ type: 'danger', message: 'Error!', description: 'Cannot apply discount when the subtotal is zero.', position: 'top-center', html: '' })
+        callToast({ type: 'danger', message: 'Cannot apply discount.', description: 'Subtotal must be greater than zero.', position: 'top-center' })
         return
       } else if (this.temporaryDiscount > this.subtotal) {
-        callToast({ type: 'danger', message: 'Error!', description: 'Cannot apply discount bigger than the subtotal.', position: 'top-center', html: '' })
+        callToast({ type: 'danger', message: 'Discount too large.', description: 'Discount cannot exceed the subtotal.', position: 'top-center' })
         return
       }
+      const confirmBtn = document.getElementById('confirm-discount')
       // Pass temporary values to main price forming menu
       this.total = this.totalBeforeDiscount // reference to the total before calculations
       this.subtotal = this.roundToTwo(this.temporarySubtotal)
@@ -338,8 +393,10 @@ export default function invoiceManager() {
       this.total = this.roundToTwo(this.temporaryTotal) 
       // Reset temporary discount values
       this.resetTemporaryDiscounts()
-      //this.callSuccessToast()
-      callToast({ type: 'success', message: 'Discount Menu:', description: 'Discount applied successfully!', position: 'top-center', html: '' })
+
+      confirmBtn.classList.remove('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
+      confirmBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600')
+      callToast({ type: 'success', message: 'Discount applied successfully.', position: 'top-center' })
       console.log("Subtotal: " + this.subtotal)
       console.log("Vat: " + this.vat)
       console.log("Discount: " + this.discount)
@@ -361,41 +418,47 @@ export default function invoiceManager() {
     },
     // Important handlers for reseting discount
     resetTemporaryDiscounts() {
+      const confirmBtn = document.getElementById('confirm-discount')
       const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
       this.temporaryDiscount = 0
+      this.temporarySubtotal = this.subtotal
+      this.temporaryVat = this.vat
+      this.temporaryTotal = this.total
       this.showNewSubtotal = false
-      discBubbleSubTotal.classList.remove('text-md', 'line-through', 'text-gray-500')
-      discBubbleSubTotal.classList.add('text-lg', 'text-white')
+      discBubbleSubTotal.classList.remove('line-through', 'text-gray-500')
+      discBubbleSubTotal.classList.add('text-slate-300')
+
+      confirmBtn.classList.remove('bg-green-500', 'text-slate-300', 'hover:bg-green-600')
+      confirmBtn.classList.add('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
     },
     resetDiscounts() {
       this.discount = 0
       this.resetTemporaryDiscounts()
       this.temporaryVat = this.vat
       this.temporaryTotal = this.total
-
-      callToast({ type: 'success', message: 'Main menu:', description: 'Discount reset successfully!', position: 'top-center', html: '' })
+      this.calculateTotals()
+      callToast({ type: 'success', message: 'Discount reset successfully.', position: 'top-center' })
     },
     showTemporarySubtotalAndDiscount() {
       const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
       
       if (this.temporaryDiscount != 0 && !isNaN(this.temporaryDiscount)) {
         this.showNewSubtotal = true
-        discBubbleSubTotal.classList.add('line-through', 'text-md', 'text-gray-500')
+        discBubbleSubTotal.classList.add('line-through', 'text-gray-500')
       } else if(this.temporaryDiscount === '' || isNaN(this.temporaryDiscount)) {
         alert("There is a problem with the discount. Contact your tech support.")
       } else {
         this.showNewSubtotal = false
-        discBubbleSubTotal.classList.remove('line-through', 'text-gray-500', 'text-md')
-        discBubbleSubTotal.classList.add('text-white', 'text-lg')
+        discBubbleSubTotal.classList.remove('line-through', 'text-gray-500',)
+        discBubbleSubTotal.classList.add('text-slate-300')
       }
       console.log("Discount is:" + this.temporaryDiscount)
     },
     // TODO: Add localstorage to set state? Maybe after fetch styles/client
     changeDiscount() {
       if (this.discount != 0) {
-        this.resetTemporaryDiscounts()
-        this.resetDiscounts()
-        callToast({ type: 'info', message: 'Discount & Main Menu:', description: 'Cannot change discount type if it has been set. All discounts reset.', position: 'top-center', html: '' })
+        callToast({ type: 'warning', message: 'Cannot change discount type.', description: 'Reset the existing discount first.', position: 'top-center' })
+        return
       }
       const icon = document.getElementById("rotateIcon");
       icon.classList.add("spin"); // Add animation class
@@ -421,7 +484,7 @@ export default function invoiceManager() {
       }
     }, 
 
-    /*-------------------------------ADD STYLES AND SAMPLES LOGIC----------------------------*/
+    /*----------------------------ADD STYLES AND SAMPLES LOGIC--------------------------*/
     // Adds new style/sample in DB and updates UI
     async invoAddStyle() {
       const style = { ...this.newStyle, client_id: this.selectedClient.id };
@@ -432,15 +495,14 @@ export default function invoiceManager() {
           body: JSON.stringify(style),
         });
         const newStyle = await response.json();
-        newStyle.name = newStyle.name;
         this.styles.push({ ...newStyle });
         this.filteredStyles = this.styles;
         this.showAddStyleModal = false;
         this.newStyle = { name: "", price: null };
-        callToast({ type: 'success', message: 'Main menu:', description: 'Successfully added style!', position: 'top-center', html: '' })
+        callToast({ type: 'success', message: 'Style added successfully.', position: 'top-center' })
       } catch (error) {
         console.error("Error adding style:", error);
-        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot add style. Try again, restart program or call support.', position: 'top-center', html: '' })
+        callToast({ type: 'danger', message: 'Error adding style.', description: 'Please try again or contact support.', position: 'top-center' })
       }
     },
     async invoAddSample() {
@@ -456,11 +518,10 @@ export default function invoiceManager() {
         this.filteredSamples = this.samples;
         this.showAddSampleModal = false;
         this.newSample = { name: "", style: null, price: null };
-        callToast({ type: 'success', message: 'Main menu:', description: 'Successfully added sample!', position: 'top-center', html: '' })
-
+        callToast({ type: 'success', message: 'Sample added successfully.', position: 'top-center' })
       } catch (error) {
         console.error("Error adding sample:", error);
-        callToast({ type: 'danger', message: 'Main menu: Error!', description: 'Cannot add sample. Try again, restart program or call support.', position: 'top-center', html: '' })
+        callToast({ type: 'danger', message: 'Error adding sample.', description: 'Please try again or contact support.', position: 'top-center' })
       }
     },
     searchStyles() {
@@ -477,21 +538,22 @@ export default function invoiceManager() {
       );
     }, 
 
-    /*-----------------------------GENERATE INVOICE LOGIC--------------------------------------*/
+    /*-----------------------------GENERATE INVOICE LOGIC-------------------------------*/
+    // Generates invoice
     async generateInvoice() {
       const invoiceData = {
         clientId: this.selectedClient.id,
         items: this.invoiceItems,
         // need to edit this based on discounts
-        discountPercent: this.discountPercent, // doesnt exist in current data itteration 
-        discountFlat: this.discountFlat,  // doesnt exist in current data itteration
+        discountPercent: this.isDiscountPercent, // doesnt exist in current data itteration 
+        discountFlat: this.isDiscountFlat,  // doesnt exist in current data itteration
         vatPercent: this.vatPercent, 
         subtotal: this.subtotal,
         discount: this.discount,
         vat: this.vat,
         total: this.total,
       };
-
+      console.log(invoiceData)
       try {
         const response = await fetch("/api/saveInvoice", {
           method: "POST",
@@ -506,16 +568,14 @@ export default function invoiceManager() {
           this.generatePDF(invoice.id);
         } else {
           console.error(
-            
             "Error generating invoice, data sent from invoiceData was shit:",
             await response.json()
           );
-          callToast({ type: 'danger', message: 'Server Error!', description: 'Error in generating invoice. Try again restart program or call support.', position: 'top-center', html: '' })
+          callToast({ type: 'danger', message: 'Server Error!', description: 'Failed to generate invoice. Please try again or contact support.', position: 'top-center' })
         }
       } catch (error) {
         console.error("Error generating invoice:", error);
-        callToast({ type: 'danger', message: 'Invoice Error!', description: 'Error in generating invoice. Try again restart program or call support.', position: 'top-center', html: '' })
-
+        callToast({ type: 'danger', message: 'Invoice Error!', description: 'Unable to generate invoice. Try again or contact support.', position: 'top-center' })
       }
     },
 
@@ -536,16 +596,12 @@ export default function invoiceManager() {
         a.download = `S.A.M.Creations-${invoiceId}.pdf`;
         a.click();
         window.URL.revokeObjectURL(url);
-        callToast({ type: 'success', message: 'PDF: Success!', description: `PDF generated successfully.`, position: 'top-center', html: '' })
-
+        callToast({ type: 'success', message: 'PDF generated successfully.', position: 'top-center' })
       } catch (error) {
         console.error("Error generating PDF:", error);
-        callToast({ type: 'danger', message: 'PDF Generator: Error!', description: 'Error in generating PDF. Try again restart program or call support.', position: 'top-center', html: '' })
-
+        callToast({ type: 'danger', message: 'PDF Generation Error!', description: 'Failed to generate PDF. Please try again or contact support.', position: 'top-center' })
       }
     },
-
-
 
    
   };
