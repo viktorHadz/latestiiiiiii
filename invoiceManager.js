@@ -35,8 +35,8 @@ export default function invoiceManager() {
     isDiscountFlat: false,
     symbol: "%",
     // Temporary values
+    // State variable to conditionally show or hide the crossed over subtotal.
     showNewSubtotal: false,
-    // Shows in discounts bubble once user starts typing which trigers showNewSubtotal that hides/shows temporary subtotal
     temporarySubtotal: 0, 
     temporaryDiscount: 0,
     temporaryVat: 0,
@@ -51,13 +51,69 @@ export default function invoiceManager() {
     tempDepoTotal: 0,
     depositSymbol: '%',
     deposit: 0,
+    // Note
+    invoiceNoteOpen: false,
+    invoiceNotePopover: '',
+    invoiceNote: '',
+    noteLength: 0,
+    lnght: 216,
+    noteMaxLength: 217,
+    
+    
+    // TODO - HANDLE ERRORS FOR THE INVOICE NOTE 
+    handleMessageSubmit() {
+      let noteText = this.$refs.noteText;
+      let removeBtn = this.$refs.removeBtn;
+      // Update the note first, then apply fade-in effect
+      this.invoiceNote = this.invoiceNotePopover;
+      if(this.noteLength >= this.noteMaxLength) {
+        callWarning('Note cannot exceed limit characters.')
+        this.$refs.invoiceNotePopover.focus()
+        return
+      }
+      this.invoiceNotePopover = ''
+      
+      setTimeout(() => {
+          // Apply fade-in effect to both text and button
+          noteText.classList.remove('fade-out-hidden');
+          noteText.classList.add('fade-in-visible');
+          removeBtn.classList.remove('fade-out-hidden');
+          removeBtn.classList.add('fade-in-visible');
+      }, 0); 
+    },
 
+    trackLength() {
+      // if input to the note you add 1 if delete you subtract 1  
+      this.noteLength = this.invoiceNotePopover.length;
 
+      if(this.noteLength >= this.noteMaxLength) {
+        callWarning('Note cannot exceed limit characters.')
+        this.$refs.invoiceNotePopover.focus()
+        return
+      }
+    },
 
+    removeMessage() {
+      let noteText = this.$refs.noteText;
+      let removeBtn = this.$refs.removeBtn;
+
+      // Apply fade-out effect to both text and button
+      noteText.classList.remove('fade-in-visible');
+      noteText.classList.add('fade-out-hidden');
+      removeBtn.classList.remove('fade-in-visible');
+      removeBtn.classList.add('fade-out-hidden');
+
+      // Clear the note after the fade-out completes
+      setTimeout(() => {
+          this.invoiceNote = '';
+      }, 300); // Matches the duration of the fade-out transition
+    },
     resetDeposit() {
       this.tempDeposit = 0;
       this.deposit = 0;
+      callSuccess('Deposit reset.')
     },
+    
 
     handleDepositType() {
       if (this.isDepositPercent) {
@@ -68,20 +124,25 @@ export default function invoiceManager() {
         this.depositSymbol = '£';
       }
     },
-    
+
     calculateDeposit() {
-      // is there a discount. Do we add deposi first or second it doesnt matter as theyre independent 
-      let tempDeposit = this.tempDeposit
-      let tempTotal = this.total
-      let deposit = this.deposit
-
-      if (!this.isDepositPercent) {
-        deposit = tempTotal - tempDeposit
-      } else if (this.isDepositPercent) {
-        deposit = tempDeposit/100 * tempTotal
+      try {
+        if (!this.validator(this, 'calculateDeposit')) return
+        let tempDeposit = this.tempDeposit
+        let tempTotal = this.total
+        let deposit = this.deposit
+  
+        if (!this.isDepositPercent) {
+          deposit = tempDeposit
+        } else if (this.isDepositPercent) {
+          deposit = tempDeposit/100 * tempTotal
+        }
+  
+        this.deposit = this.roundToTwo(deposit)
+      } catch (error) {
+        console.error(error)
+        callError('Error', 'Try again, refresh the program or call support.')
       }
-
-      this.deposit = this.roundToTwo(deposit)
       
     },
 
@@ -96,15 +157,79 @@ export default function invoiceManager() {
       }
     },
 
+    validator(context, functionName) {
+      const validations = {
+        // Additional function-specific validations can be added here
+        calculateDeposit:[
+          {
+            condition: context.total === 0,
+            toast: () => callError('Total must be greater than zero.'),
+          },    
+          { 
+            condition: context.isDepositPercent && context.tempDeposit > 100,
+            toast: () => callError('Deposit cannot exceed 100%.'),
+          },
+          {
+            condition: context.isDepositPercent === false && context.tempDeposit > context.total,
+            toast: () => callError('Deposit cannot exceed the total.'),
+          },
+          {
+            condition: context.tempDeposit <= 0,
+            toast: () => callError('Deposit cannot be zero or a negative value.'),
+          },  
+        ],
 
+        confirmDiscount: [
+          {
+            condition: context.discount !== 0,
+            toast: () => callError('Discount already applied.', 'Only one discount can be applied.')
+          },
+          {
+            condition: context.temporaryDiscount === 0,
+            toast: () => callError('Invalid discount.', 'Discount cannot be empty.')
+          },
+          {
+            condition: context.subtotal <= 0,
+            toast: () => callError('Cannot apply discount.', 'Subtotal must be greater than zero.')
+          },
+          {
+            condition: context.deposit !== 0,
+            toast: () => callError('Cannot apply discount.', 'Remove the deposit first.')
+          },
+          {
+            condition: context.temporaryDiscount < 0,
+            toast: () => callError('Invalid discount.', 'Discount value cannot be negative.')
+          },
+          {
+            condition: typeof context.temporaryDiscount !== 'number' || isNaN(context.temporaryDiscount),
+            toast: () => callError('Invalid input.', 'Discount value must be a number.')
+          },
+          {
+            condition: context.isDiscountPercent && context.temporaryDiscount > 100,
+            toast: () => callError('Discount cannot exceed 100%.', 'Please check the discount value.')
+          },
+          {
+            condition: context.isDiscountFlat && context.temporaryDiscount > context.subtotal,
+            toast: () => callError('Discount cannot exceed the subtotal.', 'Please adjust the discount value.')
+          }
+        ],
+      };
+
+      // Run the validations for the specified function
+      const functionValidations = validations[functionName] || [];
+      for (const { condition, toast } of functionValidations) {
+          if (condition) {
+              toast();
+              return false;
+          }
+      }
+      return true;
+    },
 
 
     init() {
       this.fetchClients();
       this.loadSelectedClient();
-      
-
-      
     },
 
     /**         
@@ -221,16 +346,13 @@ export default function invoiceManager() {
     addItemToInvoice(item, type) {
       console.log("Adding item to invoice");
       // Disables adding items to invoice if discount is applied
-      if (this.discount != 0) {
+      if (this.deposit !== 0) {
+        callError('Cannot add items.', 'Remove deposit and try again.')
+        return
+      }
+      if (this.discount !== 0) {
         this.calculateTotals()
-        callToast({ type: 'danger', message: 'Cannot add items.', description: 'Remove discount and try again.', position: 'top-center' })
-        console.log("I am totals if there was a discount!")
-        console.log(`Subtotal: ${this.subtotal}`)
-        console.log(`Vat: ${this.vat}`)
-        console.log(`Total: ${this.total}`)
-        console.log(`Discount${this.symbol}: ${this.discount}`)
-        console.log(`Your invoiceItems array:`)
-        console.log(this.invoiceItems)
+        callError('Cannot add items.', 'Remove discount and try again.')
         return
       }
       // 1. Unique id to identify items by an id - TODO: THIS SHOULD BE STORED TOO
@@ -281,14 +403,27 @@ export default function invoiceManager() {
     },
     
     removeItemFromInvoice(item) {
-      if (this.discount != 0 ) {
-        this.resetDiscounts()
-        this.resetTemporaryDiscounts()
+      if(this.deposit != 0) {
+        callError('Cannot remove item.', 'Deposit must be cleared first')
+        return
       }
       this.invoiceItems = this.invoiceItems.filter(
         (i) => i.uniqueId !== item.uniqueId
-      );
+      )
       this.calculateTotals();
+
+      if (this.subtotal < 0) {
+        callError('Cannot remove item.', 'Total cannot be a negative value. Check your discounts.')
+        this.invoiceItems.push(item)
+        this.calculateTotals();
+        return
+      }
+
+      if (this.invoiceItems.length === 0) {
+        this.resetDeposit()
+        this.resetDiscounts()
+        callInfo('No items in invoice list.', 'Discounts and deposits have been reset.')
+      } 
     },
 
 
@@ -321,7 +456,7 @@ export default function invoiceManager() {
     },
     calculateTotals() {
       // recalculate prices if there already is a discount present
-      if (this.discount != 0) {
+      if (this.discount !== 0) {
         let subtotal = this.calculateSubTotal()
         let discount = this.discount
         let recalcSubtotal = 0
@@ -341,6 +476,7 @@ export default function invoiceManager() {
 
         return
       }
+      
       this.subtotal = this.calculateSubTotal();
       let noDiscountVat = (this.vatPercent / 100) * this.subtotal
       this.vat = this.roundToTwo(noDiscountVat);
@@ -368,35 +504,27 @@ export default function invoiceManager() {
       this.temporaryVat = this.vatPercent/100 * this.temporarySubtotal
       this.temporaryTotal = this.temporarySubtotal + this.temporaryVat
     },
-    // Confirms all prices to send to main screen Prices menu 
+    // Checks if discount is an acceptible value based on this we 
+    // Confirms all prices to send to main screen Prices menu
     confirmDiscount() {
-      // if confirming discount when discount is 0 or subtotal is 0 or the discount > subtotal, 
-      if (this.discount != 0) {
-        callToast({ type: 'danger', message: 'Discount already applied.', description: 'Only one discount can be applied.', position: 'top-center' })
-        return
-      } else if (this.temporaryDiscount === 0) {
-        callToast({ type: 'danger', message: 'Invalid discount.', description: 'Discount cannot be empty.', position: 'top-center' })
-        return
-      } else if (this.subtotal === 0 ) {
-        callToast({ type: 'danger', message: 'Cannot apply discount.', description: 'Subtotal must be greater than zero.', position: 'top-center' })
-        return
-      } else if (this.temporaryDiscount > this.subtotal) {
-        callToast({ type: 'danger', message: 'Discount too large.', description: 'Discount cannot exceed the subtotal.', position: 'top-center' })
-        return
-      }
-      const confirmBtn = document.getElementById('confirm-discount')
+      // Discount validation using VALIDATOR :D
+      if (!this.validator(this, 'confirmDiscount')) return
+     
       // Pass temporary values to main price forming menu
-      this.total = this.totalBeforeDiscount // reference to the total before calculations
+      let totalContainer = this.total
+      const confirmBtn = document.getElementById('confirm-discount')
+      this.totalBeforeDiscount = totalContainer// reference to the total before calculations
       this.subtotal = this.roundToTwo(this.temporarySubtotal)
       this.discount = this.roundToTwo(this.temporaryDiscount)
       this.vat = this.roundToTwo(this.temporaryVat)
       this.total = this.roundToTwo(this.temporaryTotal) 
-      // Reset temporary discount values
       this.resetTemporaryDiscounts()
 
       confirmBtn.classList.remove('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
       confirmBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600')
+
       callToast({ type: 'success', message: 'Discount applied successfully.', position: 'top-center' })
+
       console.log("Subtotal: " + this.subtotal)
       console.log("Vat: " + this.vat)
       console.log("Discount: " + this.discount)
@@ -416,6 +544,7 @@ export default function invoiceManager() {
         { once: true }
       );
     },
+    
     // Important handlers for reseting discount
     resetTemporaryDiscounts() {
       const confirmBtn = document.getElementById('confirm-discount')
@@ -483,7 +612,7 @@ export default function invoiceManager() {
         this.revolveSymbol();
       }
     }, 
-
+    
     /*----------------------------ADD STYLES AND SAMPLES LOGIC--------------------------*/
     // Adds new style/sample in DB and updates UI
     async invoAddStyle() {

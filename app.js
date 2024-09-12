@@ -5,7 +5,12 @@ import toastManager from './toastManager.js';
 
 // Initialize toastManager and assign it to window
 window.toastManager = toastManager();
-window.callToast = window.toastManager.callToast.bind(window.toastManager);
+// Bind calls to the toast manager 
+window.callToast = window.toastManager.callToast.bind(window.toastManager)
+window.callError = window.toastManager.toastError.bind(window.toastManager)
+window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager)
+window.callWarning = window.toastManager.toastWarning.bind(window.toastManager)
+window.callInfo = window.toastManager.toastInfo.bind(window.toastManager)
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('tabManager', () => ({

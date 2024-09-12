@@ -40,5 +40,40 @@ export default function toastManager() {
         callToast({ type = 'info', message = '', description = '', position = 'top-center', html = '' }) {
             window.toast(message, { type, description, position, html });
         },
+
+        // Error toast
+        toastError(message, description='') {
+            this.callToast( {
+                type: 'danger',
+                message: message,
+                description: description,
+                position: "top-center",
+            })
+        },
+        toastSuccess(message, description='') {
+            this.callToast({
+                type: "success",
+                message: message,
+                description: description,
+                position: "top-center"
+            })
+        },
+        toastWarning(message, description='') {
+            this.callToast({
+                type: "warning",
+                message: message,
+                description: description,
+                position: "top-center"
+            })
+        },
+        toastInfo(message, description='') {
+            this.callToast({
+                type: "info",
+                message: message,
+                description: description,
+                position: "top-center"
+            })
+        },
+
     };
 }

@@ -233,3 +233,29 @@ input[type=number] {
   }
 }
 
+/* Alpine like transition fade in and fade out when x-show isnt applicable */
+/* Fade-In: Hidden to Visible */
+.fade-in-hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.fade-in-visible {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+/* Fade-Out: Visible to Hidden */
+.fade-out-visible {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.fade-out-hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s, transform 0.3s;
+}

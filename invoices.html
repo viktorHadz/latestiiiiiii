@@ -192,41 +192,89 @@
             </div>
 
 
-            <div class="grid grid-cols-4 border rounded-lg border-gray-500 mt-4 p-4 align-top items-end">
+            <div class="grid grid-cols-6 border rounded-lg border-gray-500 mt-4 p-4 align-top items-end">
                 <!-- MAIN PRICE MENU COL 1 -->
-                <div>
-                    <div>
-                        <h3 class="text-lg font-medium text-gray-700">Subtotal: <span x-text="subtotal"></span></h3>
+                <div class="">
+                    <div class="text-slate-800">
+                        <h3 class="text-lg font-medium">Subtotal: <span x-text="subtotal"></span></h3>
                         <!-- Add an x to remove discount -->
                         <div class="flex justify-items-start">
 
-                            <h3 class="text-lg font-medium text-gray-700">
-
-                                Discount: <span x-text="symbol === '%' ? discount + '%' : '£' + discount"></span>
-                                <span x-effect="console.log('wooooo ' + discount)"></span>
+                            <h3 class="text-lg font-medium">
+                                Discount:
+                                <span x-show="discount !== 0">-</span><span
+                                    x-text="symbol === '%' ? discount + '%' : '£' + discount"></span>
                             </h3>
-                            <button x-show="discount != 0" @click="resetDiscounts();"
-                                class="text-red-500 hover:text-red-700 transition duration-300 ml-4">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="feather feather-x-circle">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                            <button x-show="discount != 0" x-transition.duration.300 @click="resetDiscounts();"
+                                class="text-red-600 hover:text-red-700 transition duration-300 ml-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-trash-2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
                                 </svg>
                             </button>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-700">VAT: <span x-text="vat"></span></h3>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-700">Total: <span x-text="total"></span></h3>
-                            <h3 class="text-md ml-4 font-light text-gray-700">Originally: <span x-text="total"></span>
+                        <h3 class="text-lg font-medium">VAT: <span>£</span><span x-text="vat"></span></h3>
+                        <div class="flex">
+                            <h3 class="text-lg font-medium">Total: <span>£</span><span x-text="total"></span></h3>
+                            <h3 x-show="discount !== 0" x-transition.duration.300
+                                class="text-base ml-1 font-normal text-gray-600 line-through">
+                                <span x-text="totalBeforeDiscount"></span>
                             </h3>
                         </div>
-                        <h3 x-show="deposit != 0" x-transition.duration.300 class="mt-2"></h3>
+                        <div class="flex">
+                            <h3 x-show="deposit != 0" x-transition.duration.300 class="text-lg font-medium">
+                                Deposit:
+                                <span>£</span><span x-text="deposit"></span>
+                            </h3>
+                            <button x-show="deposit !== 0" x-transition.duration.300 @click="resetDeposit();"
+                                class="text-red-600 hover:text-red-700 transition duration-300 ml-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-trash-2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+
                     </div>
                 </div>
-                <!-- DISCOUNT COL 2 -->
+                <!-- MESSAGE FRAME COL 2 -->
+                <div class="h-full col-span-2">
+                    <div class="flex text-sm items-center">
+                        <p x-text="'Invoice note: ' + invoiceNote"
+                            class="font-normal italic fade-in-hidden fade-out-hidden text-wrap"
+                            :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'" x-ref="noteText"
+                            x-show="invoiceNote != ''"></p>
+                        <button @click="removeMessage()"
+                            class="text-red-600 hover:text-red-700 transition duration-300 ml-2 fade-in-hidden fade-out-hidden"
+                            :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'" x-ref="removeBtn"
+                            x-show="invoiceNote != ''">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-trash-2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DISCOUNT COL 3 -->
                 <div class="flex justify-end">
                     <div class="relative inline-block">
                         <button
@@ -324,7 +372,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- DEPOSIT MENU COL 3-->
+                <!-- DEPOSIT MENU COL 4-->
                 <div class="flex justify-end">
                     <div class="relative inline-block">
                         <button @mouseenter="(trigger === 'hover focus') ? depositOpen = true : null"
@@ -358,9 +406,10 @@
                                         <span class="absolute ml-6 h-6 border-l border-gray-300 mx-2"></span>
                                     </div>
                                 </div>
+
                                 <div class="flex flex-col text-sm justify-start w-full mb-4">
                                     <h1 class="border border-blue-900 rounded-lg p-1">
-                                        Deposit: <span x-text="deposit"></span>
+                                        Deposit: <span x-text="tempDeposit"></span>
                                     </h1>
                                 </div>
                                 <div class="flex justify-between mb-4">
@@ -376,7 +425,7 @@
                                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                                         </svg>
                                     </button>
-                                    <button id="confirm-deposit" @click="calculateDeposit()"
+                                    <button id="confirm-deposit" @click="calculateDeposit(); handleMessage()"
                                         class="rounded ml-4 px-1.5 py-1 bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
@@ -386,7 +435,7 @@
                                         </svg>
                                     </button>
                                     <button
-                                        @click="resetDeposit(); if (depositOpen) { $nextTick(() => { $refs.tempDeposit.focus()}); }"
+                                        @click="tempDeposit = 0; if (depositOpen) { $nextTick(() => { $refs.tempDeposit.focus()}); }"
                                         class=" rounded px-1.5 py-1 ml-4 bg-gray-600 text-white hover:bg-gray-700 transition duration-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
@@ -403,11 +452,106 @@
                                 aria-hidden="true"></div>
                         </div>
                     </div>
-
                 </div>
-                <!-- GENERATE INVOICE -->
-                <div class="flex justify-end">
-                    <div>
+
+                <!-- COL 5 -->
+                <div>
+                    <!-- INVOICE NOTE -->
+                    <div class="flex justify-end mb-10">
+                        <div class="relative inline-block">
+                            <button
+                                @click=" invoiceNoteOpen = !invoiceNoteOpen; if (invoiceNoteOpen) { $nextTick(() => { $refs.invoiceNotePopover.focus()}); }"
+                                type="button"
+                                class="inline-flex items-center justify-center gap-2 rounded border bg-gray-600 text-white p-2 hover:bg-gray-700 font-semibold focus:bg-gray-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
+                                <span>Invoice Note</span>
+                            </button>
+                            <div x-cloak x-show="invoiceNoteOpen" x-transition:enter="transition ease-out duration-300"
+                                @click.outside="invoiceNoteOpen = false"
+                                x-transition:enter-start="opacity-0 translate-y-2"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-145"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-10"
+                                class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
+                                <div
+                                    class="text-sm text-slate-400 border rounded-md border-slate-600 bg-gray-900 px-6 py-6">
+
+                                    <!-- TOOLTIP QUESTIONMARK -->
+                                    <div class="block absolute -translate-y-3 -translate-x-1.5">
+
+                                        <div x-data="{
+                                                    tooltipVisible: false,
+                                                    tooltipText: 'Leave a note for your client, inside the invoice.',
+                                                    tooltipArrow: true,
+                                                    tooltipPosition: 'top',
+                                                }"
+                                            x-init="$refs.content.addEventListener('mouseenter', () => { tooltipVisible = true; }); $refs.content.addEventListener('mouseleave', () => { tooltipVisible = false; });"
+                                            class="relative">
+
+                                            <div x-ref="tooltip" x-show="tooltipVisible"
+                                                :class="{ 'top-0 left-1/2 -translate-x-1/2 -mt-0.5 -translate-y-full' : tooltipPosition == 'top', 'top-1/2 -translate-y-1/2 -ml-0.5 left-0 -translate-x-full' : tooltipPosition == 'left', 'bottom-0 left-1/2 -translate-x-1/2 -mb-0.5 translate-y-full' : tooltipPosition == 'bottom', 'top-1/2 -translate-y-1/2 -mr-0.5 right-0 translate-x-full' : tooltipPosition == 'right' }"
+                                                class="absolute w-auto text-sm" x-cloak>
+                                                <div x-show="tooltipVisible" x-transition
+                                                    class="relative px-2 py-1 text-white bg-black rounded bg-opacity-90">
+                                                    <p x-text="tooltipText"
+                                                        class="flex-shrink-0 block text-xs whitespace-nowrap"></p>
+                                                    <div x-ref="tooltipArrow" x-show="tooltipArrow"
+                                                        :class="{ 'bottom-0 -translate-x-1/2 left-1/2 w-2.5 translate-y-full' : tooltipPosition == 'top', 'right-0 -translate-y-1/2 top-1/2 h-2.5 -mt-px translate-x-full' : tooltipPosition == 'left', 'top-0 -translate-x-1/2 left-1/2 w-2.5 -translate-y-full' : tooltipPosition == 'bottom', 'left-0 -translate-y-1/2 top-1/2 h-2.5 -mt-px -translate-x-full' : tooltipPosition == 'right' }"
+                                                        class="absolute inline-flex items-center justify-center overflow-hidden">
+                                                        <div :class="{ 'origin-top-left -rotate-45' : tooltipPosition == 'top', 'origin-top-left rotate-45' : tooltipPosition == 'left', 'origin-bottom-left rotate-45' : tooltipPosition == 'bottom', 'origin-top-right -rotate-45' : tooltipPosition == 'right' }"
+                                                            class="w-1.5 h-1.5 transform bg-black bg-opacity-90">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div x-ref="content"
+                                                class="text-xs rounded-full cursor-pointer text-gray-800 bg-gray-100 hover:bg-gray-300 transition duration-300 border border-slate-800">
+                                                <p class="flex justify-center align-middle font-bold h-4 w-4"><span
+                                                        class="flex items-center">?</span></p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Custom Message for Deposit -->
+                                    <div class="mb-4 mt-5">
+                                        <input type="text" maxlength="217" x-model="invoiceNotePopover"
+                                            x-ref="invoiceNotePopover" @input="trackLength()"
+                                            class="py-2 pl-2 w-full bg-slate-600 hover:bg-slate-700 border-gray-300 rounded focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300 text-gray-400 hover:text-gray-200 focus:text-gray-200"
+                                            placeholder="Invoice note..." />
+                                    </div>
+                                    <div class="mb-4">
+                                        <h1 x-transition.duration.250 class="border border-blue-900 rounded-lg p-1">
+                                            Characters: <span x-text="noteMaxLength"></span>/<span
+                                                x-text="noteMaxLength - noteLength">
+                                        </h1>
+
+                                    </div>
+
+                                    <!-- Confirm Button -->
+                                    <div class="flex justify-center">
+                                        <button @click="handleMessageSubmit()"
+                                            class="rounded px-1.5 py-1 bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-check">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-900"
+                                    aria-hidden="true"></div>
+                                <div class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-600"
+                                    aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GENERATE PDF  -->
+                    <div class="flex justify-end">
                         <button @click="generateInvoice"
                             class="bg-red-800 text-white font-semibold p-2 rounded hover:bg-red-900 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
                             Generate PDF
@@ -415,7 +559,10 @@
                     </div>
                 </div>
             </div>
+
         </div>
+</div>
+</div>
 </div>
 </div>
 </template>
