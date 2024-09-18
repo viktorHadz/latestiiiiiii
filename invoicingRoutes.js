@@ -4,6 +4,7 @@ const getDb = require("./database");
 const db = getDb();
 const PDFDocument = require('pdfkit');
 const { resolve } = require("path");
+const doc = require("pdfkit");
 
 // Fetch all clients
 router.get("/api/clients", (req, res) => {
@@ -104,14 +105,15 @@ router.get("/api/getNextInvoiceNumber", (req, res) => {
     });
 });
 
-const insertInvoice = (clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total) => {
+// Object to insert items into invoices DB table
+const insertInvoice = (clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, client_name, total_pre_discount, company_name) => {
     return new Promise((resolve, reject) => {
         db.run(
-            "INSERT INTO invoices (client_id, discount_percent, discount_flat, vat_percent, subtotal, discount, vat, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-            [clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total], 
+            "INSERT INTO invoices (client_id, discount_percent, discount_flat, vat_percent, subtotal, discount, vat, total, deposit, note, client_name, total_pre_discount, company_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            [clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, client_name, total_pre_discount, company_name], 
             function(error) {
                 if (error) {
-                    return reject(new Error("Error inserting invoice: " + error.message));
+                    return reject(new Error("Error inserting invoice(Trigered from: insertInvoice): " + error.message));
                 }
 
                 const invoiceId = this.lastID;
@@ -129,7 +131,7 @@ const insertInvoice = (clientId, discountPercent, discountFlat, vatPercent, subt
         );
     });
 };
-
+// Inserts into invoice_items
 const insertItems = (invoiceId, items) => {
     return new Promise((resolve, reject) => {
         const placeholders = items.map(() => "(?, ?, ?, ?, ?, ?)").join(",");
@@ -142,24 +144,22 @@ const insertItems = (invoiceId, items) => {
         });
     });
 };
-
+// Posts information to the invoice db by getting it from the frontend from generateInvoice.
 router.post("/api/saveInvoice", async (req, res) => {
-    const { clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total } = req.body;
+    const { clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, clientName,totalPreDiscount, companyName } = req.body;
 
     try {
-        const invoiceId = await insertInvoice(clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total);
+        const invoiceId = await insertInvoice(clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, clientName, totalPreDiscount, companyName);
         await insertItems(invoiceId, items);
 
         const invoiceNumber = `SAM${invoiceId}`;
-        const newInvoice = { id: invoiceId, invoiceNumber, clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total };
+        const newInvoice = { id: invoiceId, invoiceNumber, clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, clientName, totalPreDiscount, companyName }
         res.status(201).json(newInvoice);
 
     } catch (error) {
         res.status(500).json({ error: "Error saving invoice /api/saveInvoice: " + error.message });
     }
 });
-
-
 
 // Generate PDF for an invoice
 router.get("/api/invoices/:id/pdf", async (req, res) => {
@@ -179,7 +179,8 @@ router.get("/api/invoices/:id/pdf", async (req, res) => {
         if (!invoice) {
             return res.status(404).json({ error: "Invoice not found" });
         }
-        // IVOICE: Fetch items(style/sample) for the creation of the invoice
+
+        // Fetch items for the creation of the invoice
         const fetchItems = () => {
             return new Promise((resolve, reject) => {
                 db.all("SELECT * FROM invoice_items WHERE invoice_id = ?", [invoiceId], (error, items) => {
@@ -190,31 +191,178 @@ router.get("/api/invoices/:id/pdf", async (req, res) => {
                 });
             });
         };
-        const items = await fetchItems();
 
-        const doc = new PDFDocument();
-        res.setHeader('Content-Type', 'application/pdf');
-        
-        // Set the filename using the correct invoice_number from the database
-        res.setHeader('Content-Disposition', `attachment; filename=Invoice-${invoice.invoice_number}.pdf`);
-        
+        const items = await fetchItems();
+        const doc = new PDFDocument({ margin: 25 });
         doc.pipe(res);
-        doc.text(`Invoice Number: ${invoice.invoice_number}`, { align: 'center' });
-        // Changed id to name 
-        doc.text(`Client ID: ${invoice.client_id}`, { align: 'center' });
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, { align: 'center' });
-        doc.text('Items:', { align: 'left' });
-        // Control item display
+        // header
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=Invoice-${invoice.invoice_number}.pdf`);
+        doc.image('./public/images/samlogonew.png', 25, 25, { width: 150, align: "left" })
+            .fontSize(12)
+            .text('S.A.M. Creations', 120, 35, { align: 'right' })
+            .text('174 Hither Green Lane', 120, 50, { align: 'right' })
+            .text('London', 120, 65, { align: 'right' })
+            .text('SE13 6QB', 120, 80, { align: 'right' });
+
+        doc.text(`Invoice Number: ${invoice.invoice_number}`, 25, 150, { align: 'left' });
+        // client details and own bank details
+        doc.fontSize(17)
+            .text(`Invoice:`, 25, 180, { align: 'left' });
+        // line
+        doc.moveTo(25, 200)
+            .lineTo(585, 200)
+            .stroke();
+        // endline
+        doc.fontSize(12)
+            .text(`Company Name:    ${invoice.company_name}`, 25, 215, { align: 'left' })
+            .text(`Client Name:    ${invoice.client_name}`, 25, 235, { align: 'left' })
+            .text(`Invoice Date:    ${new Date().toLocaleDateString()}`, 25, 255, { align: 'left' });
+
+        // If deposit is present
+        if (invoice.deposit !== 0) {
+            doc.text(`Total Invoice Balance:    £${invoice.total}`, 25, 275, { align: 'left' });
+            doc.text(`Deposit Payment Due:    £${invoice.deposit}`, 25, 295, { align: 'left' });
+        } else {
+            doc.text(`Balance Due:    £${invoice.total}`, 25, 275, { align: 'left' });
+        }
+
+        // Bank details
+        doc.text(`Name:    XXXXXXXXXXXXX`, 120, 215, { align: 'right' })
+            .text(`VAT Number:    XXXXXXXX`, 120, 235, { align: 'right' })
+            .text(`Bank:    Barclays`, 120, 255, { align: 'right' })
+            .text(`Account Number:    XXXXXXXX`, 120, 275, { align: 'right' })
+            .text(`Sort Code:    XX-XX-XX`, 120, 295, { align: 'right' });
+
+        // line
+        doc.moveTo(25, 315)
+            .lineTo(585, 315)
+            .stroke()
+        // endline
+
+        // Define start coordinates and column widths for the table
+        const startX = 25
+        let startY = 340;
+        const columnWidths = [250, 80, 80, 50]
+
+        // Function to check space and add a new page if necessary
+        function checkPageSpace(doc, startY, lineHeight = 20) {
+            const pageHeight = doc.page.height; // Total height of the page
+            const bottomMargin = 50; // Margin at the bottom of the page
+            if (startY + lineHeight > pageHeight - bottomMargin) {
+                doc.addPage();
+                return 50; // Reset startY for the new page, accounting for the top margin
+            }
+            return startY;
+        }
+
+        // Draw table headers
+        doc.fontSize(12);
+        startY = checkPageSpace(doc, startY);
+        doc.text('Name', startX, startY);
+        doc.text('Type', startX + columnWidths[0], startY);
+        doc.text('Price', startX + columnWidths[0] + columnWidths[1], startY);
+        doc.text('Quantity', startX + columnWidths[0] + columnWidths[1] + columnWidths[2], startY);
+
+        // Draw a line under the headers
+        doc.moveTo(startX, startY + 15)
+            .lineTo(startX + columnWidths.reduce((a, b) => a + b, 0), startY + 15)
+            .stroke();
+
+        startY += 25;
+        // Items here
         items.forEach(item => {
-            const itemDescription = item.type === 'sample' 
-                ? `${item.name} (${item.type}) - £${item.price} - (x${item.quantity})` 
-                : `${item.name} - £${item.price} - (x${item.quantity})`;
-            doc.text(itemDescription, { align: 'left' });
+            const itemType = item.type === 'sample' ? 'Sample' : 'Style';
+            startY = checkPageSpace(doc, startY);
+            doc.text(item.name, startX, startY);
+            doc.text(itemType, startX + columnWidths[0], startY);
+            doc.text(`£${item.price}`, startX + columnWidths[0] + columnWidths[1], startY);
+            doc.text(`x${item.quantity}`, startX + columnWidths[0] + columnWidths[1] + columnWidths[2], startY);
+            startY += 20;
         });
-        doc.text(`Subtotal: ${invoice.subtotal}`, { align: 'left' });
-        doc.text(`Discount: ${invoice.discount}`, { align: 'left' });
-        doc.text(`VAT: ${invoice.vat}`, { align: 'left' });
-        doc.text(`Total: ${invoice.total}`, { align: 'left' });
+
+        startY += 20;
+
+        // Totals here
+        startY = checkPageSpace(doc, startY);
+        doc.text(`Subtotal: £${invoice.subtotal}`, startX, startY, { align: 'left' });
+
+        // show % if discount is percentage
+        if (invoice.discount_percent === 1 && invoice.discount_flat === 0 && invoice.discount > 0) {
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(`Discount: ${invoice.discount}%`, startX, startY, { align: 'left' });
+        }
+
+        // show £ if discount is flat 
+        if (invoice.discount_flat === 1 && invoice.discount_percent === 0 && invoice.discount > 0) {
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(`Discount: £${invoice.discount}`, startX, startY, { align: 'left' });
+        }
+
+        startY = checkPageSpace(doc, startY + 20);
+        doc.text(`VAT: £${invoice.vat}`, startX, startY, { align: 'left' });
+
+        if (invoice.discount !== 0) {
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(`Total: £${invoice.total} `, startX, startY, { align: 'left', continued: true });
+            doc.text(`£${invoice.total_pre_discount}`, startX, startY, {
+                align: 'left',
+                strike: true
+            });
+        } else {
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(`Total: £${invoice.total}`, startX, startY, { align: 'left' });
+        }
+
+        if (invoice.deposit !== 0) {
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(`Deposit: £${invoice.deposit}`, startX, startY, { align: 'left' });
+        }
+
+        if (invoice.note !== '') {
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(`Client note: ${invoice.note}`, startX, startY, { align: 'left' });
+        }
+
+        startY += 60;
+        startY = checkPageSpace(doc, startY);
+        doc.fontSize(17)
+        doc.text(`Terms and conditions: `, startX, startY, { align: 'left' });
+        startY += 10
+        // line
+        doc.moveTo(25, startY + 15)
+            .lineTo(585, startY + 15)
+            .stroke()
+        // endline
+        doc.fontSize(12)
+        startY += 10
+
+        const terms = [
+            `1. Full payment is due within one week of invoice date.`,
+            `2. A deposit of 50% is required at the start of production, unless otherwise agreed.`,
+            `3. Late Payments: A 1% daily fee will be applied to outstanding balances after two weeks.`,
+            `4. Late deliveries and delays on the client's end will result in adjusted payment deadlines.`,
+            `5. Non-Payment: Legal action may be taken or the outstanding balance handed to a debt collection agency, if the client does not make payment within the above specified time frame.`,
+            `6. Returns: Unsatisfactory goods must be returned within one week of receiving the items.`,
+            `7. Renegotiation: Post-agreement renegotiations are not accepted.`,
+            `8. Shipping: The company is not liable for goods damaged or lost during delivery.`
+        ];
+
+        terms.forEach((term) => {
+            if (term.includes('Returns: Unsatisfactory goods must be returned')) {
+                startY += 20;
+            }
+            startY += 20;
+            startY = checkPageSpace(doc, startY);
+            doc.text(term, startX, startY, { align: 'left' });
+        });
+
         doc.end();
     } catch (error) {
         res.status(500).json({ error: error.message });

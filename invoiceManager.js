@@ -23,7 +23,7 @@ export default function invoiceManager() {
     subtotal: 0,
     vat: 0,
     vatPercent: 20,
-    totalBeforeDiscount: 0,
+    preDiscountTotal: 0,
     total: 0,
     // Use for deposits popover menu. Not YET added.  
     popoverOpenDeposit: false,
@@ -35,7 +35,7 @@ export default function invoiceManager() {
     isDiscountFlat: false,
     symbol: "%",
     // Temporary values
-    // State variable to conditionally show or hide the crossed over subtotal.
+    // State variable to conditionally show or hide the crossed over subtotal
     showNewSubtotal: false,
     temporarySubtotal: 0, 
     temporaryDiscount: 0,
@@ -48,7 +48,7 @@ export default function invoiceManager() {
     depositOpen: false,
     isDepositPercent: true,
     tempDeposit: 0,
-    tempDepoTotal: 0,
+    tempDepositDynamicValue: 0,
     depositSymbol: '%',
     deposit: 0,
     // Note
@@ -58,21 +58,43 @@ export default function invoiceManager() {
     noteLength: 0,
     lnght: 216,
     noteMaxLength: 217,
+    // Hover card element
+    hoverCardHovered: false,
+    hoverCardDelay: 400,
+    hoverCardLeaveDelay: 300,
+    hoverCardTimout: null,
+    hoverCardLeaveTimeout: null,
+
+    hoverCardEnter () {
+        clearTimeout(this.hoverCardLeaveTimeout);
+        if(this.hoverCardHovered) return;
+        clearTimeout(this.hoverCardTimout);
+        this.hoverCardTimout = setTimeout(() => {
+            this.hoverCardHovered = true;
+        }, this.hoverCardDelay);
+    },
+    hoverCardLeave () {
+        clearTimeout(this.hoverCardTimout);
+        if(!this.hoverCardHovered) return;
+        clearTimeout(this.hoverCardLeaveTimeout);
+        this.hoverCardLeaveTimeout = setTimeout(() => {
+            this.hoverCardHovered = false;
+        }, this.hoverCardLeaveDelay);
+    },
     
-    
-    // TODO - HANDLE ERRORS FOR THE INVOICE NOTE 
     handleMessageSubmit() {
+      if (!this.validator(this, 'handleMessageSubmit')) return
+      if(this.noteLength >= this.noteMaxLength) {
+        callError('Note cannot exceed character limit.')
+        this.$refs.invoiceNotePopover.focus()
+        return
+      }
       let noteText = this.$refs.noteText;
       let removeBtn = this.$refs.removeBtn;
       // Update the note first, then apply fade-in effect
       this.invoiceNote = this.invoiceNotePopover;
-      if(this.noteLength >= this.noteMaxLength) {
-        callWarning('Note cannot exceed limit characters.')
-        this.$refs.invoiceNotePopover.focus()
-        return
-      }
       this.invoiceNotePopover = ''
-      
+      callSuccess('Note created successfully.', 'Hover over icon to preview.')
       setTimeout(() => {
           // Apply fade-in effect to both text and button
           noteText.classList.remove('fade-out-hidden');
@@ -80,12 +102,12 @@ export default function invoiceManager() {
           removeBtn.classList.remove('fade-out-hidden');
           removeBtn.classList.add('fade-in-visible');
       }, 0); 
+      this.invoiceNoteOpen = false
     },
 
     trackLength() {
-      // if input to the note you add 1 if delete you subtract 1  
+      // If input to the note you add 1 if delete you subtract 1  
       this.noteLength = this.invoiceNotePopover.length;
-
       if(this.noteLength >= this.noteMaxLength) {
         callWarning('Note cannot exceed limit characters.')
         this.$refs.invoiceNotePopover.focus()
@@ -102,20 +124,36 @@ export default function invoiceManager() {
       noteText.classList.add('fade-out-hidden');
       removeBtn.classList.remove('fade-in-visible');
       removeBtn.classList.add('fade-out-hidden');
-
+      callInfo('Note removed from invoice.')
       // Clear the note after the fade-out completes
       setTimeout(() => {
           this.invoiceNote = '';
       }, 300); // Matches the duration of the fade-out transition
     },
+
+    //---------------------------------------DEPOSIT--------------------------------//
     resetDeposit() {
+      let depositBtn = document.getElementById('confirm-deposit')
       this.tempDeposit = 0;
       this.deposit = 0;
+      depositBtn.classList.add('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
+      depositBtn.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600')
       callSuccess('Deposit reset.')
     },
-    
 
     handleDepositType() {
+      let inputFocus = this.$refs.tempDeposit
+
+      const icon = document.getElementById('toggle-deposit-btn');
+      icon.classList.add('spin'); // Add animation class
+      // Remove class after animation to reset for future clicks
+      icon.addEventListener(
+        "animationend",
+        () => {
+          icon.classList.remove('spin');
+        },
+        { once: true }
+      );
       if (this.isDepositPercent) {
         this.depositSymbol = '';
         this.depositSymbol = '%';
@@ -123,11 +161,14 @@ export default function invoiceManager() {
         this.depositSymbol = '';
         this.depositSymbol = '£';
       }
+      inputFocus.focus()
     },
 
     calculateDeposit() {
+      let inputFocus = this.$refs.tempDeposit
       try {
         if (!this.validator(this, 'calculateDeposit')) return
+        let depositBtn = document.getElementById('confirm-deposit')
         let tempDeposit = this.tempDeposit
         let tempTotal = this.total
         let deposit = this.deposit
@@ -137,11 +178,18 @@ export default function invoiceManager() {
         } else if (this.isDepositPercent) {
           deposit = tempDeposit/100 * tempTotal
         }
-  
+        
         this.deposit = this.roundToTwo(deposit)
+        depositBtn.classList.remove('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
+        depositBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600')
+        callSuccess('Deposit added to invoice.')
+        inputFocus.focus()
+        inputFocus.focus()
       } catch (error) {
         console.error(error)
         callError('Error', 'Try again, refresh the program or call support.')
+        inputFocus.focus()
+
       }
       
     },
@@ -190,7 +238,7 @@ export default function invoiceManager() {
           },
           {
             condition: context.subtotal <= 0,
-            toast: () => callError('Cannot apply discount.', 'Subtotal must be greater than zero.')
+            toast: () => callError('Cannot apply discount.', 'Insert items into invoice first.')
           },
           {
             condition: context.deposit !== 0,
@@ -212,6 +260,17 @@ export default function invoiceManager() {
             condition: context.isDiscountFlat && context.temporaryDiscount > context.subtotal,
             toast: () => callError('Discount cannot exceed the subtotal.', 'Please adjust the discount value.')
           }
+        ],
+        handleMessageSubmit: [
+          {
+            condition: context.subtotal === 0,
+            toast: () => callError('Cannot insert note.', 'Please add some items into your invoice first.')
+          },
+          {
+            condition: context.invoiceNotePopover === '',
+            toast: () => callError('Invoice note cannot be empty.', 'Please input a message first.')
+          },
+
         ],
       };
 
@@ -403,8 +462,13 @@ export default function invoiceManager() {
     },
     
     removeItemFromInvoice(item) {
+      if(this.discount != 0) {
+       callError('Cannot remove item.', 'Please clear any existing discount/deposit first.') 
+       return
+      }
+
       if(this.deposit != 0) {
-        callError('Cannot remove item.', 'Deposit must be cleared first')
+        callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
         return
       }
       this.invoiceItems = this.invoiceItems.filter(
@@ -422,7 +486,7 @@ export default function invoiceManager() {
       if (this.invoiceItems.length === 0) {
         this.resetDeposit()
         this.resetDiscounts()
-        callInfo('No items in invoice list.', 'Discounts and deposits have been reset.')
+        callWarning('No items in invoice list.', 'Discounts and deposits have been reset.')
       } 
     },
 
@@ -507,13 +571,17 @@ export default function invoiceManager() {
     // Checks if discount is an acceptible value based on this we 
     // Confirms all prices to send to main screen Prices menu
     confirmDiscount() {
+      let inputFocus = this.$refs.discountInput
       // Discount validation using VALIDATOR :D
-      if (!this.validator(this, 'confirmDiscount')) return
-     
+      if (!this.validator(this, 'confirmDiscount')) {
+        inputFocus.focus()
+        return 
+      }
+      
       // Pass temporary values to main price forming menu
       let totalContainer = this.total
       const confirmBtn = document.getElementById('confirm-discount')
-      this.totalBeforeDiscount = totalContainer// reference to the total before calculations
+      this.preDiscountTotal = totalContainer// reference to the total before calculations
       this.subtotal = this.roundToTwo(this.temporarySubtotal)
       this.discount = this.roundToTwo(this.temporaryDiscount)
       this.vat = this.roundToTwo(this.temporaryVat)
@@ -524,12 +592,12 @@ export default function invoiceManager() {
       confirmBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600')
 
       callToast({ type: 'success', message: 'Discount applied successfully.', position: 'top-center' })
-
+      inputFocus.focus()
       console.log("Subtotal: " + this.subtotal)
       console.log("Vat: " + this.vat)
       console.log("Discount: " + this.discount)
       console.log("Total: " + this.total)
-      console.log("Total before discount: " + this.totalBeforeDiscount)
+      console.log("Total before discount: " + this.preDiscountTotal)
       // HANDLE ERROR HERE
     },
     revolveSymbol() {
@@ -561,6 +629,9 @@ export default function invoiceManager() {
       confirmBtn.classList.add('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
     },
     resetDiscounts() {
+      if (this.deposit != 0) {
+        this.resetDeposit()
+      }
       this.discount = 0
       this.resetTemporaryDiscounts()
       this.temporaryVat = this.vat
@@ -585,8 +656,10 @@ export default function invoiceManager() {
     },
     // TODO: Add localstorage to set state? Maybe after fetch styles/client
     changeDiscount() {
+      let inputFocus = this.$refs.discountInput
       if (this.discount != 0) {
         callToast({ type: 'warning', message: 'Cannot change discount type.', description: 'Reset the existing discount first.', position: 'top-center' })
+        inputFocus.focus()
         return
       }
       const icon = document.getElementById("rotateIcon");
@@ -611,6 +684,7 @@ export default function invoiceManager() {
         this.isDiscountFlat = false;
         this.revolveSymbol();
       }
+      inputFocus.focus()
     }, 
     
     /*----------------------------ADD STYLES AND SAMPLES LOGIC--------------------------*/
@@ -667,7 +741,11 @@ export default function invoiceManager() {
       );
     }, 
 
-    /*-----------------------------GENERATE INVOICE LOGIC-------------------------------*/
+    /*---------------------------GENERATE INVOICE LOGIC-----------------------------*/
+    /* TODO: 
+      1. If value is 0 and it returns error the invoice still makes an invoice in the backend
+      2. NOTE! ---> Added Deposit and NOTE to DB
+    */
     // Generates invoice
     async generateInvoice() {
       const invoiceData = {
@@ -681,6 +759,11 @@ export default function invoiceManager() {
         discount: this.discount,
         vat: this.vat,
         total: this.total,
+        deposit: this.deposit,
+        note: this.invoiceNote,
+        clientName: this.selectedClient.name,
+        totalPreDiscount: this.preDiscountTotal,
+        companyName: this.selectedClient.company_name
       };
       console.log(invoiceData)
       try {

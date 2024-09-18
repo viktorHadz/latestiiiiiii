@@ -27,7 +27,7 @@ function getDb() {
           client_id INTEGER,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
         )`);
-
+        // NOTE! ---> Added Deposit and NOTE to DB
         db.run(`CREATE TABLE IF NOT EXISTS invoices (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           invoice_number TEXT,
@@ -40,6 +40,11 @@ function getDb() {
           discount REAL,
           vat REAL,
           total REAL,
+          deposit REAL,
+          note TEXT,
+          client_name TEXT,
+          total_pre_discount REAL,
+          company_name REAL,
           FOREIGN KEY (client_id) REFERENCES clients(id)
         )`);
 

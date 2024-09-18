@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoicing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="./app.js" defer></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="./public/componentsLibrary/vik-tooltip.js"></script>
@@ -14,14 +13,14 @@
             display: none !important;
         }
     </style>
-    <link rel="stylesheet" href="./public/css/style.css">
+    <link rel="stylesheet" href="./public/css/output.css">
 </head>
 
 <body>
     <div x-cloak x-data="tabManager" x-init="init()" class="flex h-screen">
 
         <!-- Sidebar Buttons -->
-        <div class="flex flex-col items-center bg-gray-900 w-56 h-screen p-4">
+        <div class="flex flex-col items-center bg-slate-900 w-56 h-screen p-4">
             <button @click="tabButtonClicked('clients')" :class="{ 'bg-gray-700': tabContentActive('clients') }"
                 class="flex items-center px-4 py-2 mb-2 mt-2 text-white font-normal hover:bg-gray-700 focus:bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500 transition-all ease-in duration-300">
                 <i class="fas fa-users"></i> Clients

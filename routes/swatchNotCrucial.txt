@@ -1,0 +1,87 @@
+THESE ARE SWATCHES FOR MY CUSTOM TAILWIND CLASSES ADDED TO TAILWIND CONFIG 
+
+<div class=""> 
+            <!-- Olive Shades -->
+            <div>
+                <div class="w-10 h-10 bg-[#f0efec] flex items-center justify-center text-xs text-black">volive-50</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#87826b] flex items-center justify-center text-xs text-white">volive-400</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#1c1b18] flex items-center justify-center text-xs text-white">volive-800</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#0d0c09] flex items-center justify-center text-xs text-white">volive-900</div>
+            </div>
+
+            <!-- Gray Shades -->
+            <div>
+                <div class="w-10 h-10 bg-[#ececeb] flex items-center justify-center text-xs text-black">vgray-50</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#757369] flex items-center justify-center text-xs text-white">vgray-400</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#36352f] flex items-center justify-center text-xs text-white">vgray-700</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#131311] flex items-center justify-center text-xs text-white">vgray-900</div>
+            </div>
+
+            <!-- Dark Gray Shades -->
+            <div>
+                <div class="w-10 h-10 bg-[#ededec] flex items-center justify-center text-xs text-black">vdark-50</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#717472] flex items-center justify-center text-xs text-white">vdark-400</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#464746] flex items-center justify-center text-xs text-white">vdark-600</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#131313] flex items-center justify-center text-xs text-white">vdark-900</div>
+            </div>
+
+            <!-- Black Shades -->
+            <div>
+                <div class="w-10 h-10 bg-[#e5e5e5] flex items-center justify-center text-xs text-black">vblack-50</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#575757] flex items-center justify-center text-xs text-white">vblack-400</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#202225] flex items-center justify-center text-xs text-white">vblack-600</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#0f0f0f] flex items-center justify-center text-xs text-white">vblack-900</div>
+            </div>
+
+            <!-- Beige Shades -->
+            <div>
+                <div class="w-10 h-10 bg-[#fdfdfb] flex items-center justify-center text-xs text-black">vbeige-50</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#e6e6ae] flex items-center justify-center text-xs text-black">vbeige-400</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#f0f0d2] flex items-center justify-center text-xs text-black">vbeige-800</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#aaaa16] flex items-center justify-center text-xs text-white">vbeige-900</div>
+            </div>
+
+            <!-- Red Shades -->
+            <div>
+                <div class="w-10 h-10 bg-[#f8e9e8] flex items-center justify-center text-xs text-black">vred-50</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#c95748] flex items-center justify-center text-xs text-white">vred-400</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#5b2821] flex items-center justify-center text-xs text-white">vred-800</div>
+            </div>
+            <div>
+                <div class="w-10 h-10 bg-[#3a1a14] flex items-center justify-center text-xs text-white">vred-900</div>
+            </div>
+        </div>
