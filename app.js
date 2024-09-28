@@ -17,10 +17,34 @@ document.addEventListener('alpine:init', () => {
         tabSelected: 'clients',
         tabContent: '',
         isLoading: true, // Set initial loading state to true
+        mode: localStorage.getItem('theme') || 'light',
+
+        toggleTheme() {
+            this.mode = this.mode === 'light' ? 'dark' : 'light';
+            document.documentElement.classList.toggle('dark', this.mode === 'dark');
+            localStorage.setItem('theme', this.mode);
+            console.log(this.mode)
+        },
 
         async init() {
             // Ensure isLoading is initially set to true, then trigger content load
             await this.loadInitialContent();
+            if (this.mode === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+            document.addEventListener('keydown', function(event) {
+            switch (event.keyCode) {
+                case 37:
+                    //left function
+                    break;
+                case 38:
+                    //Up function
+                    break;
+                case 39:
+                    //Right function
+                    break;
+                }
+            });
         },
 
         async loadInitialContent() {
@@ -66,6 +90,7 @@ document.addEventListener('alpine:init', () => {
                 Alpine.data('invoiceManager', invoiceManager);
             }
         },
+        
     }));
 
     Alpine.data('clientManager', clientManager);

@@ -130,11 +130,13 @@ export default function stylesManager() {
         cancelEditStyle(style) {
             Object.assign(style, style.original); // Revert to original data
             style.isEditing = false;
+            callSuccess('Style Edit canceled.', 'No changes were saved.')
         },
 
         cancelEditSample(sample) {
             Object.assign(sample, sample.original); // Revert to original data
             sample.isEditing = false;
+            callSuccess('Sample Edit canceled.', 'No changes were saved.')
         },
 
         async saveStyle(style) {
@@ -152,6 +154,7 @@ export default function stylesManager() {
                 });
                 if (response.ok) {
                     style.isEditing = false;
+                    callSuccess('Style edit successful', 'Changes saved.')
                 } else {
                     console.error('Error saving style:', await response.json());
                 }
@@ -176,6 +179,7 @@ export default function stylesManager() {
                 });
                 if (response.ok) {
                     sample.isEditing = false;
+                    callSuccess('Sample edit successful', 'Changes saved.')
                 } else {
                     console.error('Error saving sample:', await response.json());
                 }

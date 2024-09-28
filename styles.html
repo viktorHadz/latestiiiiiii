@@ -1,250 +1,616 @@
 <div x-data="stylesManager" class="relative w-full">
-    <button @click="openModal"
-        class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Select
-        Client</button>
-
-    <div x-show="showClientModal"
-        class="client-modal fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20"
-        @keydown.escape.window="showClientModal = false">
-        <!-- Select Client Modal -->
-        <div
-            class="modal-content bg-gray-800 border border-l-gray-300 p-4 rounded-lg shadow-lg w-full max-w-md mx-auto z-30 text-white">
-            <h2 class="text-xl font-medium text-center mb-6">Select Client</h2>
-            <div class="relative mb-6">
-                <button @click="toggleDropdown" class="w-full p-2 border border-gray-600 rounded focus:outline-none">
-                    Clients...
-                </button>
-                <div x-show="showDropdown" x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="transform scale-y-0 opacity-0"
-                    x-transition:enter-end="transform scale-y-100 opacity-100"
-                    x-transition:leave="transition ease-in duration-200"
-                    x-transition:leave-start="transform scale-y-100 opacity-100"
-                    x-transition:leave-end="transform scale-y-0 opacity-0"
-                    class="dropdown absolute w-full border border-gray-200 rounded mt-1 bg-white shadow-lg max-h-[300px] overflow-auto z-10"
-                    style="transform-origin: top;">
-                    <ul>
-                        <template x-for="client in clients" :key="client.id">
-                            <li @click="selectClient(client)" class="p-2 cursor-pointer hover:bg-gray-200 text-gray-700"
-                                x-text="client.name"></li>
-                        </template>
-                    </ul>
-                </div>
-            </div>
-            <div class="flex justify-center items-center">
-                <button @click="closeModal"
-                    class="close-modal-button px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 submit-button">
-                    Close
-                </button>
-            </div>
-        </div>
+  <div class="mb-12 flex justify-between align-baseline">
+    <div>
+      <button @click="openModal" class="butt-style">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 23 23"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-user mr-2"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Select Client
+      </button>
     </div>
-
-    <!-- Conditional display for when a client is selected -->
-    <template x-if="selectedClient">
-        <div class="mt-2">
-            <h2 class="text-xl font-medium text-gray-700 mb-4" x-text="'Styles for ' + selectedClient.name"></h2>
-
-            <div class="flex justify-between py-2">
-                <!-- Style Search Input -->
-                <input type="text" placeholder="Search Styles..."
-                    class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                    x-model="styleSearch" @input="searchStyles">
-
-                <button @click="showAddStyleModal = true"
-                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
-                    Style</button>
-            </div>
-
-            <div class="overflow-y-auto" style="max-height: 700px;">
-                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100"
-                    style="max-height: 700px;">
-                    <thead class="sticky top-0 bg-slate-800">
-                        <tr>
-                            <th class="py-2 px-4 border">Style Name</th>
-                            <th class="py-2 px-4 border">Price</th>
-                            <th class="py-2 px-4 border">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template x-for="style in filteredStyles" :key="style.id">
-                            <tr>
-                                <td class="py-2 px-4 border">
-                                    <template x-if="style.isEditing">
-                                        <input type="text" x-model="style.name"
-                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                                    </template>
-                                    <template x-if="!style.isEditing">
-                                        <span x-text="style.name"></span>
-                                    </template>
-                                </td>
-                                <td class="py-2 px-4 border">
-                                    <template x-if="style.isEditing">
-                                        <input type="number" x-model="style.price"
-                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                                    </template>
-                                    <template x-if="!style.isEditing">
-                                        <span x-text="style.price"></span>
-                                    </template>
-                                </td>
-                                <td class="py-2 px-4 border flex justify-center">
-                                    <template x-if="style.isEditing">
-                                        <div>
-                                            <button @click="saveStyle(style)"
-                                                class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
-                                            <button @click="cancelEditStyle(style)"
-                                                class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
-                                        </div>
-                                    </template>
-                                    <template x-if="!style.isEditing">
-                                        <div>
-                                            <button @click="editStyle(style)"
-                                                class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
-                                            <button @click="deleteStyle(style.id)"
-                                                class="border rounded bg-gray-600 text-white text-sm p-1 hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
-                                        </div>
-                                    </template>
-                                </td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
-
-            <h2 class="text-xl font-medium text-gray-700 mb-4 mt-8" x-text="'Samples for ' + selectedClient.name"></h2>
-            <div class="flex justify-between py-2">
-                <!-- Sample Search Input -->
-                <input type="text" placeholder="Search Samples..."
-                    class="p-2 ml-0.5 rounded bg-slate-600 hover:bg-slate-700 focus:bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                    x-model="sampleSearch" @input="searchSamples">
-
-                <button @click="showAddSampleModal = true"
-                    class="border rounded bg-gray-600 text-white p-2 hover:bg-gray-700 transition duration-300 font-bold">Add
-                    Sample</button>
-            </div>
-            <div class="overflow-y-auto" style="max-height: 700px;">
-                <table class="min-w-full divide-y divide-gray-200 bg-slate-700 text-slate-100">
-                    <thead class="sticky top-0 bg-slate-800">
-                        <tr>
-                            <th class="py-2 px-4 border">Sample Name</th>
-                            <th class="py-2 px-4 border">Time</th>
-                            <th class="py-2 px-4 border">Price</th>
-                            <th class="py-2 px-4 border">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template x-for="sample in filteredSamples" :key="sample.id">
-                            <tr>
-                                <td class="py-2 px-4 border">
-                                    <template x-if="sample.isEditing">
-                                        <input type="text" x-model="sample.name"
-                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                                    </template>
-                                    <template x-if="!sample.isEditing">
-                                        <span x-text="sample.name"></span>
-                                    </template>
-                                </td>
-                                <td class="py-2 px-4 border">
-                                    <template x-if="sample.isEditing">
-                                        <input type="number" min="0" step="0.01" x-model="sample.time"
-                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                                    </template>
-                                    <template x-if="!sample.isEditing">
-                                        <span x-text="sample.time"></span>
-                                    </template>
-                                </td>
-                                <td class="py-2 px-4 border">
-                                    <template x-if="sample.isEditing">
-                                        <input type="number" x-model="sample.price"
-                                            class="w-full p-2 bg-slate-600 border rounded hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                                    </template>
-                                    <template x-if="!sample.isEditing">
-                                        <span x-text="sample.price"></span>
-                                    </template>
-                                </td>
-                                <td class="py-2 px-4 border flex justify-center">
-                                    <template x-if="sample.isEditing">
-                                        <div>
-                                            <button @click="saveSample(sample)"
-                                                class="border rounded bg-blue-600 text-white text-sm p-1 hover:bg-blue-700 transition duration-300 font-bold">Save</button>
-                                            <button @click="cancelEditSample(sample)"
-                                                class="border rounded bg-red-500 text-white text-sm p-1 hover:bg-red-600 transition duration-300 font-bold">Cancel</button>
-                                        </div>
-                                    </template>
-                                    <template x-if="!sample.isEditing">
-                                        <div>
-                                            <button @click="editSample(sample)"
-                                                class="border rounded bg-gray-600 text-white p-1 text-sm hover:bg-gray-700 transition duration-300 font-bold">Edit</button>
-                                            <button @click="deleteSample(sample.id)"
-                                                class="border rounded bg-gray-600 text-white p-1 text-sm hover:bg-gray-700 transition duration-300 font-bold">Delete</button>
-                                        </div>
-                                    </template>
-                                </td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
+    <div class="flex align-middle">
+      <h3
+        class="decoration cursor-default self-center font-medium text-vdark-700 underline decoration-vdark-700 dark:text-neutral-300 dark:decoration-vred-300"
+        x-text="`Client: ${selectedClient.name}`"
+      ></h3>
+    </div>
+  </div>
+  <!-- Conditional display for when a client is selected -->
+  <template x-if="selectedClient">
+    <!-- MARK:STYLES -->
+    <div>
+      <div class="mb-4 flex justify-between align-middle">
+        <!-- Style Search Input -->
+        <div class="transition-all duration-500">
+          <input
+            type="text"
+            placeholder="Search Styles..."
+            class="srch-style transition-all duration-500"
+            x-model="styleSearch"
+            @input="searchStyles"
+            x-transition
+          />
         </div>
-    </template>
-
-    <!-- Add Style Modal -->
-    <div x-show="showAddStyleModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-gray-800 text-white">
-            <div class="mt-3 text-center">
-                <h3 class="text-2xl leading-6 font-medium text-white">Add Style</h3>
-                <div class="mt-2 px-7 py-3">
-                    <form @submit.prevent="addStyle">
-                        <input x-model="newStyle.name" name="name" type="text" placeholder="Style Name"
-                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                            required>
-                        <input x-model="newStyle.price" name="price" type="number" min="0" step="0.01"
-                            placeholder="Price"
-                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                            required>
-                        <button type="submit"
-                            class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add
-                            Style</button>
-                    </form>
-                    <div class="items-center mt-2">
-                        <button @click="showAddStyleModal = false"
-                            class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                            Close
-                        </button>
+        <!-- Selected Client's Styles Information -->
+        <div class="flex justify-center">
+          <h2
+            class="text- cursor-default self-center text-3xl font-semibold tracking-wider text-vdark-700 underline decoration-vred-400 decoration-4 underline-offset-2 dark:text-neutral-300 dark:decoration-neutral-300"
+          >
+            Styles
+          </h2>
+        </div>
+        <!-- Add Style Button -->
+        <div class="flex">
+          <button
+            @click="showAddStyleModal = true; if(showAddStyleModal) $nextTick(() => { ($refs.newStyleName.focus()) });"
+            @keydown.escape.window="showAddStyleModal = false"
+            class="butt-style flex self-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 23 23"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="feather feather-layers mr-2"
+            >
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            Add Style
+          </button>
+        </div>
+      </div>
+      <div class="table-scrollbar mb-12 overflow-y-auto pr-2" style="max-height: 700px">
+        <table
+          class="w-3/4 min-w-full table-auto border-separate text-vwhite-50"
+          style="max-height: 700px; border-spacing: 0 10px"
+        >
+          <thead
+            class="sticky top-0 rounded bg-vdark-600 text-left text-base font-medium text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
+          >
+            <tr>
+              <th
+                class="round-left-border border-clipper border border-transparent p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+                style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
+              >
+                Style Name
+              </th>
+              <th
+                class="w-56 p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+              >
+                Price
+              </th>
+              <th
+                class="round-right-border border-clipper w-36 p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+                style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <!-- MARK: TBODY STYLES -->
+          <tbody class="bg-slate-600 text-vwhite-50 dark:bg-neutral-700">
+            <template x-for="style in filteredStyles" :key="style.id">
+              <tr
+                class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
+              >
+                <td class="round-left-border w-2/3 p-4 py-1 text-sm">
+                  <template x-if="style.isEditing">
+                    <input type="text" x-model="style.name" class="table-edit-input-style" />
+                  </template>
+                  <template x-if="!style.isEditing">
+                    <span x-text="style.name" class="cursor-default p-1 text-sm"></span>
+                  </template>
+                </td>
+                <td class="w-1/4 px-4 py-1 text-sm">
+                  <template x-if="style.isEditing">
+                    <input type="number" x-model="style.price" class="table-edit-input-style" />
+                  </template>
+                  <template x-if="!style.isEditing">
+                    <span x-text="style.price" class="cursor-default"></span>
+                  </template>
+                </td>
+                <td class="round-right-border px-4 py-1 text-left text-sm">
+                  <template x-if="style.isEditing">
+                    <div>
+                      <button
+                        @click="saveStyle(style)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-save"
+                        >
+                          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                          <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        @click="cancelEditStyle(style)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-x-circle"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="15" y1="9" x2="9" y2="15"></line>
+                          <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                      </button>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Sample Modal -->
-    <div x-show="showAddSampleModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-gray-800 text-white">
-            <div class="mt-3 text-center">
-                <h3 class="text-2xl leading-6 font-medium text-white">Add Sample</h3>
-                <div class="mt-2 px-7 py-3">
-                    <form @submit.prevent="addSample">
-                        <input x-model="newSample.name" name="name" type="text" placeholder="Sample Name"
-                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                            required>
-                        <input x-model="newSample.time" name="time" type="number" min="0" step="0.01" placeholder="Time"
-                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                            required>
-                        <input x-model="newSample.price" name="price" type="number" min="0" step="0.01"
-                            placeholder="Price"
-                            class="w-full mb-2 p-2 rounded bg-slate-600 text-white hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300"
-                            required>
-                        <button type="submit"
-                            class="w-full bg-blue-500 text-white text-base font-medium p-2 rounded hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">Add
-                            Sample</button>
-                    </form>
-                    <div class="items-center mt-2">
-                        <button @click="showAddSampleModal = false"
-                            class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:border-blue-500 transition duration-300">
-                            Close
-                        </button>
+                  </template>
+                  <template x-if="!style.isEditing">
+                    <div>
+                      <button
+                        @click="editStyle(style)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-edit-2"
+                        >
+                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                      </button>
+                      <button
+                        @click="deleteStyle(style.id)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-trash-2"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </button>
                     </div>
-                </div>
-            </div>
+                  </template>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <!-- MARK: SAMPLES SECTION -->
+
+      <div class="mb-4 flex justify-between align-middle">
+        <!-- Sample Search Input -->
+        <div>
+          <input
+            type="text"
+            placeholder="Search Samples..."
+            class="srch-style transition-all duration-500"
+            x-model="sampleSearch"
+            @input="searchSamples"
+          />
         </div>
+
+        <!-- Selected Client's Samples Information -->
+        <div class="flex justify-center align-middle">
+          <h2
+            class="text- cursor-default self-center text-3xl font-semibold tracking-wider text-vdark-700 underline decoration-vred-400 decoration-4 underline-offset-2 dark:text-neutral-300 dark:decoration-neutral-300"
+          >
+            Samples
+          </h2>
+        </div>
+        <!-- Add Sample Button -->
+        <div>
+          <button
+            @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
+            @keydown.escape.window="showAddSampleModal = false"
+            class="butt-style flex self-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 23 23"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="feather feather-package mr-2"
+            >
+              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              ></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            Add Sample
+          </button>
+        </div>
+      </div>
+      <div class="table-scrollbar mb-12 overflow-y-auto pr-2" style="max-height: 700px">
+        <table
+          class="w-3/4 min-w-full table-auto border-separate text-vwhite-50"
+          style="max-height: 700px; border-spacing: 0 10px"
+        >
+          <thead
+            class="sticky top-0 rounded bg-vdark-600 text-left text-base font-medium text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
+          >
+            <tr>
+              <th
+                class="round-left-border border-clipper border border-transparent p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+                style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
+              >
+                Sample Name
+              </th>
+              <th
+                class="p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+              >
+                Time
+              </th>
+              <th
+                class="p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+              >
+                Price
+              </th>
+              <th
+                class="round-right-border border-clipper w-36 p-4 text-lg underline decoration-vred-400 decoration-1 underline-offset-2 dark:underline dark:decoration-neutral-300"
+                style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <!-- MARK: TBODY SAMPLES -->
+          <tbody class="bg-slate-600 text-vwhite-50 dark:bg-neutral-700">
+            <template x-for="sample in filteredSamples" :key="sample.id">
+              <tr
+                class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
+              >
+                <td class="round-left-border p-4 py-1 text-sm">
+                  <template x-if="sample.isEditing">
+                    <input type="text" x-model="sample.name" class="table-edit-input-style" />
+                  </template>
+                  <template x-if="!sample.isEditing">
+                    <span x-text="sample.name" class="p-1 text-sm"></span>
+                  </template>
+                </td>
+                <td class="w-1/5 px-4 py-1 text-sm">
+                  <template x-if="sample.isEditing">
+                    <input type="number" min="0" step="0.01" x-model="sample.time" class="table-edit-input-style" />
+                  </template>
+                  <template x-if="!sample.isEditing">
+                    <span x-text="sample.time" class="p-1 text-sm"></span>
+                  </template>
+                </td>
+                <td class="w-1/5 px-4 py-1 text-sm">
+                  <template x-if="sample.isEditing">
+                    <input type="number" x-model="sample.price" class="table-edit-input-style" />
+                  </template>
+                  <template x-if="!sample.isEditing">
+                    <span x-text="sample.price" class="p-1 text-sm"></span>
+                  </template>
+                </td>
+                <td class="round-right-border w-1/12 px-4 py-1 text-left text-sm">
+                  <template x-if="sample.isEditing">
+                    <div>
+                      <button
+                        @click="saveSample(sample)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-save"
+                        >
+                          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                          <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        @click="cancelEditSample(sample)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-x-circle"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="15" y1="9" x2="9" y2="15"></line>
+                          <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </template>
+                  <template x-if="!sample.isEditing">
+                    <div>
+                      <button
+                        @click="editSample(sample)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-edit-2"
+                        >
+                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                      </button>
+                      <button
+                        @click="deleteSample(sample.id)"
+                        class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-trash-2"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </template>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </template>
+
+  <!-- Select Client Modal -->
+  <div x-show="showClientModal" x-transition.opacity.duration.300 class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
+    <!-- Modal Body -->
+    <div
+      class="relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 bg-vdark-600 text-vwhite-50 shadow-lg transition duration-300 dark:bg-zinc-900 dark:text-neutral-300"
+      @keydown.escape.window="showClientModal = false"
+      @click.outside="showClientModal = false"
+    >
+      <div class="helooo p-2">
+        <h2 class="mb-6 text-center text-xl font-medium">Select Client</h2>
+        <div class="relative mb-6" @click.outside="showDropdown = false">
+          <button
+            @click="toggleDropdown"
+            class="w-full rounded border border-slate-300 p-2 text-vwhite-50 transition duration-300 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:text-neutral-300 dark:hover:text-vred-300"
+          >
+            Clients...
+          </button>
+          <div
+            x-show="showDropdown"
+            x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="transform scale-y-0 opacity-0"
+            x-transition:enter-end="transform scale-y-100 opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="transform scale-y-100 opacity-100"
+            x-transition:leave-end="transform scale-y-0 opacity-0"
+            class="table-scrollbar absolute z-10 mt-1 max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vdark-500 shadow-lg dark:bg-neutral-500"
+            style="transform-origin: top"
+          >
+            <ul>
+              <template x-for="client in clients" :key="client.id">
+                <li
+                  @click="selectClient(client)"
+                  class="cursor-pointer p-2 text-vwhite-50 hover:bg-slate-600 dark:text-neutral-300 dark:hover:bg-neutral-600"
+                  x-text="client.name"
+                ></li>
+              </template>
+            </ul>
+          </div>
+        </div>
+        <div class="flex items-center justify-center">
+          <button
+            @click="closeModal"
+            class="close-modal-button submit-button rounded-md bg-red-500 px-4 py-2 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Add Style Modal -->
+  <div
+    x-show="showAddStyleModal"
+    x-transition.opacity.duration.300
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50"
+  >
+    <div
+      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vdark-600 p-5 text-vdark-600 shadow-lg dark:border-vred-300 dark:bg-zinc-900 dark:text-neutral-300"
+    >
+      <div class="mt-3 text-center" @click.outside="showAddStyleModal = false">
+        <div class="mt-2 p-2 text-vwhite-50">
+          <h3
+            class="mb-2 w-full cursor-default rounded-md border-slate-300 bg-vdark-500 p-2 text-2xl font-medium leading-6 text-vwhite-50 dark:border-neutral-500"
+          >
+            Add Style
+          </h3>
+          <form @submit.prevent="addStyle">
+            <input
+              x-model="newStyle.name"
+              x-ref="newStyleName"
+              name="name"
+              type="text"
+              placeholder="Style Name"
+              class="modal-input-style mb-2 w-full"
+              required
+            />
+            <input
+              x-model="newStyle.price"
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Price"
+              class="modal-input-style mb-2 w-full"
+              required
+            />
+            <button
+              type="submit"
+              class="w-full rounded bg-blue-600 p-2 text-base font-medium text-vwhite-50 ring-vblue-600 transition duration-300 hover:bg-blue-700 focus:border-vred-400 focus:outline-none focus:ring"
+            >
+              Add Style
+            </button>
+          </form>
+          <div class="mt-2 items-center">
+            <button
+              @click="showAddStyleModal = false"
+              class="w-full rounded-md bg-red-600 px-4 py-2 text-base font-medium text-slate-100 shadow-sm ring-vred-400 transition duration-300 hover:bg-red-700 focus:border-vred-400 focus:outline-none focus:ring"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Sample Modal -->
+  <div
+    x-show="showAddSampleModal"
+    x-transition.opacity.duration.300
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50"
+  >
+    <div
+      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vdark-600 p-5 text-vdark-600 shadow-lg dark:border-vred-300 dark:bg-zinc-900 dark:text-neutral-300"
+    >
+      <div class="mt-3 text-center" @click.outside="showAddSampleModal = false">
+        <h3 class="text-2xl font-medium leading-6 text-slate-100">Add Sample</h3>
+        <div class="mt-2 p-2 text-vwhite-50">
+          <form @submit.prevent="addSample">
+            <input
+              x-model="newSample.name"
+              x-ref="newSampleName"
+              name="name"
+              type="text"
+              placeholder="Sample Name"
+              class="modal-input-style mb-2 w-full"
+              required
+            />
+            <input
+              x-model="newSample.time"
+              name="time"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Time"
+              class="modal-input-style mb-2 w-full"
+              required
+            />
+            <input
+              x-model="newSample.price"
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Price"
+              class="modal-input-style mb-2 w-full"
+              required
+            />
+            <button
+              type="submit"
+              class="w-full rounded bg-blue-600 p-2 text-base font-medium text-vwhite-50 ring-vblue-600 transition duration-300 hover:bg-blue-700 focus:border-vred-400 focus:outline-none focus:ring"
+            >
+              Add Sample
+            </button>
+          </form>
+          <div class="mt-2 items-center">
+            <button
+              @click="showAddSampleModal = false"
+              class="w-full rounded-md bg-red-600 px-4 py-2 text-base font-medium text-slate-100 shadow-sm ring-vred-400 transition duration-300 hover:bg-red-700 focus:border-vred-400 focus:outline-none focus:ring"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

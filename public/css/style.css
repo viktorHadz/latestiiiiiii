@@ -4,146 +4,147 @@
 
 /* Toggle button text styling */
 .status-text {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    font-size: 0.75rem;
-    margin-right: 0.9rem;
-    margin-bottom: 1rem;
-    /* Adjust size as needed */
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 0.75rem;
+  margin-right: 0.9rem;
+  margin-bottom: 1rem;
+  /* Adjust size as needed */
 }
 
 .status-text.paid {
-    color: green;
-    /* Or any color you prefer for 'paid' status */
+  color: green;
+  /* Or any color you prefer for 'paid' status */
 }
 
 .status-text.unpaid {
-    color: red;
-    /* Or any color you prefer for 'unpaid' status */
+  color: red;
+  /* Or any color you prefer for 'unpaid' status */
 }
-
 
 /* Style the scrollbar track */
 .invoice-list::-webkit-scrollbar-track {
-    background-color: #f5f5f5; /* Light grey track */
-    border-radius: 10px;
-  }
-  
-  /* Style the scrollbar thumb */
-  .invoice-list::-webkit-scrollbar-thumb {
-    background-color: #a7a7a7; /* Dark grey thumb */
-    border-radius: 10px;
-  }
-  
-  /* Handle hover and active states */
-  .invoice-list::-webkit-scrollbar-thumb:hover {
-    background: #7e7e7e; /* Darker grey on hover */
-  }
-
-  /* Adjust the width here */
-  .invoice-list::-webkit-scrollbar {
-    width: 10px; 
-  }
-
-  .modal-overlay {
-    position: fixed; /* Fixed position to cover the entire viewport */
-    top: 0;
-    left: 0;
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
-    display: flex; /* Flexbox to center the modal */
-    justify-content: center;
-    align-items: center;
-    z-index: 50; /* High z-index to overlay on top of other content */
+  background-color: #f5f5f5; /* Light grey track */
+  border-radius: 10px;
 }
 
-.modal-content {
-    /* Your modal content styles */
-    
-    z-index: 51; /* Higher than overlay to appear on top */
+/* Style the scrollbar thumb */
+.invoice-list::-webkit-scrollbar-thumb {
+  background-color: #a7a7a7; /* Dark grey thumb */
+  border-radius: 10px;
 }
 
-/* Style the scrollbar track */
-.preview-catch-thumb::-webkit-scrollbar-track {
-    background-color: #f5f5f5; /* Light grey track */
-    border-radius: 10px;
-  }
-  
-  /* Style the scrollbar thumb */
-  .preview-catch-thumb::-webkit-scrollbar-thumb {
-    background-color: #a7a7a7; /* Dark grey thumb */
-    border-radius: 10px;
-  }
-  
-  /* Handle hover and active states */
-  .preview-catch-thumb::-webkit-scrollbar-thumb:hover {
-    background: #7e7e7e; /* Darker grey on hover */
-  }
-
-  /* Adjust the width here */
-  .preview-catch-thumb::-webkit-scrollbar {
-    width: 10px; 
-  }
-  .selected-invoice {
-    background-color: #d7d7d7; /* Or any color you prefer */
-    border-radius: 0.375rem;
-  }
-
-
-
-/* B Invoicing */
-
-#invoicingTableSearchBarDiv {
-    position: sticky;
-    top: 0px;
-    padding-top: 4px;
-    z-index: 11; /* Higher z-index than the table headers */
-    background-color: white;
+/* Handle hover and active states */
+.invoice-list::-webkit-scrollbar-thumb:hover {
+  background: #7e7e7e; /* Darker grey on hover */
 }
-#invoiceStylesTableRow {
-    margin: top 8px;
+
+/* Adjust the width here */
+.invoice-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-overlay {
+  position: fixed; /* Fixed position to cover the entire viewport */
+  top: 0;
+  left: 0;
+  width: 100vw; /* Full viewport width */
+  height: 100vh; /* Full viewport height */
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+  display: flex; /* Flexbox to center the modal */
+  justify-content: center;
+  align-items: center;
+  z-index: 50; /* High z-index to overlay on top of other content */
 }
 
 #stylesTableSearchBarDiv {
-    position: sticky;
-    top: 0px;
-    padding-top: 4px; /* Adjust this if you need some space above the search bar */
-    z-index: 20; /* Higher z-index than the table headers */
-    background-color: white;
+  position: sticky;
+  top: 0px;
+  padding-top: 4px; /* Adjust this if you need some space above the search bar */
+  z-index: 20; /* Higher z-index than the table headers */
+  background-color: white;
 }
 /* Sticky Table Header */
 .sticky-th {
-    position: sticky;
-    top: 28px; /* Pull the header up */
-    background-color: white;
-    z-index: 10; /* Keep it above other content */
-    margin-top: -20px; /* Negative margin to pull the content up */
-    padding-top: 20px; /* Add padding to compensate for the negative margin */
+  position: sticky;
+  top: 28px; /* Pull the header up */
+  background-color: white;
+  z-index: 10; /* Keep it above other content */
+  margin-top: -20px; /* Negative margin to pull the content up */
+  padding-top: 20px; /* Add padding to compensate for the negative margin */
 }
 
-  /* For Webkit browsers */
-  ::-webkit-scrollbar {
-      width: 8px; /* Adjust the width of the scrollbar */
-  }
+/* MAIN-SCROLLBAR */
+::-webkit-scrollbar {
+  width: 16px; /* Adjust the width of the scrollbar */
+}
 
-  ::-webkit-scrollbar-track {
-      background: #f1f1f1; /* The track (progress bar) of the scrollbar */
-  }
+/* Light mode */
+::-webkit-scrollbar-track {
+  background: #475569;
+}
 
-  ::-webkit-scrollbar-thumb {
-      background: #888888; /* The draggable scrolling handle */
-      border-radius: 10px; /* Roundness of the scrollbar handle */
-  }
+::-webkit-scrollbar-thumb {
+  background: #23232e; /* The draggable scrolling handle */
+  border-radius: 5px; /* Roundness of the scrollbar handle */
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-      background: #555; /* Hover effect */
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: #1a1a23; /* Hover effect */
+}
 
-  .max-height-table {
-    max-height: 700px !important;
-  }
+/* Dark mode scrollbars */
+.dark ::-webkit-scrollbar-track {
+  background: #404040;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #18181b; /* Darker handle for dark mode */
+}
+
+.dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #09090b; /* Hover effect for dark mode */
+}
+
+/* Class for TABLES SCROLLBAR */
+.table-scrollbar::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
+}
+
+/* Light mode */
+.table-scrollbar::-webkit-scrollbar-track {
+  background: #475569;
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+  border-radius: 5px;
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb {
+  background: #23232e; /* The draggable scrolling handle */
+  border-radius: 5px; /* Roundness of the scrollbar handle */
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1a1a23; /* Hover effect */
+}
+
+/* Dark mode scrollbars */
+.dark .table-scrollbar::-webkit-scrollbar-track {
+  background: #404040;
+}
+
+.dark .table-scrollbar::-webkit-scrollbar-thumb {
+  background: #18181b; /* Darker handle for dark mode */
+}
+
+.dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #09090b; /* Hover effect for dark mode */
+}
+
+.max-height-table {
+  max-height: 700px !important;
+}
 
 /* Removing number input arrows  */
 /* Chrome, Safari, Edge, Opera */
@@ -154,24 +155,26 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
-  /* Popover */
+/* Popover */
 .popover-container {
   display: grid;
   place-items: center; /* Center items in the container */
   position: absolute;
   top: -10px; /* Adjust this value to position above the button */
   left: 50%;
-  transform: translate(-50%, -100%); /* Moves the container up above the button */
+  transform: translate(
+    -50%,
+    -100%
+  ); /* Moves the container up above the button */
   z-index: 20;
 }
 
 .popover {
   position: relative; /* Positioned relative to the arrow */
-  
 }
 
 .arrow {
@@ -181,10 +184,10 @@ input[type=number] {
   transform: translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
-  background: #111827  ;
+  background: #111827;
   z-index: 10; /* Keeps arrow under the popover */
 }
-  
+
 /* Rotateable icon  */
 #rotateIcon {
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -201,65 +204,140 @@ input[type=number] {
     transform: rotate(0deg);
   }
   80% {
-    transform: rotate(360deg) scale(1.05); 
+    transform: rotate(360deg) scale(1.05);
   }
   100% {
-    transform: rotate(360deg) scale(1); 
+    transform: rotate(360deg) scale(1);
   }
 }
-
 
 /* CSS for the revolve and change color animations */
 .revolve {
   animation: revolve 0.3s ease-in-out; /* Duration of revolve*/
   /* change color here */
-
 }
 
 /* Keyframes for revolving and changing color */
 @keyframes revolve {
   0% {
     transform: rotateY(0deg);
-    font-weight:normal;
-    color: #b8b8b8 ; /* Original color */
+    font-weight: normal;
+    color: #b8b8b8; /* Original color */
   }
 
   50% {
     transform: rotateY(90deg);
     font-weight: bold;
-    color: #3b82f6 ; /* Color during animation (e.g., red) */
+    color: #3b82f6; /* Color during animation (e.g., red) */
   }
 
   100% {
     transform: rotateY(180deg);
-    font-weight:normal;
-    color: #b8b8b8 ; /* Revert to original color */
+    font-weight: normal;
+    color: #b8b8b8; /* Revert to original color */
   }
 }
 
 /* Alpine like transition fade in and fade out when x-show isnt applicable */
 /* Fade-In: Hidden to Visible */
 .fade-in-hidden {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.5s, transform 0.5s;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
 }
 
 .fade-in-visible {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 0.5s, transform 0.5s;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
 }
 
 /* Fade-Out: Visible to Hidden */
 .fade-out-visible {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 0.3s, transform 0.3s;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .fade-out-hidden {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.3s, transform 0.3s;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+/* Table styles */
+.round-left-border {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+.round-right-border {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+/* Row Effect Added on Item Add */
+.add-item-effect {
+  box-shadow:
+    0 -2px #32be65bb,
+    0 2px #32be65bb;
+  background-color: #475569;
+}
+
+.terminator {
+  padding: 0 !important;
+}
+
+/* BUTTON light-dark mode styles Tailwind */
+.butt-style {
+  @apply flex rounded-md border border-transparent bg-vdark-600 p-3 text-sm font-medium text-vwhite-50 duration-500;
+  @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 active:scale-95;
+  @apply dark:bg-neutral-700 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300;
+}
+/* SEARCH light-dark mode styles Tailwind */
+.srch-style {
+  @apply flex rounded-md border border-vdark-600 bg-vdark-600 p-3 text-sm font-medium text-vwhite-50 transition duration-500 placeholder:text-vwhite-50;
+
+  @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 hover:placeholder:text-vred-400;
+
+  @apply focus:border-vred-300 focus:bg-vdark-500 focus:text-vred-400 focus:outline-none;
+
+  @apply dark:focus:border-vred-300 dark:focus:bg-vdark-500 dark:focus:text-vred-400 dark:focus:outline-none;
+
+  @apply dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300 dark:placeholder:text-neutral-300;
+
+  @apply dark:hover:border-vred-300 dark:hover:text-vred-300 dark:hover:placeholder:text-vred-400 dark:focus:border-vred-300 dark:focus:bg-neutral-600;
+}
+
+/* BORDER CLIPPER for adjusting table body overflowing the header*/
+.border-clipper {
+  --border-clipper: #fbf3f3;
+  box-shadow: 0 -4px 0 0 var(--border-clipper);
+}
+
+.dark .border-clipper {
+  --border-clipper: #27272a;
+}
+
+.table-edit-input-style {
+  @apply w-full rounded border border-transparent bg-vdark-500 px-1 py-0.5 text-slate-100 transition duration-200;
+  @apply hover:border-vred-400 hover:text-vred-400;
+  @apply focus:border-vred-400 focus:text-vred-400 focus:outline-none;
+  @apply dark:hover:border-vred-300 dark:hover:text-vred-300;
+  @apply dark:focus:border-vred-300 dark:focus:text-vred-300;
+}
+
+.modal-input-style {
+  @apply rounded bg-slate-500 p-2 placeholder-vwhite-50 ring-1 ring-transparent transition duration-300;
+  @apply hover:bg-slate-600;
+  @apply focus:bg-slate-600 focus:outline-none focus:ring-slate-300;
+  @apply dark:bg-vdark-500 dark:placeholder-vpalered-300;
+  @apply dark:hover:bg-vdark-600;
+  @apply dark:focus:bg-vdark-600 dark:focus:ring-vred-300;
 }

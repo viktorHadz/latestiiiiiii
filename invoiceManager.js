@@ -10,9 +10,12 @@ export default function invoiceManager() {
     selectedClient: null,
     // Invoice items - collects both styles and samples
     invoiceItems: [],
+    filteredInvoiceItems: [],
+    quantities: {},
     // Search Bar
     styleSearch: "",
     sampleSearch: "",
+    invoiceSearch: "",
     // Add new style for client
     showAddStyleModal: false,
     newStyle: { name: "", price: null },    
@@ -64,7 +67,63 @@ export default function invoiceManager() {
     hoverCardLeaveDelay: 300,
     hoverCardTimout: null,
     hoverCardLeaveTimeout: null,
+    // Tab section
+    pineTabSelected: 1,
+    tabId: null,
 
+    init() {
+      this.fetchClients();
+      this.loadSelectedClient();
+      this.tabId = this.$id('tabs');
+      // Ensure that the $refs are fully loaded before accessing them
+      this.$nextTick(() => {
+        this.tabRepositionMarker(this.$refs.tabButtons.firstElementChild);
+      });
+    },
+
+    tabButtonClicked(tabButton) {
+      this.pineTabSelected = tabButton.id.replace(this.tabId + '-', '');
+      this.tabRepositionMarker(tabButton);
+    },
+
+    tabRepositionMarker(tabButton) {
+      if (this.$refs.tabMarker) {
+        this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px';
+        this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px';
+        this.$refs.tabMarker.style.left = tabButton.offsetLeft + 'px';
+      }
+    },
+
+    tabContentActive(tabContent) {
+      return this.pineTabSelected == tabContent.id.replace(this.tabId + '-content-', '');
+    },
+
+    tabButtonActive(tabContent) {
+      const tabId = tabContent.id.split('-').slice(-1);
+      return this.pineTabSelected == tabId;
+    },
+
+
+    applyEffect(item) {
+      let styles = this.filteredStyles.map((style) => style.id)
+      console.log(styles)
+      let itemId
+      if (styles.includes(item.id)) {
+        console.log("Your clicked item's id")
+        console.log(item.id)
+        itemId = `rowid-${item.id}`
+      }
+      let rowEl = document.getElementById(itemId)
+      if (rowEl) {
+        rowEl.classList.remove('hover:bg-gray-700')
+        rowEl.classList.add('add-item-effect');
+        setTimeout(() => {
+          rowEl.classList.remove('add-item-effect');
+          rowEl.classList.add('hover:bg-gray-700');
+        }, 200);
+      }
+    },
+    
     hoverCardEnter () {
         clearTimeout(this.hoverCardLeaveTimeout);
         if(this.hoverCardHovered) return;
@@ -286,11 +345,7 @@ export default function invoiceManager() {
     },
 
 
-    init() {
-      this.fetchClients();
-      this.loadSelectedClient();
-    },
-
+    
     /**         
         
      TO DO LIST: 
@@ -401,12 +456,15 @@ export default function invoiceManager() {
         callToast({ type: 'danger', message: 'Error fetching samples.', description: 'Please try again or contact support.', position: 'top-center' })
       }
     },
-    /*-----------------------------PRICE FORMING LOGIC--------------------------------------*/
+    /*-------------------------PRICE FORMING LOGIC---------------------------------*/
+    handleInvoQtySubmit(item) {
+      return this.quantities[item.id] || 1
+    },
+
     addItemToInvoice(item, type) {
-      console.log("Adding item to invoice");
       // Disables adding items to invoice if discount is applied
       if (this.deposit !== 0) {
-        callError('Cannot add items.', 'Remove deposit and try again.')
+        callError('Cannot add items.', 'Remove deposit/discount and try again.')
         return
       }
       if (this.discount !== 0) {
@@ -415,9 +473,9 @@ export default function invoiceManager() {
         return
       }
       // 1. Unique id to identify items by an id - TODO: THIS SHOULD BE STORED TOO
-      const uniqueId = `${type}-${item.id}`;
-      let qty = 1;
-      let itemExists = false;
+      const uniqueId = `${type}-${item.id}`
+      let qty = this.quantities[item.id] || 1
+      let itemExists = false
       // 2. Map over the invoiceItems
       this.invoiceItems = this.invoiceItems.map((invoiceItem) => {
         // 3. if the item exists is in the lsit:
@@ -433,7 +491,8 @@ export default function invoiceManager() {
           }
         } 
         return invoiceItem
-      });
+      })
+      this.filteredInvoiceItems = this.invoiceItems
       // 4. If the item does not exist, add it to the invoiceItems array
       if (!itemExists) {
         this.invoiceItems.push({
@@ -443,10 +502,11 @@ export default function invoiceManager() {
           quantity: qty,
           price: parseFloat(item.price) * (type === "sample" ? parseFloat(item.time) : 1 )
         })
+        this.applyEffect(item)
       }
       if (this.discount === 0) {
         this.calculateTotals()
-        // this.callSuccessToast()
+        this.applyEffect(item)
         console.log("I am totals when there is no previous discount!")
         console.log(`Subtotal: ${this.subtotal}`)
         console.log(`Vat: ${this.vat}`)
@@ -472,6 +532,9 @@ export default function invoiceManager() {
         return
       }
       this.invoiceItems = this.invoiceItems.filter(
+        (i) => i.uniqueId !== item.uniqueId 
+      )
+      this.filteredInvoiceItems = this.filteredInvoiceItems.filter(
         (i) => i.uniqueId !== item.uniqueId
       )
       this.calculateTotals();
@@ -486,7 +549,7 @@ export default function invoiceManager() {
       if (this.invoiceItems.length === 0) {
         this.resetDeposit()
         this.resetDiscounts()
-        callWarning('No items in invoice list.', 'Discounts and deposits have been reset.')
+        callInfo('No items in invoice list.', 'Discounts and deposits have been reset.')
       } 
     },
 
@@ -569,7 +632,7 @@ export default function invoiceManager() {
       this.temporaryTotal = this.temporarySubtotal + this.temporaryVat
     },
     // Checks if discount is an acceptible value based on this we 
-    // Confirms all prices to send to main screen Prices menu
+    // Confirm all prices to send to main screen Prices menu
     confirmDiscount() {
       let inputFocus = this.$refs.discountInput
       // Discount validation using VALIDATOR :D
@@ -577,7 +640,7 @@ export default function invoiceManager() {
         inputFocus.focus()
         return 
       }
-      
+
       // Pass temporary values to main price forming menu
       let totalContainer = this.total
       const confirmBtn = document.getElementById('confirm-discount')
@@ -615,7 +678,6 @@ export default function invoiceManager() {
     
     // Important handlers for reseting discount
     resetTemporaryDiscounts() {
-      const confirmBtn = document.getElementById('confirm-discount')
       const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
       this.temporaryDiscount = 0
       this.temporarySubtotal = this.subtotal
@@ -625,10 +687,11 @@ export default function invoiceManager() {
       discBubbleSubTotal.classList.remove('line-through', 'text-gray-500')
       discBubbleSubTotal.classList.add('text-slate-300')
 
-      confirmBtn.classList.remove('bg-green-500', 'text-slate-300', 'hover:bg-green-600')
-      confirmBtn.classList.add('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
+      
     },
     resetDiscounts() {
+      const confirmBtn = document.getElementById('confirm-discount')
+
       if (this.deposit != 0) {
         this.resetDeposit()
       }
@@ -637,7 +700,10 @@ export default function invoiceManager() {
       this.temporaryVat = this.vat
       this.temporaryTotal = this.total
       this.calculateTotals()
+      confirmBtn.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600')
+      confirmBtn.classList.add('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
       callToast({ type: 'success', message: 'Discount reset successfully.', position: 'top-center' })
+
     },
     showTemporarySubtotalAndDiscount() {
       const discBubbleSubTotal = document.getElementById('subtotal-discount-buble')
@@ -740,6 +806,13 @@ export default function invoiceManager() {
           .includes(this.sampleSearch.toLowerCase())
       );
     }, 
+    searchInvoiceItems(){
+      this.filteredInvoiceItems = this.invoiceItems.filter((item) => 
+        item.name
+          .toLowerCase()
+          .includes(this.invoiceSearch.toLowerCase())
+      )
+    },
 
     /*---------------------------GENERATE INVOICE LOGIC-----------------------------*/
     /* TODO: 

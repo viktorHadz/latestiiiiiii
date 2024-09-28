@@ -1,0 +1,29 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "semi": false,
+  "printWidth": 80,
+  "bracketSpacing": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "tailwindPreserveWhitespace": false,
+  "arrowParens": "avoid",
+  "plugins": [
+    "prettier-plugin-tailwindcss"
+  ],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "html",
+        "printWidth": 120
+      }
+    },
+    {
+      "files": "*.js",
+      "options": {
+        "parser": "babel"
+      }
+    }
+  ]
+}
