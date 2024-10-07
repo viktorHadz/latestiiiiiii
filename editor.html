@@ -1,0 +1,140 @@
+<div x-data="editorManager">
+  <div class="p-4 mb-4 border rounded-md border-vdark-600">
+    <div class="flex justify-between align-baseline">
+      <div>
+        <button @click="openModal" class="butt-style !text-xs">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 23 23"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mr-2 feather feather-user"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Select Client
+        </button>
+      </div>
+      <div class="flex align-middle">
+        <h3
+          class="self-center font-medium underline cursor-default decoration text-vdark-700 decoration-vdark-700 dark:text-neutral-300 dark:decoration-vred-300"
+          x-text="`Client: ${selectedClient.name}`"
+        ></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex h-screen">
+    <div class="w-1/3 pr-2 overflow-y-auto table-scrollbar" style="max-height: 500px">
+      <table class="min-w-full border-separate table-auto" style="max-height: 500px; border-spacing: 0 10px">
+        <thead class="sticky top-0 text-base font-medium text-center bg-vred-50">
+          <tr>
+            <th>
+              <div class="flex text-center align-middle">
+                <span class="mr-2 text-center">Pick invoice from the list</span>
+                <button class="">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-caret-up-square-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4 9h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5A.5.5 0 0 0 4 11"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="transition-all duration-500">
+                <input
+                  type="text"
+                  placeholder="Search invoices..."
+                  class="srch-style mb-2 !p-1.5 !text-xs font-normal transition-all duration-500"
+                />
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>
+            <!-- MARK:INVOICE LIST -->
+            <template x-for="item in listItems" :key="item.id">
+              <button class="flex justify-between mb-2 invo-list-style">
+                <div class="flex flex-col justify-start mr-2">
+                  <div class="text-xs" x-text="item.client_name"></div>
+                  <div class="text-xs text-left">12.12.2024</div>
+                </div>
+                <div class="">
+                  <div class="flex self-end text-xs" x-text="item.invoice_number"></div>
+                </div>
+              </button>
+            </template>
+          </td>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="invoice-editor" class="w-full h-full p-2 rounded-l-none rounded-r-md bg-vpalered-500">
+      Edit invoice
+      <button class="butt-style" @click="saysHello()">cliick</button>
+    </div>
+  </div>
+  <!-- MARK: CLIENT MODAL  -->
+  <div x-show="showClientModal" x-transition.opacity.duration.300 class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
+    <!-- Modal Body -->
+    <div
+      class="relative z-30 w-1/3 mx-auto transition duration-300 border rounded-md shadow-lg top-1/3 border-slate-300 bg-vdark-600 text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
+      @keydown.escape.window="showClientModal = false"
+      @click.outside="showClientModal = false"
+    >
+      <div class="p-2">
+        <h2 class="mb-6 text-xl font-medium text-center">Select Client</h2>
+        <div class="relative mb-6" @click.outside="showDropdown = false">
+          <button
+            @click="toggleDropdown"
+            class="w-full p-2 transition duration-300 border rounded border-slate-300 text-vwhite-50 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:text-neutral-300 dark:hover:text-vred-300"
+          >
+            Clients...
+          </button>
+          <div
+            x-show="showDropdown"
+            x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="transform scale-y-0 opacity-0"
+            x-transition:enter-end="transform scale-y-100 opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="transform scale-y-100 opacity-100"
+            x-transition:leave-end="transform scale-y-0 opacity-0"
+            class="table-scrollbar absolute z-10 mt-1 max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vdark-500 shadow-lg dark:bg-neutral-500"
+            style="transform-origin: top"
+          >
+            <ul>
+              <template x-for="client in clients" :key="client.id">
+                <li
+                  @click="selectClient(client)"
+                  class="p-2 cursor-pointer text-vwhite-50 hover:bg-slate-600 dark:text-neutral-300 dark:hover:bg-neutral-600"
+                  x-text="client.name"
+                ></li>
+              </template>
+            </ul>
+          </div>
+        </div>
+        <div class="flex items-center justify-center">
+          <button
+            @click="closeModal"
+            class="px-4 py-2 text-base font-medium transition-colors duration-200 bg-red-500 rounded-md shadow-sm close-modal-button submit-button text-slate-100 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

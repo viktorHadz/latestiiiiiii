@@ -1,16 +1,17 @@
 import clientManager from './clientManager.js';
 import stylesManager from './stylesManager.js';
 import invoiceManager from './invoiceManager.js';
+import editorManager from './editorManager.js';
 import toastManager from './toastManager.js';
 
 // Initialize toastManager and assign it to window
-window.toastManager = toastManager();
+window.toastManager = toastManager()
 // Bind calls to the toast manager 
-window.callToast = window.toastManager.callToast.bind(window.toastManager)
-window.callError = window.toastManager.toastError.bind(window.toastManager)
-window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager)
-window.callWarning = window.toastManager.toastWarning.bind(window.toastManager)
-window.callInfo = window.toastManager.toastInfo.bind(window.toastManager)
+window.callToast = window.toastManager.callToast.bind(window.toastManager);
+window.callError = window.toastManager.toastError.bind(window.toastManager);
+window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager);
+window.callWarning = window.toastManager.toastWarning.bind(window.toastManager);
+window.callInfo = window.toastManager.toastInfo.bind(window.toastManager);
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('tabManager', () => ({
@@ -18,7 +19,7 @@ document.addEventListener('alpine:init', () => {
         tabContent: '',
         isLoading: true, // Set initial loading state to true
         mode: localStorage.getItem('theme') || 'light',
-
+        
         toggleTheme() {
             this.mode = this.mode === 'light' ? 'dark' : 'light';
             document.documentElement.classList.toggle('dark', this.mode === 'dark');
@@ -32,19 +33,7 @@ document.addEventListener('alpine:init', () => {
             if (this.mode === 'dark') {
                 document.documentElement.classList.add('dark');
             }
-            document.addEventListener('keydown', function(event) {
-            switch (event.keyCode) {
-                case 37:
-                    //left function
-                    break;
-                case 38:
-                    //Up function
-                    break;
-                case 39:
-                    //Right function
-                    break;
-                }
-            });
+            
         },
 
         async loadInitialContent() {
@@ -71,8 +60,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         async loadTabContent(tabName) {
-            const response = await fetch(`/${tabName}.html`);
-            const content = await response.text();
+            const response = await fetch(`/${tabName}.html`)
+            const content = await response.text()
             this.tabSelected = tabName;
 
             this.$nextTick(() => {
@@ -83,11 +72,13 @@ document.addEventListener('alpine:init', () => {
 
         initTabComponent(tabName) {
             if (tabName === 'styles') {
-                Alpine.data('stylesManager', stylesManager);
+                Alpine.data('stylesManager', stylesManager)
             } else if (tabName === 'clients') {
-                Alpine.data('clientManager', clientManager);
+                Alpine.data('clientManager', clientManager)
             } else if (tabName === 'invoices') {
-                Alpine.data('invoiceManager', invoiceManager);
+                Alpine.data('invoiceManager', invoiceManager)
+            } else if (tabName === 'editor') {
+                Alpine.data('editorManager', editorManager)
             }
         },
         
@@ -96,5 +87,6 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('clientManager', clientManager);
     Alpine.data('stylesManager', stylesManager);
     Alpine.data('invoiceManager', invoiceManager);
+    Alpine.data('editorManager', editorManager);
     Alpine.data('toastManager', toastManager);
 });

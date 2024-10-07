@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] {
+  display: none !important;
+}
+
 /* Toggle button text styling */
 .status-text {
   position: absolute;
@@ -282,12 +286,60 @@ input[type='number'] {
   border-bottom-right-radius: 0.375rem;
 }
 
-/* Row Effect Added on Item Add */
-.add-item-effect {
-  box-shadow:
-    0 -2px #32be65bb,
-    0 2px #32be65bb;
-  background-color: #475569;
+/* Keyframe for glowing effect */
+@keyframes glowEffect {
+  0% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
+    border-radius: 0.375rem;
+  }
+  20% {
+    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
+    border-radius: 0.375rem;
+  }
+  50% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
+    border-radius: 0.375rem;
+  }
+  80% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
+    border-radius: 0.375rem;
+  }
+  100% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
+    border-radius: 0.375rem;
+  }
+}
+
+@keyframes glowEffectDark {
+  0% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
+    border-radius: 0.375rem;
+  }
+  20% {
+    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
+    border-radius: 0.375rem;
+  }
+  50% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
+    border-radius: 0.375rem;
+  }
+  80% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
+    border-radius: 0.375rem;
+  }
+  100% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
+    border-radius: 0.375rem;
+  }
+}
+
+/* Apply the animation for the glow effect */
+.add-item-glow {
+  animation: glowEffect 500ms ease-out;
+}
+
+.add-item-glow-dark {
+  animation: glowEffectDark 500ms ease-out;
 }
 
 .terminator {
@@ -296,6 +348,12 @@ input[type='number'] {
 
 /* BUTTON light-dark mode styles Tailwind */
 .butt-style {
+  @apply flex rounded-md border border-transparent bg-vdark-600 p-3 text-sm font-medium text-vwhite-50 duration-500;
+  @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 active:scale-95;
+  @apply dark:bg-neutral-700 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300;
+}
+/* BUTTON light-dark mode styles Tailwind */
+.invo-list-style {
   @apply flex rounded-md border border-transparent bg-vdark-600 p-3 text-sm font-medium text-vwhite-50 duration-500;
   @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 active:scale-95;
   @apply dark:bg-neutral-700 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300;

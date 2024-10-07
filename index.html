@@ -4,12 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoicing</title>
-    <script src="./public/componentsLibrary/vik-tooltip.js"></script>
-    <style>
-      [x-cloak] {
-        display: none !important;
-      }
-    </style>
     <link rel="stylesheet" href="./public/css/output.css" />
   </head>
 
@@ -19,14 +13,14 @@
       <!-- Palette below -->
       <!-- https://coolors.co/visualizer/2d2d3b-5c757f-fe5f55-e8f0ff-f8e9e9 -->
       <div
-        class="flex h-screen w-56 flex-col items-center bg-vdark-600 p-4 transition duration-300 dark:bg-zinc-900"
+        class="flex flex-col items-center w-56 h-screen p-4 transition duration-300 bg-vdark-600 dark:bg-zinc-900"
         x-ref="mainSidebar"
       >
-        <!-- MARK: CLIENTS BUTTON dark:!text-neutral-400 dark:text-neutral-100 dark:hover:text-neutral-400-->
+        <!-- MARK: CLIENTS -->
         <button
           :class="{ '!text-vred-400 !underline dark:!underline !decoration-1 dark:!decoration-2 !decoration-vred-400 dark:!decoration-vred-300 dark:!text-neutral-50': tabContentActive('clients') }"
           @click="tabButtonClicked('clients')"
-          class="my-4 flex flex-row p-2 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
+          class="flex flex-row p-2 my-4 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +32,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="feather feather-users mr-2"
+            class="mr-2 feather feather-users"
           >
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -47,10 +41,11 @@
           </svg>
           <span>Clients</span>
         </button>
+        <!-- MARK: STYLES -->
         <button
           @click="tabButtonClicked('styles')"
           :class="{ '!text-vred-400 !underline dark:!underline !decoration-1 dark:!decoration-2 !decoration-vred-400 dark:!decoration-vred-300 dark:!text-neutral-50': tabContentActive('styles') }"
-          class="my-4 flex flex-row p-2 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
+          class="flex flex-row p-2 my-4 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +57,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="feather feather-scissors mr-2"
+            class="mr-2 feather feather-scissors"
           >
             <circle cx="6" cy="6" r="3"></circle>
             <circle cx="6" cy="18" r="3"></circle>
@@ -72,10 +67,11 @@
           </svg>
           Styles
         </button>
+        <!-- MARK: INVOICES -->
         <button
           @click="tabButtonClicked('invoices')"
           :class="{ '!text-vred-400 !underline dark:!underline !decoration-1 dark:!decoration-2 !decoration-vred-400 dark:!decoration-vred-300 dark:!text-neutral-50': tabContentActive('invoices') }"
-          class="my-4 flex flex-row p-2 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
+          class="flex flex-row p-2 my-4 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +83,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="feather feather-file-text mr-2"
+            class="mr-2 feather feather-file-text"
           >
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -97,7 +93,28 @@
           </svg>
           Invoices
         </button>
-        <div class="absolute bottom-0 mb-8 p-2">
+        <!-- MARK: EDITOR -->
+        <button
+          @click="tabButtonClicked('editor')"
+          :class="{ '!text-vred-400 !underline dark:!underline !decoration-1 dark:!decoration-2 !decoration-vred-400 dark:!decoration-vred-300 dark:!text-neutral-50': tabContentActive('editor') }"
+          class="flex flex-row p-2 my-4 text-lg font-bold text-white transition duration-300 hover:text-vred-300 active:scale-95 dark:text-neutral-400 dark:hover:text-neutral-50"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="currentColor"
+            class="flex mr-2 align-middle bi bi-wrench"
+            viewBox="0 -1 20 20"
+          >
+            <path
+              d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364zm13.37 9.019.528.026.287.445.445.287.026.529L15 13l-.242.471-.026.529-.445.287-.287.445-.529.026L13 15l-.471-.242-.529-.026-.287-.445-.445-.287-.026-.529L11 13l.242-.471.026-.529.445-.287.287-.445.529-.026L13 11z"
+            />
+          </svg>
+          Editor
+        </button>
+        <!-- MARK: THEME CHANGE -->
+        <div class="absolute bottom-0 p-2 mb-8">
           <template x-if="mode === 'light'">
             <button @click="toggleTheme()" x-show="mode==='light'" class="items-center">
               <svg
@@ -110,7 +127,7 @@
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class="feather feather-sun text-white transition duration-300 hover:text-vred-300 active:scale-90"
+                class="text-white transition duration-300 feather feather-sun hover:text-vred-300 active:scale-90"
               >
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -124,6 +141,7 @@
               </svg>
             </button>
           </template>
+
           <template x-if="mode === 'dark'">
             <button @click="toggleTheme()" class="items-center">
               <svg
@@ -136,7 +154,7 @@
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class="feather feather-moon text-white transition duration-300 hover:text-vred-300 active:scale-90"
+                class="text-white transition duration-300 feather feather-moon hover:text-vred-300 active:scale-90"
               >
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
               </svg>
@@ -144,9 +162,8 @@
           </template>
         </div>
       </div>
-
       <!-- Content Container with Transitions -->
-      <div class="flex w-full flex-col overflow-auto bg-vpalered-300 p-5 will-change-auto dark:bg-zinc-800">
+      <div class="flex flex-col w-full p-5 overflow-auto bg-vpalered-300 will-change-auto dark:bg-zinc-800">
         <template x-if="true">
           <div
             x-ref="tabContentContainer"
@@ -163,8 +180,7 @@
           </div>
         </template>
       </div>
-
-      <!-- Our template -->
+      <!-- MARK: TOASTS -->
       <template x-teleport="body">
         <ul
           x-data="{ 
@@ -510,7 +526,7 @@
                             "
               @mouseover="toastHovered=true"
               @mouseout="toastHovered=false"
-              class="absolute w-full select-none duration-300 ease-out sm:max-w-xs"
+              class="absolute w-full duration-300 ease-out select-none sm:max-w-xs"
               :class="{ 'toast-no-description': !toast.description }"
             >
               <span
@@ -591,6 +607,7 @@
                     ></p>
                   </div>
                 </template>
+
                 <template x-if="toast.html">
                   <div x-html="toast.html"></div>
                 </template>
@@ -599,7 +616,7 @@
                   class="absolute right-0 mr-2.5 cursor-pointer rounded-full p-1.5 text-gray-400 opacity-0 duration-100 ease-in-out hover:bg-gray-50 hover:text-gray-500"
                   :class="{ 'top-1/2 -translate-y-1/2' : !toast.description && !toast.html, 'top-0 mt-2.5' : (toast.description || toast.html), 'opacity-100' : toastHovered, 'opacity-0' : !toastHovered }"
                 >
-                  <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill-rule="evenodd"
                       d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -613,6 +630,7 @@
         </ul>
       </template>
     </div>
+    <script src="./public/componentsLibrary/vik-tooltip.js" defer></script>
     <script type="module" src="./app.js" defer></script>
     <script src="./alpinejs/dist/cdn.min.js" defer></script>
   </body>

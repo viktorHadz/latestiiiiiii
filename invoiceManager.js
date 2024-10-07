@@ -28,7 +28,7 @@ export default function invoiceManager() {
     vatPercent: 20,
     preDiscountTotal: 0,
     total: 0,
-    // Use for deposits popover menu. Not YET added.  
+    // Use for deposits popover menu. Not YET added 
     popoverOpenDeposit: false,
     // Discount section
     popoverOpen: false,
@@ -40,10 +40,10 @@ export default function invoiceManager() {
     // Temporary values
     // State variable to conditionally show or hide the crossed over subtotal
     showNewSubtotal: false,
-    temporarySubtotal: 0, 
+    temporarySubtotal: 0,
     temporaryDiscount: 0,
     temporaryVat: 0,
-    temporaryTotal: 0,    
+    temporaryTotal: 0,
     // This is discount in  the main price forming meny
     discount: 0,
     // Deposit popover menu
@@ -68,22 +68,23 @@ export default function invoiceManager() {
     hoverCardTimout: null,
     hoverCardLeaveTimeout: null,
     // Tab section
-    pineTabSelected: 1,
+    pineTabSelected: "1",
     tabId: null,
 
     init() {
-      this.fetchClients();
-      this.loadSelectedClient();
-      this.tabId = this.$id('tabs');
+      this.fetchClients()
+      this.loadSelectedClient()
+      this.tabId = this.$id('tabs')
       // Ensure that the $refs are fully loaded before accessing them
       this.$nextTick(() => {
-        this.tabRepositionMarker(this.$refs.tabButtons.firstElementChild);
-      });
+        this.tabRepositionMarker(this.$refs.tabButtons.firstElementChild)
+
+      })
     },
 
     tabButtonClicked(tabButton) {
-      this.pineTabSelected = tabButton.id.replace(this.tabId + '-', '');
-      this.tabRepositionMarker(tabButton);
+      this.pineTabSelected = tabButton.id.replace(this.tabId + '-', '')
+      this.tabRepositionMarker(tabButton)
     },
 
     tabRepositionMarker(tabButton) {
@@ -102,35 +103,64 @@ export default function invoiceManager() {
       const tabId = tabContent.id.split('-').slice(-1);
       return this.pineTabSelected == tabId;
     },
-
-
+    
     applyEffect(item) {
       let styles = this.filteredStyles.map((style) => style.id)
-      console.log(styles)
+      let samples = this.filteredSamples.map((sample) => sample.id)
+
       let itemId
+      let sampleId
+
       if (styles.includes(item.id)) {
-        console.log("Your clicked item's id")
-        console.log(item.id)
         itemId = `rowid-${item.id}`
       }
       let rowEl = document.getElementById(itemId)
-      if (rowEl) {
-        rowEl.classList.remove('hover:bg-gray-700')
-        rowEl.classList.add('add-item-effect');
-        setTimeout(() => {
-          rowEl.classList.remove('add-item-effect');
-          rowEl.classList.add('hover:bg-gray-700');
-        }, 200);
+      if (samples.includes(item.id)) {
+        sampleId = `sampleRowId-${item.id}`
       }
+      let sampleRowEl = document.getElementById(sampleId)
+
+
+      const applyClassAndRemove = (el, className) => {
+       // Remove any previous instance of the class
+        el.classList.remove(className); 
+        void el.offsetWidth; // Force a reflow to reset animation
+        el.classList.add(className); // Reapply the class to trigger animation
+
+        // Remove the class once the animation finishes
+        el.addEventListener('animationend', () => {
+          el.classList.remove(className);
+        }, { once: true }); // `once: true` ensures the listener is removed after one execution
+      };
+
+      if (rowEl) {
+        if (this.mode === "light") {
+          applyClassAndRemove(rowEl, 'add-item-glow')
+        }
+        if (this.mode === "dark") {
+          applyClassAndRemove(rowEl, 'add-item-glow-dark')
+        }
+      }
+
+      if (sampleRowEl) {
+        if (this.mode === "light") {
+          applyClassAndRemove(sampleRowEl, 'add-item-glow') 
+        }
+        if (this.mode === "dark") {
+          applyClassAndRemove(sampleRowEl, 'add-item-glow-dark') 
+        }
+      }
+
     },
+
     
     hoverCardEnter () {
-        clearTimeout(this.hoverCardLeaveTimeout);
-        if(this.hoverCardHovered) return;
-        clearTimeout(this.hoverCardTimout);
-        this.hoverCardTimout = setTimeout(() => {
-            this.hoverCardHovered = true;
-        }, this.hoverCardDelay);
+      clearTimeout(this.hoverCardLeaveTimeout)
+      if(this.hoverCardHovered) return
+      clearTimeout(this.hoverCardTimout)
+      this.hoverCardTimout = setTimeout(() => {
+          this.hoverCardHovered = true
+      }, this.hoverCardDelay)
     },
     hoverCardLeave () {
         clearTimeout(this.hoverCardTimout);
@@ -522,22 +552,27 @@ export default function invoiceManager() {
     },
     
     removeItemFromInvoice(item) {
+      let confirmText = "Are you sure you want to remove this item?"
       if(this.discount != 0) {
-       callError('Cannot remove item.', 'Please clear any existing discount/deposit first.') 
-       return
+        callError('Cannot remove item.', 'Please clear any existing discount/deposit first.') 
+        return
       }
-
       if(this.deposit != 0) {
         callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
         return
       }
-      this.invoiceItems = this.invoiceItems.filter(
-        (i) => i.uniqueId !== item.uniqueId 
-      )
-      this.filteredInvoiceItems = this.filteredInvoiceItems.filter(
-        (i) => i.uniqueId !== item.uniqueId
-      )
-      this.calculateTotals();
+      if (confirm(confirmText) === true) {
+        this.invoiceItems = this.invoiceItems.filter(
+          (i) => i.uniqueId !== item.uniqueId 
+        )
+        this.filteredInvoiceItems = this.filteredInvoiceItems.filter(
+          (i) => i.uniqueId !== item.uniqueId
+        )
+        this.calculateTotals();
+        callSuccess('Item removed', 'Successfully removed item from invoice.')
+      } else {
+        return
+      }
 
       if (this.subtotal < 0) {
         callError('Cannot remove item.', 'Total cannot be a negative value. Check your discounts.')
@@ -552,7 +587,6 @@ export default function invoiceManager() {
         callInfo('No items in invoice list.', 'Discounts and deposits have been reset.')
       } 
     },
-
 
     // Rounds numbers to two decimal spaces. Only use after all math ops. are done. 
     roundToTwo(value) {
@@ -793,6 +827,7 @@ export default function invoiceManager() {
         callToast({ type: 'danger', message: 'Error adding sample.', description: 'Please try again or contact support.', position: 'top-center' })
       }
     },
+
     searchStyles() {
       this.filteredStyles = this.styles.filter((style) =>
         style.name.toLowerCase().includes(this.styleSearch.toLowerCase())
@@ -886,8 +921,6 @@ export default function invoiceManager() {
         console.error("Error generating PDF:", error);
         callToast({ type: 'danger', message: 'PDF Generation Error!', description: 'Failed to generate PDF. Please try again or contact support.', position: 'top-center' })
       }
-    },
-
-   
+    }, 
   };
 }

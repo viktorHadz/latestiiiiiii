@@ -27,7 +27,7 @@ function getDb() {
           client_id INTEGER,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
         )`);
-        // NOTE! ---> Added Deposit and NOTE to DB
+
         db.run(`CREATE TABLE IF NOT EXISTS invoices (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           invoice_number TEXT,
@@ -48,7 +48,6 @@ function getDb() {
           FOREIGN KEY (client_id) REFERENCES clients(id)
         )`);
 
-        // NOTE!!! ---- Might have problems with time as text as it should be set to REAL for float instead of TEXT -- editing now and adding quantity
         db.run(`CREATE TABLE IF NOT EXISTS invoice_items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT,

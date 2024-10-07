@@ -49,7 +49,7 @@ router.get("/api/samples/client/:clientId", (req, res) => {
     });
 });
 
-// Create new style from Invoicing menu
+// Post a new stye into the styles table 
 router.post("/styles", (req, res) => {
     const { name, price, client_id } = req.body;
   

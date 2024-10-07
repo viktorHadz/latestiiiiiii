@@ -6,6 +6,7 @@ const { exec } = require("child_process"); // Add this line
 const clientsRoutes = require("./clientsRoutes");
 const stylesRoutes = require("./stylesRoutes");
 const invoicingRoutes = require("./invoicingRoutes");
+const editorRoutes = require("./editorRoutes")
 
 const connection = require("./database");
 const app = express();
@@ -14,7 +15,7 @@ const port = process.env.PORT || 5002;
 
 app.use(express.json());
 app.use(cors());
-//eslint-disable-next-line
+
 app.use(express.static(path.join(__dirname)));
 
 // Serve static files from the public directory
@@ -22,7 +23,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve index.html on the root route
 app.get("/", (req, res) => {
-//eslint-disable-next-line
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
 app.use(clientsRoutes);
 app.use(stylesRoutes);
 app.use(invoicingRoutes);
+app.use(editorRoutes)
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
