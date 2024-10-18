@@ -26,38 +26,80 @@ For this I need routes:
 // 2. Get invoices by client id
 router.get("/editor/invoices/:clientId", (req, res) => {
     const clientId = req.params.clientId
-    const dbQuery = 'SELECT id, invoice_number, client_name, client_id FROM invoices WHERE client_id = ?'
-    db.all(dbQuery, [clientId], (err, invoices) => {
+    const dbQueryInvoices = 'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
+    const dbQueryClient = 'SELECT name, address FROM clients WHERE id = ?'
+
+    db.get(dbQueryClient, [clientId], (err, clientDetails) => {
         if (err) {
-            res.status(500).json({ error: `Couldn't fetch invoices for client ${clientId}. Status: ${err.message}` })
+            res.status(500).json({ error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}` })
             return
         }
-        res.json(invoices)
+        
+        db.all(dbQueryInvoices, [clientId], (err, invoiceDetails) => {
+            if (err) {
+                res.status(500).json({ error: `Couldn't fetch invoices for client ${clientId}. Status: ${err.message}` });
+                return
+            }
+            const listData = invoiceDetails.map(invoice => ({
+                ...invoice,
+                client_name: clientDetails.name
+            }))
+            res.json(listData)
+        })
     })
 })
 
-// Create route for retrieving invoice items then invoice prices that we want the client to be able to edit 
-/*
-router.get("/editor/invoice/:clientId/:invoiceId", (req, res) => {
+// Route for invoice items and prices for client with id 
+// example - /editor/invoice/1/46
+router.get("/editor/invoices/:clientId/:invoiceId", (req, res) => {
     const clientId = req.params.clientId
     const invoiceId = req.params.invoiceId
     
     const invoiceEditObj = {}
     
-    const clientsQuery = 'SELECT * FROM clients'
-    db.all(dbQuery, [clientId], [invoiceId], (err, invoices) => {
-    
-    // get data stick in object  
-    // Object looks like: 
-    let invoiceEditObj = 
-    {
-        name: invoice.name
-    }
-    },
-    // return object 
-    return invoiceEditObj
-},
-*/
+    const clientsQuery = 'SELECT * FROM clients WHERE id = ?'
+
+    db.get(clientsQuery, [clientId], (err, client) => {
+        if (err) {
+            res.status(500).json({ error: `Issue with client details. Status: ${err.message}` })
+            return
+        }
+        if (!client) {
+            res.status(404).json({ error: 'Issue getting client' })
+            return
+        }
+        // add client to the invoiceEditObj
+        invoiceEditObj.client = client
+
+        const invoiceQuery = 'SELECT * FROM invoices WHERE id = ? AND client_id = ?'
+        db.get(invoiceQuery, [invoiceId, clientId], (err, invoice) => {
+            if (err) {
+                res.status(500).json({ error: `Error in route while getting items from invoices with client id and invoice id. Status: ${err.message}` })
+                return
+            }
+            if (!invoice) {
+                res.status(404).json({ error: `Invoice not found::: ${err.message}` });
+                return
+            }
+            invoiceEditObj.invoice = invoice
+
+            const itemsQuery = 'SELECT * FROM invoice_items WHERE invoice_id = ?'
+            db.all(itemsQuery, [invoiceId], (err, items) => {
+                if (err) {
+                    res.status(500).json({ error: `Error in route while getting items from invoice_items. Status: ${err.message}` })
+                    return
+                }
+
+                invoiceEditObj.invoiceItems = items
+
+                // SEND THE COMPLETED INVOICE OBJECT HERE:
+                res.json(invoiceEditObj)
+            })  
+
+        })
+    })
+})
+
 
 // 2. Get invoices by client id  
 // 3. Get invoice_items by invoice_id 

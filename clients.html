@@ -1,12 +1,12 @@
 <div x-data="clientManager" class="relative w-full">
   <div>
-    <div class="flex justify-between mb-4 align-middle">
+    <div class="mb-4 flex justify-between align-middle">
       <!-- Style Search Input -->
       <div class="transition-all duration-500">
         <input
           type="text"
           placeholder="Search Clients..."
-          class="transition-all duration-500 srch-style"
+          class="srch-style transition-all duration-500"
           x-model="clientSearch"
           @input="searchClients"
           x-transition
@@ -15,7 +15,7 @@
       <!-- CLIENTS CENTER TEXT -->
       <div class="flex justify-center">
         <h2
-          class="self-center text-3xl font-semibold tracking-wider underline cursor-default text- text-vdark-700 decoration-vred-400 decoration-4 underline-offset-2 dark:text-neutral-300 dark:decoration-neutral-300"
+          class="text- cursor-default self-center text-3xl font-semibold tracking-wider text-vdark-700 underline decoration-vred-400 decoration-4 underline-offset-2 dark:text-neutral-300 dark:decoration-neutral-300"
         >
           Clients
         </h2>
@@ -36,7 +36,7 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="mr-2 feather feather-user-plus"
+          class="feather feather-user-plus mr-2"
         >
           <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
           <circle cx="8.5" cy="7" r="4"></circle>
@@ -50,23 +50,23 @@
   <div class="flex justify-center">
     <!-- Clients Table -->
     <table class="w-full border-separate text-vwhite-50" style="border-spacing: 0 10px">
-      <thead class="text-base font-medium rounded bg-vdark-600 text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300">
+      <thead class="rounded bg-vdark-600 text-base font-medium text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300">
         <tr>
-          <th class="hidden max-w-1/12">ID</th>
-          <th id="sortNameClients" class="p-4 pl-4 text-lg text-left max-w-2/12 round-left-border">Name</th>
-          <th class="p-4 text-base text-left max-w-2/12">Company Name</th>
-          <th class="p-4 text-base text-left max-w-2/12">Address</th>
-          <th class="p-4 text-base text-left max-w-2/12">Email</th>
-          <th class="p-4 pr-4 text-base text-left max-w-2/12 round-right-border">Actions</th>
+          <th class="max-w-1/12 hidden">ID</th>
+          <th id="sortNameClients" class="max-w-2/12 round-left-border p-4 pl-4 text-left text-lg">Name</th>
+          <th class="max-w-2/12 p-4 text-left text-base">Company Name</th>
+          <th class="max-w-2/12 p-4 text-left text-base">Address</th>
+          <th class="max-w-2/12 p-4 text-left text-base">Email</th>
+          <th class="max-w-2/12 round-right-border p-4 pr-4 text-left text-base">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-slate-600 text-vwhite-50 dark:bg-neutral-700">
         <template x-for="client in filteredClients" :key="client.id">
           <tr
-            class="transition duration-200 cursor-default hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
+            class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
           >
             <td class="hidden" x-text="client.id"></td>
-            <td class="p-2 text-sm round-left-border">
+            <td class="round-left-border p-2 text-sm">
               <template x-if="client.isEditing">
                 <input type="text" x-model="client.name" class="table-edit-input-style" />
               </template>
@@ -98,12 +98,12 @@
                 <span x-text="client.email" class="mr-6"></span>
               </template>
             </td>
-            <td class="text-sm text-center round-right-border">
+            <td class="round-right-border text-center text-sm">
               <template x-if="client.isEditing">
                 <div>
                   <button
                     @click="saveClient(client)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-blue-400"
+                    class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +124,7 @@
                   </button>
                   <button
                     @click="cancelEdit(client)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-red-400"
+                    class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@
                 <div class="">
                   <button
                     @click="editClient(client)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-blue-400"
+                    class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@
                   </button>
                   <button
                     @click="removeClient(client.id)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-red-400"
+                    class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -196,24 +196,20 @@
       </tbody>
     </table>
   </div>
-  <!-- Add Client Modal -->
+  <!-- MARK: ADD CLIENT -->
   <div
     x-show="showAddClientModal"
     x-transition.opacity.duration.300
-    class="fixed inset-0 z-50 w-full h-full overflow-y-auto bg-gray-800 bg-opacity-50"
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50"
     id="my-modal"
   >
     <!-- Modal content -->
     <div
-      class="relative p-5 mx-auto border rounded-md shadow-lg top-1/4 w-96 border-slate-300 bg-vdark-600 text-vdark-600 dark:border-vred-300 dark:bg-zinc-900 dark:text-neutral-300"
+      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vdark-600 text-center text-vwhite-50 shadow-lg dark:bg-zinc-900 dark:text-neutral-300"
     >
-      <div class="my-3 text-center text-vwhite-50" @click.outside="showAddClientModal = false">
-        <div class="">
-          <h3
-            class="w-full p-2 mb-2 text-2xl font-medium leading-6 rounded-md cursor-default border-slate-300 bg-vdark-500 text-vwhite-50 dark:border-neutral-500"
-          >
-            Add Client
-          </h3>
+      <div @click.outside="showAddClientModal = false">
+        <div class="p-6">
+          <h3 class="mb-4 text-xl font-medium">Add Client</h3>
           <form @submit.prevent="addClient">
             <input
               x-model="newClient.name"
@@ -221,7 +217,7 @@
               name="name"
               type="text"
               placeholder="Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required
             />
             <input
@@ -229,7 +225,7 @@
               name="company_name"
               type="text"
               placeholder="Company Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required
             />
             <input
@@ -237,7 +233,7 @@
               name="address"
               type="text"
               placeholder="Address"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required
             />
             <input
@@ -245,20 +241,20 @@
               name="email"
               type="email"
               placeholder="Email"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required
             />
             <button
               type="submit"
-              class="w-full p-2 text-base font-medium transition duration-300 bg-blue-600 rounded text-vwhite-50 ring-vblue-600 hover:bg-blue-700 focus:border-vred-400 focus:outline-none focus:ring"
+              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600"
             >
-              Add Client
+              Add
             </button>
           </form>
-          <div class="items-center mt-2">
+          <div class="mt-2 items-center">
             <button
               @click="showAddClientModal = false"
-              class="w-full px-4 py-2 text-base font-medium transition duration-300 bg-red-600 rounded-md shadow-sm text-slate-100 ring-vred-400 hover:bg-red-700 focus:border-vred-400 focus:outline-none focus:ring"
+              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               Close
             </button>

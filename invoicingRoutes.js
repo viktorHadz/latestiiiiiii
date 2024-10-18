@@ -104,13 +104,13 @@ router.get("/api/getNextInvoiceNumber", (req, res) => {
         res.json({ nextInvoiceNumber });
     });
 });
-
+// deposit_flat, deposit_percent, discountPercentValue, depositPercentValue
 // Object to insert items into invoices DB table
-const insertInvoice = (clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, client_name, total_pre_discount, company_name) => {
+const insertInvoice = (clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, discountPercentValue, vat, total, deposit, depositPercentValue, note, total_pre_discount, date, depositFlat, depositPercent) => {
     return new Promise((resolve, reject) => {
         db.run(
-            "INSERT INTO invoices (client_id, discount_percent, discount_flat, vat_percent, subtotal, discount, vat, total, deposit, note, client_name, total_pre_discount, company_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-            [clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, client_name, total_pre_discount, company_name], 
+            "INSERT INTO invoices (client_id, discount_percent, discount_flat, vat_percent, subtotal, discount, discount_percent_value, vat, total, deposit, deposit_percent_value, note, total_pre_discount, date, deposit_percent, deposit_flat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            [clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, discountPercentValue, vat, total, deposit, depositPercentValue, note, total_pre_discount, date, depositFlat, depositPercent], 
             function(error) {
                 if (error) {
                     return reject(new Error("Error inserting invoice(Trigered from: insertInvoice): " + error.message));
@@ -146,14 +146,14 @@ const insertItems = (invoiceId, items) => {
 };
 // Posts information to the invoice db by getting it from the frontend from generateInvoice.
 router.post("/api/saveInvoice", async (req, res) => {
-    const { clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, clientName,totalPreDiscount, companyName } = req.body;
+    const { clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, discountPercentValue, vat, total, deposit, depositPercentValue, note, totalPreDiscount, date, depositPercent, depositFlat } = req.body;
 
     try {
-        const invoiceId = await insertInvoice(clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, clientName, totalPreDiscount, companyName);
+        const invoiceId = await insertInvoice(clientId, discountPercent, discountFlat, vatPercent, subtotal, discount, discountPercentValue, vat, total, deposit, depositPercentValue, note, totalPreDiscount, date, depositPercent, depositFlat );
         await insertItems(invoiceId, items);
 
         const invoiceNumber = `SAM${invoiceId}`;
-        const newInvoice = { id: invoiceId, invoiceNumber, clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, clientName, totalPreDiscount, companyName }
+        const newInvoice = { id: invoiceId, invoiceNumber, clientId, items, discountPercent, discountFlat, vatPercent, subtotal, discount, vat, total, deposit, note, totalPreDiscount, date, depositPercent, depositFlat }
         res.status(201).json(newInvoice);
 
     } catch (error) {
@@ -179,6 +179,19 @@ router.get("/api/invoices/:id/pdf", async (req, res) => {
         if (!invoice) {
             return res.status(404).json({ error: "Invoice not found" });
         }
+
+        // Get client information 
+        const client = await new Promise((resolve, reject) => {
+            db.get("SELECT company_name, name FROM clients WHERE id = ?", [invoice.client_id], (error, client) => {
+                if (error) {
+                    return reject(error)
+                }
+                if (!client) {
+                    return reject(new Error("Client not found"))
+                }
+                resolve(client)
+            })
+        })
 
         // Fetch items for the creation of the invoice
         const fetchItems = () => {
@@ -215,9 +228,9 @@ router.get("/api/invoices/:id/pdf", async (req, res) => {
             .stroke();
         // endline
         doc.fontSize(12)
-            .text(`Company Name:    ${invoice.company_name}`, 25, 215, { align: 'left' })
-            .text(`Client Name:    ${invoice.client_name}`, 25, 235, { align: 'left' })
-            .text(`Invoice Date:    ${new Date().toLocaleDateString()}`, 25, 255, { align: 'left' });
+            .text(`Company Name:    ${client.company_name}`, 25, 215, { align: 'left' })
+            .text(`Client Name:    ${client.name}`, 25, 235, { align: 'left' })
+            .text(`Invoice Date:    ${invoice.date}`, 25, 255, { align: 'left' });
 
         // If deposit is present
         if (invoice.deposit !== 0) {

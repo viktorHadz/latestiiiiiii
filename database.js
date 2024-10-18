@@ -38,13 +38,16 @@ function getDb() {
           vat_percent REAL,
           subtotal REAL,
           discount REAL,
+          discount_percent_value REAL,
           vat REAL,
           total REAL,
           deposit REAL,
+          deposit_percent_value REAL,
           note TEXT,
-          client_name TEXT,
           total_pre_discount REAL,
-          company_name REAL,
+          date TEXT,
+          deposit_flat,
+          deposit_percent,
           FOREIGN KEY (client_id) REFERENCES clients(id)
         )`);
 

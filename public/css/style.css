@@ -143,7 +143,40 @@
 }
 
 .dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #09090b; /* Hover effect for dark mode */
+  background: #2c2c31; /* Hover effect for dark mode */
+}
+
+/* Class for TABLES SCROLLBAR */
+.alt-table-scrollbar::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
+}
+
+/* Light mode */
+.alt-table-scrollbar::-webkit-scrollbar-track {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.alt-table-scrollbar::-webkit-scrollbar-thumb {
+  background: #23232e; /* The draggable scrolling handle */
+  border-radius: 4px; /* Roundness of the scrollbar handle */
+}
+
+.alt-table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1a1a23; /* Hover effect */
+}
+
+/* Dark mode scrollbars */
+.dark .alt-table-scrollbar::-webkit-scrollbar-track {
+  background: #404040;
+}
+
+.dark .alt-table-scrollbar::-webkit-scrollbar-thumb {
+  background: #18181b; /* Darker handle for dark mode */
+}
+
+.dark .alt-table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2c2c31; /* Hover effect for dark mode */
 }
 
 .max-height-table {
@@ -360,7 +393,7 @@ input[type='number'] {
 }
 /* SEARCH light-dark mode styles Tailwind */
 .srch-style {
-  @apply flex rounded-md border border-vdark-600 bg-vdark-600 p-3 text-sm font-medium text-vwhite-50 transition duration-500 placeholder:text-vwhite-50;
+  @apply flex rounded-md border border-vdark-600 bg-vdark-600 p-2 text-sm font-medium text-vwhite-50 transition duration-500 placeholder:text-vwhite-50;
 
   @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 hover:placeholder:text-vred-400;
 
@@ -384,18 +417,55 @@ input[type='number'] {
 }
 
 .table-edit-input-style {
-  @apply w-full rounded border border-transparent bg-vdark-500 px-1 py-0.5 text-slate-100 transition duration-200;
-  @apply hover:border-vred-400 hover:text-vred-400;
+  @apply w-full rounded border border-transparent bg-vdark-600 px-1 py-0.5 text-slate-100 transition duration-200;
+  @apply hover:border-vred-400 hover:bg-vdark-500 hover:text-vred-400;
   @apply focus:border-vred-400 focus:text-vred-400 focus:outline-none;
-  @apply dark:hover:border-vred-300 dark:hover:text-vred-300;
+  @apply dark:bg-zinc-900;
+  @apply dark:hover:border-vred-300 dark:hover:bg-zinc-800 dark:hover:text-vred-300;
   @apply dark:focus:border-vred-300 dark:focus:text-vred-300;
 }
 
 .modal-input-style {
-  @apply rounded bg-slate-500 p-2 placeholder-vwhite-50 ring-1 ring-transparent transition duration-300;
-  @apply hover:bg-slate-600;
-  @apply focus:bg-slate-600 focus:outline-none focus:ring-slate-300;
-  @apply dark:bg-vdark-500 dark:placeholder-vpalered-300;
-  @apply dark:hover:bg-vdark-600;
-  @apply dark:focus:bg-vdark-600 dark:focus:ring-vred-300;
+  @apply rounded-md bg-slate-600 p-2 text-vwhite-50 placeholder-vwhite-50 ring-1 ring-transparent transition duration-300;
+  @apply hover:bg-slate-500;
+  @apply focus:bg-slate-500 focus:outline-none focus:ring-slate-300;
+  @apply dark:bg-vdark-600 dark:text-neutral-300 dark:placeholder-neutral-400;
+  @apply dark:hover:bg-vdark-500;
+  @apply dark:focus:bg-vdark-500 dark:focus:ring-vred-300;
+}
+
+input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 0.6rem; /* Size of the radio button */
+  height: 0.6rem;
+
+  background-color: #d4d4d4;
+  border-radius: 50%;
+
+  outline: solid 2px #d4d4d4;
+  outline-offset: 4px;
+
+  cursor: pointer;
+  transition:
+    outline-offset 150ms,
+    background 200ms,
+    border-color 200ms;
+}
+
+input[type='radio']:focus {
+  background-color: #777777;
+  outline-color: #777777;
+}
+
+input[type='radio']:focus {
+  background-color: #777777;
+  outline-color: #777777;
+}
+
+input[type='radio']:checked {
+  outline: solid 2px #fea09a;
+  outline-offset: 2px;
+  background-color: #fea09a; /* Background color when checked */
 }

@@ -46,14 +46,21 @@ export default function invoiceManager() {
     temporaryTotal: 0,
     // This is discount in  the main price forming meny
     discount: 0,
+    // To display discount numeric value when discount is percent
+    discValSub: 0,
+    discountValue: 0,
     // Deposit popover menu
     trigger: 'click',
     depositOpen: false,
     isDepositPercent: true,
+    depositPercent: 1,
+    depositFlat: 0,
     tempDeposit: 0,
     tempDepositDynamicValue: 0,
     depositSymbol: '%',
     deposit: 0,
+    depositNumericValue: 0,
+    depositDisplay: '',
     // Note
     invoiceNoteOpen: false,
     invoiceNotePopover: '',
@@ -220,7 +227,8 @@ export default function invoiceManager() {
       }, 300); // Matches the duration of the fade-out transition
     },
 
-    //---------------------------------------DEPOSIT--------------------------------//
+    //MARK: DEPOSIT
+
     resetDeposit() {
       let depositBtn = document.getElementById('confirm-deposit')
       this.tempDeposit = 0;
@@ -231,8 +239,11 @@ export default function invoiceManager() {
     },
 
     handleDepositType() {
+      if (this.deposit !== 0) {
+        callError('Cannot change deposit type', 'Remove any existing deposits first.')
+        return
+      }
       let inputFocus = this.$refs.tempDeposit
-
       const icon = document.getElementById('toggle-deposit-btn');
       icon.classList.add('spin'); // Add animation class
       // Remove class after animation to reset for future clicks
@@ -246,9 +257,13 @@ export default function invoiceManager() {
       if (this.isDepositPercent) {
         this.depositSymbol = '';
         this.depositSymbol = '%';
+        this.depositPercent = 1
+        this.depositFlat = 0
       } else {
         this.depositSymbol = '';
         this.depositSymbol = '£';
+        this.depositFlat = 1
+        this.depositPercent = 0
       }
       inputFocus.focus()
     },
@@ -261,14 +276,20 @@ export default function invoiceManager() {
         let tempDeposit = this.tempDeposit
         let tempTotal = this.total
         let deposit = this.deposit
-  
+        let depositNumeric
+
         if (!this.isDepositPercent) {
           deposit = tempDeposit
         } else if (this.isDepositPercent) {
           deposit = tempDeposit/100 * tempTotal
+          depositNumeric = deposit
+          this.depositNumericValue = this.roundToTwo(depositNumeric)
         }
         
         this.deposit = this.roundToTwo(deposit)
+
+        this.depositDisplay = this.isDepositPercent ? `${tempDeposit}% (£${this.depositNumericValue})` : `£${this.deposit}`
+
         depositBtn.classList.remove('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
         depositBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600')
         callSuccess('Deposit added to invoice.')
@@ -276,7 +297,7 @@ export default function invoiceManager() {
         inputFocus.focus()
       } catch (error) {
         console.error(error)
-        callError('Error', 'Try again, refresh the program or call support.')
+        callError('Error calculating deposit.', 'Try again, refresh the program or call support.')
         inputFocus.focus()
 
       }
@@ -299,6 +320,10 @@ export default function invoiceManager() {
         // Additional function-specific validations can be added here
         calculateDeposit:[
           {
+            condition: context.deposit !== 0,
+            toast: () => callError('Cannot change deposit.', 'Remove any existing deposits first.')
+          },
+          {
             condition: context.total === 0,
             toast: () => callError('Total must be greater than zero.'),
           },    
@@ -313,7 +338,7 @@ export default function invoiceManager() {
           {
             condition: context.tempDeposit <= 0,
             toast: () => callError('Deposit cannot be zero or a negative value.'),
-          },  
+          },
         ],
 
         confirmDiscount: [
@@ -604,6 +629,7 @@ export default function invoiceManager() {
           .reduce((total, item) => total + item.price * item.quantity, 0);
         // Calculate the overall subtotal by summing both
         let subTotal = sampleTotal + styleTotal;
+        this.discValSub = subTotal
         console.log("Samples: ", sampleTotal);
         console.log("Styles: ", styleTotal);
         console.log("Subtotal: ", subTotal);
@@ -645,6 +671,7 @@ export default function invoiceManager() {
       this.total = this.roundToTwo(noDiscountTotal)
        
     },
+    // MARK: DISCOUNT
     // Helps keep discount input value to 0 
     handleDiscountInput(event) {
       const inputValue = event.target.value;
@@ -674,13 +701,16 @@ export default function invoiceManager() {
         inputFocus.focus()
         return 
       }
-
       // Pass temporary values to main price forming menu
       let totalContainer = this.total
       const confirmBtn = document.getElementById('confirm-discount')
       this.preDiscountTotal = totalContainer// reference to the total before calculations
       this.subtotal = this.roundToTwo(this.temporarySubtotal)
       this.discount = this.roundToTwo(this.temporaryDiscount)
+      // MARK: Discount Value - gets the numberic value for discounts when discount === percent
+      if (this.isDiscountPercent === true) {
+        this.discountValue = this.discValSub/100 * this.discount
+      }
       this.vat = this.roundToTwo(this.temporaryVat)
       this.total = this.roundToTwo(this.temporaryTotal) 
       this.resetTemporaryDiscounts()
@@ -698,7 +728,7 @@ export default function invoiceManager() {
       // HANDLE ERROR HERE
     },
     revolveSymbol() {
-      const symbol = document.getElementById("symbolId");
+      const symbol = document.getElementById("symbolIdDeposit");
       symbol.classList.add("revolve");
 
       symbol.addEventListener(
@@ -758,7 +788,7 @@ export default function invoiceManager() {
     changeDiscount() {
       let inputFocus = this.$refs.discountInput
       if (this.discount != 0) {
-        callToast({ type: 'warning', message: 'Cannot change discount type.', description: 'Reset the existing discount first.', position: 'top-center' })
+        callError('Cannot change discount type.', 'Reset the existing discount first.')
         inputFocus.focus()
         return
       }
@@ -787,7 +817,7 @@ export default function invoiceManager() {
       inputFocus.focus()
     }, 
     
-    /*----------------------------ADD STYLES AND SAMPLES LOGIC--------------------------*/
+    /*MARK: ADD STYLES & SAMPLE */
     // Adds new style/sample in DB and updates UI
     async invoAddStyle() {
       const style = { ...this.newStyle, client_id: this.selectedClient.id };
@@ -864,14 +894,17 @@ export default function invoiceManager() {
         discountFlat: this.isDiscountFlat,  // doesnt exist in current data itteration
         vatPercent: this.vatPercent, 
         subtotal: this.subtotal,
-        discount: this.discount,
+        discount: this.discountValue,
+        discountPercentValue: this.discount !== 0 ? this.discount : 0,
         vat: this.vat,
         total: this.total,
         deposit: this.deposit,
+        depositPercentValue: this.tempDeposit !== 0 ? this.tempDeposit : 0, 
         note: this.invoiceNote,
-        clientName: this.selectedClient.name,
         totalPreDiscount: this.preDiscountTotal,
-        companyName: this.selectedClient.company_name
+        date: new Date().toLocaleDateString(),
+        depositFlat: this.depositFlat,
+        depositPercent: this.depositPercent,
       };
       console.log(invoiceData)
       try {
@@ -904,14 +937,11 @@ export default function invoiceManager() {
         const response = await fetch(`/api/invoices/${invoiceId}/pdf`, {
           method: "GET",
         });
-        console.log("Invoice id is:" + invoiceId);
 
-        console.log(response);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        console.log(url);
         // PDF Filename - set by Content-Disposition in backend.
         a.download = `S.A.M.Creations-${invoiceId}.pdf`;
         a.click();

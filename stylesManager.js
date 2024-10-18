@@ -15,11 +15,41 @@ export default function stylesManager() {
         newSample: { name: '', time: null, price: null },
         styleSearch: '',
         sampleSearch: '',
+        // Tab section
+        pineTabSelected: "1",
+        tabId: null,
 
         init() {
             console.log(this.message);
             this.fetchClients();
             this.loadSelectedClient();
+            this.tabId = this.$id('tabs')
+            // Ensure that the $refs are fully loaded before accessing them
+            this.$nextTick(() => {
+                this.tabRepositionMarker(this.$refs.tabButtons.firstElementChild)
+
+            })
+        },
+        tabButtonClicked(tabButton) {
+            this.pineTabSelected = tabButton.id.replace(this.tabId + '-', '')
+            this.tabRepositionMarker(tabButton)
+        },
+
+        tabRepositionMarker(tabButton) {
+            if (this.$refs.tabMarker) {
+                this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px';
+                this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px';
+                this.$refs.tabMarker.style.left = tabButton.offsetLeft + 'px';
+            }
+        },
+
+        tabContentActive(tabContent) {
+        return this.pineTabSelected == tabContent.id.replace(this.tabId + '-content-', '');
+        },
+
+        tabButtonActive(tabContent) {
+            const tabId = tabContent.id.split('-').slice(-1);
+            return this.pineTabSelected == tabId;
         },
 
         async fetchClients() {
