@@ -100,6 +100,28 @@ router.get("/editor/invoices/:clientId/:invoiceId", (req, res) => {
     })
 })
 
+// Fetch styles for a specific client
+router.get("/api/styles/client/:clientId", (req, res) => {
+    const clientId = req.params.clientId
+    db.all("SELECT * FROM styles WHERE client_id = ?", [clientId], (error, results) => {
+        if (error) {
+            return res.status(500).send({ error: "Error fetching styles" })
+        }
+        res.json(results)
+    })
+})
+
+// Fetch samples for a specific client
+router.get("/api/samples/client/:clientId", (req, res) => {
+    const clientId = req.params.clientId
+    db.all("SELECT * FROM samples WHERE client_id = ?", [clientId], (error, results) => {
+        if (error) {
+            return res.status(500).send({ error: "Error fetching samples" })
+        }
+        res.json(results)
+    })
+})
+
 
 // 2. Get invoices by client id  
 // 3. Get invoice_items by invoice_id 

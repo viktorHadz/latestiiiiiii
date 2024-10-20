@@ -2,12 +2,12 @@
   <div class="mb-4 rounded-md border border-vdark-600 p-2 dark:border-neutral-600">
     <div class="flex justify-between align-baseline">
       <div>
-        <button @click="openModal" class="butt-style">
+        <button @click="openModal" class="butt-style flex items-baseline">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 23 23"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
@@ -46,25 +46,7 @@
             :class="{ 'text-vred-400 dark:text-vred-300' : tabButtonActive($el) }"
             class="text-md relative z-20 inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-md border-2 border-transparent px-3 font-medium transition-all"
           >
-            <span class="flex items-center pb-2">
-              <svg
-                class="mr-1.5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="30"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M9 5h-.16667c-.86548 0-1.70761.28071-2.4.8L3.5 8l2 3.5L8 10v9h8v-9l2.5 1.5 2-3.5-2.9333-2.2c-.6924-.51929-1.5346-.8-2.4-.8H15M9 5c0 1.5 1.5 3 3 3s3-1.5 3-3M9 5h6"
-                />
-              </svg>
-              Styles
-            </span>
+            <span class="flex items-center pb-2">Styles</span>
           </button>
           <!-- MARK: Samples Alpine Tab Button -->
           <button
@@ -74,34 +56,14 @@
             :class="{ 'text-vred-400 dark:text-vred-300' : tabButtonActive($el) }"
             class="text-md relative z-20 inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-md border-2 border-transparent px-3 font-medium transition-all"
           >
-            <span class="flex items-center pb-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-scissors mr-1.5"
-              >
-                <circle cx="6" cy="6" r="3"></circle>
-                <circle cx="6" cy="18" r="3"></circle>
-                <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
-                <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
-                <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
-              </svg>
-              Samples
-            </span>
+            <span class="flex items-center pb-2">Samples</span>
           </button>
           <div x-ref="tabMarker" class="absolute left-0 z-10 h-full w-1/2 duration-300 ease-out" x-cloak>
             <div class="h-full w-full rounded-md bg-vdark-600 shadow-sm dark:bg-zinc-900"></div>
           </div>
         </div>
         <div
-          class="content relative mt-2 rounded-md border border-vdark-600 p-2 text-xs text-gray-400 dark:border-neutral-600"
+          class="content relative mt-2 rounded-md border border-vdark-600 p-4 text-xs text-gray-400 dark:border-neutral-600"
         >
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
@@ -125,29 +87,13 @@
                   @keydown.escape.window="showAddStyleModal = false"
                   class="butt-style flex items-center !p-1.5"
                 >
-                  <svg
-                    class="mr-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="26"
-                    height="26"
-                    fill="none"
-                    viewBox="0 1 21 21"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linejoin="round"
-                      stroke-width="1"
-                      d="M9 5h-.16667c-.86548 0-1.70761.28071-2.4.8L3.5 8l2 3.5L8 10v9h8v-9l2.5 1.5 2-3.5-2.9333-2.2c-.6924-.51929-1.5346-.8-2.4-.8H15M9 5c0 1.5 1.5 3 3 3s3-1.5 3-3M9 5h6"
-                    />
-                  </svg>
                   Add Style
                 </button>
               </div>
             </div>
-            <div class="table-scrollbar mb-12 overflow-y-auto pr-2" style="max-height: 700px">
+            <div class="table-scrollbar mb-12 overflow-y-auto" style="max-height: 700px">
               <table
-                class="w-3/4 min-w-full table-auto border-separate text-vwhite-50"
+                class="w-[calc(100%-10px)] table-auto border-separate text-vwhite-50"
                 style="max-height: 700px; border-spacing: 0 10px"
               >
                 <thead
@@ -310,37 +256,19 @@
               </div>
 
               <!-- Add Sample Button -->
-              <div>
+              <div class="flex">
                 <button
                   @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
                   @keydown.escape.window="showAddSampleModal = false"
                   class="butt-style flex items-center !p-1.5"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-scissors mr-2"
-                  >
-                    <circle cx="6" cy="6" r="3"></circle>
-                    <circle cx="6" cy="18" r="3"></circle>
-                    <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
-                    <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
-                    <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
-                  </svg>
                   Add Sample
                 </button>
               </div>
             </div>
-            <div class="table-scrollbar mb-12 overflow-y-auto pr-2" style="max-height: 700px">
+            <div class="table-scrollbar mb-12 overflow-y-auto" style="max-height: 700px">
               <table
-                class="w-3/4 min-w-full table-auto border-separate text-vwhite-50"
+                class="w-[calc(100%-10px)] table-auto border-separate text-vwhite-50"
                 style="max-height: 700px; border-spacing: 0 10px"
               >
                 <thead
@@ -364,7 +292,7 @@
                   </tr>
                 </thead>
                 <!-- MARK: TBODY Samples -->
-                <tbody class="bg-slate-600 text-vwhite-50 dark:bg-neutral-700">
+                <tbody class="bg-slate-600 pr-2 text-vwhite-50 dark:bg-neutral-700">
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr
                       class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
@@ -509,32 +437,34 @@
     </div>
   </template>
 
-  <!-- MARK: SELECT CLIENT MODAL -->
-  <div x-show="showClientModal" x-transition.opacity.duration.300 class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
+  <!-- MARK: CLIENT MODAL -->
+  <div
+    x-show="showClientModal"
+    x-transition.opacity.duration.300ms
+    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50"
+  >
+    <!-- Clients Modal Body -->
     <div
-      class="relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 bg-vdark-600 text-vwhite-50 shadow-lg transition duration-300 dark:bg-zinc-900 dark:text-neutral-300"
+      class="relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 bg-vdark-600 text-vwhite-50 shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900 dark:text-neutral-300"
       @keydown.escape.window="showClientModal = false"
       @click.outside="showClientModal = false"
     >
-      <div class="p-2">
-        <h2 class="mb-6 text-center text-xl font-medium">Select Client</h2>
-        <div class="relative mb-6" @click.outside="showDropdown = false">
+      <div class="p-6">
+        <h2 class="mb-4 text-center text-xl font-medium">Select Client</h2>
+        <div class="relative" @click.outside="showDropdown = false">
           <button
-            @click="toggleDropdown"
-            class="w-full rounded border border-slate-300 p-2 text-vwhite-50 transition duration-300 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:text-neutral-300 dark:hover:text-vred-300"
+            x-ref="clientModalButton"
+            @click="showDropdown = !showDropdown"
+            :class="{'border-vred-400 dark:border-vred-300 text-vred-400 dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-neutral-300': !showDropdown}"
+            class="mb-4 w-full rounded-md border p-2 text-vwhite-50 transition duration-300 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:border-neutral-300 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300"
           >
-            Clients...
+            Clients
           </button>
           <div
+            x-anchor.offset.5="$refs.clientModalButton"
             x-show="showDropdown"
-            x-transition:enter="transition ease-out duration-500"
-            x-transition:enter-start="transform scale-y-0 opacity-0"
-            x-transition:enter-end="transform scale-y-100 opacity-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="transform scale-y-100 opacity-100"
-            x-transition:leave-end="transform scale-y-0 opacity-0"
-            class="table-scrollbar absolute z-10 mt-1 max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vdark-500 shadow-lg dark:bg-neutral-500"
-            style="transform-origin: top"
+            x-collapse.duration.500ms
+            class="table-scrollbar max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vdark-500 shadow-lg dark:bg-neutral-500"
           >
             <ul>
               <template x-for="client in clients" :key="client.id">
@@ -549,8 +479,8 @@
         </div>
         <div class="flex items-center justify-center">
           <button
-            @click="closeModal"
-            class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+            @click="showClientModal = !showClientModal"
+            class="submit-button w-1/2 rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Close
           </button>
@@ -558,6 +488,7 @@
       </div>
     </div>
   </div>
+
   <!-- MARK: ADD STYLE MODAL -->
   <div
     x-show="showAddStyleModal"

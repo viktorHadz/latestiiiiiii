@@ -381,7 +381,7 @@ input[type='number'] {
 
 /* BUTTON light-dark mode styles Tailwind */
 .butt-style {
-  @apply flex rounded-md border border-transparent bg-vdark-600 p-3 text-sm font-medium text-vwhite-50 duration-500;
+  @apply flex items-center rounded-md border border-transparent bg-vdark-600 p-2 text-sm font-medium text-vwhite-50 duration-500;
   @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 active:scale-95;
   @apply dark:bg-neutral-700 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300;
 }
@@ -441,7 +441,7 @@ input[type='radio'] {
   width: 0.6rem; /* Size of the radio button */
   height: 0.6rem;
 
-  background-color: #d4d4d4;
+  background-color: #d4d4d400;
   border-radius: 50%;
 
   outline: solid 2px #d4d4d4;
@@ -452,11 +452,6 @@ input[type='radio'] {
     outline-offset 150ms,
     background 200ms,
     border-color 200ms;
-}
-
-input[type='radio']:focus {
-  background-color: #777777;
-  outline-color: #777777;
 }
 
 input[type='radio']:focus {

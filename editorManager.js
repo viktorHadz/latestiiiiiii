@@ -3,18 +3,48 @@ export default function editorManager() {
         showClientModal: false,
         showDropdown: false,
         clients: [],
-        selectedClient: [],
+        selectedClient: {},
         listItems: [],
-        invoiceItems: {},
+        invoiceItems: [],
         showInvoiceItems: false,
         newItem: { 
             type: '',
             name: '', 
             price: null,
             quantity: null,
+        },
+        existingItems: {
             showItemModal: false, 
+            openDropdown: false,
+            combinedItems: [],
+            filteredItems: [],
+            searchQuery: '',
+
+            
+        },
+        addNewItem(item) {
+            const newItem = {
+                ...item,
+                quantity: item.quantity
+            }
+            // empty out quantity
+            // Send item to styles or samples table in db
+            
+            this.invoiceItems.invoiceItems.push(newItem)
+            const index = this.existingItems.combinedItems.findIndex(i => i.frontEndId === item.frontEndId);
+            if (index !== -1) {
+                this.existingItems.combinedItems[index].quantity = 1; // Reset quantity to default
+            }
         },
         
+        searchItems() {
+             const query = this.existingItems.searchQuery.toLowerCase();             
+             this.existingItems.filteredItems = this.existingItems.combinedItems.filter(item => 
+                item.name.toLowerCase().includes(query)
+             )
+             
+        },
+
         editing: false,
         editMode: '',
         openEditModal: false,
@@ -22,13 +52,12 @@ export default function editorManager() {
         editingPrice: '',
         editingPriceValue: 0,
         // Overwrite data structure to restore on cancel
-        temporaryEditValues: {},
+        initialValuesInvItems: {},
         
-
         // IMPORTANT: Use this to build out the expanded menu of the invoice list with associated invoices
         expanded: false,
         // Temp values to store edits to prices
-       
+
         /*
         TODO:
         1. How do we handle multiple invoice copies? E.g. you've added one copy of the invoice but you need one more after that. What if the original has to be altered beforehand?
@@ -47,29 +76,13 @@ export default function editorManager() {
             2. COPY
                 I can edit item prices, add items, remove items and edit final prices
         */
-
-        addNewInvoiceStyle() {
-            let items = this.invoiceItems.invoiceItems
-             let newItem = {
-                ...this.newStyle,
-                id: 0,          // UCAREFUL LET BACKEND HANDLE
-                name: "",
-                price: 0,         // Default price, or replace with a dynamic value
-                type: "",      // As the type is "style"
-                time: 0,         // As per your structure
-                quantity: 0,        // Default quantity
-                invoice_id: this.invoiceItems.invoice.invoice_id // Set invoice_id from invoice object
-            };
-            items.push(newItem)
-            console.log(items)
-
-            //items.push()
-        },
+        // MARK: INIT FUNC
         init() {
           this.fetchClients()
           this.loadSelectedClient()
           this.fetchListById()
         },
+        
 
         removeInvoiceItem(id) {
             this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(item => item.id !== id)
@@ -112,14 +125,14 @@ export default function editorManager() {
                 try {
                     // conditionally send different types of data depending on whether editing as copy or overwrite
                     if (this.editMode === 'editOverwrite') {
-                        callSuccess(`Invoice - ${this.temporaryEditValues.invoice.invoice_number}`, 'Overwritten successfully.')
+                        callSuccess(`Invoice - ${this.initialValuesInvItems.invoice.invoice_number}`, 'Overwritten successfully.')
                         // Give the invoice number an altered tag
                         // Give altered date too
                         // renameEditedInvoice()
                     }
                     if (this.editMode === 'editCopy') {
                         // Fetch the new invoice number here by requesting a response from the backend function
-                        callSuccess(`Invoice - ${this.temporaryEditValues.invoice.invoice_number}`, `Copied as ${data.editType} successfully.`)
+                        callSuccess(`Invoice - ${this.initialValuesInvItems.invoice.invoice_number}`, `Copied as ${data.editType} successfully.`)
                     }
                     // Use route and if you get 'error, log it in the catch.'   
                     this.editing = false
@@ -135,15 +148,15 @@ export default function editorManager() {
         // MARK: EDIT
         editInvoice() { 
             if (this.editMode === 'editOverwrite') {
-                this.temporaryEditValues = JSON.parse(JSON.stringify(this.invoiceItems))
+                this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
                 this.editing = true
                 this.openEditModal = false
-                callSuccess(`Editing invoice. Overwriting the current invoice - (${this.temporaryEditValues.invoice.invoice_number}).`)
+                callSuccess(`Editing invoice. Overwriting the current invoice - (${this.initialValuesInvItems.invoice.invoice_number}).`)
             } else if (this.editMode === 'editCopy') {
-                this.temporaryEditValues = JSON.parse(JSON.stringify(this.invoiceItems))
+                this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
                 this.editing = true
                 this.openEditModal = false
-                callSuccess(`Editing invoice. Creating a copy of the current invoice - (${this.temporaryEditValues.invoice.invoice_number}).`)
+                callSuccess(`Editing invoice. Creating a copy of the current invoice - (${this.initialValuesInvItems.invoice.invoice_number}).`)
             } else {
                 callError('Empty selection.', 'Please select one of the edit types.')
                 return
@@ -154,9 +167,9 @@ export default function editorManager() {
             return new Promise((resolve) => {
                 if (this.editing === true) {
                     if(confirm('Current edit will be lost. Continue?')){
-                        this.invoiceItems = JSON.parse(JSON.stringify(this.temporaryEditValues))
+                        this.invoiceItems = JSON.parse(JSON.stringify(this.initialValuesInvItems))
                         this.editing = false
-                        callWarning(`Edit canceled.`, `Invoice ${this.temporaryEditValues.invoice.invoice_number} was not altered.`)
+                        callWarning(`Edit canceled.`, `Invoice ${this.initialValuesInvItems.invoice.invoice_number} was not altered.`)
                         this.editMode = ''
                         resolve(true)
                     } else {
@@ -266,12 +279,20 @@ export default function editorManager() {
 
         applyEffect(item) {
             let items = this.listItems.map((itemFromList) => itemFromList.id)
+            let combinedItems = this.existingItems.combinedItems.map((newItem) => newItem.frontEndId)
+
             let itemId
-        
+            let frontEndItemId
+            let rowEl
             if (items.includes(item.id)) {
                 itemId = `rowid-${item.id}`
+                rowEl = document.getElementById(itemId)
+            } 
+            if (combinedItems.includes(item.frontEndId)) {
+                frontEndItemId = item.frontEndId
+                rowEl = document.getElementById(frontEndItemId)
+                console.log(frontEndItemId)
             }
-            let rowEl = document.getElementById(itemId)
 
             const applyClassAndRemove = (el, className) => {
             // Remove any previous instance of the class
@@ -287,10 +308,10 @@ export default function editorManager() {
 
             if (rowEl) {
                 if (this.mode === "light") {
-                applyClassAndRemove(rowEl, 'add-item-glow')
+                    applyClassAndRemove(rowEl, 'add-item-glow')
                 }
                 if (this.mode === "dark") {
-                applyClassAndRemove(rowEl, 'add-item-glow-dark')
+                    applyClassAndRemove(rowEl, 'add-item-glow-dark')
                 }
             }
 
@@ -315,17 +336,8 @@ export default function editorManager() {
                 console.error('Error fetching clients:', error);
             }
         },
-
-        toggleDropdown() {
-            this.showDropdown = !this.showDropdown;
-        },
-        openModal() {
-            this.showClientModal = true;
-        },
-        closeModal() {
-            this.showClientModal = false;
-        },
-
+        
+        // MARK: SELECT CLIENT
         selectClient(client) {
             this.selectedClient = client;
             this.showDropdown = false;
@@ -343,6 +355,34 @@ export default function editorManager() {
                 this.selectedClient = client;
             }
         },
+        // MARK: FETCH STYLES & SAMPLES
+        async fetchStylesAndSamples(clientId) {
+            try {
+                const [stylesResponse, samplesResponse] = await Promise.all(
+                    [fetch(`/styles/client/${clientId}`),
+                    fetch(`/samples/client/${clientId}`)
+                ])
+
+                const styles = await stylesResponse.json()
+                const samples = await samplesResponse.json()
+
+                
+                let preInsertStyles = styles.map(style => ({ ...style, type: 'style', frontEndId:`${style.type}-${style.id}`, quantity: 1 }))
+                let preInsertSamples = samples.map(sample => ({ ...sample, type: 'sample', quantity: 1 }))
+                
+                let insertStyles = preInsertStyles.map(style => ({ ...style, frontEndId:`${style.type}-${style.id}` })) 
+                let insertSamples = preInsertSamples.map(sample => ({ ...sample, frontEndId:`${sample.type}-${sample.id}` })) 
+
+                const combined = [...insertStyles, ...insertSamples]
+
+                this.existingItems.combinedItems = [ ...combined ]
+                this.existingItems.filteredItems = [...combined]
+            } catch (error) {
+                console.error('Error fetching styles:', error)
+                callError('Error getting styles', 'Contact support or refresh the page and try again.')
+            }
+        },
+        
     }
 }
  
