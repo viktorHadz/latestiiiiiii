@@ -1,3 +1,6 @@
+
+
+THIS IS BEFORE THE MIGRATION TO VITE on 21/10/2024
 {
   "name": "invoicing4",
   "version": "1.0.0",
@@ -6,9 +9,9 @@
   "bin": "backend.js",
   "scripts": {
     "start": "node backend.js",
-    "dev": "vite --config ./configs/vite.config.js",
-    "build": "vite build --config ./configs/vite.config.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "rollup -c",
+    "build-css": "npx tailwindcss -i ./public/css/style.css -o ./public/css/output.css --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
@@ -35,7 +38,8 @@
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
-    "tailwindcss": "^3.4.11"
+    "tailwindcss": "^3.4.11",
+    "vite": "^5.4.9"
   },
   "pkg": {
     "assets": [

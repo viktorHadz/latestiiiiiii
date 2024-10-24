@@ -3,6 +3,7 @@
   "trailingComma": "all",
   "tabWidth": 2,
   "semi": false,
+  "bracketSameLine": true,
   "printWidth": 80,
   "bracketSpacing": true,
   "htmlWhitespaceSensitivity": "ignore",
@@ -22,7 +23,8 @@
     {
       "files": "*.js",
       "options": {
-        "parser": "babel"
+        "parser": "babel",
+        "tabWidth": 2
       }
     }
   ]

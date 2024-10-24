@@ -1,9 +1,11 @@
+// import componentManager from './public/componentsLibrary/components.js';
 import clientManager from './clientManager.js';
 import stylesManager from './stylesManager.js';
 import invoiceManager from './invoiceManager.js';
 import editorManager from './editorManager.js';
 import toastManager from './toastManager.js';
 
+// window.componentManager = componentManager()
 // Initialize toastManager and assign it to window
 window.toastManager = toastManager()
 // Bind calls to the toast manager 
@@ -17,7 +19,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('tabManager', () => ({
         tabSelected: 'clients',
         tabContent: '',
-        isLoading: true, // Set initial loading state to true
+        isLoading: true, // Set initial loading state to true for animation at the start of the app 
         mode: localStorage.getItem('theme') || 'light',
         
         toggleTheme() {
@@ -33,13 +35,22 @@ document.addEventListener('alpine:init', () => {
             if (this.mode === 'dark') {
                 document.documentElement.classList.add('dark');
             }
+            // Watch the tab content and the next tick when a change occurs fire htmx.process 
+            this.$watch('tabContent', () => {
+                this.$nextTick( () => {
+                    htmx.process(this.$refs.tabContentContainer)
+                    // hmx.logger() for debugging els 
+                    // console.log(htmx)
+                })
+            })
+            
             
         },
 
         async loadInitialContent() {
-            // Load initial content without setting isLoading to false immediately
+            // Load initial content 
             await this.loadTabContent('clients');
-            this.isLoading = false; // This should trigger the initial enter transition
+            this.isLoading = false; // Enter transition
         },
 
         async tabButtonClicked(tabName) {
@@ -58,7 +69,7 @@ document.addEventListener('alpine:init', () => {
                 this.isLoading = false; // Trigger enter transition
             }, 200); // Adjust timeout to match transition duration
         },
-
+        
         async loadTabContent(tabName) {
             const response = await fetch(`/${tabName}.html`)
             const content = await response.text()
