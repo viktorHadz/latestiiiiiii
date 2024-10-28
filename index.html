@@ -11,55 +11,133 @@
 
   <body>
     <div x-cloak x-data="tabManager" x-init="init()" class="flex h-screen">
-      <!-- MARK: SIDEBAR -->
       <!-- Palette below -->
       <!-- https://coolors.co/visualizer/2d2d3b-5c757f-fe5f55-e8f0ff-f8e9e9 -->
+      <!-- MARK: SIDEBAR -->
       <div
-        class="flex flex-col items-center w-56 h-screen p-4 transition duration-300 bg-vdark-600 dark:bg-zinc-900"
-        x-ref="mainSidebar">
-        <!-- MARK: CLIENTS -->
-        <button
-          @click="tabButtonClicked('clients')"
-          :class="{ 'tab-button-active': tabContentActive('clients') }"
-          class="tab-button">
-          <span hx-get="/public/images/users.svg" hx-trigger="load" class="mr-1.5"></span>
-          <span>Clients</span>
-        </button>
-        <!-- MARK: STYLES -->
-        <button
-          @click="tabButtonClicked('styles')"
-          :class="{ 'tab-button-active': tabContentActive('styles') }"
-          class="tab-button">
-          <span hx-get="/public/images/package.svg" hx-trigger="load" class="mr-1.5"></span>
-          Items
-        </button>
-        <!-- MARK: INVOICES -->
-        <button
-          @click="tabButtonClicked('invoices')"
-          :class="{ 'tab-button-active': tabContentActive('invoices') }"
-          class="tab-button">
-          <span hx-get="/public/images/file-text.svg" hx-trigger="load" class="mr-1.5"></span>
+        :class="{'w-72': sideBar, 'w-16': !sideBar}"
+        class="h-screen bg-vlp p-4 transition-all duration-500 dark:bg-vdp"
+        x-ref="mainSidebar"
+        x-transition:enter="transition-all ease-in-out duration-500"
+        x-transition:enter-start="w-16"
+        x-transition:enter-end="w-72"
+        x-transition:leave="transition-all ease-in-out duration-500"
+        x-transition:leave-start="w-72"
+        x-transition:leave-end="w-16">
+        <div class="grid h-full grid-cols-1 grid-rows-3 gap-20">
+          <!-- MARK:ROW-1-ContentButtons -->
+          <div class="w-full flex-col items-center justify-items-center">
+            <!-- CLIENTS -->
+            <button
+              @click="tabButtonClicked('clients')"
+              :class="{ 'tab-button-active': tabContentActive('clients') }"
+              class="tab-button">
+              <div x-show="sideBar" class="flex items-center">
+                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('users.svg')"></div>
+                <span>Clients</span>
+              </div>
+              <div x-show="!sideBar">
+                <div title="Clients" x-html="$store.svgCache.getSvgContent('users-copy.svg')"></div>
+              </div>
+            </button>
+            <!-- STYLES -->
+            <button
+              @click="tabButtonClicked('styles')"
+              :class="{ 'tab-button-active': tabContentActive('styles') }"
+              class="tab-button">
+              <div x-show="sideBar" class="flex items-center">
+                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('package.svg')"></div>
+                <span>Items</span>
+              </div>
+              <div x-show="!sideBar">
+                <div title="Items" x-html="$store.svgCache.getSvgContent('package-copy.svg')"></div>
+              </div>
+            </button>
+            <!-- INVOICES -->
+            <button
+              @click="tabButtonClicked('invoices')"
+              :class="{ 'tab-button-active': tabContentActive('invoices') }"
+              class="tab-button">
+              <div x-show="sideBar" class="flex items-center">
+                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('file-text.svg')"></div>
+                <span x-show="sideBar">Invoices</span>
+              </div>
+              <div x-show="!sideBar">
+                <div title="Invoicing" x-html="$store.svgCache.getSvgContent('file-text-copy.svg')"></div>
+              </div>
+            </button>
+            <!-- EDITOR -->
+            <button
+              @click="tabButtonClicked('editor')"
+              :class="{ 'tab-button-active': tabContentActive('editor') }"
+              class="tab-button">
+              <div x-show="sideBar" class="flex items-center">
+                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('edit.svg')"></div>
+                <span x-show="sideBar">Editor</span>
+              </div>
+              <div x-show="!sideBar">
+                <div title="Editor" x-html="$store.svgCache.getSvgContent('edit-copy.svg')"></div>
+              </div>
+            </button>
+          </div>
 
-          Invoices
-        </button>
-        <!-- MARK: EDITOR -->
-        <button
-          @click="tabButtonClicked('editor')"
-          :class="{ 'tab-button-active': tabContentActive('editor') }"
-          class="tab-button">
-          <span hx-get="/public/images/edit.svg" hx-trigger="load" class="mr-1.5"></span>
-          Editor
-        </button>
-        <!-- MARK: DARK THEME -->
-        <div
-          hx-target="this"
-          hx-trigger="load"
-          hx-ext="alpine-morph"
-          hx-swap="morph"
-          hx-get="/htmx-alpine-components/darkMode.html"></div>
+          <!-- MARK:ROW-2-Client Select -->
+          <div class="flex flex-col items-center justify-center">
+            <div x-show="sideBar" class="flex flex-col items-center">
+              <button class="tab-button w-full justify-center" @click="openSelectClient = !openSelectClient">
+                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('refresh-ccw.svg')"></div>
+                Select Client
+              </button>
+            </div>
+            <div x-show="!sideBar" @click="openSelectClient = !openSelectClient" class="tab-button flex justify-center">
+              <button title="Open Sidebar">
+                <div x-html="$store.svgCache.getSvgContent('refresh-ccw-copy.svg')"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- MARK:ROW-3-DarkMode&Toggle -->
+          <div x-show="sideBar" class="flex items-end justify-center">
+            <!-- DARKMODE -->
+            <div
+              hx-target="this"
+              hx-trigger="load"
+              hx-ext="alpine-morph"
+              hx-swap="morph"
+              hx-get="/htmx-alpine-components/darkMode.html"></div>
+            <!-- SIDEBAR EXPANDED-->
+            <button
+              :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'"
+              @click="sideBarOpen()"
+              class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
+              <div x-html="$store.svgCache.getSvgContent('sidebar.svg')"></div>
+            </button>
+          </div>
+
+          <div x-show="!sideBar" class="flex flex-col items-center justify-end">
+            <!-- SIDEBAR COLAPSED -->
+            <button
+              :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'"
+              @click="sideBarOpen()"
+              class="mb-2 text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vda">
+              <div
+                class="flex h-full w-full items-center justify-center"
+                x-html="$store.svgCache.getSvgContent('sidebar.svg')"></div>
+            </button>
+
+            <!-- DARKMODE -->
+            <div
+              hx-trigger="load"
+              hx-ext="alpine-morph"
+              hx-swap="morph"
+              hx-get="/htmx-alpine-components/darkMode.html"
+              class="mb-2 flex h-full w-full items-center justify-center"></div>
+          </div>
+        </div>
       </div>
-      <!--MARK:SIDEBAR BUTTON + EFFECT-->
-      <div class="flex flex-col w-full p-5 overflow-auto bg-vpalered-300 will-change-auto dark:bg-zinc-800">
+
+      <!--MARK: MAIN CONTENT + EFFECT-->
+      <div class="flex w-full flex-col overflow-auto bg-vls p-6 will-change-auto dark:bg-vdp2">
         <div
           x-ref="tabContentContainer"
           x-show="!isLoading"
@@ -75,6 +153,9 @@
         </div>
       </div>
 
+      <!-- MARK: SELECT CLIENT MODAL -->
+      <div hx-get="/htmx-alpine-components/selectClient.html" hx-trigger="load" x-show="selectClientModal = true"></div>
+
       <!-- MARK: TOASTS HTMX -->
       <div
         hx-target="this"
@@ -82,9 +163,8 @@
         hx-swap="morph"
         hx-trigger="load"
         hx-get="/htmx-alpine-components/toast.html"></div>
+      <!--  MARK: TOASTS END  -->
     </div>
-
-    <!--  MARK: TOASTS END  -->
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <script type="module" src="./app.js" defer></script>
     <!--  Alpine Plugins  -->

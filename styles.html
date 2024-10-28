@@ -1,5 +1,5 @@
 <div x-data="stylesManager" class="relative w-full">
-  <div class="mb-4 rounded-md border border-vdark-600 p-2 dark:border-neutral-600">
+  <div class="border-vlp mb-4 rounded-md border p-2 dark:border-neutral-600">
     <div class="flex justify-between align-baseline">
       <div>
         <button @click="openModal" class="butt-style flex items-baseline">
@@ -13,8 +13,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="feather feather-user mr-2"
-          >
+            class="feather feather-user mr-2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
@@ -23,9 +22,8 @@
       </div>
       <div class="flex align-middle">
         <h3
-          class="decoration cursor-default self-center font-medium text-vdark-700 underline decoration-vdark-700 dark:text-neutral-300 dark:decoration-vred-300"
-          x-text="`Client: ${selectedClient.name}`"
-        ></h3>
+          class="decoration text-vlp decoration-vlp dark:text-vds cursor-default self-center font-medium underline dark:decoration-vred-300"
+          x-text="`Client: ${selectedClient.name}`"></h3>
       </div>
     </div>
   </div>
@@ -36,16 +34,14 @@
       <div class="relative mb-4 w-full max-w-full">
         <div
           x-ref="tabButtons"
-          class="darl:text-vwhite-50 relative inline-grid h-12 w-full select-none grid-cols-2 items-center justify-center rounded-lg border border-vdark-600 bg-vpalered-300 p-2 text-vdark-600 dark:bg-neutral-600 dark:text-vwhite-50"
-        >
+          class="darl:text-vls border-vlp text-vlp dark:text-vls relative inline-grid h-12 w-full select-none grid-cols-2 items-center justify-center rounded-lg border bg-vpalered-300 p-2 dark:bg-neutral-600">
           <!-- MARK: Styles Alpine Tab Button -->
           <button
             :id="$id(tabId)"
             @click="tabButtonClicked($el);"
             type="button"
-            :class="{ 'text-vred-400 dark:text-vred-300' : tabButtonActive($el) }"
-            class="text-md relative z-20 inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-md border-2 border-transparent px-3 font-medium transition-all"
-          >
+            :class="{ 'text-vla dark:text-vred-300' : tabButtonActive($el) }"
+            class="text-md relative z-20 inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-md border-2 border-transparent px-3 font-medium transition-all">
             <span class="flex items-center pb-2">Styles</span>
           </button>
           <!-- MARK: Samples Alpine Tab Button -->
@@ -53,18 +49,16 @@
             :id="$id(tabId)"
             @click="tabButtonClicked($el);"
             type="button"
-            :class="{ 'text-vred-400 dark:text-vred-300' : tabButtonActive($el) }"
-            class="text-md relative z-20 inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-md border-2 border-transparent px-3 font-medium transition-all"
-          >
+            :class="{ 'text-vla dark:text-vred-300' : tabButtonActive($el) }"
+            class="text-md relative z-20 inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-md border-2 border-transparent px-3 font-medium transition-all">
             <span class="flex items-center pb-2">Samples</span>
           </button>
           <div x-ref="tabMarker" class="absolute left-0 z-10 h-full w-1/2 duration-300 ease-out" x-cloak>
-            <div class="h-full w-full rounded-md bg-vdark-600 shadow-sm dark:bg-zinc-900"></div>
+            <div class="bg-vlp h-full w-full rounded-md shadow-sm dark:bg-zinc-900"></div>
           </div>
         </div>
         <div
-          class="content relative mt-2 rounded-md border border-vdark-600 p-4 text-xs text-gray-400 dark:border-neutral-600"
-        >
+          class="content border-vlp relative mt-2 rounded-md border p-4 text-xs text-gray-400 dark:border-neutral-600">
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
             <div class="mb-4 flex justify-between align-middle">
@@ -76,8 +70,7 @@
                   class="srch-style transition-all duration-500"
                   x-model="styleSearch"
                   @input="searchStyles"
-                  x-transition
-                />
+                  x-transition />
               </div>
 
               <!-- Add Style Button -->
@@ -85,42 +78,36 @@
                 <button
                   @click="showAddStyleModal = true; if(showAddStyleModal) $nextTick(() => { ($refs.newStyleName.focus()) });"
                   @keydown.escape.window="showAddStyleModal = false"
-                  class="butt-style flex items-center !p-1.5"
-                >
+                  class="butt-style flex items-center !p-1.5">
                   Add Style
                 </button>
               </div>
             </div>
             <div class="table-scrollbar mb-12 overflow-y-auto" style="max-height: 700px">
               <table
-                class="w-[calc(100%-10px)] table-auto border-separate text-vwhite-50"
-                style="max-height: 700px; border-spacing: 0 10px"
-              >
+                class="text-vls w-[calc(100%-10px)] table-auto border-separate"
+                style="max-height: 700px; border-spacing: 0 10px">
                 <thead
-                  class="sticky top-0 rounded bg-vdark-600 text-left text-base font-medium text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
-                >
+                  class="bg-vlp text-vls dark:text-vds sticky top-0 rounded text-left text-base font-medium dark:bg-zinc-900">
                   <tr>
                     <th
                       class="round-left-border border-clipper border border-transparent p-2 text-lg dark:decoration-neutral-300"
-                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
-                    >
+                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                       Style Name
                     </th>
                     <th class="w-56 p-2 text-lg">Price</th>
                     <th
                       class="round-right-border border-clipper w-36 p-2 text-lg"
-                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
-                    >
+                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <!-- MARK: TBODY STYLES -->
-                <tbody class="bg-slate-600 text-vwhite-50 dark:bg-neutral-700">
+                <tbody class="text-vls bg-slate-600 dark:bg-neutral-700">
                   <template x-for="style in filteredStyles" :key="style.id">
                     <tr
-                      class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
-                    >
+                      class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white">
                       <!-- Name -->
                       <td class="round-left-border w-2/3 p-2 py-1 text-sm">
                         <template x-if="style.isEditing">
@@ -145,8 +132,7 @@
                           <div class="flex">
                             <button
                               @click="saveStyle(style)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -157,8 +143,7 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-save"
-                              >
+                                class="feather feather-save">
                                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                                 <polyline points="17 21 17 13 7 13 7 21"></polyline>
                                 <polyline points="7 3 7 8 15 8"></polyline>
@@ -166,8 +151,7 @@
                             </button>
                             <button
                               @click="cancelEditStyle(style)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -178,8 +162,7 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-x-circle"
-                              >
+                                class="feather feather-x-circle">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <line x1="15" y1="9" x2="9" y2="15"></line>
                                 <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -191,8 +174,7 @@
                           <div class="flex">
                             <button
                               @click="editStyle(style)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -203,15 +185,13 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-edit-2"
-                              >
+                                class="feather feather-edit-2">
                                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                               </svg>
                             </button>
                             <button
                               @click="deleteStyle(style.id)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -222,12 +202,10 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-trash-2"
-                              >
+                                class="feather feather-trash-2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path
-                                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                                ></path>
+                                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                 <line x1="10" y1="11" x2="10" y2="17"></line>
                                 <line x1="14" y1="11" x2="14" y2="17"></line>
                               </svg>
@@ -251,8 +229,7 @@
                   placeholder="Search Samples..."
                   class="srch-style transition-all duration-500"
                   x-model="sampleSearch"
-                  @input="searchSamples"
-                />
+                  @input="searchSamples" />
               </div>
 
               <!-- Add Sample Button -->
@@ -260,43 +237,37 @@
                 <button
                   @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
                   @keydown.escape.window="showAddSampleModal = false"
-                  class="butt-style flex items-center !p-1.5"
-                >
+                  class="butt-style flex items-center !p-1.5">
                   Add Sample
                 </button>
               </div>
             </div>
             <div class="table-scrollbar mb-12 overflow-y-auto" style="max-height: 700px">
               <table
-                class="w-[calc(100%-10px)] table-auto border-separate text-vwhite-50"
-                style="max-height: 700px; border-spacing: 0 10px"
-              >
+                class="text-vls w-[calc(100%-10px)] table-auto border-separate"
+                style="max-height: 700px; border-spacing: 0 10px">
                 <thead
-                  class="sticky top-0 rounded bg-vdark-600 text-left text-base font-medium text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
-                >
+                  class="bg-vlp text-vls dark:text-vds sticky top-0 rounded text-left text-base font-medium dark:bg-zinc-900">
                   <tr>
                     <th
                       class="round-left-border border-clipper border border-transparent p-2 text-lg"
-                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
-                    >
+                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                       Sample Name
                     </th>
                     <th class="p-2 text-lg">Time</th>
                     <th class="p-2 text-lg">Price</th>
                     <th
                       class="round-right-border border-clipper w-36 p-2 text-lg"
-                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
-                    >
+                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <!-- MARK: TBODY Samples -->
-                <tbody class="bg-slate-600 pr-2 text-vwhite-50 dark:bg-neutral-700">
+                <tbody class="text-vls bg-slate-600 pr-2 dark:bg-neutral-700">
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr
-                      class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white"
-                    >
+                      class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white">
                       <!-- Name -->
                       <td class="round-left-border p-2 text-sm">
                         <template x-if="sample.isEditing">
@@ -314,8 +285,7 @@
                             min="0"
                             step="0.01"
                             x-model="sample.time"
-                            class="table-edit-input-style"
-                          />
+                            class="table-edit-input-style" />
                         </template>
                         <template x-if="!sample.isEditing">
                           <span x-text="sample.time" class="p-1 text-sm"></span>
@@ -336,8 +306,7 @@
                           <div class="flex">
                             <button
                               @click="saveSample(sample)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -348,8 +317,7 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-save"
-                              >
+                                class="feather feather-save">
                                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                                 <polyline points="17 21 17 13 7 13 7 21"></polyline>
                                 <polyline points="7 3 7 8 15 8"></polyline>
@@ -357,8 +325,7 @@
                             </button>
                             <button
                               @click="cancelEditSample(sample)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -369,8 +336,7 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-x-circle"
-                              >
+                                class="feather feather-x-circle">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <line x1="15" y1="9" x2="9" y2="15"></line>
                                 <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -382,8 +348,7 @@
                           <div class="flex">
                             <button
                               @click="editSample(sample)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-blue-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -394,15 +359,13 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-edit-2"
-                              >
+                                class="feather feather-edit-2">
                                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                               </svg>
                             </button>
                             <button
                               @click="deleteSample(sample.id)"
-                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400"
-                            >
+                              class="p-1 text-sm text-slate-100 transition duration-300 hover:text-red-400">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -413,12 +376,10 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="feather feather-trash-2"
-                              >
+                                class="feather feather-trash-2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path
-                                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                                ></path>
+                                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                 <line x1="10" y1="11" x2="10" y2="17"></line>
                                 <line x1="14" y1="11" x2="14" y2="17"></line>
                               </svg>
@@ -441,38 +402,33 @@
   <div
     x-show="showClientModal"
     x-transition.opacity.duration.300ms
-    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50"
-  >
+    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <!-- Clients Modal Body -->
     <div
-      class="relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 bg-vdark-600 text-vwhite-50 shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900 dark:text-neutral-300"
+      class="bg-vlp text-vls dark:text-vds relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900"
       @keydown.escape.window="showClientModal = false"
-      @click.outside="showClientModal = false"
-    >
+      @click.outside="showClientModal = false">
       <div class="p-6">
         <h2 class="mb-4 text-center text-xl font-medium">Select Client</h2>
         <div class="relative" @click.outside="showDropdown = false">
           <button
             x-ref="clientModalButton"
             @click="showDropdown = !showDropdown"
-            :class="{'border-vred-400 dark:border-vred-300 text-vred-400 dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-neutral-300': !showDropdown}"
-            class="mb-4 w-full rounded-md border p-2 text-vwhite-50 transition duration-300 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:border-neutral-300 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300"
-          >
+            :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !showDropdown}"
+            class="text-vls hover:border-vla hover:text-vla dark:text-vds mb-4 w-full rounded-md border p-2 transition duration-300 focus:outline-none dark:border-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300">
             Clients
           </button>
           <div
             x-anchor.offset.5="$refs.clientModalButton"
             x-show="showDropdown"
             x-collapse.duration.500ms
-            class="table-scrollbar max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vdark-500 shadow-lg dark:bg-neutral-500"
-          >
+            class="table-scrollbar bg-vlp max-h-[300px] w-full overflow-auto rounded border border-slate-400 shadow-lg dark:bg-neutral-500">
             <ul>
               <template x-for="client in clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
-                  class="cursor-pointer p-2 text-vwhite-50 hover:bg-slate-600 dark:text-neutral-300 dark:hover:bg-neutral-600"
-                  x-text="client.name"
-                ></li>
+                  class="text-vls dark:text-vds cursor-pointer p-2 hover:bg-slate-600 dark:hover:bg-neutral-600"
+                  x-text="client.name"></li>
               </template>
             </ul>
           </div>
@@ -480,8 +436,7 @@
         <div class="flex items-center justify-center">
           <button
             @click="showClientModal = !showClientModal"
-            class="submit-button w-1/2 rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
+            class="submit-button w-1/2 rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
             Close
           </button>
         </div>
@@ -493,11 +448,9 @@
   <div
     x-show="showAddStyleModal"
     x-transition.opacity.duration.300
-    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50"
-  >
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vdark-600 text-vwhite-50 shadow-lg dark:bg-zinc-900 dark:text-neutral-300"
-    >
+      class="bg-vlp text-vls dark:text-vds relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 shadow-lg dark:bg-zinc-900">
       <div class="text-center" @click.outside="showAddStyleModal = false">
         <div class="p-6">
           <h3 class="mb-4 text-xl font-medium">Add Style</h3>
@@ -509,8 +462,7 @@
               type="text"
               placeholder="Style Name"
               class="modal-input-style mb-2 w-full"
-              required
-            />
+              required />
             <input
               x-model="newStyle.price"
               name="price"
@@ -519,20 +471,17 @@
               step="0.01"
               placeholder="Price"
               class="modal-input-style mb-2 w-full"
-              required
-            />
+              required />
             <button
               type="submit"
-              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600"
-            >
+              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
               Add
             </button>
           </form>
           <div class="mt-2 items-center">
             <button
               @click="showAddStyleModal = false"
-              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
               Close
             </button>
           </div>
@@ -544,11 +493,9 @@
   <div
     x-show="showAddSampleModal"
     x-transition.opacity.duration.300
-    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50"
-  >
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vdark-600 text-vwhite-50 shadow-lg dark:bg-zinc-900 dark:text-neutral-300"
-    >
+      class="bg-vlp text-vls dark:text-vds relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 shadow-lg dark:bg-zinc-900">
       <div class="text-center" @click.outside="showAddSampleModal = false">
         <div class="p-6">
           <h3 class="mb-4 text-xl font-medium">Add Sample</h3>
@@ -560,8 +507,7 @@
               type="text"
               placeholder="Sample Name"
               class="modal-input-style mb-2 w-full"
-              required
-            />
+              required />
             <input
               x-model="newSample.time"
               name="time"
@@ -570,8 +516,7 @@
               step="0.01"
               placeholder="Time"
               class="modal-input-style mb-2 w-full"
-              required
-            />
+              required />
             <input
               x-model="newSample.price"
               name="price"
@@ -580,20 +525,17 @@
               step="0.01"
               placeholder="Price"
               class="modal-input-style mb-2 w-full"
-              required
-            />
+              required />
             <button
               type="submit"
-              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600"
-            >
+              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
               Add
             </button>
           </form>
           <div class="mt-2 items-center">
             <button
               @click="showAddSampleModal = false"
-              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
               Close
             </button>
           </div>

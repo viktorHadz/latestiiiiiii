@@ -1,12 +1,12 @@
-<div x-data="clientManager" class="relative w-full">
-  <div>
-    <div class="flex justify-between mb-4 align-middle">
+<div x-data="clientManager" class="relative w-full p-6">
+  <div class="p-6">
+    <div class="flex justify-between align-middle">
       <!-- Style Search Input -->
       <div class="transition-all duration-500">
         <input
           type="text"
           placeholder="Search Clients..."
-          class="transition-all duration-500 srch-style"
+          class="srch-style transition-all duration-500"
           x-model="clientSearch"
           @input="searchClients"
           x-transition />
@@ -16,31 +16,30 @@
         @click="showAddClientModal = true; 
         if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
         @keydown.escape.window="showAddClientModal = false"
-        class="flex items-center butt-style">
-        <span hx-get="/public/images/user-plus.svg" hx-trigger="load" class="mr-1.5 flex items-center"></span>
+        class="butt-style flex items-baseline justify-center">
+        <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('user-plus.svg')"></div>
         <span class="flex self-center">Add Client</span>
       </button>
     </div>
   </div>
-  <div class="flex justify-center">
+  <div class="flex justify-center p-6">
     <!-- Clients Table -->
-    <table class="w-full border-separate text-vwhite-50" style="border-spacing: 0 10px">
-      <thead class="text-base font-medium rounded bg-vdark-600 text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300">
+    <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
+      <thead class="rounded bg-vlp text-base font-medium text-vls dark:bg-vdp dark:text-vds">
         <tr>
-          <th class="hidden max-w-1/12">ID</th>
-          <th id="sortNameClients" class="p-4 pl-4 text-lg text-left max-w-2/12 round-left-border">Name</th>
-          <th class="p-4 text-base text-left max-w-2/12">Company Name</th>
-          <th class="p-4 text-base text-left max-w-2/12">Address</th>
-          <th class="p-4 text-base text-left max-w-2/12">Email</th>
-          <th class="p-4 pr-4 text-base text-left max-w-2/12 round-right-border">Actions</th>
+          <th class="max-w-1/12 hidden">ID</th>
+          <th id="sortNameClients" class="max-w-2/12 round-left-border p-2 pl-2 text-left text-lg">Name</th>
+          <th class="max-w-2/12 p-2 text-left text-base">Company Name</th>
+          <th class="max-w-2/12 p-2 text-left text-base">Address</th>
+          <th class="max-w-2/12 p-2 text-left text-base">Email</th>
+          <th class="max-w-2/12 round-right-border p-2 pr-2 text-center text-base">Actions</th>
         </tr>
       </thead>
-      <tbody class="bg-slate-600 text-vwhite-50 dark:bg-neutral-700">
+      <tbody class="bg-vlp2 text-vls dark:bg-vds3neu700">
         <template x-for="client in filteredClients" :key="client.id">
-          <tr
-            class="transition duration-200 cursor-default hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white">
+          <tr class="border-hover-ring-efect">
             <td class="hidden" x-text="client.id"></td>
-            <td class="p-2 text-sm round-left-border">
+            <td class="round-left-border p-2 text-sm">
               <template x-if="client.isEditing">
                 <input type="text" x-model="client.name" class="table-edit-input-style" />
               </template>
@@ -72,87 +71,33 @@
                 <span x-text="client.email" class="mr-6"></span>
               </template>
             </td>
-            <td class="text-sm text-center round-right-border">
+            <td class="round-right-border text-center text-sm">
               <template x-if="client.isEditing">
-                <div>
-                  <button
-                    @click="saveClient(client)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-blue-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-save">
-                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                      <polyline points="7 3 7 8 15 8"></polyline>
-                    </svg>
+                <div class="flex items-center justify-evenly">
+                  <button @click="saveClient(client)" class="table-interaction-icon-blue">
+                    <div
+                      class="flex items-center justify-center"
+                      x-html="$store.svgCache.getSvgContent('save.svg')"></div>
                   </button>
                   <button
+                    class="table-interaction-icon-red flex items-center justify-center"
                     @click="cancelEdit(client)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-red-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-x-circle">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="15" y1="9" x2="9" y2="15"></line>
-                      <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
+                    class="table-interaction-icon-red">
+                    <div x-html="$store.svgCache.getSvgContent('x-circle.svg')"></div>
                   </button>
                 </div>
               </template>
               <template x-if="!client.isEditing">
-                <div class="">
-                  <button
-                    @click="editClient(client)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-blue-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-edit-2">
-                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                    </svg>
+                <div class="flex items-center justify-evenly">
+                  <button @click="editClient(client)" class="table-interaction-icon-blue">
+                    <div
+                      class="flex items-center justify-center"
+                      x-html="$store.svgCache.getSvgContent('edit-2.svg')"></div>
                   </button>
-                  <button
-                    @click="removeClient(client.id)"
-                    class="p-1 text-sm transition duration-300 text-slate-100 hover:text-red-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-trash-2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      <line x1="10" y1="11" x2="10" y2="17"></line>
-                      <line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
+                  <button @click="removeClient(client.id)" class="table-interaction-icon-red">
+                    <div
+                      class="flex items-center justify-center"
+                      x-html="$store.svgCache.getSvgContent('trash-2.svg')"></div>
                   </button>
                 </div>
               </template>
@@ -162,16 +107,15 @@
       </tbody>
     </table>
   </div>
-  <!-- MARK: ADD CLIENT -->
+  <!-- MARK: ADD CLIENT MODAL -->
   <div
     x-show="showAddClientModal"
     x-transition.opacity.duration.300
-    class="fixed inset-0 z-50 w-full h-full overflow-y-auto bg-gray-800 bg-opacity-50"
+    class="outter-modal-overlay-blur-fixed z-50"
     id="my-modal">
     <!-- Modal content -->
-    <div
-      class="relative mx-auto text-center border rounded-md shadow-lg top-1/4 w-96 border-slate-300 bg-vdark-600 text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300">
-      <div @click.outside="showAddClientModal = false">
+    <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
+      <div @keyup.escape="showAddClientModal = false">
         <div class="p-6">
           <h3 class="mb-4 text-xl font-medium">Add Client</h3>
           <form @submit.prevent="addClient">
@@ -181,39 +125,39 @@
               name="name"
               type="text"
               placeholder="Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newClient.company_name"
               name="company_name"
               type="text"
               placeholder="Company Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newClient.address"
               name="address"
               type="text"
               placeholder="Address"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newClient.email"
               name="email"
               type="email"
               placeholder="Email"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <button
               type="submit"
-              class="w-full p-1 text-base font-medium transition-colors duration-200 rounded-md shadow-sm close-modal-button submit-button bg-sky-700 text-slate-100 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
+              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-vlp2">
               Add
             </button>
           </form>
-          <div class="items-center mt-2">
+          <div class="mt-2 items-center">
             <button
               @click="showAddClientModal = false"
-              class="w-full p-1 text-base font-medium transition-colors duration-200 bg-red-800 rounded-md shadow-sm close-modal-button submit-button text-slate-100 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-600">
               Close
             </button>
           </div>

@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Extra Light weight */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: light;
+}
+/* Light weight */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: light;
+}
+/* Regular weight */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold weight */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Italic weight */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Bold Italic */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
 [x-cloak] {
   display: none !important;
 }
@@ -26,86 +72,87 @@
   /* Or any color you prefer for 'unpaid' status */
 }
 
-/* MARK: Scrollbar */
-/* Global */
+/* MARK: Scrollbars Light */
+
+/* Global*/
 ::-webkit-scrollbar {
-  width: 16px; /* Adjust the width of the scrollbar */
+  width: 14px; /* Adjust the width of the scrollbar */
 }
-/* Light mode */
 ::-webkit-scrollbar-track {
-  background: #475569;
+  background: #d6eeff;
 }
 ::-webkit-scrollbar-thumb {
-  background: #23232e; /* The draggable scrolling handle */
-  border-radius: 5px; /* Roundness of the scrollbar handle */
+  background: #001b2e; /* The draggable scrolling handle */
+  border-radius: 4px; /* Roundness of the scrollbar handle */
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1a1a23; /* Hover effect */
+  background: #00477a; /* Hover effect */
 }
-/* Dark mode scrollbars */
-.dark ::-webkit-scrollbar-track {
-  background: #404040;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #18181b; /* Darker handle for dark mode */
-}
-.dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #09090b; /* Hover effect for dark mode */
-}
-/* MARK: Table Scrollbar */
-.table-scrollbar::-webkit-scrollbar {
-  width: 12px; /* Adjust the width of the scrollbar */
-}
-/* Light mode */
+/* Table */
 .table-scrollbar::-webkit-scrollbar-track {
-  background: #475569;
-  margin-top: 8px !important;
-  margin-bottom: 8px !important;
+  background: #d6eeff;
   border-radius: 5px;
 }
 .table-scrollbar::-webkit-scrollbar-thumb {
-  background: #23232e; /* The draggable scrolling handle */
+  background: #001b2e; /* The draggable scrolling handle */
   border-radius: 5px; /* Roundness of the scrollbar handle */
 }
 .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #1a1a23; /* Hover effect */
+  background: #00477a; /* Hover effect */
 }
-/* Dark mode scrollbars */
+/* Table Alternative Scrollbar Light */
+.alt-table-scrollbar::-webkit-scrollbar {
+  width: 14px; /* Adjust the width of the scrollbar */
+}
+/* Alternative Table */
+.alt-table-scrollbar::-webkit-scrollbar-track {
+  background: #d6eeff;
+  border-radius: 4px;
+}
+.alt-table-scrollbar::-webkit-scrollbar-thumb {
+  background: #001b2e; /* The draggable scrolling handle */
+  border-radius: 4px; /* Roundness of the scrollbar handle */
+}
+.alt-table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00477a; /* Hover effect */
+}
+
+/* MARK: Scrollbars Dark */
+
+/* Global */
+.dark ::-webkit-scrollbar-track {
+  background: #525252;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #18181b; /* Dark mode handle */
+}
+.dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46; /* Hover effect dark mode */
+}
+/*Table */
+.dark.table-scrollbar::-webkit-scrollbar {
+  width: 18px; /* Adjust the width of the scrollbar */
+}
 .dark .table-scrollbar::-webkit-scrollbar-track {
-  background: #404040;
+  background: #525252;
 }
 .dark .table-scrollbar::-webkit-scrollbar-thumb {
   background: #18181b; /* Darker handle for dark mode */
 }
 .dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #2c2c31; /* Hover effect for dark mode */
+  background: #3f3f46; /* Hover effect for dark mode */
 }
-/* MARK: Alternative Scrollbar */
-.alt-table-scrollbar::-webkit-scrollbar {
-  width: 12px; /* Adjust the width of the scrollbar */
-}
-/* Light mode */
-.alt-table-scrollbar::-webkit-scrollbar-track {
-  background: #475569;
-  border-radius: 4px;
-}
-.alt-table-scrollbar::-webkit-scrollbar-thumb {
-  background: #23232e; /* The draggable scrolling handle */
-  border-radius: 4px; /* Roundness of the scrollbar handle */
-}
-.alt-table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #1a1a23; /* Hover effect */
-}
-/* Dark mode scrollbars */
+/* Alternative Table Dark */
 .dark .alt-table-scrollbar::-webkit-scrollbar-track {
-  background: #404040;
+  background: #525252;
 }
 .dark .alt-table-scrollbar::-webkit-scrollbar-thumb {
   background: #18181b; /* Darker handle for dark mode */
 }
 .dark .alt-table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #2c2c31; /* Hover effect for dark mode */
+  background: #3f3f46; /* Hover effect for dark mode */
 }
+
 .max-height-table {
   max-height: 700px !important;
 }
@@ -115,10 +162,6 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-/* Firefox */
-input[type='number'] {
-  -moz-appearance: textfield;
 }
 
 /* MARK:Rotateable icon - Symbols  */
@@ -192,7 +235,7 @@ input[type='number'] {
     opacity 0.3s,
     transform 0.3s;
 }
-/* MARK: Table styles */
+/* MARK: Table styles - borders */
 .round-left-border {
   border-top-left-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;
@@ -200,6 +243,31 @@ input[type='number'] {
 .round-right-border {
   border-top-right-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
+}
+.border-hover-ring-efect {
+  @apply hover:ring-vla cursor-default rounded-md transition duration-200 hover:ring;
+  @apply dark:hover:ring-vda;
+}
+/* MARK:TABLE INPUTS */
+.table-edit-input-style {
+  @apply bg-vlp text-vls w-full rounded border border-transparent px-1 py-0.5 transition duration-500;
+  @apply hover:bg-vlp hover:border-vla hover:text-vla;
+  @apply focus:border-vla focus:text-vla focus:outline-none;
+  @apply dark:bg-vdp;
+  @apply dark:hover:border-vda dark:hover:bg-vdp2 dark:hover:text-vda;
+  @apply dark:focus:border-vda dark:focus:text-vda;
+}
+.table-interaction-icon-blue {
+  @apply text-vls transition duration-300;
+  @apply hover:text-vla2;
+  @apply dark:text-vds;
+  @apply dark:hover:text-blue-500;
+}
+.table-interaction-icon-red {
+  @apply text-vls transition duration-300;
+  @apply hover:text-vda2;
+  @apply dark:text-vds;
+  @apply dark:hover:text-vda2;
 }
 /* MARK: Glow Effect */
 @keyframes glowEffect {
@@ -257,35 +325,65 @@ input[type='number'] {
   padding: 0 !important;
 }
 
-/* MARK: Buttons */
+/* MARK: Tab Buttons */
 .tab-button {
-  @apply my-4 flex flex-row items-baseline text-lg font-bold text-white transition duration-300;
-  @apply hover:text-vred-300 active:scale-95;
-  @apply dark:text-neutral-400 dark:hover:text-neutral-50;
+  @apply text-vls2 my-4 flex flex-row items-baseline text-lg font-bold transition duration-300;
+  @apply hover:text-vla2;
 }
 .tab-button-active {
-  @apply !text-vred-400 !underline !decoration-vred-400 !decoration-1;
-  @apply dark:!text-neutral-50 dark:!underline dark:!decoration-vred-300 dark:!decoration-2;
+  @apply text-vla;
 }
 .butt-style {
-  @apply flex items-center rounded-md border border-transparent bg-vdark-600 p-2 text-sm font-medium text-vwhite-50 duration-500;
-  @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 active:scale-95;
-  @apply dark:bg-neutral-700 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300;
+  @apply bg-vlp text-vls flex items-center rounded-md border border-transparent p-2 text-sm font-medium duration-500;
+  @apply hover:bg-vlp hover:text-vla hover:border-vla active:scale-95;
+}
+/* Dark tab buttons */
+.dark .tab-button {
+  @apply text-vds3light hover:text-vls my-4 flex flex-row items-baseline text-lg font-bold transition duration-300;
+}
+.dark .tab-button-active {
+  @apply text-vls decoration-vda !underline !decoration-2;
+}
+.dark .butt-style {
+  @apply bg-vdp text-vds flex items-center rounded-md border border-transparent p-2 text-sm font-medium duration-500;
+  @apply hover:text-vda hover:border-vda active:scale-95;
 }
 
 /* MARK:Search Input*/
 .srch-style {
-  @apply flex rounded-md border border-vdark-600 bg-vdark-600 p-2 text-sm font-medium text-vwhite-50 transition duration-500 placeholder:text-vwhite-50;
+  @apply border-vlp bg-vlp text-vls placeholder:text-vls flex rounded-md border p-2 text-sm font-medium transition duration-500;
+  @apply hover:bg-vlp hover:text-vla hover:placeholder:text-vla hover:border-vla2;
+  @apply focus:bg-vlp focus:text-vla focus:border-vla2 focus:outline-none;
+}
+.dark .srch-style {
+  @apply bg-vdp text-vds placeholder:text-vds border-transparent p-2 text-sm font-medium transition duration-500;
+  @apply hover:placeholder:text-vda hover:border-vda hover:text-vda;
+  @apply focus:text-vda focus:border-vda focus:outline-none;
+}
 
-  @apply hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 hover:placeholder:text-vred-400;
+/* MARK: MODALS */
+.modal-input-style {
+  @apply text-vlp placeholder-vlp bg-vlp3 rounded-md p-2 ring-1 ring-transparent transition duration-500;
+  @apply hover:bg-vls;
+  @apply focus:bg-vls focus:ring-vla focus:outline-none;
+}
+.dark .modal-input-style {
+  @apply text-vds placeholder-vds3light bg-vdp3 rounded-md p-2 ring-1 ring-transparent transition duration-500;
+  @apply hover:bg-vds2 hover:text-vds;
+  @apply focus:bg-vds2 focus:text-vds focus:ring-vds focus:outline-none;
+}
+.outter-modal-overlay-blur-fixed {
+  @apply fixed inset-0 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50 backdrop-blur-sm;
+}
 
-  @apply focus:border-vred-300 focus:bg-vdark-500 focus:text-vred-400 focus:outline-none;
-
-  @apply dark:focus:border-vred-300 dark:focus:bg-vdark-500 dark:focus:text-vred-400 dark:focus:outline-none;
-
-  @apply dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300 dark:placeholder:text-neutral-300;
-
-  @apply dark:hover:border-vred-300 dark:hover:text-vred-300 dark:hover:placeholder:text-vred-400 dark:focus:border-vred-300 dark:focus:bg-neutral-600;
+.inner-modal-size-positioning-relative {
+  @apply relative top-1/4 mx-auto w-96 text-center;
+}
+.modal-bg-and-borders {
+  @apply bg-vlp text-vls border-vlp2 rounded-md border shadow-lg;
+}
+.dark .modal-bg-and-borders {
+  @apply bg-vdp border-vds2 rounded-md border shadow-lg;
 }
 
 /* MARK: BORDER CLIPPER for adjusting table body overflowing the header*/
@@ -295,24 +393,6 @@ input[type='number'] {
 }
 .dark .border-clipper {
   --border-clipper: #27272a;
-}
-
-.table-edit-input-style {
-  @apply w-full rounded border border-transparent bg-vdark-600 px-1 py-0.5 text-slate-100 transition duration-200;
-  @apply hover:border-vred-400 hover:bg-vdark-500 hover:text-vred-400;
-  @apply focus:border-vred-400 focus:text-vred-400 focus:outline-none;
-  @apply dark:bg-zinc-900;
-  @apply dark:hover:border-vred-300 dark:hover:bg-zinc-800 dark:hover:text-vred-300;
-  @apply dark:focus:border-vred-300 dark:focus:text-vred-300;
-}
-
-.modal-input-style {
-  @apply rounded-md bg-slate-600 p-2 text-vwhite-50 placeholder-vwhite-50 ring-1 ring-transparent transition duration-300;
-  @apply hover:bg-slate-500;
-  @apply focus:bg-slate-500 focus:outline-none focus:ring-slate-300;
-  @apply dark:bg-vdark-600 dark:text-neutral-300 dark:placeholder-neutral-400;
-  @apply dark:hover:bg-vdark-500;
-  @apply dark:focus:bg-vdark-500 dark:focus:ring-vred-300;
 }
 /* MARK: Inputs */
 input[type='radio'] {

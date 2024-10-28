@@ -1,8 +1,8 @@
 <div x-data="editorManager">
-  <div class="p-2 mb-4 border rounded-md border-vdark-600 dark:border-neutral-600">
+  <div class="border-vlp mb-4 rounded-md border p-2 dark:border-neutral-600">
     <div class="flex justify-between align-baseline">
       <div>
-        <button @click="showClientModal = !showClientModal" class="flex items-baseline butt-style">
+        <button @click="showClientModal = !showClientModal" class="butt-style flex items-baseline">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -13,8 +13,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="mr-2 feather feather-user"
-          >
+            class="feather feather-user mr-2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
@@ -23,14 +22,13 @@
       </div>
       <div class="flex align-middle">
         <h3
-          class="self-center font-medium underline cursor-default decoration text-vdark-700 decoration-vdark-700 dark:text-neutral-300 dark:decoration-vred-300"
-          x-text="`Client: ${selectedClient.name}`"
-        ></h3>
+          class="decoration text-vlp-700 decoration-vlp-700 dark:text-vds cursor-default self-center font-medium underline dark:decoration-vred-300"
+          x-text="`Client: ${selectedClient.name}`"></h3>
       </div>
     </div>
   </div>
   <!-- Container for both list and editor -->
-  <div class="flex h-screen p-1 border rounded-md border-vdark-600 dark:border-neutral-600">
+  <div class="border-vlp flex h-screen rounded-md border p-1 dark:border-neutral-600">
     <!-- MARK:INVOICE LIST -->
     <div class="w-1/3 p-2">
       <div class="alt-table-scrollbar max-h-[100%] overflow-y-auto rounded-md border border-transparent">
@@ -39,15 +37,13 @@
           <thead class="sticky top-0 z-10">
             <tr>
               <th
-                class="m-2 rounded-md round-left-border round-right-border border-clipper bg-vdark-600 text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
-                style="box-shadow: 0 -4px 0 0 var(--border-clipper)"
-              >
+                class="round-left-border round-right-border border-clipper bg-vlp text-vls dark:text-vds m-2 rounded-md dark:bg-zinc-900"
+                style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                 <p class="mb-2 font-medium">Invoice Book</p>
                 <input
                   type="text"
                   placeholder="Search invoices..."
-                  class="mr-2 flex w-full rounded-md border border-b-0 border-l-0 border-r-0 border-t-vdark-600 bg-vdark-600 p-1.5 text-xs font-normal text-vwhite-50 transition duration-500 placeholder:text-vwhite-50 hover:border-vred-300 hover:bg-vdark-500 hover:text-vred-400 hover:placeholder:text-vred-400 focus:border-vred-300 focus:bg-vdark-500 focus:text-vred-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300 dark:placeholder:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300 dark:hover:placeholder:text-vred-400 dark:focus:border-vred-300 dark:focus:bg-vdark-500 dark:focus:text-vred-400 dark:focus:outline-none"
-                />
+                  class="border-t-vlp bg-vlp hover:bg-vlp focus:bg-vlp dark:focus:bg-vlp text-vls placeholder:text-vls hover:text-vla hover:placeholder:text-vla focus:text-vla dark:hover:placeholder:text-vla dark:focus:text-vla dark:text-vds mr-2 flex w-full rounded-md border border-b-0 border-l-0 border-r-0 p-1.5 text-xs font-normal transition duration-500 hover:border-vred-300 focus:border-vred-300 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:placeholder:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300 dark:focus:border-vred-300 dark:focus:outline-none" />
               </th>
             </tr>
           </thead>
@@ -59,9 +55,8 @@
                   <button
                     @click="fetchItems(selectedClient.id, item.id); $refs.tempText.classList.add('hidden'); applyEffect(item)"
                     :id="'rowid-' + item.id"
-                    class="mb-2 flex w-full cursor-default justify-between rounded-md border border-vdark-600 bg-slate-600 p-1.5 text-vwhite-50 transition duration-200 hover:border-vred-400 hover:bg-slate-500 focus:border-vred-400 focus:bg-slate-500 active:border-vred-400 active:bg-slate-500 dark:bg-neutral-700 dark:hover:border-vred-300 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vred-300 dark:active:border-vred-300"
-                  >
-                    <div class="flex flex-col justify-start mr-2 text-xs text-left">
+                    class="border-vlp text-vls hover:border-vla focus:border-vla active:border-vla mb-2 flex w-full cursor-default justify-between rounded-md border bg-slate-600 p-1.5 transition duration-200 hover:bg-slate-500 focus:bg-slate-500 active:bg-slate-500 dark:bg-neutral-700 dark:hover:border-vred-300 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vred-300 dark:active:border-vred-300">
+                    <div class="mr-2 flex flex-col justify-start text-left text-xs">
                       <div x-text="item.client_name"></div>
                       <div x-text="item.date"></div>
                     </div>
@@ -80,19 +75,17 @@
     <div id="invoice-editor" class="w-full">
       <div
         x-ref="tempText"
-        class="flex items-center justify-center w-full h-full text-center align-middle text-vwhite-50 dark:text-neutral-300"
-      >
-        <p class="text-2xl text-vdark-600 dark:text-neutral-300">Pick an invoice from the list to edit.</p>
+        class="text-vls dark:text-vds flex h-full w-full items-center justify-center text-center align-middle">
+        <p class="text-vlp dark:text-vds text-2xl">Pick an invoice from the list to edit.</p>
       </div>
       <!-- MARK: NON EDIT STATE -->
       <template x-if="editing === false">
         <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto p-1.5">
           <template x-if="showInvoiceItems === true">
-            <div x-show="showInvoiceItems" x-transition class="text-vwhite-50 dark:text-neutral-300">
+            <div x-show="showInvoiceItems" x-transition class="text-vls dark:text-vds">
               <!-- MARK: Header -->
               <div
-                class="flex justify-between w-full p-2 font-medium text-center rounded-b-none rounded-t-md bg-vdark-600 text-vwhite-50 dark:bg-zinc-900"
-              >
+                class="bg-vlp text-vls flex w-full justify-between rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
                 <div class="flex self-center">
                   <span class="mr-1">Invoice:</span>
                   <p class="mr-2" x-text="invoiceItems.invoice.invoice_number"></p>
@@ -102,8 +95,7 @@
               </div>
               <!-- MARK: Client details -->
               <div
-                class="flex justify-between w-full h-full p-1 mb-2 border rounded-t-none rounded-b-md border-vdark-600 bg-slate-600 dark:bg-neutral-700"
-              >
+                class="border-vlp mb-2 flex h-full w-full justify-between rounded-b-md rounded-t-none border bg-slate-600 p-1 dark:bg-neutral-700">
                 <div class="flex flex-col">
                   <p class="mr-1">
                     Client name:
@@ -123,7 +115,7 @@
                   </p>
                 </div>
                 <div class="flex flex-col justify-between">
-                  <button @click="generateInvoice" class="butt-style flex !bg-vdark-600 !p-1.5 dark:!bg-zinc-900">
+                  <button @click="generateInvoice" class="butt-style !bg-vlp flex !p-1.5 dark:!bg-zinc-900">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="14"
@@ -134,8 +126,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="mr-2 feather feather-download"
-                    >
+                      class="feather feather-download mr-2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                       <polyline points="7 10 12 15 17 10"></polyline>
                       <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -145,8 +136,7 @@
 
                   <button
                     @click="openEditModal = true"
-                    class="butt-style flex !w-full !bg-vdark-600 !p-1.5 dark:!bg-zinc-900"
-                  >
+                    class="butt-style !bg-vlp flex !w-full !p-1.5 dark:!bg-zinc-900">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -157,20 +147,18 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-edit-2"
-                    >
+                      class="feather feather-edit-2">
                       <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                     </svg>
-                    <span class="flex justify-center w-full text-center">Edit Invoice</span>
+                    <span class="flex w-full justify-center text-center">Edit Invoice</span>
                   </button>
                 </div>
               </div>
               <!-- MARK: Invoice Items Table -->
               <div
-                class="w-full mb-2 overflow-y-auto border rounded-md alt-table-scrollbar border-vdark-600 bg-slate-600 dark:bg-neutral-700"
-              >
-                <table class="w-full table-auto text-vwhite-50 dark:text-neutral-300">
-                  <thead class="sticky top-0 font-medium text-left bg-vdark-600 dark:bg-zinc-900">
+                class="alt-table-scrollbar border-vlp mb-2 w-full overflow-y-auto rounded-md border bg-slate-600 dark:bg-neutral-700">
+                <table class="text-vls dark:text-vds w-full table-auto">
+                  <thead class="bg-vlp sticky top-0 text-left font-medium dark:bg-zinc-900">
                     <tr>
                       <th class="p-1">Name</th>
                       <th class="p-1">Type</th>
@@ -192,13 +180,11 @@
               </div>
               <!-- MARK: Prices -->
               <div
-                class="flex justify-center w-full p-2 font-medium text-center rounded-b-none rounded-t-md bg-vdark-600 text-vwhite-50 dark:bg-zinc-900"
-              >
+                class="bg-vlp text-vls flex w-full justify-center rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
                 Prices
               </div>
               <div
-                class="flex flex-col p-1 border rounded-t-none rounded-b-md border-vdark-600 bg-slate-600 dark:bg-neutral-700"
-              >
+                class="border-vlp flex flex-col rounded-b-md rounded-t-none border bg-slate-600 p-1 dark:bg-neutral-700">
                 <p class="mb-1" x-text="'Subtotal: ' + '£' + invoiceItems.invoice.subtotal"></p>
                 <p class="mb-1" x-text="'VAT: ' + '£' + invoiceItems.invoice.vat"></p>
                 <template x-if="invoiceItems.invoice.discount_flat === 1">
@@ -223,11 +209,10 @@
       <!-- MARK: EDIT STATE -->
       <template x-if="editing === true">
         <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto p-2">
-          <div x-show="showInvoiceItems" x-transition class="text-vwhite-50 dark:text-neutral-300">
+          <div x-show="showInvoiceItems" x-transition class="text-vls dark:text-vds">
             <!-- MARK: Header -->
             <div
-              class="flex w-full p-2 font-medium text-center rounded-b-none rounded-t-md bg-vdark-600 text-vwhite-50 dark:bg-zinc-900"
-            >
+              class="bg-vlp text-vls flex w-full rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
               <div class="flex">
                 <span class="mr-1">Invoice:</span>
                 <p class="mr-2" x-text="invoiceItems.invoice.invoice_number"></p>
@@ -242,8 +227,7 @@
             </div>
             <!-- MARK: Client Information -->
             <div
-              class="flex justify-between p-2 mb-2 border rounded-t-none rounded-b-md border-vdark-600 bg-slate-600 dark:bg-neutral-700"
-            >
+              class="border-vlp mb-2 flex justify-between rounded-b-md rounded-t-none border bg-slate-600 p-2 dark:bg-neutral-700">
               <div class="flex flex-col">
                 <p>
                   Client name:
@@ -267,16 +251,14 @@
                 <button
                   title="Add new invoice item"
                   @click="existingItems.showItemModal = true; fetchStylesAndSamples(selectedClient.id)"
-                  class="butt-style flex self-center !bg-vdark-600 dark:!bg-zinc-900"
-                >
+                  class="butt-style !bg-vlp flex self-center dark:!bg-zinc-900">
                   Add Item
                 </button>
                 <div class="flex justify-between">
                   <button
                     title="Save edit"
-                    class="flex align-middle transition duration-300 rounded-full text-vwhite-50 hover:text-sky-500 dark:text-vwhite-50 dark:hover:text-sky-400"
-                    @click="saveEdit()"
-                  >
+                    class="text-vls dark:text-vls flex rounded-full align-middle transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    @click="saveEdit()">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="22"
@@ -287,8 +269,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-save"
-                    >
+                      class="feather feather-save">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                       <polyline points="17 21 17 13 7 13 7 21"></polyline>
                       <polyline points="7 3 7 8 15 8"></polyline>
@@ -296,9 +277,8 @@
                   </button>
                   <button
                     title="Cancel edit"
-                    class="flex self-end align-middle transition duration-300 rounded-full text-vwhite-50 hover:text-vred-400 dark:text-vwhite-50 dark:hover:text-vred-300"
-                    @click="cancelEdit()"
-                  >
+                    class="text-vls dark:text-vls hover:text-vla flex self-end rounded-full align-middle transition duration-300 dark:hover:text-vred-300"
+                    @click="cancelEdit()">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="23"
@@ -309,8 +289,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-x-circle"
-                    >
+                      class="feather feather-x-circle">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="15" y1="9" x2="9" y2="15"></line>
                       <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -322,16 +301,15 @@
 
             <!-- MARK: Invoice Items Table -->
             <div
-              class="w-full mb-2 overflow-y-auto border rounded-md alt-table-scrollbar border-vdark-600 bg-slate-600 dark:bg-neutral-700"
-            >
-              <table class="w-full text-vwhite-50 dark:text-neutral-300">
-                <thead class="sticky top-0 font-medium text-left bg-vdark-600 dark:bg-zinc-900">
+              class="alt-table-scrollbar border-vlp mb-2 w-full overflow-y-auto rounded-md border bg-slate-600 dark:bg-neutral-700">
+              <table class="text-vls dark:text-vds w-full">
+                <thead class="bg-vlp sticky top-0 text-left font-medium dark:bg-zinc-900">
                   <tr>
                     <th class="w-1/2 p-2">Name</th>
-                    <th class="p-2 w-fit">Type</th>
-                    <th class="p-2 w-fit">Qty</th>
-                    <th class="p-2 w-fit">Price</th>
-                    <th class="flex justify-center w-full p-2">
+                    <th class="w-fit p-2">Type</th>
+                    <th class="w-fit p-2">Qty</th>
+                    <th class="w-fit p-2">Price</th>
+                    <th class="flex w-full justify-center p-2">
                       <!-- MARK:ADD ITEM BTNS -->
                       Actions
                     </th>
@@ -341,16 +319,15 @@
                   <template x-for="item in invoiceItems.invoiceItems" :key="item.id">
                     <tr>
                       <td class="w-1/2 p-1" x-text="item.name"></td>
-                      <td class="p-1 w-fit" x-text="item.type"></td>
-                      <td class="p-1 w-fit" x-text="item.quantity"></td>
-                      <td class="p-1 w-fit" x-text="'£' + item.price"></td>
-                      <td class="flex justify-center w-full p-1 items">
+                      <td class="w-fit p-1" x-text="item.type"></td>
+                      <td class="w-fit p-1" x-text="item.quantity"></td>
+                      <td class="w-fit p-1" x-text="'£' + item.price"></td>
+                      <td class="items flex w-full justify-center p-1">
                         <!-- Remove Item -->
                         <button
                           title="Remove item"
                           @click="removeInvoiceItem(item.id)"
-                          class="flex self-end mt-1 align-middle transition duration-300 rounded-full text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-300"
-                        >
+                          class="text-vls hover:text-vla dark:text-vds mt-1 flex self-end rounded-full align-middle transition duration-300 dark:hover:text-vred-300">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -361,12 +338,10 @@
                             stroke-width="2"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            class="feather feather-trash-2"
-                          >
+                            class="feather feather-trash-2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path
-                              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                            ></path>
+                              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                             <line x1="10" y1="11" x2="10" y2="17"></line>
                             <line x1="14" y1="11" x2="14" y2="17"></line>
                           </svg>
@@ -380,62 +355,54 @@
 
             <!-- MARK: Editable Prices -->
             <div
-              class="flex justify-center w-full p-2 font-medium text-center rounded-b-none rounded-t-md bg-vdark-600 text-vwhite-50 dark:bg-zinc-900"
-            >
+              class="bg-vlp text-vls flex w-full justify-center rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
               Prices
             </div>
             <div
-              class="flex flex-col p-1 border rounded-t-none rounded-b-md border-vdark-600 bg-slate-600 dark:bg-neutral-700"
-            >
+              class="border-vlp flex flex-col rounded-b-md rounded-t-none border bg-slate-600 p-1 dark:bg-neutral-700">
               <!-- Subtotal -->
-              <div class="flex mb-1">
+              <div class="mb-1 flex">
                 <span class="mr-2">Subtotal:</span>
                 <span
                   x-show="editingPrice === ''"
                   x-text="'£' + invoiceItems.invoice.subtotal"
                   x-transition:enter.duration.300ms
-                  x-transition:leave.duration.300ms
-                ></span>
+                  x-transition:leave.duration.300ms></span>
               </div>
 
               <!-- VAT -->
-              <div class="flex mb-1">
+              <div class="mb-1 flex">
                 <span class="mr-2">VAT:</span>
                 <span
                   x-show="editingPrice === ''"
                   x-text="'£' + invoiceItems.invoice.vat"
                   x-transition:enter.duration.300ms
-                  x-transition:leave.duration.300ms
-                ></span>
+                  x-transition:leave.duration.300ms></span>
               </div>
 
               <!-- MARK: Discount -->
               <div
-                class="flex mb-1"
+                class="mb-1 flex"
                 x-show="invoiceItems.invoice.discount > 0"
                 x-transition:enter.duration.300ms
-                x-transition:leave.duration.300ms
-              >
+                x-transition:leave.duration.300ms>
                 <!-- Not editing -->
                 <span class="mr-2">Discount:</span>
                 <div
-                  class="flex mr-2"
+                  class="mr-2 flex"
                   x-show="editingPrice === ''"
                   x-transition:enter.duration.300ms
-                  x-transition:leave.duration.300ms
-                >
+                  x-transition:leave.duration.300ms>
                   <template x-if="invoiceItems.invoice.discount_flat === 1">
                     <span x-text="`-£${invoiceItems.invoice.discount}`"></span>
                   </template>
                   <template x-if="invoiceItems.invoice.discount_percent === 1">
                     <span
-                      x-text="`-${invoiceItems.invoice.discount_percent_value}%` + `(£${invoiceItems.invoice.discount})`"
-                    ></span>
+                      x-text="`-${invoiceItems.invoice.discount_percent_value}%` + `(£${invoiceItems.invoice.discount})`"></span>
                   </template>
                   <button
                     @click="editingPrice = 'discount'; editingPriceValue = invoiceItems.invoice.discount"
-                    class="ml-2 transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-400"
-                  >
+                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds ml-2 transition duration-300">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -446,8 +413,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-edit-2"
-                    >
+                      class="feather feather-edit-2">
                       <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                     </svg>
                   </button>
@@ -457,13 +423,11 @@
                   x-show="editingPrice === 'discount'"
                   x-transition:enter.duration.300ms
                   x-transition:leave.duration.300ms
-                  class="mb-0.5 flex items-center"
-                >
+                  class="mb-0.5 flex items-center">
                   <input class="table-edit-input-style mr-2 !w-32" x-model.number="editingPriceValue" />
                   <button
-                    class="mr-2 transition duration-300 text-vwhite-50 hover:text-sky-500 dark:text-vwhite-50 dark:hover:text-sky-400"
-                    @click="savePrice('discount', editingPriceValue)"
-                  >
+                    class="text-vls dark:text-vls mr-2 transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    @click="savePrice('discount', editingPriceValue)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -474,17 +438,15 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-save"
-                    >
+                      class="feather feather-save">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                       <polyline points="17 21 17 13 7 13 7 21"></polyline>
                       <polyline points="7 3 7 8 15 8"></polyline>
                     </svg>
                   </button>
                   <button
-                    class="transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-400"
-                    @click="editingPrice = ''"
-                  >
+                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300"
+                    @click="editingPrice = ''">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -495,8 +457,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-x-circle"
-                    >
+                      class="feather feather-x-circle">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="15" y1="9" x2="9" y2="15"></line>
                       <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -505,20 +466,18 @@
                 </div>
               </div>
               <!-- MARK: Total -->
-              <div class="flex mb-1">
+              <div class="mb-1 flex">
                 <!-- Not editing -->
                 <span class="mr-2">Total:</span>
                 <div
                   class="flex"
                   x-show="editingPrice === ''"
                   x-transition:enter.duration.300ms
-                  x-transition:leave.duration.300ms
-                >
+                  x-transition:leave.duration.300ms>
                   <span class="mr-2" x-text="'£' + invoiceItems.invoice.total"></span>
                   <button
                     @click="editingPrice = 'total'; editingPriceValue = invoiceItems.invoice.total"
-                    class="transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-400"
-                  >
+                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -529,8 +488,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-edit-2"
-                    >
+                      class="feather feather-edit-2">
                       <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                     </svg>
                   </button>
@@ -540,13 +498,11 @@
                   x-show="editingPrice === 'total'"
                   x-transition:enter.duration.300ms
                   x-transition:leave.duration.300ms
-                  class="mb-0.5 flex items-center"
-                >
+                  class="mb-0.5 flex items-center">
                   <input class="table-edit-input-style mr-2 !w-32" x-model.number="editingPriceValue" />
                   <button
-                    class="transition duration-300 text-vwhite-50 hover:text-sky-500 dark:text-vwhite-50 dark:hover:text-sky-400"
-                    @click="savePrice('total', editingPriceValue)"
-                  >
+                    class="text-vls dark:text-vls transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    @click="savePrice('total', editingPriceValue)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -557,17 +513,15 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-save"
-                    >
+                      class="feather feather-save">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                       <polyline points="17 21 17 13 7 13 7 21"></polyline>
                       <polyline points="7 3 7 8 15 8"></polyline>
                     </svg>
                   </button>
                   <button
-                    class="transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-400"
-                    @click="editingPrice = ''"
-                  >
+                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300"
+                    @click="editingPrice = ''">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -578,8 +532,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-x-circle"
-                    >
+                      class="feather feather-x-circle">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="15" y1="9" x2="9" y2="15"></line>
                       <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -589,31 +542,27 @@
               </div>
               <!-- MARK: Deposit -->
               <div
-                class="flex mb-1"
+                class="mb-1 flex"
                 x-show="invoiceItems.invoice.deposit > 0"
                 x-transition:enter.duration.300ms
-                x-transition:leave.duration.300ms
-              >
+                x-transition:leave.duration.300ms>
                 <!-- Not editing -->
                 <span class="mr-2">Deposit:</span>
                 <div
-                  class="flex mr-2"
+                  class="mr-2 flex"
                   x-show="editingPrice === ''"
                   x-transition:enter.duration.300ms
-                  x-transition:leave.duration.300ms
-                >
+                  x-transition:leave.duration.300ms>
                   <template x-if="invoiceItems.invoice.deposit_flat === 1">
                     <span x-text="` £${invoiceItems.invoice.deposit}`"></span>
                   </template>
                   <template x-if="invoiceItems.invoice.deposit_percent === 1">
                     <span
-                      x-text="`${invoiceItems.invoice.deposit_percent_value}%` + `(£${invoiceItems.invoice.deposit})`"
-                    ></span>
+                      x-text="`${invoiceItems.invoice.deposit_percent_value}%` + `(£${invoiceItems.invoice.deposit})`"></span>
                   </template>
                   <button
                     @click="editingPrice = 'deposit'; editingPriceValue = invoiceItems.invoice.deposit"
-                    class="ml-2 transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-400"
-                  >
+                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds ml-2 transition duration-300">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -624,8 +573,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-edit-2"
-                    >
+                      class="feather feather-edit-2">
                       <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                     </svg>
                   </button>
@@ -635,13 +583,11 @@
                   x-show="editingPrice === 'deposit'"
                   x-transition:enter.duration.300ms
                   x-transition:leave.duration.300ms
-                  class="mb-0.5 flex items-center"
-                >
+                  class="mb-0.5 flex items-center">
                   <input class="table-edit-input-style mr-2 !w-32 !p-1 !text-sm" x-model.number="editingPriceValue" />
                   <button
-                    class="mr-2 transition duration-300 text-vwhite-50 hover:text-sky-500 dark:text-vwhite-50 dark:hover:text-sky-400"
-                    @click="savePrice('deposit', editingPriceValue)"
-                  >
+                    class="text-vls dark:text-vls mr-2 transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    @click="savePrice('deposit', editingPriceValue)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -652,17 +598,15 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-save"
-                    >
+                      class="feather feather-save">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                       <polyline points="17 21 17 13 7 13 7 21"></polyline>
                       <polyline points="7 3 7 8 15 8"></polyline>
                     </svg>
                   </button>
                   <button
-                    class="transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-400"
-                    @click="editingPrice = ''; editingPriceValue = ''"
-                  >
+                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300"
+                    @click="editingPrice = ''; editingPriceValue = ''">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -673,8 +617,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="feather feather-x-circle"
-                    >
+                      class="feather feather-x-circle">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="15" y1="9" x2="9" y2="15"></line>
                       <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -683,7 +626,7 @@
                 </div>
               </div>
               <!-- MARK: Note -->
-              <div class="flex items-center mb-1">
+              <div class="mb-1 flex items-center">
                 <span class="mr-2">Note:</span>
                 <input class="table-edit-input-style !w-11/12" x-model="invoiceItems.invoice.note" maxlength="217" />
               </div>
@@ -699,36 +642,31 @@
   <!-- MARK: EDIT MODAL -->
   <div x-show="openEditModal" x-transition.opacity.duration.300 class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <div
-      class="relative z-30 w-1/4 mx-auto transition duration-300 border rounded-md shadow-lg top-1/3 border-slate-300 bg-vdark-600 text-vwhite-50 dark:bg-zinc-900 dark:text-neutral-300"
+      class="bg-vlp text-vls dark:text-vds relative top-1/3 z-30 mx-auto w-1/4 rounded-md border border-slate-300 shadow-lg transition duration-300 dark:bg-zinc-900"
       @keydown.escape.window="openEditModal = false"
-      @click.outside="openEditModal = false"
-    >
+      @click.outside="openEditModal = false">
       <div class="p-4 text-center">
-        <h2 class="text-xl font-medium text-vwhite-50 dark:text-neutral-300">Chose edit type</h2>
-        <p class="mb-4 text-sm font-normal text-vwhite-50 dark:text-neutral-300">
-          How would you like to edit the invoice?
-        </p>
+        <h2 class="text-vls dark:text-vds text-xl font-medium">Chose edit type</h2>
+        <p class="text-vls dark:text-vds mb-4 text-sm font-normal">How would you like to edit the invoice?</p>
 
         <!-- Overwrite Invoice -->
-        <label for="editorOverwrite" class="flex items-center justify-between p-2 mb-2 font-medium modal-input-style">
+        <label for="editorOverwrite" class="modal-input-style mb-2 flex items-center justify-between p-2 font-medium">
           <div>
-            <div class="flex flex-row items-center justify-center w-full h-full">
+            <div class="flex h-full w-full flex-row items-center justify-center">
               <input
                 type="radio"
                 id="editorOverwrite"
                 name="overwrite"
                 value="editOverwrite"
-                class="mx-2 text-lg translate-y-px text-vdark-500 focus:ring-vred-400 dark:text-neutral-300"
-                x-model="editMode"
-              />
+                class="text-vlp focus:ring-vla dark:text-vds mx-2 translate-y-px text-lg"
+                x-model="editMode" />
               <span class="pl-1.5">Overwrite current invoice.</span>
             </div>
           </div>
           <button
             title="Click me."
             @click="callInfo('Overwrite.', 'Saves changes into existing invoice. Keeps original invoice number.')"
-            class="transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-300"
-          >
+            class="text-vls hover:text-vla dark:text-vds transition duration-300 dark:hover:text-vred-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -739,8 +677,7 @@
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="feather feather-help-circle"
-            >
+              class="feather feather-help-circle">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
@@ -748,25 +685,23 @@
           </button>
         </label>
         <!-- Copy Invoice -->
-        <label for="editorCopy" class="flex items-center justify-between p-2 mb-4 font-medium modal-input-style">
+        <label for="editorCopy" class="modal-input-style mb-4 flex items-center justify-between p-2 font-medium">
           <div>
-            <div class="flex flex-row items-center justify-center w-full h-full">
+            <div class="flex h-full w-full flex-row items-center justify-center">
               <input
                 type="radio"
                 id="editorCopy"
                 name="copy"
                 value="editCopy"
-                class="mx-2 text-lg translate-y-px text-vdark-500 focus:ring-vred-400 dark:text-neutral-300"
-                x-model="editMode"
-              />
+                class="text-vlp focus:ring-vla dark:text-vds mx-2 translate-y-px text-lg"
+                x-model="editMode" />
               <span class="pl-1.5">Save a copy of the invoice.</span>
             </div>
           </div>
           <button
             title="Click me."
             @click="callInfo('Create a new copy', 'Use this for all official client correspondence.')"
-            class="transition duration-300 text-vwhite-50 hover:text-vred-400 dark:text-neutral-300 dark:hover:text-vred-300"
-          >
+            class="text-vls hover:text-vla dark:text-vds transition duration-300 dark:hover:text-vred-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -777,8 +712,7 @@
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="feather feather-help-circle"
-            >
+              class="feather feather-help-circle">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
@@ -788,14 +722,12 @@
 
         <button
           @click="editInvoice()"
-          class="w-full p-1 mb-2 text-base font-medium transition-colors duration-200 rounded-md shadow-sm submit-button bg-sky-700 text-slate-100 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600"
-        >
+          class="submit-button mb-2 w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
           Edit
         </button>
         <button
           @click="openEditModal = false; editMode = ''"
-          class="w-full p-1 text-base font-medium transition-colors duration-200 bg-red-800 rounded-md shadow-sm submit-button text-slate-100 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
+          class="submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
           Close
         </button>
       </div>
@@ -805,48 +737,42 @@
   <div
     x-show="existingItems.showItemModal"
     x-transition.opacity.duration.300ms
-    class="fixed inset-0 z-50 w-full h-full overflow-y-auto bg-gray-800 bg-opacity-50"
-  >
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="relative w-1/3 mx-auto border rounded-md shadow-lg max-w-1/4 top-1/4 border-slate-300 bg-vdark-600 text-vwhite-50 dark:border-neutral-300 dark:bg-zinc-900 dark:text-neutral-300"
-    >
+      class="max-w-1/4 bg-vlp text-vls dark:text-vds relative top-1/4 mx-auto w-1/3 rounded-md border border-slate-300 shadow-lg dark:border-neutral-300 dark:bg-zinc-900">
       <div
         class="text-center"
         @click.outside="existingItems.showItemModal = false; existingItems.openDropdown = false"
-        @keydown.escape.window="existingItems.showItemModal = false; existingItems.openDropdown = false"
-      >
+        @keydown.escape.window="existingItems.showItemModal = false; existingItems.openDropdown = false">
         <!-- MARK:Existing items dropdown -->
         <div class="p-4">
           <h3 class="text-xl font-medium" x-text="`${selectedClient.name}'s Items`"></h3>
-          <p class="mb-2 text-sm font-normal text-center">Add from existing styles and samples</p>
+          <p class="mb-2 text-center text-sm font-normal">Add from existing styles and samples</p>
           <div class="relative" @click.outside="existingItems.openDropdown = false">
             <button
               x-ref="existingItemsDropdown"
               @click="existingItems.openDropdown = !existingItems.openDropdown"
-              :class="{'border-vred-400 dark:border-vred-300 text-vred-400 dark:text-vred-300': existingItems.openDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-neutral-300': !existingItems.openDropdown}"
-              class="w-full p-2 mb-4 transition duration-300 border rounded-md text-vwhite-50 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:border-neutral-300 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300"
-            >
+              :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': existingItems.openDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !existingItems.openDropdown}"
+              class="text-vls hover:border-vla hover:text-vla dark:text-vds mb-4 w-full rounded-md border p-2 transition duration-300 focus:outline-none dark:border-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300">
               Items
             </button>
             <div
               x-anchor.offset.5="$refs.existingItemsDropdown"
               x-show="existingItems.openDropdown"
               x-collapse.duration.500ms
-              class="w-full overflow-auto border rounded shadow-lg table-scrollbar max-h-80 border-slate-300 bg-vdark-500 dark:border-neutral-300 dark:bg-neutral-600"
-            >
-              <table class="w-full text-vwhite-50 dark:text-neutral-300">
-                <thead class="sticky top-0 bg-vdark-600 dark:bg-zinc-900">
+              class="table-scrollbar bg-vlp max-h-80 w-full overflow-auto rounded border border-slate-300 shadow-lg dark:border-neutral-300 dark:bg-neutral-600">
+              <table class="text-vls dark:text-vds w-full">
+                <thead class="bg-vlp sticky top-0 dark:bg-zinc-900">
                   <tr class="sticky w-full">
                     <input
                       type="text"
-                      class="w-full p-1 text-center transition-all duration-300 bg-vdark-600 text-vred-400 placeholder-vwhite-50 hover:placeholder-vred-400 focus:outline-vred-400 dark:bg-zinc-900 dark:text-vred-300 dark:placeholder-neutral-300 dark:hover:placeholder-vred-300 dark:focus:outline-vred-300"
+                      class="bg-vlp placeholder-vls text-vla hover:placeholder-vla focus:outline-vla w-full p-1 text-center transition-all duration-300 dark:bg-zinc-900 dark:text-vred-300 dark:placeholder-neutral-300 dark:hover:placeholder-vred-300 dark:focus:outline-vred-300"
                       placeholder="Seach items..."
                       x-model="existingItems.searchQuery"
-                      @input="searchItems()"
-                    />
+                      @input="searchItems()" />
                   </tr>
                   <tr>
-                    <th class="p-1 ml-2 text-left">Name</th>
+                    <th class="ml-2 p-1 text-left">Name</th>
                     <th class="p-1 text-right">Price</th>
                     <th class="p-1 text-right">Time</th>
                     <th class="p-1 text-center">Qty</th>
@@ -855,12 +781,11 @@
                 <tbody>
                   <template x-for="item in existingItems.filteredItems" :key="item.frontEndId">
                     <tr
-                      class="transition duration-200 cursor-default bg-slate-600 hover:bg-slate-500 dark:bg-neutral-700 dark:hover:bg-neutral-500"
-                      :id="item.frontEndId"
-                    >
-                      <td class="p-1 text-sm text-left" x-text="item.name"></td>
-                      <td class="p-1 text-sm text-right" x-text="item.price"></td>
-                      <td class="p-1 text-sm text-right" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
+                      class="cursor-default bg-slate-600 transition duration-200 hover:bg-slate-500 dark:bg-neutral-700 dark:hover:bg-neutral-500"
+                      :id="item.frontEndId">
+                      <td class="p-1 text-left text-sm" x-text="item.name"></td>
+                      <td class="p-1 text-right text-sm" x-text="item.price"></td>
+                      <td class="p-1 text-right text-sm" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
                       <td class="p-1 text-sm">
                         <div class="flex items-center justify-center">
                           <input
@@ -870,12 +795,10 @@
                             maxlength="10"
                             placeholder="1"
                             x-model.number="item.quantity"
-                            class="w-10 rounded border border-slate-300 bg-slate-600 p-0.5 text-vwhite-50 placeholder-vwhite-100 transition duration-300 hover:border-vdark-400 hover:bg-slate-400 focus:border-vdark-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:text-vpalered-300 dark:placeholder-vpalered-300 dark:hover:border-vred-300 dark:focus:border-vred-300"
-                          />
+                            class="hover:border-vlp-400 focus:border-vlp-400 text-vls placeholder-vls-100 w-10 rounded border border-slate-300 bg-slate-600 p-0.5 transition duration-300 hover:bg-slate-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:text-vpalered-300 dark:placeholder-vpalered-300 dark:hover:border-vred-300 dark:focus:border-vred-300" />
                           <button
                             @click="addNewItem(item); applyEffect(item)"
-                            class="ml-2 transition druation-300 text-vwhite-50 hover:text-blue-400 dark:text-neutral-300 dark:hover:text-blue-400"
-                          >
+                            class="druation-300 text-vls dark:text-vds ml-2 transition hover:text-blue-400 dark:hover:text-blue-400">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="18"
@@ -886,8 +809,7 @@
                               stroke-width="2"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              class="feather feather-plus-circle"
-                            >
+                              class="feather feather-plus-circle">
                               <circle cx="12" cy="12" r="10"></circle>
                               <line x1="12" y1="8" x2="12" y2="16"></line>
                               <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -904,8 +826,8 @@
 
           <h2 class="text-xl font-medium">Add New Item</h2>
           <!-- MARK: Labels for new item type -->
-          <p class="mb-2 text-sm font-normal text-center">Chose item type</p>
-          <div class="flex mb-4 justify-evenly">
+          <p class="mb-2 text-center text-sm font-normal">Chose item type</p>
+          <div class="mb-4 flex justify-evenly">
             <!-- STYLE -->
             <label for="style" class="modal-input-style flex !w-28 items-center p-4">
               <div class="flex items-center">
@@ -918,8 +840,7 @@
                   x-model="newItem.type"
                   @click="setTimeout(() => {
                       $nextTick(() => {$refs.newStyleName.focus()})
-                    }, 300)"
-                />
+                    }, 300)" />
                 <span class="pl-4">Style</span>
               </div>
             </label>
@@ -935,15 +856,14 @@
                   x-model="newItem.type"
                   @click="setTimeout(() => {
                       $nextTick(() => {$refs.newSampleName.focus()})
-                    }, 300)"
-                />
+                    }, 300)" />
                 <span>Sample</span>
               </div>
             </label>
           </div>
           <!-- MARK: Add New Style  -->
           <div x-show="newItem.type === 'style'" x-collapse.duration.300ms>
-            <p class="mb-2 text-lg font-medium text-center text-vwhite-50 dark:text-neutral-300">Style</p>
+            <p class="text-vls dark:text-vds mb-2 text-center text-lg font-medium">Style</p>
 
             <input
               x-model="newItem.name"
@@ -952,8 +872,7 @@
               type="text"
               placeholder="Style Name"
               class="modal-input-style mb-2 w-full !p-1 text-sm"
-              required
-            />
+              required />
             <input
               x-model="newItem.price"
               name="price"
@@ -962,8 +881,7 @@
               step="0.01"
               placeholder="Individual Price"
               class="modal-input-style mb-2 w-full !p-1 text-sm"
-              required
-            />
+              required />
             <input
               x-model="newItem.quantity"
               name="quantity"
@@ -972,24 +890,21 @@
               step="1"
               placeholder="Quantity"
               class="modal-input-style mb-4 w-full !p-1 text-sm"
-              required
-            />
+              required />
             <button
               type="submit"
-              class="w-1/3 p-1 mr-4 text-base font-medium transition-colors duration-200 rounded-md shadow-sm submit-button bg-sky-700 text-slate-100 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600"
-            >
+              class="submit-button mr-4 w-1/3 rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
               Add
             </button>
             <button
               @click="newItem.type = ''"
-              class="w-1/3 p-1 text-base font-medium transition-colors duration-200 bg-red-800 rounded-md shadow-sm submit-button text-slate-100 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+              class="submit-button w-1/3 rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
               Back
             </button>
           </div>
           <!-- MARK: Add Sample -->
           <div x-show="newItem.type === 'sample'" x-collapse.duration.300ms>
-            <p class="mb-2 text-xl font-medium text-center text-vwhite-50 dark:text-neutral-300">Sample</p>
+            <p class="text-vls dark:text-vds mb-2 text-center text-xl font-medium">Sample</p>
             <input
               x-model="newItem.name"
               x-ref="newSampleName"
@@ -997,8 +912,7 @@
               type="text"
               placeholder="Sample Name"
               class="modal-input-style mb-2 w-full !p-1 text-sm"
-              required
-            />
+              required />
             <input
               x-model="newItem.price"
               name="price"
@@ -1007,8 +921,7 @@
               step="0.01"
               placeholder="Individual Price"
               class="modal-input-style mb-2 w-full !p-1 text-sm"
-              required
-            />
+              required />
 
             <input
               x-model="newItem.time"
@@ -1018,8 +931,7 @@
               step="0.1"
               placeholder="Time"
               class="modal-input-style mb-2 w-full !p-1 text-sm"
-              required
-            />
+              required />
             <input
               x-model="newItem.quantity"
               name="quantity"
@@ -1028,17 +940,14 @@
               step="1"
               placeholder="Quantity"
               class="modal-input-style mb-4 w-full !p-1 text-sm"
-              required
-            />
+              required />
             <button
-              class="w-1/3 p-1 mr-4 text-base font-medium transition-colors duration-200 rounded-md shadow-sm submit-button bg-sky-700 text-slate-100 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600"
-            >
+              class="submit-button mr-4 w-1/3 rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
               Add
             </button>
             <button
               @click="newItem.type = ''"
-              class="w-1/3 p-1 text-base font-medium transition-colors duration-200 bg-red-800 rounded-md shadow-sm submit-button text-slate-100 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+              class="submit-button w-1/3 rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
               Back
             </button>
           </div>
@@ -1051,37 +960,32 @@
   <div
     x-show="showClientModal"
     x-transition.opacity.duration.300ms
-    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50"
-  >
+    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <div
-      class="relative z-30 w-1/3 mx-auto transition duration-300 border rounded-md shadow-lg top-1/3 border-slate-300 bg-vdark-600 text-vwhite-50 dark:border-neutral-300 dark:bg-zinc-900 dark:text-neutral-300"
+      class="bg-vlp text-vls dark:text-vds relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900"
       @keydown.escape.window="showClientModal = false"
-      @click.outside="showClientModal = false"
-    >
+      @click.outside="showClientModal = false">
       <div class="p-6">
-        <h2 class="mb-4 text-xl font-medium text-center">Select Client</h2>
+        <h2 class="mb-4 text-center text-xl font-medium">Select Client</h2>
         <div class="relative" @click.outside="showDropdown = false">
           <button
             x-ref="clientModalButton"
             @click="showDropdown = !showDropdown"
-            :class="{'border-vred-400 dark:border-vred-300 text-vred-400 dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-neutral-300': !showDropdown}"
-            class="w-full p-2 mb-4 transition duration-300 border rounded-md text-vwhite-50 hover:border-vred-400 hover:text-vred-400 focus:outline-none dark:border-neutral-300 dark:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300"
-          >
+            :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !showDropdown}"
+            class="text-vls hover:border-vla hover:text-vla dark:text-vds mb-4 w-full rounded-md border p-2 transition duration-300 focus:outline-none dark:border-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300">
             Clients
           </button>
           <div
             x-anchor.offset.5="$refs.clientModalButton"
             x-show="showDropdown"
             x-collapse.duration.500ms
-            class="table-scrollbar max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vdark-500 shadow-lg dark:bg-neutral-500"
-          >
+            class="table-scrollbar bg-vlp max-h-[300px] w-full overflow-auto rounded border border-slate-400 shadow-lg dark:bg-neutral-500">
             <ul>
               <template x-for="client in clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
-                  class="p-2 cursor-pointer text-vwhite-50 hover:bg-slate-600 dark:text-neutral-300 dark:hover:bg-neutral-600"
-                  x-text="client.name"
-                ></li>
+                  class="text-vls dark:text-vds cursor-pointer p-2 hover:bg-slate-600 dark:hover:bg-neutral-600"
+                  x-text="client.name"></li>
               </template>
             </ul>
           </div>
@@ -1089,8 +993,7 @@
         <div class="flex items-center justify-center">
           <button
             @click="showClientModal = !showClientModal"
-            class="w-1/2 p-1 text-base font-medium transition-colors duration-200 bg-red-800 rounded-md shadow-sm submit-button text-slate-100 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
+            class="submit-button w-1/2 rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
             Close
           </button>
         </div>
