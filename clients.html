@@ -6,7 +6,7 @@
         <input
           type="text"
           placeholder="Search Clients..."
-          class="srch-style transition-all duration-500"
+          class="transition-all duration-500 srch-style"
           x-model="clientSearch"
           @input="searchClients"
           x-transition />
@@ -16,7 +16,7 @@
         @click="showAddClientModal = true; 
         if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
         @keydown.escape.window="showAddClientModal = false"
-        class="butt-style flex items-baseline justify-center">
+        class="flex items-baseline justify-center butt-style">
         <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('user-plus.svg')"></div>
         <span class="flex self-center">Add Client</span>
       </button>
@@ -25,21 +25,21 @@
   <div class="flex justify-center p-6">
     <!-- Clients Table -->
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
-      <thead class="rounded bg-vlp text-base font-medium text-vls dark:bg-vdp dark:text-vds">
+      <thead class="text-base font-medium rounded bg-vlp text-vls dark:bg-vdp dark:text-vds">
         <tr>
-          <th class="max-w-1/12 hidden">ID</th>
-          <th id="sortNameClients" class="max-w-2/12 round-left-border p-2 pl-2 text-left text-lg">Name</th>
-          <th class="max-w-2/12 p-2 text-left text-base">Company Name</th>
-          <th class="max-w-2/12 p-2 text-left text-base">Address</th>
-          <th class="max-w-2/12 p-2 text-left text-base">Email</th>
-          <th class="max-w-2/12 round-right-border p-2 pr-2 text-center text-base">Actions</th>
+          <th class="hidden max-w-1/12">ID</th>
+          <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Company Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Address</th>
+          <th class="p-2 text-base text-left max-w-2/12">Email</th>
+          <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-vlp2 text-vls dark:bg-vds3neu700">
         <template x-for="client in filteredClients" :key="client.id">
           <tr class="border-hover-ring-efect">
             <td class="hidden" x-text="client.id"></td>
-            <td class="round-left-border p-2 text-sm">
+            <td class="p-2 text-sm round-left-border">
               <template x-if="client.isEditing">
                 <input type="text" x-model="client.name" class="table-edit-input-style" />
               </template>
@@ -71,7 +71,7 @@
                 <span x-text="client.email" class="mr-6"></span>
               </template>
             </td>
-            <td class="round-right-border text-center text-sm">
+            <td class="text-sm text-center round-right-border">
               <template x-if="client.isEditing">
                 <div class="flex items-center justify-evenly">
                   <button @click="saveClient(client)" class="table-interaction-icon-blue">
@@ -80,7 +80,7 @@
                       x-html="$store.svgCache.getSvgContent('save.svg')"></div>
                   </button>
                   <button
-                    class="table-interaction-icon-red flex items-center justify-center"
+                    class="flex items-center justify-center table-interaction-icon-red"
                     @click="cancelEdit(client)"
                     class="table-interaction-icon-red">
                     <div x-html="$store.svgCache.getSvgContent('x-circle.svg')"></div>
@@ -111,7 +111,7 @@
   <div
     x-show="showAddClientModal"
     x-transition.opacity.duration.300
-    class="outter-modal-overlay-blur-fixed z-50"
+    class="z-50 outter-modal-overlay-blur-fixed"
     id="my-modal">
     <!-- Modal content -->
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
@@ -125,42 +125,34 @@
               name="name"
               type="text"
               placeholder="Name"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newClient.company_name"
               name="company_name"
               type="text"
               placeholder="Company Name"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newClient.address"
               name="address"
               type="text"
               placeholder="Address"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newClient.email"
               name="email"
               type="email"
               placeholder="Email"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
-            <button
-              type="submit"
-              class="close-modal-button submit-button w-full rounded-md bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-vlp2">
-              Add
-            </button>
+            <div class="flex justify-end gap-4 mt-2">
+              <button type="submit" class="text-vds3light">Add</button>
+              <button @click="showAddClientModal = false" class="">Close</button>
+            </div>
           </form>
-          <div class="mt-2 items-center">
-            <button
-              @click="showAddClientModal = false"
-              class="close-modal-button submit-button w-full rounded-md bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-600">
-              Close
-            </button>
-          </div>
         </div>
       </div>
     </div>

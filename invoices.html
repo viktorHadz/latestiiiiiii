@@ -1,5 +1,5 @@
 <div x-data="invoiceManager" class="relative w-full">
-  <div class="border-vlp mb-4 rounded-md border p-2 dark:border-neutral-600">
+  <div class="mb-4 rounded-md border border-vlp p-2 dark:border-neutral-600">
     <div class="flex justify-between align-baseline">
       <div>
         <button @click="openModal" class="butt-style flex items-baseline">
@@ -23,7 +23,7 @@
       <!-- Selected Client -->
       <div class="flex align-middle">
         <h3
-          class="decoration text-vlp-700 decoration-vlp-700 dark:text-vds cursor-default self-center font-medium underline dark:decoration-vred-300"
+          class="decoration text-vlp-700 decoration-vlp-700 cursor-default self-center font-medium underline dark:text-vds dark:decoration-vred-300"
           x-text="`Client: ${selectedClient.name}`"></h3>
       </div>
     </div>
@@ -34,7 +34,7 @@
       class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
       <!-- Clients Modal Body -->
       <div
-        class="bg-vlp text-vls dark:text-vds relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900"
+        class="relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 bg-vlp text-vls shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900 dark:text-vds"
         @keydown.escape.window="showClientModal = false"
         @click.outside="showClientModal = false">
         <div class="p-6">
@@ -44,19 +44,19 @@
               x-ref="clientModalButton"
               @click="showDropdown = !showDropdown"
               :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !showDropdown}"
-              class="text-vls hover:border-vla hover:text-vla dark:text-vds mb-4 w-full rounded-md border p-2 transition duration-300 focus:outline-none dark:border-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300">
+              class="mb-4 w-full rounded-md border p-2 text-vls transition duration-300 hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
               Clients
             </button>
             <div
               x-anchor.offset.5="$refs.clientModalButton"
               x-show="showDropdown"
               x-collapse.duration.500ms
-              class="table-scrollbar bg-vlp max-h-[300px] w-full overflow-auto rounded border border-slate-400 shadow-lg dark:bg-neutral-500">
+              class="table-scrollbar max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vlp shadow-lg dark:bg-neutral-500">
               <ul>
                 <template x-for="client in clients" :key="client.id">
                   <li
                     @click="selectClient(client)"
-                    class="text-vls dark:text-vds cursor-pointer p-2 hover:bg-slate-600 dark:hover:bg-neutral-600"
+                    class="cursor-pointer p-2 text-vls hover:bg-slate-600 dark:text-vds dark:hover:bg-neutral-600"
                     x-text="client.name"></li>
                 </template>
               </ul>
@@ -79,9 +79,9 @@
     x-transition.opacity.duration.300
     class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="bg-vlp text-vlp dark:text-vds relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 shadow-lg dark:bg-zinc-900">
+      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vlp text-vlp shadow-lg dark:bg-zinc-900 dark:text-vds">
       <div class="text-center" @click.outside="showAddStyleModal = false">
-        <div class="text-vls p-6">
+        <div class="p-6 text-vls">
           <h3 class="mb-4 text-center text-xl font-medium">Add Style</h3>
           <form @submit.prevent="invoAddStyle">
             <input
@@ -124,9 +124,9 @@
     x-transition.opacity.duration.300
     class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="bg-vlp text-vlp dark:text-vds relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 shadow-lg dark:bg-zinc-900">
+      class="relative top-1/4 mx-auto w-96 rounded-md border border-slate-300 bg-vlp text-vlp shadow-lg dark:bg-zinc-900 dark:text-vds">
       <div class="text-center" @click.outside="showAddSampleModal = false">
-        <div class="text-vls dark:text-vds p-6">
+        <div class="p-6 text-vls dark:text-vds">
           <h3 class="mb-4 text-center text-xl font-medium">Add Sample</h3>
           <form @submit.prevent="invoAddSample">
             <input
@@ -180,7 +180,7 @@
       <div class="relative mb-4 w-full max-w-full">
         <div
           x-ref="tabButtons"
-          class="darl:text-vls border-vlp text-vlp dark:text-vls relative inline-grid h-12 w-full select-none grid-cols-2 items-center justify-center rounded-lg border bg-vpalered-300 p-2 dark:bg-neutral-600">
+          class="darl:text-vls bg-vpalered-300 relative inline-grid h-12 w-full select-none grid-cols-2 items-center justify-center rounded-lg border border-vlp p-2 text-vlp dark:bg-neutral-600 dark:text-vls">
           <button
             :id="$id(tabId)"
             @click="tabButtonClicked($el);"
@@ -198,12 +198,12 @@
             <span class="flex items-center pb-2">Samples</span>
           </button>
           <div x-ref="tabMarker" class="absolute left-0 z-10 h-full w-1/2 duration-300 ease-out" x-cloak>
-            <div class="bg-vlp h-full w-full rounded-md shadow-sm dark:bg-zinc-900"></div>
+            <div class="h-full w-full rounded-md bg-vlp shadow-sm dark:bg-zinc-900"></div>
           </div>
         </div>
 
         <div
-          class="content border-vlp relative mt-2 rounded-md border p-4 text-xs text-gray-400 dark:border-neutral-600">
+          class="content relative mt-2 rounded-md border border-vlp p-4 text-xs text-gray-400 dark:border-neutral-600">
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
             <!-- MARK: TAB 1 - STYLES -->
             <div class="w-full">
@@ -235,7 +235,7 @@
                   class="w-[calc(100%-10px)] table-auto border-separate text-white"
                   style="max-height: 500px; border-spacing: 0 10px">
                   <thead
-                    class="bg-vlp text-vls dark:text-vds sticky top-0 rounded text-left text-base font-medium dark:bg-zinc-900">
+                    class="sticky top-0 rounded bg-vlp text-left text-base font-medium text-vls dark:bg-zinc-900 dark:text-vds">
                     <tr>
                       <th
                         class="round-left-border border-clipper w-4/5 border border-transparent p-2 text-lg dark:decoration-neutral-300"
@@ -250,7 +250,7 @@
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="text-vls dark:text-vds bg-slate-600 pr-2 dark:bg-neutral-700">
+                  <tbody class="bg-slate-600 pr-2 text-vls dark:bg-neutral-700 dark:text-vds">
                     <template x-for="style in filteredStyles" :key="style.id">
                       <tr
                         :id="'rowid-' + style.id"
@@ -283,7 +283,7 @@
                               placeholder="1"
                               x-model.number="quantities[style.id]"
                               @input="handleInvoQtySubmit(style)"
-                              class="hover:border-vlp-400 focus:border-vlp-400 text-vls placeholder-vls-100 w-10 rounded border border-slate-300 bg-slate-500 p-0.5 transition duration-300 hover:bg-slate-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:text-vpalered-300 dark:placeholder-vpalered-300 dark:hover:border-vred-300 dark:focus:border-vred-300" />
+                              class="hover:border-vlp-400 focus:border-vlp-400 placeholder-vls-100 dark:text-vpalered-300 dark:placeholder-vpalered-300 w-10 rounded border border-slate-300 bg-slate-500 p-0.5 text-vls transition duration-300 hover:bg-slate-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:hover:border-vred-300 dark:focus:border-vred-300" />
                           </div>
                         </td>
                       </tr>
@@ -316,10 +316,10 @@
             </div>
             <div class="table-scrollbar overflow-y-auto" style="max-height: 500px">
               <table
-                class="text-vls w-[calc(100%-10px)] table-auto border-separate"
+                class="w-[calc(100%-10px)] table-auto border-separate text-vls"
                 style="max-height: 500px; border-spacing: 0 10px">
                 <thead
-                  class="bg-vlp text-vls dark:text-vds sticky top-0 rounded text-left text-base font-medium dark:bg-zinc-900">
+                  class="sticky top-0 rounded bg-vlp text-left text-base font-medium text-vls dark:bg-zinc-900 dark:text-vds">
                   <tr>
                     <th
                       class="round-left-border border-clipper w-3/4 border border-transparent p-2 text-lg"
@@ -335,7 +335,7 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody class="text-vls bg-slate-600 pr-2 dark:bg-neutral-700">
+                <tbody class="bg-slate-600 pr-2 text-vls dark:bg-neutral-700">
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr
                       :id="'sampleRowId-' + sample.id"
@@ -369,7 +369,7 @@
                             placeholder="1"
                             x-model.number="quantities[sample.id]"
                             @input="handleInvoQtySubmit(sample)"
-                            class="focus:border-vlp text-vls placeholder-vls-100 w-10 rounded border border-slate-300 bg-slate-500 p-0.5 transition duration-300 hover:border-slate-100 hover:bg-slate-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:text-vpalered-300 dark:placeholder-vpalered-300 dark:hover:border-vred-300 dark:focus:border-vred-300" />
+                            class="placeholder-vls-100 dark:text-vpalered-300 dark:placeholder-vpalered-300 w-10 rounded border border-slate-300 bg-slate-500 p-0.5 text-vls transition duration-300 hover:border-slate-100 hover:bg-slate-400 focus:border-vlp focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:hover:border-vred-300 dark:focus:border-vred-300" />
                         </div>
                       </td>
                     </tr>
@@ -396,7 +396,7 @@
         <!--  Invoice Items -->
         <div class="text-center">
           <h2
-            class="text- text-vlp-700 decoration-vla dark:text-vds cursor-default self-center text-xl font-semibold tracking-wider underline decoration-4 underline-offset-2 dark:decoration-neutral-300">
+            class="text- text-vlp-700 cursor-default self-center text-xl font-semibold tracking-wider underline decoration-vla decoration-4 underline-offset-2 dark:text-vds dark:decoration-neutral-300">
             Invoice Items
           </h2>
         </div>
@@ -410,7 +410,7 @@
           class="w-3/4 min-w-full table-auto border-separate text-white"
           style="max-height: 350px; border-spacing: 0 10px">
           <thead
-            class="bg-vlp text-vls dark:text-vds sticky top-0 rounded text-left text-base font-medium dark:bg-zinc-900">
+            class="sticky top-0 rounded bg-vlp text-left text-base font-medium text-vls dark:bg-zinc-900 dark:text-vds">
             <tr>
               <th
                 class="round-left-border border-clipper w-3/4 border border-transparent p-2 text-lg"
@@ -427,7 +427,7 @@
               </th>
             </tr>
           </thead>
-          <tbody class="text-vls bg-slate-600 dark:bg-neutral-700">
+          <tbody class="bg-slate-600 text-vls dark:bg-neutral-700">
             <template x-for="item in filteredInvoiceItems" :key="item.uniqueId">
               <tr
                 class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white">
@@ -438,7 +438,7 @@
                 <td class="round-right-border px-2 py-1 text-left text-sm">
                   <button
                     @click="removeItemFromInvoice(item)"
-                    class="dark:hover:text-vla mr-2 p-1 text-sm text-white transition duration-300 hover:text-red-400">
+                    class="mr-2 p-1 text-sm text-white transition duration-300 hover:text-red-400 dark:hover:text-vla">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -462,11 +462,11 @@
       </div>
       <!-- MARK: TOTALS -->
       <div
-        class="bg-vlp mt-4 rounded-lg border border-slate-300 p-4 align-top dark:border-zinc-900 dark:bg-neutral-600">
+        class="mt-4 rounded-lg border border-slate-300 bg-vlp p-4 align-top dark:border-zinc-900 dark:bg-neutral-600">
         <div
-          class="border-vls grid grid-cols-4 items-end rounded-md border bg-slate-600 p-4 dark:border-neutral-600 dark:bg-zinc-900">
+          class="grid grid-cols-4 items-end rounded-md border border-vls bg-slate-600 p-4 dark:border-neutral-600 dark:bg-zinc-900">
           <!--MARK: MAIN PRICE MENU COL 1 -->
-          <div class="text-vls dark:text-vds flex-col self-center align-middle text-lg font-medium">
+          <div class="flex-col self-center align-middle text-lg font-medium text-vls dark:text-vds">
             <h3>
               Subtotal:
               <span x-text="'£' + subtotal"></span>
@@ -486,7 +486,7 @@
                 x-show="discount != 0"
                 x-transition.duration.300
                 @click="resetDiscounts();"
-                class="dark:hover: text-vls hover:text-vla dark:text-vds ml-2 transition duration-300 dark:hover:text-vred-300">
+                class="dark:hover: ml-2 text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
@@ -521,7 +521,7 @@
               <h3
                 x-show="discount !== 0"
                 x-transition.duration.300
-                class="text-vls ml-1 line-through dark:text-neutral-400">
+                class="ml-1 text-vls line-through dark:text-neutral-400">
                 <span x-text="preDiscountTotal"></span>
               </h3>
             </div>
@@ -538,7 +538,7 @@
                 x-show="deposit !== 0"
                 x-transition.opacity.duration.300
                 @click="resetDeposit();"
-                class="dark:hover: text-vls hover:text-vla dark:text-vds ml-2 transition duration-300 dark:hover:text-vred-300">
+                class="dark:hover: ml-2 text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
@@ -593,10 +593,10 @@
                 x-transition:leave-end="opacity-0 -translate-y-10"
                 class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
                 <div
-                  class="bg-vlp text-vls dark:text-vds overflow-hidden rounded-md border border-slate-300 px-8 py-4 text-sm dark:border-vred-300 dark:bg-zinc-900">
+                  class="overflow-hidden rounded-md border border-slate-300 bg-vlp px-8 py-4 text-sm text-vls dark:border-vred-300 dark:bg-zinc-900 dark:text-vds">
                   <div class="relative">
                     <div class="mb-2 flex flex-col items-center justify-center">
-                      <h3 class="text-vls dark:text-vds mb-2 text-center text-lg font-medium">Discount</h3>
+                      <h3 class="mb-2 text-center text-lg font-medium text-vls dark:text-vds">Discount</h3>
                       <!-- Input Value Discount -->
                       <div class="relative">
                         <!-- 0 SYMBOL CONTROL WITH PADDING -->
@@ -605,7 +605,7 @@
                           type="number"
                           x-model.number="temporaryDiscount"
                           x-ref="discountInput"
-                          class="focus:border-v-red-400 hover:text-vls focus:text-vls w-full rounded border-slate-300 bg-slate-500 py-1 pl-12 text-gray-400 transition duration-300 hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
+                          class="focus:border-v-red-400 w-full rounded border-slate-300 bg-slate-500 py-1 pl-12 text-gray-400 transition duration-300 hover:bg-slate-600 hover:text-vls focus:bg-slate-600 focus:text-vls focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
                           :value="temporaryDiscount === 0 ? 0 : temporaryDiscount"
                           :placeholder="temporaryDiscount === 0 ? 'Enter value' : 0"
                           @input="handleDiscountInput(event); calculateTemporaryValues(); showTemporarySubtotalAndDiscount();" />
@@ -714,7 +714,7 @@
                   </div>
                 </div>
                 <div
-                  class="border-t-vlp relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent dark:border-t-zinc-900"
+                  class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                   aria-hidden="true"></div>
                 <div
                   class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-300 dark:border-t-vred-300"
@@ -760,12 +760,12 @@
                 x-transition:leave-end="opacity-0 -translate-y-10"
                 class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
                 <div
-                  class="bg-vlp text-vls dark:text-vds overflow-hidden rounded-md border border-slate-300 px-4 py-4 text-sm dark:border-vred-300 dark:bg-zinc-900">
-                  <h3 class="text-vls dark:text-vds text-center text-lg font-medium">Deposit</h3>
+                  class="overflow-hidden rounded-md border border-slate-300 bg-vlp px-4 py-4 text-sm text-vls dark:border-vred-300 dark:bg-zinc-900 dark:text-vds">
+                  <h3 class="text-center text-lg font-medium text-vls dark:text-vds">Deposit</h3>
                   <div class="relative my-4">
                     <input
                       x-ref="tempDeposit"
-                      class="focus:border-v-red-400 hover:text-vls focus:text-vls w-full rounded border-slate-300 bg-slate-500 py-1 pl-12 text-gray-400 transition duration-300 hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
+                      class="focus:border-v-red-400 w-full rounded border-slate-300 bg-slate-500 py-1 pl-12 text-gray-400 transition duration-300 hover:bg-slate-600 hover:text-vls focus:bg-slate-600 focus:text-vls focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
                       type="number"
                       min="0"
                       placeholder="Enter deposit..."
@@ -845,7 +845,7 @@
                   </div>
                 </div>
                 <div
-                  class="border-t-vlp relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent dark:border-t-zinc-900"
+                  class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                   aria-hidden="true"></div>
                 <div
                   class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-300 dark:border-t-vred-300"
@@ -865,7 +865,7 @@
                 :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'"
                 x-show="invoiceNote != ''">
                 <div
-                  class="text-vls hover:fill-vls hover:text-vla dark:text-vds flex align-top transition-colors duration-300 dark:hover:fill-vred-300 dark:hover:text-vred-300"
+                  class="flex align-top text-vls transition-colors duration-300 hover:fill-vls hover:text-vla dark:text-vds dark:hover:fill-vred-300 dark:hover:text-vred-300"
                   :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -886,7 +886,7 @@
                   </svg>
                   <button
                     @click="removeMessage()"
-                    class="fade-in-hidden fade-out-hidden text-vls hover:text-vla flex justify-items-end transition duration-300 dark:text-vred-300"
+                    class="fade-in-hidden fade-out-hidden flex justify-items-end text-vls transition duration-300 hover:text-vla dark:text-vred-300"
                     x-ref="removeBtn">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -912,9 +912,9 @@
                   x-cloak>
                   <div
                     x-show="hoverCardHovered"
-                    class="bg-vlp flex h-auto w-[full] items-start space-x-3 rounded-md border border-slate-300 p-4 shadow-sm dark:border-neutral-600 dark:bg-zinc-900"
+                    class="flex h-auto w-[full] items-start space-x-3 rounded-md border border-slate-300 bg-vlp p-4 shadow-sm dark:border-neutral-600 dark:bg-zinc-900"
                     x-transition>
-                    <div class="text-vls flex h-full w-full dark:text-vred-300">
+                    <div class="flex h-full w-full text-vls dark:text-vred-300">
                       <div class="flex items-center justify-center text-sm">
                         <p
                           x-text="invoiceNote"
@@ -962,7 +962,7 @@
                   x-transition:leave-end="opacity-0 -translate-y-10"
                   class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
                   <div
-                    class="bg-vlp text-vls dark:text-vds overflow-hidden rounded-md border border-slate-300 px-4 py-4 text-sm dark:border-vred-300 dark:bg-zinc-900">
+                    class="overflow-hidden rounded-md border border-slate-300 bg-vlp px-4 py-4 text-sm text-vls dark:border-vred-300 dark:bg-zinc-900 dark:text-vds">
                     <!-- TOOLTIP QUESTIONMARK -->
                     <div class="absolute block -translate-x-1.5 -translate-y-1">
                       <div
@@ -1010,7 +1010,7 @@
                     <!-- Custom Message for Deposit -->
                     <div>
                       <div>
-                        <h3 class="text-vls dark:text-vds mb-2 text-center text-lg font-medium">Client Note</h3>
+                        <h3 class="mb-2 text-center text-lg font-medium text-vls dark:text-vds">Client Note</h3>
                       </div>
                       <input
                         type="text"
@@ -1018,11 +1018,11 @@
                         x-model="invoiceNotePopover"
                         x-ref="invoiceNotePopover"
                         @input="trackLength()"
-                        class="focus:border-v-red-400 text-vls-300 focus:text-vls mb-2 w-full rounded border-slate-300 bg-slate-500 py-1 text-center text-base font-medium transition duration-300 hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
+                        class="focus:border-v-red-400 text-vls-300 mb-2 w-full rounded border-slate-300 bg-slate-500 py-1 text-center text-base font-medium transition duration-300 hover:bg-slate-600 focus:bg-slate-600 focus:text-vls focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
                         placeholder="Invoice note..." />
                     </div>
                     <div class="mb-2">
-                      <h1 x-transition.duration.300 class="text-small text-vls text-center dark:text-vred-300">
+                      <h1 x-transition.duration.300 class="text-small text-center text-vls dark:text-vred-300">
                         Characters:
                         <span x-text="noteMaxLength"></span>
                         /
@@ -1052,7 +1052,7 @@
                     </div>
                   </div>
                   <div
-                    class="border-t-vlp relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent dark:border-t-zinc-900"
+                    class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                     aria-hidden="true"></div>
                   <div
                     class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-300 dark:border-t-vred-300"

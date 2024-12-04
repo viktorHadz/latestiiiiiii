@@ -1,15 +1,15 @@
 // tooltip.js
 
 class VikTooltip extends HTMLElement {
-    constructor() {
-      super();
-  
-      // Attach Shadow DOM
-      const shadowRoot = this.attachShadow({ mode: 'open' });
-  
-      // Create the template for the tooltip
-      const template = document.createElement('template');
-      template.innerHTML = `
+  constructor() {
+    super()
+
+    // Attach Shadow DOM
+    const shadowRoot = this.attachShadow({ mode: 'open' })
+
+    // Create the template for the tooltip
+    const template = document.createElement('template')
+    template.innerHTML = `
         <style>
           .tooltip-container {
             position: relative;
@@ -70,33 +70,33 @@ class VikTooltip extends HTMLElement {
           <!-- Tooltip content -->
           <div class="tooltip" id="tooltip"></div>
         </div>
-      `;
-  
-      // Attach the template content to the shadow root
-      shadowRoot.appendChild(template.content.cloneNode(true));
-  
-      // Store a reference to the tooltip element
-      this.tooltip = shadowRoot.getElementById('tooltip');
-    }
-  
-    connectedCallback() {
-      // Set the tooltip text from the attribute
-      this.tooltip.textContent = this.getAttribute('tooltip-text') || 'Tooltip text';
-  
-      // Bind mouse events to show and hide the tooltip
-      this.addEventListener('mouseenter', this.showTooltip.bind(this));
-      this.addEventListener('mouseleave', this.hideTooltip.bind(this));
-    }
-  
-    showTooltip() {
-      this.tooltip.classList.add('show');
-    }
-  
-    hideTooltip() {
-      this.tooltip.classList.remove('show');
-    }
+      `
+
+    // Attach the template content to the shadow root
+    shadowRoot.appendChild(template.content.cloneNode(true))
+
+    // Store a reference to the tooltip element
+    this.tooltip = shadowRoot.getElementById('tooltip')
   }
-  
-  // Define the custom element
-  customElements.define('vik-tooltip', VikTooltip);
-  
+
+  connectedCallback() {
+    // Set the tooltip text from the attribute
+    this.tooltip.textContent =
+      this.getAttribute('tooltip-text') || 'Tooltip text'
+
+    // Bind mouse events to show and hide the tooltip
+    this.addEventListener('mouseenter', this.showTooltip.bind(this))
+    this.addEventListener('mouseleave', this.hideTooltip.bind(this))
+  }
+
+  showTooltip() {
+    this.tooltip.classList.add('show')
+  }
+
+  hideTooltip() {
+    this.tooltip.classList.remove('show')
+  }
+}
+
+// Define the custom element
+customElements.define('vik-tooltip', VikTooltip)

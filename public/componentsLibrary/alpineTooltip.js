@@ -1,17 +1,17 @@
 // Reusable components using shadow dom
-// Closed shadowRoot vs Open - when it is closed the element can be accessed into the environtment. When it is open it cannot. Guess it depends on what you need. 
+// Closed shadowRoot vs Open - when it is closed the element can be accessed into the environtment. When it is open it cannot. Guess it depends on what you need.
 // Alpine.initTree(this.shadowRoot) allows setting alpine data atributes
 
 // components/vik-tooltip.js
 
 class VikTooltip extends HTMLElement {
   constructor() {
-    super();
+    super()
     // Attach open Shadow DOM (change to 'open' for debugging purposes)
-    const shadowRoot = this.attachShadow({ mode: 'open' });
+    const shadowRoot = this.attachShadow({ mode: 'open' })
 
     // Create the template with Alpine.js integration
-    const template = document.createElement('template');
+    const template = document.createElement('template')
     template.innerHTML = `
       <style>
         .tooltip-container {
@@ -61,25 +61,24 @@ class VikTooltip extends HTMLElement {
           <slot>Hover me</slot>
         </div>
       </div>
-    `;
+    `
 
     // Attach the template content to the shadow root
-    shadowRoot.appendChild(template.content.cloneNode(true));
+    shadowRoot.appendChild(template.content.cloneNode(true))
   }
 
   connectedCallback() {
     // Check if Alpine is ready before initializing
     if (window.Alpine) {
-      Alpine.initTree(this.shadowRoot);
+      Alpine.initTree(this.shadowRoot)
     } else {
       // Wait for Alpine to be ready, then initialize
       document.addEventListener('alpine:init', () => {
-        Alpine.initTree(this.shadowRoot);
-      });
+        Alpine.initTree(this.shadowRoot)
+      })
     }
   }
 }
 
 // Define the custom element
-customElements.define('vik-tooltip', VikTooltip);
-
+customElements.define('vik-tooltip', VikTooltip)

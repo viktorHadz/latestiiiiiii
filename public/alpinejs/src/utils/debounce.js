@@ -1,18 +1,18 @@
-
 export function debounce(func, wait) {
-    var timeout
+  var timeout
 
-    return function() {
-        var context = this, args = arguments
+  return function () {
+    var context = this,
+      args = arguments
 
-        var later = function () {
-            timeout = null
+    var later = function () {
+      timeout = null
 
-            func.apply(context, args)
-        }
-
-        clearTimeout(timeout)
-
-        timeout = setTimeout(later, wait)
+      func.apply(context, args)
     }
+
+    clearTimeout(timeout)
+
+    timeout = setTimeout(later, wait)
+  }
 }

@@ -1,41 +1,42 @@
-
 let flushPending = false
 let flushing = false
 let queue = []
 let lastFlushedIndex = -1
 
-export function scheduler (callback) { queueJob(callback) }
+export function scheduler(callback) {
+  queueJob(callback)
+}
 
 function queueJob(job) {
-    if (! queue.includes(job)) queue.push(job)
+  if (!queue.includes(job)) queue.push(job)
 
-    queueFlush()
+  queueFlush()
 }
 export function dequeueJob(job) {
-    let index = queue.indexOf(job)
+  let index = queue.indexOf(job)
 
-    if (index !== -1 && index > lastFlushedIndex) queue.splice(index, 1)
+  if (index !== -1 && index > lastFlushedIndex) queue.splice(index, 1)
 }
 
 function queueFlush() {
-    if (! flushing && ! flushPending) {
-        flushPending = true
+  if (!flushing && !flushPending) {
+    flushPending = true
 
-        queueMicrotask(flushJobs)
-    }
+    queueMicrotask(flushJobs)
+  }
 }
 
 export function flushJobs() {
-    flushPending = false
-    flushing = true
+  flushPending = false
+  flushing = true
 
-    for (let i = 0; i < queue.length; i++) {
-        queue[i]()
-        lastFlushedIndex = i
-    }
+  for (let i = 0; i < queue.length; i++) {
+    queue[i]()
+    lastFlushedIndex = i
+  }
 
-    queue.length = 0
-    lastFlushedIndex = -1
+  queue.length = 0
+  lastFlushedIndex = -1
 
-    flushing = false
+  flushing = false
 }

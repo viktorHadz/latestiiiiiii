@@ -2,17 +2,17 @@ import { magic } from '../magics'
 import { watch } from '../reactivity'
 
 magic('watch', (el, { evaluateLater, cleanup }) => (key, callback) => {
-    let evaluate = evaluateLater(key)
+  let evaluate = evaluateLater(key)
 
-    let getter = () => {
-        let value
+  let getter = () => {
+    let value
 
-        evaluate(i => value = i)
+    evaluate(i => (value = i))
 
-        return value
-    }
+    return value
+  }
 
-    let unwatch = watch(getter, callback)
+  let unwatch = watch(getter, callback)
 
-    cleanup(unwatch)
+  cleanup(unwatch)
 })

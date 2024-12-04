@@ -245,13 +245,13 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 0.375rem;
 }
 .border-hover-ring-efect {
-  @apply hover:ring-vla cursor-default rounded-md transition duration-200 hover:ring;
+  @apply cursor-default rounded-md transition duration-200 hover:ring hover:ring-vla;
   @apply dark:hover:ring-vda;
 }
 /* MARK:TABLE INPUTS */
 .table-edit-input-style {
-  @apply bg-vlp text-vls w-full rounded border border-transparent px-1 py-0.5 transition duration-500;
-  @apply hover:bg-vlp hover:border-vla hover:text-vla;
+  @apply w-full rounded border border-transparent bg-vlp px-1 py-0.5 text-vls transition duration-500;
+  @apply hover:border-vla hover:bg-vlp hover:text-vla;
   @apply focus:border-vla focus:text-vla focus:outline-none;
   @apply dark:bg-vdp;
   @apply dark:hover:border-vda dark:hover:bg-vdp2 dark:hover:text-vda;
@@ -327,50 +327,50 @@ input::-webkit-inner-spin-button {
 
 /* MARK: Tab Buttons */
 .tab-button {
-  @apply text-vls2 my-4 flex flex-row items-baseline text-lg font-bold transition duration-300;
+  @apply my-4 flex flex-row items-baseline text-lg font-bold text-vls2 transition duration-300;
   @apply hover:text-vla2;
 }
 .tab-button-active {
   @apply text-vla;
 }
 .butt-style {
-  @apply bg-vlp text-vls flex items-center rounded-md border border-transparent p-2 text-sm font-medium duration-500;
-  @apply hover:bg-vlp hover:text-vla hover:border-vla active:scale-95;
+  @apply flex items-center rounded-md border border-transparent bg-vlp p-2 text-sm font-medium text-vls duration-500;
+  @apply hover:border-vla hover:bg-vlp hover:text-vla active:scale-95;
 }
 /* Dark tab buttons */
 .dark .tab-button {
-  @apply text-vds3light hover:text-vls my-4 flex flex-row items-baseline text-lg font-bold transition duration-300;
+  @apply my-4 flex flex-row items-baseline text-lg font-bold text-vds3light transition duration-300 hover:text-vls;
 }
 .dark .tab-button-active {
-  @apply text-vls decoration-vda !underline !decoration-2;
+  @apply text-vls !underline decoration-vda !decoration-2;
 }
 .dark .butt-style {
-  @apply bg-vdp text-vds flex items-center rounded-md border border-transparent p-2 text-sm font-medium duration-500;
-  @apply hover:text-vda hover:border-vda active:scale-95;
+  @apply flex items-center rounded-md border border-transparent bg-vdp p-2 text-sm font-medium text-vds duration-500;
+  @apply hover:border-vda hover:text-vda active:scale-95;
 }
 
 /* MARK:Search Input*/
 .srch-style {
-  @apply border-vlp bg-vlp text-vls placeholder:text-vls flex rounded-md border p-2 text-sm font-medium transition duration-500;
-  @apply hover:bg-vlp hover:text-vla hover:placeholder:text-vla hover:border-vla2;
-  @apply focus:bg-vlp focus:text-vla focus:border-vla2 focus:outline-none;
+  @apply flex rounded-md border border-vlp bg-vlp p-2 text-sm font-medium text-vls transition duration-500 placeholder:text-vls;
+  @apply hover:border-vla2 hover:bg-vlp hover:text-vla hover:placeholder:text-vla;
+  @apply focus:border-vla2 focus:bg-vlp focus:text-vla focus:outline-none;
 }
 .dark .srch-style {
-  @apply bg-vdp text-vds placeholder:text-vds border-transparent p-2 text-sm font-medium transition duration-500;
-  @apply hover:placeholder:text-vda hover:border-vda hover:text-vda;
-  @apply focus:text-vda focus:border-vda focus:outline-none;
+  @apply border-transparent bg-vdp p-2 text-sm font-medium text-vds transition duration-500 placeholder:text-vds;
+  @apply hover:border-vda hover:text-vda hover:placeholder:text-vda;
+  @apply focus:border-vda focus:text-vda focus:outline-none;
 }
 
 /* MARK: MODALS */
 .modal-input-style {
-  @apply text-vlp placeholder-vlp bg-vlp3 rounded-md p-2 ring-1 ring-transparent transition duration-500;
+  @apply rounded-md bg-vlp3 p-2 text-vlp placeholder-vlp ring-1 ring-transparent transition duration-500;
   @apply hover:bg-vls;
-  @apply focus:bg-vls focus:ring-vla focus:outline-none;
+  @apply focus:bg-vls focus:outline-none focus:ring-vla;
 }
 .dark .modal-input-style {
-  @apply text-vds placeholder-vds3light bg-vdp3 rounded-md p-2 ring-1 ring-transparent transition duration-500;
+  @apply rounded-md bg-vdp3 p-2 text-vds placeholder-vds3light ring-1 ring-transparent transition duration-500;
   @apply hover:bg-vds2 hover:text-vds;
-  @apply focus:bg-vds2 focus:text-vds focus:ring-vds focus:outline-none;
+  @apply focus:bg-vds2 focus:text-vds focus:outline-none focus:ring-vds;
 }
 .outter-modal-overlay-blur-fixed {
   @apply fixed inset-0 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50 backdrop-blur-sm;
@@ -380,10 +380,10 @@ input::-webkit-inner-spin-button {
   @apply relative top-1/4 mx-auto w-96 text-center;
 }
 .modal-bg-and-borders {
-  @apply bg-vlp text-vls border-vlp2 rounded-md border shadow-lg;
+  @apply rounded-md border border-vlp2 bg-vlp text-vls shadow-lg;
 }
 .dark .modal-bg-and-borders {
-  @apply bg-vdp border-vds2 rounded-md border shadow-lg;
+  @apply rounded-md border border-vds2 bg-vdp shadow-lg;
 }
 
 /* MARK: BORDER CLIPPER for adjusting table body overflowing the header*/

@@ -1,5 +1,5 @@
 <div x-data="editorManager">
-  <div class="border-vlp mb-4 rounded-md border p-2 dark:border-neutral-600">
+  <div class="mb-4 rounded-md border border-vlp p-2 dark:border-neutral-600">
     <div class="flex justify-between align-baseline">
       <div>
         <button @click="showClientModal = !showClientModal" class="butt-style flex items-baseline">
@@ -22,13 +22,13 @@
       </div>
       <div class="flex align-middle">
         <h3
-          class="decoration text-vlp-700 decoration-vlp-700 dark:text-vds cursor-default self-center font-medium underline dark:decoration-vred-300"
+          class="decoration text-vlp-700 decoration-vlp-700 cursor-default self-center font-medium underline dark:text-vds dark:decoration-vred-300"
           x-text="`Client: ${selectedClient.name}`"></h3>
       </div>
     </div>
   </div>
   <!-- Container for both list and editor -->
-  <div class="border-vlp flex h-screen rounded-md border p-1 dark:border-neutral-600">
+  <div class="flex h-screen rounded-md border border-vlp p-1 dark:border-neutral-600">
     <!-- MARK:INVOICE LIST -->
     <div class="w-1/3 p-2">
       <div class="alt-table-scrollbar max-h-[100%] overflow-y-auto rounded-md border border-transparent">
@@ -37,13 +37,13 @@
           <thead class="sticky top-0 z-10">
             <tr>
               <th
-                class="round-left-border round-right-border border-clipper bg-vlp text-vls dark:text-vds m-2 rounded-md dark:bg-zinc-900"
+                class="round-left-border round-right-border border-clipper m-2 rounded-md bg-vlp text-vls dark:bg-zinc-900 dark:text-vds"
                 style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                 <p class="mb-2 font-medium">Invoice Book</p>
                 <input
                   type="text"
                   placeholder="Search invoices..."
-                  class="border-t-vlp bg-vlp hover:bg-vlp focus:bg-vlp dark:focus:bg-vlp text-vls placeholder:text-vls hover:text-vla hover:placeholder:text-vla focus:text-vla dark:hover:placeholder:text-vla dark:focus:text-vla dark:text-vds mr-2 flex w-full rounded-md border border-b-0 border-l-0 border-r-0 p-1.5 text-xs font-normal transition duration-500 hover:border-vred-300 focus:border-vred-300 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:placeholder:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300 dark:focus:border-vred-300 dark:focus:outline-none" />
+                  class="mr-2 flex w-full rounded-md border border-b-0 border-l-0 border-r-0 border-t-vlp bg-vlp p-1.5 text-xs font-normal text-vls transition duration-500 placeholder:text-vls hover:border-vred-300 hover:bg-vlp hover:text-vla hover:placeholder:text-vla focus:border-vred-300 focus:bg-vlp focus:text-vla focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-vds dark:placeholder:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300 dark:hover:placeholder:text-vla dark:focus:border-vred-300 dark:focus:bg-vlp dark:focus:text-vla dark:focus:outline-none" />
               </th>
             </tr>
           </thead>
@@ -55,7 +55,7 @@
                   <button
                     @click="fetchItems(selectedClient.id, item.id); $refs.tempText.classList.add('hidden'); applyEffect(item)"
                     :id="'rowid-' + item.id"
-                    class="border-vlp text-vls hover:border-vla focus:border-vla active:border-vla mb-2 flex w-full cursor-default justify-between rounded-md border bg-slate-600 p-1.5 transition duration-200 hover:bg-slate-500 focus:bg-slate-500 active:bg-slate-500 dark:bg-neutral-700 dark:hover:border-vred-300 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vred-300 dark:active:border-vred-300">
+                    class="mb-2 flex w-full cursor-default justify-between rounded-md border border-vlp bg-slate-600 p-1.5 text-vls transition duration-200 hover:border-vla hover:bg-slate-500 focus:border-vla focus:bg-slate-500 active:border-vla active:bg-slate-500 dark:bg-neutral-700 dark:hover:border-vred-300 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vred-300 dark:active:border-vred-300">
                     <div class="mr-2 flex flex-col justify-start text-left text-xs">
                       <div x-text="item.client_name"></div>
                       <div x-text="item.date"></div>
@@ -75,8 +75,8 @@
     <div id="invoice-editor" class="w-full">
       <div
         x-ref="tempText"
-        class="text-vls dark:text-vds flex h-full w-full items-center justify-center text-center align-middle">
-        <p class="text-vlp dark:text-vds text-2xl">Pick an invoice from the list to edit.</p>
+        class="flex h-full w-full items-center justify-center text-center align-middle text-vls dark:text-vds">
+        <p class="text-2xl text-vlp dark:text-vds">Pick an invoice from the list to edit.</p>
       </div>
       <!-- MARK: NON EDIT STATE -->
       <template x-if="editing === false">
@@ -85,7 +85,7 @@
             <div x-show="showInvoiceItems" x-transition class="text-vls dark:text-vds">
               <!-- MARK: Header -->
               <div
-                class="bg-vlp text-vls flex w-full justify-between rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
+                class="flex w-full justify-between rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
                 <div class="flex self-center">
                   <span class="mr-1">Invoice:</span>
                   <p class="mr-2" x-text="invoiceItems.invoice.invoice_number"></p>
@@ -95,7 +95,7 @@
               </div>
               <!-- MARK: Client details -->
               <div
-                class="border-vlp mb-2 flex h-full w-full justify-between rounded-b-md rounded-t-none border bg-slate-600 p-1 dark:bg-neutral-700">
+                class="mb-2 flex h-full w-full justify-between rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
                 <div class="flex flex-col">
                   <p class="mr-1">
                     Client name:
@@ -115,7 +115,7 @@
                   </p>
                 </div>
                 <div class="flex flex-col justify-between">
-                  <button @click="generateInvoice" class="butt-style !bg-vlp flex !p-1.5 dark:!bg-zinc-900">
+                  <button @click="generateInvoice" class="butt-style flex !bg-vlp !p-1.5 dark:!bg-zinc-900">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="14"
@@ -136,7 +136,7 @@
 
                   <button
                     @click="openEditModal = true"
-                    class="butt-style !bg-vlp flex !w-full !p-1.5 dark:!bg-zinc-900">
+                    class="butt-style flex !w-full !bg-vlp !p-1.5 dark:!bg-zinc-900">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -156,9 +156,9 @@
               </div>
               <!-- MARK: Invoice Items Table -->
               <div
-                class="alt-table-scrollbar border-vlp mb-2 w-full overflow-y-auto rounded-md border bg-slate-600 dark:bg-neutral-700">
-                <table class="text-vls dark:text-vds w-full table-auto">
-                  <thead class="bg-vlp sticky top-0 text-left font-medium dark:bg-zinc-900">
+                class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded-md border border-vlp bg-slate-600 dark:bg-neutral-700">
+                <table class="w-full table-auto text-vls dark:text-vds">
+                  <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
                     <tr>
                       <th class="p-1">Name</th>
                       <th class="p-1">Type</th>
@@ -180,11 +180,11 @@
               </div>
               <!-- MARK: Prices -->
               <div
-                class="bg-vlp text-vls flex w-full justify-center rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
+                class="flex w-full justify-center rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
                 Prices
               </div>
               <div
-                class="border-vlp flex flex-col rounded-b-md rounded-t-none border bg-slate-600 p-1 dark:bg-neutral-700">
+                class="flex flex-col rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
                 <p class="mb-1" x-text="'Subtotal: ' + '£' + invoiceItems.invoice.subtotal"></p>
                 <p class="mb-1" x-text="'VAT: ' + '£' + invoiceItems.invoice.vat"></p>
                 <template x-if="invoiceItems.invoice.discount_flat === 1">
@@ -212,7 +212,7 @@
           <div x-show="showInvoiceItems" x-transition class="text-vls dark:text-vds">
             <!-- MARK: Header -->
             <div
-              class="bg-vlp text-vls flex w-full rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
+              class="flex w-full rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
               <div class="flex">
                 <span class="mr-1">Invoice:</span>
                 <p class="mr-2" x-text="invoiceItems.invoice.invoice_number"></p>
@@ -227,7 +227,7 @@
             </div>
             <!-- MARK: Client Information -->
             <div
-              class="border-vlp mb-2 flex justify-between rounded-b-md rounded-t-none border bg-slate-600 p-2 dark:bg-neutral-700">
+              class="mb-2 flex justify-between rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
               <div class="flex flex-col">
                 <p>
                   Client name:
@@ -251,13 +251,13 @@
                 <button
                   title="Add new invoice item"
                   @click="existingItems.showItemModal = true; fetchStylesAndSamples(selectedClient.id)"
-                  class="butt-style !bg-vlp flex self-center dark:!bg-zinc-900">
+                  class="butt-style flex self-center !bg-vlp dark:!bg-zinc-900">
                   Add Item
                 </button>
                 <div class="flex justify-between">
                   <button
                     title="Save edit"
-                    class="text-vls dark:text-vls flex rounded-full align-middle transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    class="flex rounded-full align-middle text-vls transition duration-300 hover:text-sky-500 dark:text-vls dark:hover:text-sky-400"
                     @click="saveEdit()">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -277,7 +277,7 @@
                   </button>
                   <button
                     title="Cancel edit"
-                    class="text-vls dark:text-vls hover:text-vla flex self-end rounded-full align-middle transition duration-300 dark:hover:text-vred-300"
+                    class="flex self-end rounded-full align-middle text-vls transition duration-300 hover:text-vla dark:text-vls dark:hover:text-vred-300"
                     @click="cancelEdit()">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -301,9 +301,9 @@
 
             <!-- MARK: Invoice Items Table -->
             <div
-              class="alt-table-scrollbar border-vlp mb-2 w-full overflow-y-auto rounded-md border bg-slate-600 dark:bg-neutral-700">
-              <table class="text-vls dark:text-vds w-full">
-                <thead class="bg-vlp sticky top-0 text-left font-medium dark:bg-zinc-900">
+              class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded-md border border-vlp bg-slate-600 dark:bg-neutral-700">
+              <table class="w-full text-vls dark:text-vds">
+                <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
                   <tr>
                     <th class="w-1/2 p-2">Name</th>
                     <th class="w-fit p-2">Type</th>
@@ -327,7 +327,7 @@
                         <button
                           title="Remove item"
                           @click="removeInvoiceItem(item.id)"
-                          class="text-vls hover:text-vla dark:text-vds mt-1 flex self-end rounded-full align-middle transition duration-300 dark:hover:text-vred-300">
+                          class="mt-1 flex self-end rounded-full align-middle text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -355,11 +355,11 @@
 
             <!-- MARK: Editable Prices -->
             <div
-              class="bg-vlp text-vls flex w-full justify-center rounded-b-none rounded-t-md p-2 text-center font-medium dark:bg-zinc-900">
+              class="flex w-full justify-center rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
               Prices
             </div>
             <div
-              class="border-vlp flex flex-col rounded-b-md rounded-t-none border bg-slate-600 p-1 dark:bg-neutral-700">
+              class="flex flex-col rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
               <!-- Subtotal -->
               <div class="mb-1 flex">
                 <span class="mr-2">Subtotal:</span>
@@ -402,7 +402,7 @@
                   </template>
                   <button
                     @click="editingPrice = 'discount'; editingPriceValue = invoiceItems.invoice.discount"
-                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds ml-2 transition duration-300">
+                    class="ml-2 text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vla">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -426,7 +426,7 @@
                   class="mb-0.5 flex items-center">
                   <input class="table-edit-input-style mr-2 !w-32" x-model.number="editingPriceValue" />
                   <button
-                    class="text-vls dark:text-vls mr-2 transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    class="mr-2 text-vls transition duration-300 hover:text-sky-500 dark:text-vls dark:hover:text-sky-400"
                     @click="savePrice('discount', editingPriceValue)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -445,7 +445,7 @@
                     </svg>
                   </button>
                   <button
-                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300"
+                    class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vla"
                     @click="editingPrice = ''">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -477,7 +477,7 @@
                   <span class="mr-2" x-text="'£' + invoiceItems.invoice.total"></span>
                   <button
                     @click="editingPrice = 'total'; editingPriceValue = invoiceItems.invoice.total"
-                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300">
+                    class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vla">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -501,7 +501,7 @@
                   class="mb-0.5 flex items-center">
                   <input class="table-edit-input-style mr-2 !w-32" x-model.number="editingPriceValue" />
                   <button
-                    class="text-vls dark:text-vls transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    class="text-vls transition duration-300 hover:text-sky-500 dark:text-vls dark:hover:text-sky-400"
                     @click="savePrice('total', editingPriceValue)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -520,7 +520,7 @@
                     </svg>
                   </button>
                   <button
-                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300"
+                    class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vla"
                     @click="editingPrice = ''">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -562,7 +562,7 @@
                   </template>
                   <button
                     @click="editingPrice = 'deposit'; editingPriceValue = invoiceItems.invoice.deposit"
-                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds ml-2 transition duration-300">
+                    class="ml-2 text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vla">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -586,7 +586,7 @@
                   class="mb-0.5 flex items-center">
                   <input class="table-edit-input-style mr-2 !w-32 !p-1 !text-sm" x-model.number="editingPriceValue" />
                   <button
-                    class="text-vls dark:text-vls mr-2 transition duration-300 hover:text-sky-500 dark:hover:text-sky-400"
+                    class="mr-2 text-vls transition duration-300 hover:text-sky-500 dark:text-vls dark:hover:text-sky-400"
                     @click="savePrice('deposit', editingPriceValue)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -605,7 +605,7 @@
                     </svg>
                   </button>
                   <button
-                    class="text-vls hover:text-vla dark:hover:text-vla dark:text-vds transition duration-300"
+                    class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vla"
                     @click="editingPrice = ''; editingPriceValue = ''">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -642,12 +642,12 @@
   <!-- MARK: EDIT MODAL -->
   <div x-show="openEditModal" x-transition.opacity.duration.300 class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <div
-      class="bg-vlp text-vls dark:text-vds relative top-1/3 z-30 mx-auto w-1/4 rounded-md border border-slate-300 shadow-lg transition duration-300 dark:bg-zinc-900"
+      class="relative top-1/3 z-30 mx-auto w-1/4 rounded-md border border-slate-300 bg-vlp text-vls shadow-lg transition duration-300 dark:bg-zinc-900 dark:text-vds"
       @keydown.escape.window="openEditModal = false"
       @click.outside="openEditModal = false">
       <div class="p-4 text-center">
-        <h2 class="text-vls dark:text-vds text-xl font-medium">Chose edit type</h2>
-        <p class="text-vls dark:text-vds mb-4 text-sm font-normal">How would you like to edit the invoice?</p>
+        <h2 class="text-xl font-medium text-vls dark:text-vds">Chose edit type</h2>
+        <p class="mb-4 text-sm font-normal text-vls dark:text-vds">How would you like to edit the invoice?</p>
 
         <!-- Overwrite Invoice -->
         <label for="editorOverwrite" class="modal-input-style mb-2 flex items-center justify-between p-2 font-medium">
@@ -658,7 +658,7 @@
                 id="editorOverwrite"
                 name="overwrite"
                 value="editOverwrite"
-                class="text-vlp focus:ring-vla dark:text-vds mx-2 translate-y-px text-lg"
+                class="mx-2 translate-y-px text-lg text-vlp focus:ring-vla dark:text-vds"
                 x-model="editMode" />
               <span class="pl-1.5">Overwrite current invoice.</span>
             </div>
@@ -666,7 +666,7 @@
           <button
             title="Click me."
             @click="callInfo('Overwrite.', 'Saves changes into existing invoice. Keeps original invoice number.')"
-            class="text-vls hover:text-vla dark:text-vds transition duration-300 dark:hover:text-vred-300">
+            class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -693,7 +693,7 @@
                 id="editorCopy"
                 name="copy"
                 value="editCopy"
-                class="text-vlp focus:ring-vla dark:text-vds mx-2 translate-y-px text-lg"
+                class="mx-2 translate-y-px text-lg text-vlp focus:ring-vla dark:text-vds"
                 x-model="editMode" />
               <span class="pl-1.5">Save a copy of the invoice.</span>
             </div>
@@ -701,7 +701,7 @@
           <button
             title="Click me."
             @click="callInfo('Create a new copy', 'Use this for all official client correspondence.')"
-            class="text-vls hover:text-vla dark:text-vds transition duration-300 dark:hover:text-vred-300">
+            class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -739,7 +739,7 @@
     x-transition.opacity.duration.300ms
     class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="max-w-1/4 bg-vlp text-vls dark:text-vds relative top-1/4 mx-auto w-1/3 rounded-md border border-slate-300 shadow-lg dark:border-neutral-300 dark:bg-zinc-900">
+      class="max-w-1/4 relative top-1/4 mx-auto w-1/3 rounded-md border border-slate-300 bg-vlp text-vls shadow-lg dark:border-neutral-300 dark:bg-zinc-900 dark:text-vds">
       <div
         class="text-center"
         @click.outside="existingItems.showItemModal = false; existingItems.openDropdown = false"
@@ -753,20 +753,20 @@
               x-ref="existingItemsDropdown"
               @click="existingItems.openDropdown = !existingItems.openDropdown"
               :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': existingItems.openDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !existingItems.openDropdown}"
-              class="text-vls hover:border-vla hover:text-vla dark:text-vds mb-4 w-full rounded-md border p-2 transition duration-300 focus:outline-none dark:border-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300">
+              class="mb-4 w-full rounded-md border p-2 text-vls transition duration-300 hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
               Items
             </button>
             <div
               x-anchor.offset.5="$refs.existingItemsDropdown"
               x-show="existingItems.openDropdown"
               x-collapse.duration.500ms
-              class="table-scrollbar bg-vlp max-h-80 w-full overflow-auto rounded border border-slate-300 shadow-lg dark:border-neutral-300 dark:bg-neutral-600">
-              <table class="text-vls dark:text-vds w-full">
-                <thead class="bg-vlp sticky top-0 dark:bg-zinc-900">
+              class="table-scrollbar max-h-80 w-full overflow-auto rounded border border-slate-300 bg-vlp shadow-lg dark:border-neutral-300 dark:bg-neutral-600">
+              <table class="w-full text-vls dark:text-vds">
+                <thead class="sticky top-0 bg-vlp dark:bg-zinc-900">
                   <tr class="sticky w-full">
                     <input
                       type="text"
-                      class="bg-vlp placeholder-vls text-vla hover:placeholder-vla focus:outline-vla w-full p-1 text-center transition-all duration-300 dark:bg-zinc-900 dark:text-vred-300 dark:placeholder-neutral-300 dark:hover:placeholder-vred-300 dark:focus:outline-vred-300"
+                      class="w-full bg-vlp p-1 text-center text-vla placeholder-vls transition-all duration-300 hover:placeholder-vla focus:outline-vla dark:bg-zinc-900 dark:text-vred-300 dark:placeholder-neutral-300 dark:hover:placeholder-vred-300 dark:focus:outline-vred-300"
                       placeholder="Seach items..."
                       x-model="existingItems.searchQuery"
                       @input="searchItems()" />
@@ -795,10 +795,10 @@
                             maxlength="10"
                             placeholder="1"
                             x-model.number="item.quantity"
-                            class="hover:border-vlp-400 focus:border-vlp-400 text-vls placeholder-vls-100 w-10 rounded border border-slate-300 bg-slate-600 p-0.5 transition duration-300 hover:bg-slate-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:text-vpalered-300 dark:placeholder-vpalered-300 dark:hover:border-vred-300 dark:focus:border-vred-300" />
+                            class="hover:border-vlp-400 focus:border-vlp-400 placeholder-vls-100 dark:text-vpalered-300 dark:placeholder-vpalered-300 w-10 rounded border border-slate-300 bg-slate-600 p-0.5 text-vls transition duration-300 hover:bg-slate-400 focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:hover:border-vred-300 dark:focus:border-vred-300" />
                           <button
                             @click="addNewItem(item); applyEffect(item)"
-                            class="druation-300 text-vls dark:text-vds ml-2 transition hover:text-blue-400 dark:hover:text-blue-400">
+                            class="druation-300 ml-2 text-vls transition hover:text-blue-400 dark:text-vds dark:hover:text-blue-400">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="18"
@@ -863,7 +863,7 @@
           </div>
           <!-- MARK: Add New Style  -->
           <div x-show="newItem.type === 'style'" x-collapse.duration.300ms>
-            <p class="text-vls dark:text-vds mb-2 text-center text-lg font-medium">Style</p>
+            <p class="mb-2 text-center text-lg font-medium text-vls dark:text-vds">Style</p>
 
             <input
               x-model="newItem.name"
@@ -904,7 +904,7 @@
           </div>
           <!-- MARK: Add Sample -->
           <div x-show="newItem.type === 'sample'" x-collapse.duration.300ms>
-            <p class="text-vls dark:text-vds mb-2 text-center text-xl font-medium">Sample</p>
+            <p class="mb-2 text-center text-xl font-medium text-vls dark:text-vds">Sample</p>
             <input
               x-model="newItem.name"
               x-ref="newSampleName"
@@ -962,7 +962,7 @@
     x-transition.opacity.duration.300ms
     class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <div
-      class="bg-vlp text-vls dark:text-vds relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900"
+      class="relative top-1/3 z-30 mx-auto w-1/3 rounded-md border border-slate-300 bg-vlp text-vls shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900 dark:text-vds"
       @keydown.escape.window="showClientModal = false"
       @click.outside="showClientModal = false">
       <div class="p-6">
@@ -972,19 +972,19 @@
             x-ref="clientModalButton"
             @click="showDropdown = !showDropdown"
             :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !showDropdown}"
-            class="text-vls hover:border-vla hover:text-vla dark:text-vds mb-4 w-full rounded-md border p-2 transition duration-300 focus:outline-none dark:border-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300">
+            class="mb-4 w-full rounded-md border p-2 text-vls transition duration-300 hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
             Clients
           </button>
           <div
             x-anchor.offset.5="$refs.clientModalButton"
             x-show="showDropdown"
             x-collapse.duration.500ms
-            class="table-scrollbar bg-vlp max-h-[300px] w-full overflow-auto rounded border border-slate-400 shadow-lg dark:bg-neutral-500">
+            class="table-scrollbar max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vlp shadow-lg dark:bg-neutral-500">
             <ul>
               <template x-for="client in clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
-                  class="text-vls dark:text-vds cursor-pointer p-2 hover:bg-slate-600 dark:hover:bg-neutral-600"
+                  class="cursor-pointer p-2 text-vls hover:bg-slate-600 dark:text-vds dark:hover:bg-neutral-600"
                   x-text="client.name"></li>
               </template>
             </ul>

@@ -9,9 +9,7 @@
   "htmlWhitespaceSensitivity": "ignore",
   "tailwindPreserveWhitespace": false,
   "arrowParens": "avoid",
-  "plugins": [
-    "prettier-plugin-tailwindcss"
-  ],
+  "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
       "files": "*.html",
@@ -24,6 +22,21 @@
       "files": "*.js",
       "options": {
         "parser": "babel",
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "parser": "json",
+        "tabWidth": 2,
+        "trailingComma": "none"
+      }
+    },
+    {
+      "files": "*.css",
+      "options": {
+        "parser": "css",
         "tabWidth": 2
       }
     }
