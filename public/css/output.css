@@ -1845,6 +1845,11 @@ video {
   color: rgb(212 212 212 / var(--tw-text-opacity, 1));
 }
 
+.text-vds3light {
+  --tw-text-opacity: 1;
+  color: rgb(163 163 163 / var(--tw-text-opacity, 1));
+}
+
 .text-vla {
   --tw-text-opacity: 1;
   color: rgb(43 194 76 / var(--tw-text-opacity, 1));
@@ -1868,11 +1873,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-}
-
-.text-vds3light {
-  --tw-text-opacity: 1;
-  color: rgb(163 163 163 / var(--tw-text-opacity, 1));
 }
 
 .underline {
