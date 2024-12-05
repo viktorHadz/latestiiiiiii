@@ -2,31 +2,141 @@
 const colors = require('tailwindcss/colors')
 module.exports = {
   darkMode: 'class',
-  content: ['!./node_modules', './**/*.{html,js}'],
+  content: ['!./node_modules/**/*', './**/*.{html,js}'],
   theme: {
     extend: {
       colors: {
         // MARK: Light Theme
-        vlp: '#001B2E', // Primary vblue.[600]
-        vlp2: '#00477A', // Primary Light vblue.[500]
-        vlp3: '#D6EEFF', // Primary Lighter Light vblue.[50]
-        vls: '#fcfffc', // Secondary Light for white babyPowder - Undefined
-        vls2: '#E5E5E5', // Secondary Darker platinum - Undefined
-        vla: '#2bc24c', // Accent green[500]
-        vla2: '#51d76e', // Accent Lighter green[400]
+        vlp: '#FFFFFF', // Primary
+        vlp2: '#E8E9EB', // Primary darker
+        vlp3: '#D3D5D6', // Primary even darker
+        vls: '#8B9197', // Secondary
+        vls2: '#2B3440', // Secondary darker
+        vls3: '#181D24', // Secondary even darker
+        vla: '#53CF6E', // Accent
+        vla2: '#4BA85F', // Accent darker
+        vla3: '#216430', // Accent even darker
 
         // MARK: Dark theme
-        vdp: colors.zinc[900], // Primary #18181b
-        vdp2: colors.zinc[800], // Primary Light #27272a
-        vdp3: colors.zinc[700], //  Primary Lighter #3f3f46
-        vds: colors.neutral[300], // Secondart Neutral 300 #d4d4d4
-        vds2: colors.neutral[600], // Secondary Light #525252
-        vds3light: colors.neutral[400], // Secondary Lighter
-        vds3neu700: colors.neutral[700], // Secondary Darker
+        vdp: '#18181b', // Primary #18181b
+        vdp2: '#27272a', // Primary Light #27272a
+        vdp3: '#3f3f46', //  Primary Lighter #3f3f46
+        vds: '#d4d4d4', // Secondart Neutral 300 #d4d4d4
+        vds2: '#525252', // Secondary Light #525252
+        vds3light: '#a3a3a3', // Secondary Lighter
+        vds3neu700: '#404040', // Secondary Darker
         vda: '#FEA09A', // Accent VRED 300
         vda2: '#FE7F76', // Accent Dark - vred 400
 
         // Custom color definitions
+        'vlp-1': {
+          DEFAULT: '#ffffff',
+          100: '#333333',
+          200: '#666666',
+          300: '#999999',
+          400: '#cccccc',
+          500: '#ffffff',
+          600: '#ffffff',
+          700: '#ffffff',
+          800: '#ffffff',
+          900: '#ffffff',
+        },
+        'vlp-2': {
+          DEFAULT: '#e8e9eb',
+          100: '#2c2e32',
+          200: '#575c64',
+          300: '#858a95',
+          400: '#b7bac0',
+          500: '#e8e9eb',
+          600: '#eeeef0',
+          700: '#f2f2f4',
+          800: '#f6f7f7',
+          900: '#fbfbfb',
+        },
+        'vlp-3': {
+          DEFAULT: '#d3d5d6',
+          100: '#292b2c',
+          200: '#515658',
+          300: '#7a8184',
+          400: '#a6aaad',
+          500: '#d3d5d6',
+          600: '#dbddde',
+          700: '#e4e5e6',
+          800: '#edeeee',
+          900: '#f6f6f7',
+        },
+        'vls-1': {
+          DEFAULT: '#8b9197',
+          100: '#1c1d1f',
+          200: '#373a3d',
+          300: '#53575c',
+          400: '#6e747a',
+          500: '#8b9197',
+          600: '#a3a7ac',
+          700: '#babdc0',
+          800: '#d1d3d5',
+          900: '#e8e9ea',
+        },
+        'vls-2': {
+          DEFAULT: '#2b3440',
+          100: '#090a0d',
+          200: '#11151a',
+          300: '#1a1f27',
+          400: '#222a33',
+          500: '#2b3440',
+          600: '#4b5b71',
+          700: '#6e839e',
+          800: '#9eacbf',
+          900: '#cfd6df',
+        },
+        'vls-3': {
+          DEFAULT: '#181d24',
+          100: '#050607',
+          200: '#0a0c0f',
+          300: '#0f1216',
+          400: '#14181d',
+          500: '#181d24',
+          600: '#3c495b',
+          700: '#607490',
+          800: '#93a2b7',
+          900: '#c9d1db',
+        },
+        'vla-1': {
+          DEFAULT: '#53cf6e',
+          100: '#0d2d14',
+          200: '#1a5b28',
+          300: '#26883c',
+          400: '#33b54f',
+          500: '#53cf6e',
+          600: '#76d88b',
+          700: '#98e2a8',
+          800: '#bbecc5',
+          900: '#ddf5e2',
+        },
+        'vla-2': {
+          DEFAULT: '#4ba85f',
+          100: '#0f2213',
+          200: '#1e4426',
+          300: '#2e653a',
+          400: '#3d874d',
+          500: '#4ba85f',
+          600: '#6dbd7e',
+          700: '#91ce9e',
+          800: '#b6debf',
+          900: '#daefdf',
+        },
+        'vla-3': {
+          DEFAULT: '#216430',
+          100: '#07140a',
+          200: '#0d2813',
+          300: '#143c1d',
+          400: '#1b5026',
+          500: '#216430',
+          600: '#349c4b',
+          700: '#55c66e',
+          800: '#8ed99e',
+          900: '#c6eccf',
+        },
         vblue: {
           50: '#D6EEFF',
           100: '#B3DFFF',
@@ -67,7 +177,6 @@ module.exports = {
           950: '#230300',
         },
       },
-
       fontFamily: {
         sans: ['Manrope', 'sans-serif'],
       },

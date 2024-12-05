@@ -8,5 +8,13 @@
   "eslint.options": {
     "overrideConfigFile": "~/eslint.config.mjs"
   },
-  "prettier.configPath": "~/.prettierrc"
+  "prettier.configPath": "~/.prettierrc",
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "javascript": "javascript",
+    "css": "css"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  }
 }

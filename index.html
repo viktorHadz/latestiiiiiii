@@ -16,7 +16,7 @@
       <!-- MARK: SIDEBAR -->
       <div
         :class="{'w-72': sideBar, 'w-16': !sideBar}"
-        class="h-screen bg-vlp p-4 transition-all duration-500 dark:bg-vdp"
+        class="h-screen p-4 transition-all duration-500 bg-vlp dark:bg-vdp"
         x-ref="mainSidebar"
         x-transition:enter="transition-all ease-in-out duration-500"
         x-transition:enter-start="w-16"
@@ -26,7 +26,7 @@
         x-transition:leave-end="w-16">
         <div class="grid h-full grid-cols-1 grid-rows-3 gap-20">
           <!-- MARK:ROW-1-ContentButtons -->
-          <div class="w-full flex-col items-center justify-items-center">
+          <div class="flex-col items-center w-full justify-items-center">
             <!-- CLIENTS -->
             <button
               @click="tabButtonClicked('clients')"
@@ -84,12 +84,12 @@
           <!-- MARK:ROW-2-Client Select -->
           <div class="flex flex-col items-center justify-center">
             <div x-show="sideBar" class="flex flex-col items-center">
-              <button class="tab-button w-full justify-center" @click="openSelectClient = !openSelectClient">
+              <button class="justify-center w-full tab-button" @click="openSelectClient = !openSelectClient">
                 <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('refresh-ccw.svg')"></div>
                 Select Client
               </button>
             </div>
-            <div x-show="!sideBar" @click="openSelectClient = !openSelectClient" class="tab-button flex justify-center">
+            <div x-show="!sideBar" @click="openSelectClient = !openSelectClient" class="flex justify-center tab-button">
               <button title="Open Sidebar">
                 <div x-html="$store.svgCache.getSvgContent('refresh-ccw-copy.svg')"></div>
               </button>
@@ -109,7 +109,7 @@
             <button
               :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'"
               @click="sideBarOpen()"
-              class="text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vred-300">
+              class="transition duration-300 text-vl hover:text-vla dark:text-vds dark:hover:text-vred-300">
               <div x-html="$store.svgCache.getSvgContent('sidebar.svg')"></div>
             </button>
           </div>
@@ -119,9 +119,9 @@
             <button
               :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'"
               @click="sideBarOpen()"
-              class="mb-2 text-vls transition duration-300 hover:text-vla dark:text-vds dark:hover:text-vda">
+              class="mb-2 transition duration-300 text-vls hover:text-vla dark:text-vds dark:hover:text-vda">
               <div
-                class="flex h-full w-full items-center justify-center"
+                class="flex items-center justify-center w-full h-full"
                 x-html="$store.svgCache.getSvgContent('sidebar.svg')"></div>
             </button>
 
@@ -131,13 +131,13 @@
               hx-ext="alpine-morph"
               hx-swap="morph"
               hx-get="/htmx-alpine-components/darkMode.html"
-              class="mb-2 flex h-full w-full items-center justify-center"></div>
+              class="flex items-center justify-center w-full h-full mb-2"></div>
           </div>
         </div>
       </div>
 
       <!--MARK: MAIN CONTENT + EFFECT-->
-      <div class="flex w-full flex-col overflow-auto bg-vls p-6 will-change-auto dark:bg-vdp2">
+      <div class="flex flex-col w-full p-6 overflow-auto bg-vls will-change-auto dark:bg-vdp2">
         <div
           x-ref="tabContentContainer"
           x-show="!isLoading"

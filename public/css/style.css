@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* MARK: Fonts */
 /* Extra Light weight */
 @font-face {
   font-family: 'Manrope';
@@ -23,7 +23,6 @@
   font-weight: 400;
   font-style: normal;
 }
-
 /* Bold weight */
 @font-face {
   font-family: 'Manrope';
@@ -31,7 +30,6 @@
   font-weight: 700;
   font-style: normal;
 }
-
 /* Italic weight */
 @font-face {
   font-family: 'Manrope';
@@ -39,7 +37,6 @@
   font-weight: 400;
   font-style: italic;
 }
-
 /* Bold Italic */
 @font-face {
   font-family: 'Manrope';
@@ -47,11 +44,12 @@
   font-weight: 700;
   font-style: italic;
 }
-
 [x-cloak] {
   display: none !important;
 }
-
+html {
+  font-size: 16px;
+}
 /* MARK: Status */
 /* Toggle button text styling */
 .status-text {
@@ -73,7 +71,6 @@
 }
 
 /* MARK: Scrollbars Light */
-
 /* Global*/
 ::-webkit-scrollbar {
   width: 14px; /* Adjust the width of the scrollbar */
@@ -104,7 +101,7 @@
 .alt-table-scrollbar::-webkit-scrollbar {
   width: 14px; /* Adjust the width of the scrollbar */
 }
-/* Alternative Table */
+/* Alternative Table Scroll */
 .alt-table-scrollbar::-webkit-scrollbar-track {
   background: #d6eeff;
   border-radius: 4px;
@@ -204,7 +201,7 @@ input::-webkit-inner-spin-button {
     color: #b8b8b8; /* Revert to original color */
   }
 }
-/* MARK: Alpine transition fade in and fade out when x-show isnt applicable */
+/* MARK: Alpine like transition fade in and fade out when x-show isnt applicable */
 /* Fade-In: Hidden to Visible */
 .fade-in-hidden {
   opacity: 0;
@@ -368,14 +365,20 @@ input::-webkit-inner-spin-button {
   @apply focus:bg-vls focus:outline-none focus:ring-vla;
 }
 .dark .modal-input-style {
-  @apply rounded-md bg-vdp3 p-2 text-vds placeholder-vds3light ring-1 ring-transparent transition duration-500;
+  @apply rounded-md bg-vdp3 p-2 text-vds placeholder-vds3light ring-1 ring-transparent transition duration-500 focus:placeholder-vls;
   @apply hover:bg-vds2 hover:text-vds;
   @apply focus:bg-vds2 focus:text-vds focus:outline-none focus:ring-vds;
 }
 .outter-modal-overlay-blur-fixed {
   @apply fixed inset-0 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50 backdrop-blur-sm;
 }
+.dark .modal-title {
+  @apply text-2xl font-medium tracking-tighter text-vds;
+}
 
+.dark .modal-button {
+  @apply rounded-md border border-vds3light px-2 py-1 text-base text-vds3light decoration-transparent underline-offset-2 duration-500 hover:border-vda hover:text-vls hover:decoration-vda active:scale-95 active:border-vda;
+}
 .inner-modal-size-positioning-relative {
   @apply relative top-1/4 mx-auto w-96 text-center;
 }

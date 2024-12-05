@@ -25,7 +25,7 @@
   <div class="flex justify-center p-6">
     <!-- Clients Table -->
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
-      <thead class="text-base font-medium rounded bg-vlp text-vls dark:bg-vdp dark:text-vds">
+      <thead class="text-base font-medium rounded bg-vls2 text-vlp dark:bg-vdp dark:text-vds">
         <tr>
           <th class="hidden max-w-1/12">ID</th>
           <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
@@ -117,7 +117,7 @@
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div @keyup.escape="showAddClientModal = false">
         <div class="p-6">
-          <h3 class="mb-4 text-xl font-medium">Add Client</h3>
+          <h3 class="mb-4 modal-title">Add Client</h3>
           <form @submit.prevent="addClient">
             <input
               x-model="newClient.name"
@@ -148,9 +148,9 @@
               placeholder="Email"
               class="w-full mb-2 modal-input-style"
               required />
-            <div class="flex justify-end gap-4 mt-2">
-              <button type="submit" class="text-vds3light">Add</button>
-              <button @click="showAddClientModal = false" class="">Close</button>
+            <div class="flex justify-end gap-8 mt-2">
+              <button type="submit" class="modal-button">Add</button>
+              <button @click="showAddClientModal = false" class="modal-button">Close</button>
             </div>
           </form>
         </div>

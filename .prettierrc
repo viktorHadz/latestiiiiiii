@@ -11,34 +11,7 @@
   "arrowParens": "avoid",
   "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
-    {
-      "files": "*.html",
-      "options": {
-        "parser": "html",
-        "printWidth": 120
-      }
-    },
-    {
-      "files": "*.js",
-      "options": {
-        "parser": "babel",
-        "tabWidth": 2
-      }
-    },
-    {
-      "files": "*.json",
-      "options": {
-        "parser": "json",
-        "tabWidth": 2,
-        "trailingComma": "none"
-      }
-    },
-    {
-      "files": "*.css",
-      "options": {
-        "parser": "css",
-        "tabWidth": 2
-      }
-    }
+    { "files": "*.html", "options": { "parser": "html", "printWidth": 120 } },
+    { "files": "*.js", "options": { "parser": "babel", "tabWidth": 2 } }
   ]
 }
