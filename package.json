@@ -1,6 +1,6 @@
 {
-  "name": "invoicing4",
-  "version": "1.0.0",
+  "name": "invoicer",
+  "version": "4.0.0",
   "description": "Invoicing App For Clothing Business",
   "main": "backend.js",
   "bin": "backend.js",

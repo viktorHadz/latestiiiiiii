@@ -1,0 +1,22 @@
+Extensions installed on SSH: 5002drslowdeath-server.ddns.net:
+adrianwilczynski.alpine-js-intellisense
+bradlc.vscode-tailwindcss
+christian-kohler.npm-intellisense
+divyamrit.alpine-snippets
+donjayamanne.githistory
+dunstontc.vscode-go-syntax
+dzhavat.bracket-pair-toggler
+eamodio.gitlens
+ecmel.vscode-html-css
+emmanuelbeziat.vscode-great-icons
+esbenp.prettier-vscode
+golang.go
+mechatroner.rainbow-csv
+mohsen1.prettify-json
+natizyskunk.sftp
+otovo-oss.htmx-tags
+sperovita.alpinejs-syntax-highlight
+usernamehw.errorlens
+wix.vscode-import-cost
+xabikos.javascriptsnippets
+zhuangtongfa.material-theme
