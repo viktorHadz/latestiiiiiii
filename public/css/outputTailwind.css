@@ -2134,68 +2134,68 @@ html {
 /* Global*/
 
 ::-webkit-scrollbar {
-  width: 14px;
+  width: 12px;
   /* Adjust the width of the scrollbar */
 }
 
 ::-webkit-scrollbar-track {
-  background: #d6eeff;
+  background: #ffffff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #001b2e;
+  background: #2b3440;
   /* The draggable scrolling handle */
   border-radius: 4px;
   /* Roundness of the scrollbar handle */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00477a;
+  background: #242c36;
   /* Hover effect */
 }
 
 /* Table */
 
 .table-scrollbar::-webkit-scrollbar-track {
-  background: #d6eeff;
+  background: #ffffff;
   border-radius: 5px;
 }
 
 .table-scrollbar::-webkit-scrollbar-thumb {
-  background: #001b2e;
+  background: #2b3440;
   /* The draggable scrolling handle */
   border-radius: 5px;
   /* Roundness of the scrollbar handle */
 }
 
 .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #00477a;
+  background: #242c36;
   /* Hover effect */
 }
 
 /* Table Alternative Scrollbar Light */
 
 .alt-table-scrollbar::-webkit-scrollbar {
-  width: 14px;
+  width: 12px;
   /* Adjust the width of the scrollbar */
 }
 
 /* Alternative Table Scroll */
 
 .alt-table-scrollbar::-webkit-scrollbar-track {
-  background: #d6eeff;
+  background: #ffffff;
   border-radius: 4px;
 }
 
 .alt-table-scrollbar::-webkit-scrollbar-thumb {
-  background: #001b2e;
+  background: #2b3440;
   /* The draggable scrolling handle */
   border-radius: 4px;
   /* Roundness of the scrollbar handle */
 }
 
 .alt-table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #00477a;
+  background: #242c36;
   /* Hover effect */
 }
 
