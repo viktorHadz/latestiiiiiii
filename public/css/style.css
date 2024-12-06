@@ -242,27 +242,27 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 0.375rem;
 }
 .border-hover-ring-efect {
-  @apply cursor-default rounded-md transition duration-200 hover:ring hover:ring-vla;
+  @apply cursor-default rounded-md transition duration-100 hover:shadow-lg hover:ring-1 hover:ring-vls2;
   @apply dark:hover:ring-vda;
 }
 /* MARK:TABLE INPUTS */
 .table-edit-input-style {
-  @apply w-full rounded border border-transparent bg-vlp px-1 py-0.5 text-vls transition duration-500;
-  @apply hover:border-vla hover:bg-vlp hover:text-vla;
-  @apply focus:border-vla focus:text-vla focus:outline-none;
+  @apply w-full rounded border border-transparent bg-vlp2/70 px-1 py-0.5 text-vls2/60 transition duration-100;
+  @apply hover:border-vls2 hover:bg-vlp hover:text-vls2;
+  @apply focus:border-vls2 focus:bg-vlp focus:text-vls2 focus:outline-none;
   @apply dark:bg-vdp;
   @apply dark:hover:border-vda dark:hover:bg-vdp2 dark:hover:text-vda;
   @apply dark:focus:border-vda dark:focus:text-vda;
 }
 .table-interaction-icon-blue {
-  @apply text-vls transition duration-300;
-  @apply hover:text-vla2;
+  @apply rounded-full p-1.5 text-vls2 transition duration-100;
+  @apply hover:bg-vlp2/60 hover:text-vla;
   @apply dark:text-vds;
   @apply dark:hover:text-blue-500;
 }
 .table-interaction-icon-red {
-  @apply text-vls transition duration-300;
-  @apply hover:text-vda2;
+  @apply rounded-full p-1.5 text-vls2 transition duration-100;
+  @apply hover:bg-vlp2/60 hover:text-vda2;
   @apply dark:text-vds;
   @apply dark:hover:text-vda2;
 }
@@ -324,15 +324,17 @@ input::-webkit-inner-spin-button {
 
 /* MARK: Tab Buttons */
 .tab-button {
-  @apply my-4 flex flex-row items-baseline text-lg font-bold text-vls2 transition duration-300;
-  @apply hover:text-vla2;
+  @apply transform rounded-md text-vls2 transition-all duration-300 ease-in-out;
+  @apply hover:bg-vlp2 hover:text-vls3;
+  @apply active:scale-90;
 }
 .tab-button-active {
-  @apply text-vla;
+  @apply flex rounded-md bg-vls2 text-vla;
+  @apply hover:bg-vls2 hover:text-vla;
 }
 .butt-style {
-  @apply flex items-center rounded-md border border-transparent bg-vlp p-2 text-sm font-medium text-vls duration-500;
-  @apply hover:border-vla hover:bg-vlp hover:text-vla active:scale-95;
+  @apply flex items-center rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp duration-500;
+  @apply hover:border-vla hover:bg-vls3 hover:text-vla active:scale-95;
 }
 /* Dark tab buttons */
 .dark .tab-button {
@@ -348,9 +350,9 @@ input::-webkit-inner-spin-button {
 
 /* MARK:Search Input*/
 .srch-style {
-  @apply flex rounded-md border border-vlp bg-vlp p-2 text-sm font-medium text-vls transition duration-500 placeholder:text-vls;
-  @apply hover:border-vla2 hover:bg-vlp hover:text-vla hover:placeholder:text-vla;
-  @apply focus:border-vla2 focus:bg-vlp focus:text-vla focus:outline-none;
+  @apply flex rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp2 transition duration-500 placeholder:text-vlp2;
+  @apply hover:border-vla hover:bg-vls3 hover:text-vlp;
+  @apply focus:border-vla focus:bg-vls3 focus:text-vlp focus:outline-none;
 }
 .dark .srch-style {
   @apply border-transparent bg-vdp p-2 text-sm font-medium text-vds transition duration-500 placeholder:text-vds;

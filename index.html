@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoicing</title>
-    <link rel="stylesheet" href="/css/output.css" />
+    <link rel="stylesheet" href="/css/outputTailwind.css" />
+    <script src="./node_modules/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script src="/public/alpinejs/plugins/morph.js"></script>
   </head>
@@ -16,7 +17,7 @@
       <!-- MARK: SIDEBAR -->
       <div
         :class="{'w-72': sideBar, 'w-16': !sideBar}"
-        class="h-screen p-4 transition-all duration-500 bg-vlp dark:bg-vdp"
+        class="h-screen bg-vlp transition-all duration-500 dark:bg-vdp"
         x-ref="mainSidebar"
         x-transition:enter="transition-all ease-in-out duration-500"
         x-transition:enter-start="w-16"
@@ -24,46 +25,47 @@
         x-transition:leave="transition-all ease-in-out duration-500"
         x-transition:leave-start="w-72"
         x-transition:leave-end="w-16">
-        <div class="grid h-full grid-cols-1 grid-rows-3 gap-20">
+        <div class="grid h-full grid-cols-1 grid-rows-3 items-center gap-20">
           <!-- MARK:ROW-1-ContentButtons -->
-          <div class="flex-col items-center w-full justify-items-center">
+          <div class="grid h-full w-full grid-cols-1 grid-rows-4 place-items-center items-center">
             <!-- CLIENTS -->
             <button
               @click="tabButtonClicked('clients')"
               :class="{ 'tab-button-active': tabContentActive('clients') }"
-              class="tab-button">
-              <div x-show="sideBar" class="flex items-center">
-                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('users.svg')"></div>
+              class="tab-button flex items-center">
+              <div x-show="sideBar" class="flex items-center p-2">
+                <object data-feather="users" class="mr-1.5 w-4"></object>
                 <span>Clients</span>
               </div>
-              <div x-show="!sideBar">
-                <div title="Clients" x-html="$store.svgCache.getSvgContent('users-copy.svg')"></div>
+              <div x-show="!sideBar" class="p-2">
+                <object data-feather="users"></object>
               </div>
             </button>
             <!-- STYLES -->
             <button
               @click="tabButtonClicked('styles')"
               :class="{ 'tab-button-active': tabContentActive('styles') }"
-              class="tab-button">
-              <div x-show="sideBar" class="flex items-center">
-                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('package.svg')"></div>
+              class="tab-button flex items-center">
+              <div x-show="sideBar" class="flex items-center p-2">
+                <object data-feather="package" class="mr-1.5 w-4"></object>
+
                 <span>Items</span>
               </div>
-              <div x-show="!sideBar">
-                <div title="Items" x-html="$store.svgCache.getSvgContent('package-copy.svg')"></div>
+              <div x-show="!sideBar" class="p-2">
+                <object data-feather="package"></object>
               </div>
             </button>
             <!-- INVOICES -->
             <button
               @click="tabButtonClicked('invoices')"
               :class="{ 'tab-button-active': tabContentActive('invoices') }"
-              class="tab-button">
-              <div x-show="sideBar" class="flex items-center">
-                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('file-text.svg')"></div>
+              class="tab-button flex items-center">
+              <div x-show="sideBar" class="flex items-center p-2">
+                <object data-feather="file-text" class="mr-1.5 w-4"></object>
                 <span x-show="sideBar">Invoices</span>
               </div>
-              <div x-show="!sideBar">
-                <div title="Invoicing" x-html="$store.svgCache.getSvgContent('file-text-copy.svg')"></div>
+              <div x-show="!sideBar" class="p-2">
+                <object data-feather="file-text"></object>
               </div>
             </button>
             <!-- EDITOR -->
@@ -71,12 +73,12 @@
               @click="tabButtonClicked('editor')"
               :class="{ 'tab-button-active': tabContentActive('editor') }"
               class="tab-button">
-              <div x-show="sideBar" class="flex items-center">
-                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('edit.svg')"></div>
+              <div x-show="sideBar" class="flex items-center p-2">
+                <object data-feather="edit" class="mr-1.5 w-4"></object>
                 <span x-show="sideBar">Editor</span>
               </div>
-              <div x-show="!sideBar">
-                <div title="Editor" x-html="$store.svgCache.getSvgContent('edit-copy.svg')"></div>
+              <div x-show="!sideBar" class="p-2">
+                <object data-feather="edit"></object>
               </div>
             </button>
           </div>
@@ -84,60 +86,35 @@
           <!-- MARK:ROW-2-Client Select -->
           <div class="flex flex-col items-center justify-center">
             <div x-show="sideBar" class="flex flex-col items-center">
-              <button class="justify-center w-full tab-button" @click="openSelectClient = !openSelectClient">
+              <button class="tab-button w-full justify-center" @click="openSelectClient = !openSelectClient">
                 <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('refresh-ccw.svg')"></div>
                 Select Client
               </button>
             </div>
-            <div x-show="!sideBar" @click="openSelectClient = !openSelectClient" class="flex justify-center tab-button">
+            <div x-show="!sideBar" @click="openSelectClient = !openSelectClient" class="tab-button flex justify-center">
               <button title="Open Sidebar">
                 <div x-html="$store.svgCache.getSvgContent('refresh-ccw-copy.svg')"></div>
               </button>
             </div>
           </div>
 
-          <!-- MARK:ROW-3-DarkMode&Toggle -->
-          <div x-show="sideBar" class="flex items-end justify-center">
+          <!-- MARK:ROW-3-DarkMode -->
+          <div class="grid h-full grid-cols-1 grid-rows-2 place-items-center justify-center">
             <!-- DARKMODE -->
-            <div
-              hx-target="this"
-              hx-trigger="load"
-              hx-ext="alpine-morph"
-              hx-swap="morph"
-              hx-get="/htmx-alpine-components/darkMode.html"></div>
+            <button @click="toggleTheme()" title="Dark mode toggle" class="tab-button p-2">
+              <object x-show="mode === 'light'" data-feather="moon"></object>
+              <object x-show="mode === 'dark'" data-feather="sun"></object>
+            </button>
             <!-- SIDEBAR EXPANDED-->
-            <button
-              :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'"
-              @click="sideBarOpen()"
-              class="transition duration-300 text-vl hover:text-vla dark:text-vds dark:hover:text-vred-300">
-              <div x-html="$store.svgCache.getSvgContent('sidebar.svg')"></div>
+            <button :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'" @click="sideBarOpen()" class="tab-button p-2">
+              <object data-feather="sidebar"></object>
             </button>
-          </div>
-
-          <div x-show="!sideBar" class="flex flex-col items-center justify-end">
-            <!-- SIDEBAR COLAPSED -->
-            <button
-              :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'"
-              @click="sideBarOpen()"
-              class="mb-2 transition duration-300 text-vls hover:text-vla dark:text-vds dark:hover:text-vda">
-              <div
-                class="flex items-center justify-center w-full h-full"
-                x-html="$store.svgCache.getSvgContent('sidebar.svg')"></div>
-            </button>
-
-            <!-- DARKMODE -->
-            <div
-              hx-trigger="load"
-              hx-ext="alpine-morph"
-              hx-swap="morph"
-              hx-get="/htmx-alpine-components/darkMode.html"
-              class="flex items-center justify-center w-full h-full mb-2"></div>
           </div>
         </div>
       </div>
 
-      <!--MARK: MAIN CONTENT + EFFECT-->
-      <div class="flex flex-col w-full p-6 overflow-auto bg-vls will-change-auto dark:bg-vdp2">
+      <!--MARK: CONTENT -->
+      <div class="flex w-full flex-col overflow-auto bg-vlp3 p-6 will-change-auto dark:bg-vdp2">
         <div
           x-ref="tabContentContainer"
           x-show="!isLoading"
@@ -165,6 +142,9 @@
         hx-get="/htmx-alpine-components/toast.html"></div>
       <!--  MARK: TOASTS END  -->
     </div>
+    <script>
+      feather.replace()
+    </script>
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <script type="module" src="./app.js" defer></script>
     <!--  Alpine Plugins  -->

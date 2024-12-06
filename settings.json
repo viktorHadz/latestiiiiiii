@@ -3,6 +3,11 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "editor.colorDecorators": true,
+  "tailwindCSS.colorDecorators": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "editor.fontFamily": "'JetBrains Mono NFM', 'JetBrains Mono', Consolas, 'Courier New', monospace",
   "eslint.alwaysShowStatus": true,
   "eslint.options": {
@@ -14,6 +19,7 @@
     "javascript": "javascript",
     "css": "css"
   },
+  "tailwindCSS.experimental.configFile": "./tailwind.config.js",
   "editor.quickSuggestions": {
     "strings": true
   }

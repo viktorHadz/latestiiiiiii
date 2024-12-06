@@ -6,7 +6,7 @@
         <input
           type="text"
           placeholder="Search Clients..."
-          class="transition-all duration-500 srch-style"
+          class="srch-style transition-all duration-500"
           x-model="clientSearch"
           @input="searchClients"
           x-transition />
@@ -16,7 +16,7 @@
         @click="showAddClientModal = true; 
         if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
         @keydown.escape.window="showAddClientModal = false"
-        class="flex items-baseline justify-center butt-style">
+        class="butt-style flex items-baseline justify-center">
         <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('user-plus.svg')"></div>
         <span class="flex self-center">Add Client</span>
       </button>
@@ -25,21 +25,21 @@
   <div class="flex justify-center p-6">
     <!-- Clients Table -->
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
-      <thead class="text-base font-medium rounded bg-vls2 text-vlp dark:bg-vdp dark:text-vds">
+      <thead class="rounded bg-vls2 text-base font-medium text-vlp dark:bg-vdp dark:text-vds">
         <tr>
-          <th class="hidden max-w-1/12">ID</th>
-          <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
-          <th class="p-2 text-base text-left max-w-2/12">Company Name</th>
-          <th class="p-2 text-base text-left max-w-2/12">Address</th>
-          <th class="p-2 text-base text-left max-w-2/12">Email</th>
-          <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
+          <th class="max-w-1/12 hidden">ID</th>
+          <th id="sortNameClients" class="max-w-2/12 round-left-border p-2 pl-2 text-left text-lg">Name</th>
+          <th class="max-w-2/12 p-2 text-left text-base">Company Name</th>
+          <th class="max-w-2/12 p-2 text-left text-base">Address</th>
+          <th class="max-w-2/12 p-2 text-left text-base">Email</th>
+          <th class="max-w-2/12 round-right-border p-2 pr-2 text-center text-base">Actions</th>
         </tr>
       </thead>
-      <tbody class="bg-vlp2 text-vls dark:bg-vds3neu700">
+      <tbody class="bg-vlp text-vls2 hover:text-vls3 dark:bg-vds3neu700 dark:text-vds">
         <template x-for="client in filteredClients" :key="client.id">
           <tr class="border-hover-ring-efect">
             <td class="hidden" x-text="client.id"></td>
-            <td class="p-2 text-sm round-left-border">
+            <td class="round-left-border p-2 text-sm">
               <template x-if="client.isEditing">
                 <input type="text" x-model="client.name" class="table-edit-input-style" />
               </template>
@@ -71,7 +71,7 @@
                 <span x-text="client.email" class="mr-6"></span>
               </template>
             </td>
-            <td class="text-sm text-center round-right-border">
+            <td class="round-right-border text-center text-sm">
               <template x-if="client.isEditing">
                 <div class="flex items-center justify-evenly">
                   <button @click="saveClient(client)" class="table-interaction-icon-blue">
@@ -80,7 +80,7 @@
                       x-html="$store.svgCache.getSvgContent('save.svg')"></div>
                   </button>
                   <button
-                    class="flex items-center justify-center table-interaction-icon-red"
+                    class="table-interaction-icon-red flex items-center justify-center"
                     @click="cancelEdit(client)"
                     class="table-interaction-icon-red">
                     <div x-html="$store.svgCache.getSvgContent('x-circle.svg')"></div>
@@ -111,13 +111,13 @@
   <div
     x-show="showAddClientModal"
     x-transition.opacity.duration.300
-    class="z-50 outter-modal-overlay-blur-fixed"
+    class="outter-modal-overlay-blur-fixed z-50"
     id="my-modal">
     <!-- Modal content -->
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div @keyup.escape="showAddClientModal = false">
         <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Client</h3>
+          <h3 class="modal-title mb-4">Add Client</h3>
           <form @submit.prevent="addClient">
             <input
               x-model="newClient.name"
@@ -125,30 +125,30 @@
               name="name"
               type="text"
               placeholder="Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newClient.company_name"
               name="company_name"
               type="text"
               placeholder="Company Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newClient.address"
               name="address"
               type="text"
               placeholder="Address"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newClient.email"
               name="email"
               type="email"
               placeholder="Email"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
-            <div class="flex justify-end gap-8 mt-2">
+            <div class="mt-2 flex justify-end gap-8">
               <button type="submit" class="modal-button">Add</button>
               <button @click="showAddClientModal = false" class="modal-button">Close</button>
             </div>

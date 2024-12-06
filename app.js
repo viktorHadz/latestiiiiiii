@@ -96,6 +96,7 @@ document.addEventListener('alpine:init', () => {
     tabContent: '',
     isLoading: true, // Set initial loading state to true for animation at the start of the app
     mode: localStorage.getItem('theme') || 'light',
+
     sideBar: false,
     svgCache: [],
 

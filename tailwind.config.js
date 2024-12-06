@@ -1,8 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-// const colors = require('tailwindcss/colors')
 module.exports = {
   darkMode: 'class',
-  content: ['./**/*.{html,js,jsx,ts,tsx,vue}', '!./node_modules/**/*'],
+  content: ['./**/*.{html,js}', '!./node_modules'],
   theme: {
     extend: {
       colors: {
@@ -12,7 +11,7 @@ module.exports = {
         vlp3: '#D3D5D6', // Primary even darker
         vls: '#8B9197', // Secondary
         vls2: '#2B3440', // Secondary darker
-        vls3: '#181D24', // Secondary even darker
+        vls3: '#242C36', // Secondary even darker
         vla: '#53CF6E', // Accent
         vla2: '#4BA85F', // Accent darker
         vla3: '#216430', // Accent even darker

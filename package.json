@@ -6,9 +6,7 @@
   "bin": "backend.js",
   "scripts": {
     "start": "node backend.js",
-    "dev": "vite --config ./configs/vite.config.js",
-    "build": "vite build --config ./configs/vite.config.js",
-    "build-css": "npx tailwindcss -i ./public/css/style.css -o ./public/css/output.css --watch",
+    "build-tailwind": "npx tailwindcss -i ./public/css/style.css -o ./public/css/outputTailwind.css --watch",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -17,6 +15,7 @@
     "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "feather-icons": "^4.29.2",
     "jspdf": "^2.5.1",
     "nodemon": "^3.1.4",
     "path": "^0.12.7",
