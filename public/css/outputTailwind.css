@@ -3908,6 +3908,18 @@ input[type='radio']:checked {
   border-bottom-color: rgb(212 212 212 / var(--tw-border-opacity, 1));
 }
 
+.dark\:hover\:border-y-vdp:hover:is(.dark *) {
+  --tw-border-opacity: 1;
+  border-top-color: rgb(24 24 27 / var(--tw-border-opacity, 1));
+  border-bottom-color: rgb(24 24 27 / var(--tw-border-opacity, 1));
+}
+
+.dark\:hover\:border-y-vdp3:hover:is(.dark *) {
+  --tw-border-opacity: 1;
+  border-top-color: rgb(63 63 70 / var(--tw-border-opacity, 1));
+  border-bottom-color: rgb(63 63 70 / var(--tw-border-opacity, 1));
+}
+
 .dark\:hover\:bg-neutral-500:hover:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(115 115 115 / var(--tw-bg-opacity, 1));
@@ -3921,6 +3933,21 @@ input[type='radio']:checked {
 .dark\:hover\:bg-neutral-700:hover:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(64 64 64 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:hover\:bg-vds2:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(82 82 82 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:hover\:bg-vds:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(212 212 212 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:hover\:bg-vdp3:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(63 63 70 / var(--tw-bg-opacity, 1));
 }
 
 .dark\:hover\:fill-vred-300:hover:is(.dark *) {
