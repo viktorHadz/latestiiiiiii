@@ -89,7 +89,7 @@ module.exports = getDb
 
 /**
 filename: populateDatabase.js
-Dont think I need this: 
+purpose: fill up the db with artificial entries
 
 const createClients = (numClients) => {
     const clients = [];

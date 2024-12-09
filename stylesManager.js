@@ -138,9 +138,11 @@ export default function stylesManager() {
         this.styles.push({ ...newStyle, isEditing: false })
         this.filteredStyles = this.styles
         this.showAddStyleModal = false
+        callSuccess('Added new style:', `${this.newStyle.name}`)
         this.newStyle = { name: '', price: null } // Clear the form
       } catch (error) {
         console.error('Error adding style:', error)
+        callError('Cannot add style', 'Contact support.')
       }
     },
 
@@ -156,9 +158,11 @@ export default function stylesManager() {
         this.samples.push({ ...newSample, isEditing: false })
         this.filteredSamples = this.samples
         this.showAddSampleModal = false
+        callSuccess(`Added new sample: ${this.newSample.name}`)
         this.newSample = { name: '', time: null, price: null } // Clear the form
       } catch (error) {
         console.error('Error adding sample:', error)
+        callError('Cannot add sample', 'Contact support.')
       }
     },
 
@@ -234,32 +238,42 @@ export default function stylesManager() {
     },
 
     async deleteStyle(styleId) {
-      try {
-        const response = await fetch(`/styles/${styleId}`, { method: 'DELETE' })
-        if (response.ok) {
-          this.styles = this.styles.filter(style => style.id !== styleId)
-          this.filteredStyles = this.styles
-        } else {
-          console.error('Error deleting style:', await response.json())
+      if (confirm('Delete this style?')) {
+        try {
+          const response = await fetch(`/styles/${styleId}`, {
+            method: 'DELETE',
+          })
+          if (response.ok) {
+            this.styles = this.styles.filter(style => style.id !== styleId)
+            this.filteredStyles = this.styles
+          } else {
+            console.error('Error deleting style:', await response.json())
+          }
+        } catch (error) {
+          console.error('Error deleting style:', error)
         }
-      } catch (error) {
-        console.error('Error deleting style:', error)
+      } else {
+        return
       }
     },
 
     async deleteSample(sampleId) {
-      try {
-        const response = await fetch(`/samples/${sampleId}`, {
-          method: 'DELETE',
-        })
-        if (response.ok) {
-          this.samples = this.samples.filter(sample => sample.id !== sampleId)
-          this.filteredSamples = this.samples
-        } else {
-          console.error('Error deleting sample:', await response.json())
+      if (confirm('Delete this sample?')) {
+        try {
+          const response = await fetch(`/samples/${sampleId}`, {
+            method: 'DELETE',
+          })
+          if (response.ok) {
+            this.samples = this.samples.filter(sample => sample.id !== sampleId)
+            this.filteredSamples = this.samples
+          } else {
+            console.error('Error deleting sample:', await response.json())
+          }
+        } catch (error) {
+          console.error('Error deleting sample:', error)
         }
-      } catch (error) {
-        console.error('Error deleting sample:', error)
+      } else {
+        return
       }
     },
 
