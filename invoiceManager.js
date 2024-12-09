@@ -81,6 +81,8 @@ export default function invoiceManager() {
     init() {
       this.fetchClients()
       this.loadSelectedClient()
+      console.log('icons replaced')
+      feather.replace()
       this.tabId = this.$id('tabs')
       // Ensure that the $refs are fully loaded before accessing them
       this.$nextTick(() => {

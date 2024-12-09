@@ -4,13 +4,13 @@
     class="inner-modal-size-positioning-relative modal-bg-and-borders"
     @keydown.escape.window="openSelectClient = false">
     <div class="p-6">
-      <h2 class="mb-4 text-xl font-medium">Select Client</h2>
+      <h2 class="modal-title">Select Client</h2>
       <div class="relative">
         <button
           x-ref="clientModalButton"
           @click="showDropdown = !showDropdown"
-          :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !showDropdown}"
-          class="mb-4 w-full rounded-md border p-2 text-vls transition duration-300 hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
+          :class="{'border-vls2 dark:border-vls text-vls2 dark:text-vls2': showDropdown, 'border-vls dark:border-vds2 text-vls dark:text-vds2': !showDropdown}"
+          class="mb-4 w-full rounded-md border border-vls2 p-2 text-vls2 dark:border-vls dark:text-vls2 dark:hover:border-vred-300 dark:hover:text-vred-300">
           Clients
         </button>
         <div

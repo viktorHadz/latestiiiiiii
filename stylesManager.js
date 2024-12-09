@@ -23,6 +23,8 @@ export default function stylesManager() {
       console.log(this.message)
       this.fetchClients()
       this.loadSelectedClient()
+      // Call feather icons replace to re-render icons.
+      feather.replace()
       this.tabId = this.$id('tabs')
       // Ensure that the $refs are fully loaded before accessing them
       this.$nextTick(() => {
@@ -67,21 +69,26 @@ export default function stylesManager() {
       this.showClientModal = true
     },
 
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown
+    closeModal() {
+      this.showClientModal = false
     },
 
     selectClient(client) {
       this.selectedClient = client
       this.showDropdown = false
-      this.showClientModal = false
+
       this.saveSelectedClient(client)
       this.fetchStyles(client.id)
       this.fetchSamples(client.id)
+      this.$nextTick(() => {
+        this.closeModal()
+      })
     },
 
     saveSelectedClient(client) {
       localStorage.setItem('selectedClient', JSON.stringify(client))
+      const savedClient = JSON.parse(localStorage.getItem('selectedClient'))
+      callSuccess(`Selected client: ${savedClient.name}`)
     },
 
     loadSelectedClient() {
@@ -254,10 +261,6 @@ export default function stylesManager() {
       } catch (error) {
         console.error('Error deleting sample:', error)
       }
-    },
-
-    closeModal() {
-      this.showClientModal = false
     },
 
     searchStyles() {

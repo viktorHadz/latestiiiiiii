@@ -8,6 +8,8 @@ export default function clientManager() {
 
     init() {
       this.fetchClients()
+      console.log('icons replaced')
+      feather.replace()
     },
     // Search clients
     searchClients() {

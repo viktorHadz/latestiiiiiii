@@ -89,13 +89,16 @@ html {
 .table-scrollbar::-webkit-scrollbar-track {
   background: #ffffff;
   border-radius: 5px;
+  clip-path: inset(0);
 }
 .table-scrollbar::-webkit-scrollbar-thumb {
   background: #2b3440; /* The draggable scrolling handle */
   border-radius: 5px; /* Roundness of the scrollbar handle */
+  clip-path: inset(0);
 }
 .table-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #242c36; /* Hover effect */
+  clip-path: inset(0);
 }
 /* Table Alternative Scrollbar Light */
 .alt-table-scrollbar::-webkit-scrollbar {
@@ -115,7 +118,6 @@ html {
 }
 
 /* MARK: Scrollbars Dark */
-
 /* Global */
 .dark ::-webkit-scrollbar-track {
   background: #525252;
@@ -161,6 +163,280 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+/* MARK: Table styles - borders */
+.round-left-border {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+.round-right-border {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+.border-hover-ring-efect {
+  @apply cursor-default rounded-md transition duration-100;
+  @apply hover:shadow-lg hover:ring-1 hover:ring-vls2/80 dark:hover:ring-vds3light;
+}
+.table-container {
+  @apply mb-12 overflow-y-auto;
+}
+.table-head-style {
+  @apply sticky top-0 z-10 rounded bg-vls2 text-base font-medium text-vlp;
+  @apply dark:bg-vdp dark:text-vds;
+}
+.table-head-works {
+  @apply sticky top-0 rounded bg-vls2 text-base font-medium text-vlp dark:bg-zinc-900 dark:text-vds;
+}
+.table-body-style {
+  @apply bg-vlp text-vls2 hover:text-vls3;
+  @apply dark:bg-vds3neu700 dark:text-vds;
+}
+/* TABLE INPUTS */
+.table-edit-input-style {
+  @apply w-full rounded border border-transparent bg-vlp2/70 px-1 py-0.5 text-vls2/60 transition duration-100;
+  @apply hover:border-vls2 hover:bg-vlp hover:text-vls2;
+  @apply focus:border-vls2 focus:bg-vlp focus:text-vls2 focus:outline-none;
+  @apply dark:bg-vdp2 dark:text-vds3light;
+  @apply dark:hover:border-vds dark:hover:bg-vdp3 dark:hover:text-vds;
+  @apply dark:focus:border-vds dark:focus:bg-vdp3 dark:focus:text-vds;
+}
+.dark .table-edit-input-style {
+  @apply dark:bg-vdp2 dark:text-vds3light;
+  @apply dark:hover:border-vds dark:hover:bg-vdp3 dark:hover:text-vds;
+  @apply dark:focus:border-vds dark:focus:bg-vdp3 dark:focus:text-vds;
+}
+
+.table-interaction-icon-blue {
+  @apply rounded-full p-1.5 text-vls2 transition duration-100;
+  @apply hover:bg-vlp2/60 hover:text-vla;
+  @apply dark:text-vds;
+  @apply dark:hover:bg-vlp2/20 dark:hover:text-blue-400;
+  @apply active:scale-95;
+}
+.table-interaction-icon-red {
+  @apply rounded-full p-1.5 text-vls2 transition duration-100;
+  @apply hover:bg-vlp2/60 hover:text-vda2;
+  @apply dark:text-vds;
+  @apply dark:hover:bg-vlp2/20 dark:hover:text-vda2;
+  @apply active:scale-95;
+}
+/* Buttons */
+.butt-style {
+  @apply flex items-center rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp duration-500;
+  @apply hover:border-vla hover:bg-vls3 hover:text-vla active:scale-95;
+}
+.dark .butt-style {
+  @apply flex items-center rounded-md border border-vds2 bg-vdp p-2 text-sm font-medium text-vds3light duration-500;
+  @apply hover:border-vda hover:text-vda active:scale-95;
+}
+
+/* MARK: Tab Buttons */
+.tab-button {
+  @apply transform rounded-md text-vls2 transition-all duration-300 ease-in-out;
+  @apply hover:bg-vlp2 hover:text-vls3;
+  @apply active:scale-90;
+}
+.tab-button-active {
+  @apply flex rounded-md bg-vls2 text-vla;
+  @apply hover:bg-vls2 hover:text-vla;
+}
+
+/* Dark tab buttons */
+.dark .tab-button {
+  @apply my-4 flex flex-row items-baseline font-bold text-vds3light transition duration-300 ease-in-out;
+  @apply hover:bg-vdp3 hover:text-vda;
+}
+.dark .tab-button-active {
+  @apply flex rounded-md bg-vdp3 text-vda2;
+  @apply hover:text-vds3light;
+}
+/* MARK: Tab Toggler Tabs */
+.toggler {
+  @apply relative inline-grid h-10 w-full select-none grid-cols-2 items-center justify-center rounded-md border border-vls text-vdp2;
+  @apply dark:border-vds2 dark:bg-vdp2 dark:text-vds;
+}
+.toggler-handle-bg {
+  @apply absolute inset-0 z-10 h-full w-1/2 duration-500 ease-out; /* Align within parent */
+}
+.toggler-handle-inner {
+  @apply z-10 !h-full w-full rounded-md bg-vls2 shadow-sm dark:bg-zinc-900;
+}
+.toggler-active,
+.toggler-inactive {
+  @apply relative z-20 h-full; /* Text stays above slider */
+}
+
+.toggler-inactive {
+  @apply text-vls2 transition duration-500 ease-out hover:text-vls3 hover:underline;
+  @apply dark:text-vds dark:hover:text-vda;
+}
+
+.toggler-active {
+  @apply pointer-events-none text-vlp;
+  @apply dark:text-vda;
+}
+/* Togglers Ends */
+
+/* MARK:Search Input*/
+.srch-style {
+  @apply flex rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp2 transition duration-500 placeholder:text-vlp2;
+  @apply hover:border-vla hover:bg-vls3 hover:text-vlp;
+  @apply focus:border-vla focus:bg-vls3 focus:text-vlp focus:outline-none;
+}
+.dark .srch-style {
+  @apply border-transparent bg-vdp p-2 text-sm font-medium text-vds transition duration-500 placeholder:text-vds3light;
+  @apply hover:border-vda hover:text-vds hover:placeholder-vds;
+  @apply focus:border-vda focus:text-vds focus:placeholder-vds focus:outline-none;
+}
+
+/* MARK: MODALS */
+.modal-input-style {
+  @apply rounded-md bg-blue-50 p-2 text-vls2 placeholder-vls ring-1 ring-vls2/30 transition-all duration-500;
+  @apply hover:bg-blue-100 hover:placeholder-vls2/80 hover:ring-vls2/70;
+  @apply focus:bg-blue-100 focus:placeholder-vls2/80 focus:outline-none focus:ring-vls2/70;
+}
+
+.dark .modal-input-style {
+  @apply rounded-md bg-vds3neu700 p-2 text-vds placeholder-vds3light ring-1 ring-transparent transition duration-500;
+  @apply hover:bg-vds2 hover:text-vds hover:placeholder-vds;
+  @apply focus:bg-vds2 focus:text-vds focus:placeholder-vds focus:ring-vds3light;
+}
+.outter-modal-overlay-blur-fixed {
+  @apply fixed inset-0 h-full w-full overflow-y-auto bg-gray-800/50 backdrop-blur-sm;
+}
+.dark .modal-title {
+  @apply text-2xl font-medium tracking-tighter text-vds;
+}
+.modal-title {
+  @apply text-2xl font-medium tracking-tighter text-vls2;
+}
+/* Modal Buttons */
+.modal-dropdown {
+  @apply mb-4 w-full rounded-md border border-vls p-2 text-vls transition duration-300;
+  @apply hover:border-vls2 hover:text-vls2;
+
+  @apply dark:border-vds3light dark:text-vds3light;
+  @apply dark:hover:border-vds dark:hover:text-vds;
+}
+.inner-modal-dropdown-open {
+  @apply flex justify-center border border-vls2 p-2 text-vls2 transition duration-300 dark:border-vds dark:text-vds;
+}
+.modal-btn-prim {
+  @apply rounded-md border bg-vls2 px-2 py-1 text-base text-vlp2 duration-500;
+  @apply hover:border-vla hover:bg-vls3 hover:text-vla;
+  @apply active:scale-95 active:border-vla;
+}
+.dark .modal-btn-prim {
+  @apply rounded-md border border-transparent bg-vds3neu700 px-2 py-1 text-base text-vlp2 duration-500;
+  @apply hover:border-vda hover:bg-vds2 hover:text-vda;
+  @apply active:scale-95 active:border-vda;
+}
+.modal-btn-sec {
+  @apply rounded-md bg-red-800 px-2 py-1 text-base text-vlp transition duration-300;
+  @apply hover:bg-red-700;
+  @apply active:scale-95;
+}
+
+.inner-modal-size-positioning-relative {
+  @apply relative top-1/4 mx-auto w-96 text-center;
+}
+.modal-bg-and-borders {
+  @apply rounded-md border border-vls2/70 bg-vlp text-vls shadow-lg;
+  @apply dark:border-vds2 dark:bg-vdp;
+}
+
+/* MARK: BORDER CLIPPER for adjusting table body overflowing the header*/
+.border-clipper {
+  --border-clipper: #d3d5d6;
+  box-shadow: 0 -4px 0 0 var(--border-clipper);
+}
+.dark .border-clipper {
+  --border-clipper: #27272a;
+}
+/* MARK: Inputs */
+input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 0.6rem; /* Size of the radio button */
+  height: 0.6rem;
+
+  background-color: #d4d4d400;
+  border-radius: 50%;
+
+  outline: solid 2px #d4d4d4;
+  outline-offset: 4px;
+
+  cursor: pointer;
+  transition:
+    outline-offset 150ms,
+    background 200ms,
+    border-color 200ms;
+}
+input[type='radio']:focus {
+  background-color: #777777;
+  outline-color: #777777;
+}
+input[type='radio']:checked {
+  outline: solid 2px #fea09a;
+  outline-offset: 2px;
+  background-color: #fea09a; /* Background color when checked */
+}
+
+/* MARK: Animations */
+@keyframes glowEffect {
+  0% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
+    border-radius: 0.375rem;
+  }
+  20% {
+    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
+    border-radius: 0.375rem;
+  }
+  50% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
+    border-radius: 0.375rem;
+  }
+  80% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
+    border-radius: 0.375rem;
+  }
+  100% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
+    border-radius: 0.375rem;
+  }
+}
+@keyframes glowEffectDark {
+  0% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
+    border-radius: 0.375rem;
+  }
+  20% {
+    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
+    border-radius: 0.375rem;
+  }
+  50% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
+    border-radius: 0.375rem;
+  }
+  80% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
+    border-radius: 0.375rem;
+  }
+  100% {
+    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
+    border-radius: 0.375rem;
+  }
+}
+/* Apply the animation for the glow effect */
+.add-item-glow {
+  animation: glowEffect 500ms ease-out;
+}
+.add-item-glow-dark {
+  animation: glowEffectDark 500ms ease-out;
+}
+.terminator {
+  padding: 0 !important;
+}
 /* MARK:Rotateable icon - Symbols  */
 #rotateIcon {
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -231,200 +507,4 @@ input::-webkit-inner-spin-button {
   transition:
     opacity 0.3s,
     transform 0.3s;
-}
-/* MARK: Table styles - borders */
-.round-left-border {
-  border-top-left-radius: 0.375rem;
-  border-bottom-left-radius: 0.375rem;
-}
-.round-right-border {
-  border-top-right-radius: 0.375rem;
-  border-bottom-right-radius: 0.375rem;
-}
-.border-hover-ring-efect {
-  @apply cursor-default rounded-md transition duration-100 hover:shadow-lg hover:ring-1 hover:ring-vls2;
-  @apply dark:hover:ring-vda;
-}
-/* MARK:TABLE INPUTS */
-.table-edit-input-style {
-  @apply w-full rounded border border-transparent bg-vlp2/70 px-1 py-0.5 text-vls2/60 transition duration-100;
-  @apply hover:border-vls2 hover:bg-vlp hover:text-vls2;
-  @apply focus:border-vls2 focus:bg-vlp focus:text-vls2 focus:outline-none;
-  @apply dark:bg-vdp;
-  @apply dark:hover:border-vda dark:hover:bg-vdp2 dark:hover:text-vda;
-  @apply dark:focus:border-vda dark:focus:text-vda;
-}
-.table-interaction-icon-blue {
-  @apply rounded-full p-1.5 text-vls2 transition duration-100;
-  @apply hover:bg-vlp2/60 hover:text-vla;
-  @apply dark:text-vds;
-  @apply dark:hover:text-blue-500;
-}
-.table-interaction-icon-red {
-  @apply rounded-full p-1.5 text-vls2 transition duration-100;
-  @apply hover:bg-vlp2/60 hover:text-vda2;
-  @apply dark:text-vds;
-  @apply dark:hover:text-vda2;
-}
-/* MARK: Glow Effect */
-@keyframes glowEffect {
-  0% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
-    border-radius: 0.375rem;
-  }
-  20% {
-    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
-    border-radius: 0.375rem;
-  }
-  50% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
-    border-radius: 0.375rem;
-  }
-  80% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
-    border-radius: 0.375rem;
-  }
-  100% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
-    border-radius: 0.375rem;
-  }
-}
-@keyframes glowEffectDark {
-  0% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
-    border-radius: 0.375rem;
-  }
-  20% {
-    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
-    border-radius: 0.375rem;
-  }
-  50% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
-    border-radius: 0.375rem;
-  }
-  80% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
-    border-radius: 0.375rem;
-  }
-  100% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
-    border-radius: 0.375rem;
-  }
-}
-/* Apply the animation for the glow effect */
-.add-item-glow {
-  animation: glowEffect 500ms ease-out;
-}
-.add-item-glow-dark {
-  animation: glowEffectDark 500ms ease-out;
-}
-.terminator {
-  padding: 0 !important;
-}
-
-/* MARK: Tab Buttons */
-.tab-button {
-  @apply transform rounded-md text-vls2 transition-all duration-300 ease-in-out;
-  @apply hover:bg-vlp2 hover:text-vls3;
-  @apply active:scale-90;
-}
-.tab-button-active {
-  @apply flex rounded-md bg-vls2 text-vla;
-  @apply hover:bg-vls2 hover:text-vla;
-}
-.butt-style {
-  @apply flex items-center rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp duration-500;
-  @apply hover:border-vla hover:bg-vls3 hover:text-vla active:scale-95;
-}
-/* Dark tab buttons */
-.dark .tab-button {
-  @apply my-4 flex flex-row items-baseline text-lg font-bold text-vds3light transition duration-300 hover:text-vls;
-}
-.dark .tab-button-active {
-  @apply text-vls !underline decoration-vda !decoration-2;
-}
-.dark .butt-style {
-  @apply flex items-center rounded-md border border-transparent bg-vdp p-2 text-sm font-medium text-vds duration-500;
-  @apply hover:border-vda hover:text-vda active:scale-95;
-}
-
-/* MARK:Search Input*/
-.srch-style {
-  @apply flex rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp2 transition duration-500 placeholder:text-vlp2;
-  @apply hover:border-vla hover:bg-vls3 hover:text-vlp;
-  @apply focus:border-vla focus:bg-vls3 focus:text-vlp focus:outline-none;
-}
-.dark .srch-style {
-  @apply border-transparent bg-vdp p-2 text-sm font-medium text-vds transition duration-500 placeholder:text-vds;
-  @apply hover:border-vda hover:text-vda hover:placeholder:text-vda;
-  @apply focus:border-vda focus:text-vda focus:outline-none;
-}
-
-/* MARK: MODALS */
-.modal-input-style {
-  @apply rounded-md bg-vlp3 p-2 text-vlp placeholder-vlp ring-1 ring-transparent transition duration-500;
-  @apply hover:bg-vls;
-  @apply focus:bg-vls focus:outline-none focus:ring-vla;
-}
-.dark .modal-input-style {
-  @apply rounded-md bg-vdp3 p-2 text-vds placeholder-vds3light ring-1 ring-transparent transition duration-500 focus:placeholder-vls;
-  @apply hover:bg-vds2 hover:text-vds;
-  @apply focus:bg-vds2 focus:text-vds focus:outline-none focus:ring-vds;
-}
-.outter-modal-overlay-blur-fixed {
-  @apply fixed inset-0 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50 backdrop-blur-sm;
-}
-.dark .modal-title {
-  @apply text-2xl font-medium tracking-tighter text-vds;
-}
-
-.dark .modal-button {
-  @apply rounded-md border border-vds3light px-2 py-1 text-base text-vds3light decoration-transparent underline-offset-2 duration-500 hover:border-vda hover:text-vls hover:decoration-vda active:scale-95 active:border-vda;
-}
-.inner-modal-size-positioning-relative {
-  @apply relative top-1/4 mx-auto w-96 text-center;
-}
-.modal-bg-and-borders {
-  @apply rounded-md border border-vlp2 bg-vlp text-vls shadow-lg;
-}
-.dark .modal-bg-and-borders {
-  @apply rounded-md border border-vds2 bg-vdp shadow-lg;
-}
-
-/* MARK: BORDER CLIPPER for adjusting table body overflowing the header*/
-.border-clipper {
-  --border-clipper: #fbf3f3;
-  box-shadow: 0 -4px 0 0 var(--border-clipper);
-}
-.dark .border-clipper {
-  --border-clipper: #27272a;
-}
-/* MARK: Inputs */
-input[type='radio'] {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 0.6rem; /* Size of the radio button */
-  height: 0.6rem;
-
-  background-color: #d4d4d400;
-  border-radius: 50%;
-
-  outline: solid 2px #d4d4d4;
-  outline-offset: 4px;
-
-  cursor: pointer;
-  transition:
-    outline-offset 150ms,
-    background 200ms,
-    border-color 200ms;
-}
-input[type='radio']:focus {
-  background-color: #777777;
-  outline-color: #777777;
-}
-input[type='radio']:checked {
-  outline: solid 2px #fea09a;
-  outline-offset: 2px;
-  background-color: #fea09a; /* Background color when checked */
 }

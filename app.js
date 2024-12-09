@@ -4,6 +4,7 @@ import stylesManager from './stylesManager.js'
 import invoiceManager from './invoiceManager.js'
 import editorManager from './editorManager.js'
 import toastManager from './toastManager.js'
+// TEMPLATING: Put the logic of select client into the reusable element's html using an alpine data and then just load the element. This will allow me to template
 
 // window.componentManager = componentManager()
 // Initialize toastManager and assigns it to window
@@ -68,6 +69,7 @@ document.addEventListener('alpine:init', () => {
   // document.body.addEventListener('htmx:afterRequest', function (e) {
   //   console.log('HTMX Request Completed:', e.target, e.detail)
   // })
+  // Icons called after content loaded
   Alpine.store('svgCache', {
     svgCache: [],
 
@@ -158,6 +160,9 @@ document.addEventListener('alpine:init', () => {
       this.$nextTick(() => {
         this.tabContent = content
         this.initTabComponent(tabName)
+        // Neeed to also call it inside the init statement of each
+        // console.log('loading icons')
+        // feather.replace()
       })
     },
 

@@ -81,6 +81,7 @@ export default function editorManager() {
       this.fetchClients()
       this.loadSelectedClient()
       this.fetchListById()
+      feather.replace()
     },
 
     removeInvoiceItem(id) {

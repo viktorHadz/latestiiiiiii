@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoicing</title>
-    <link rel="stylesheet" href="/css/outputTailwind.css" />
     <script src="./node_modules/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="/css/outputTailwind.css" />
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script src="/public/alpinejs/plugins/morph.js"></script>
   </head>
@@ -27,7 +27,7 @@
         x-transition:leave-end="w-16">
         <div class="grid h-full grid-cols-1 grid-rows-3 items-center gap-20">
           <!-- MARK:ROW-1-ContentButtons -->
-          <div class="grid h-full w-full grid-cols-1 grid-rows-4 place-items-center items-center">
+          <div class="mt-4 grid h-full w-full grid-cols-1 grid-rows-4 place-items-center items-center">
             <!-- CLIENTS -->
             <button
               @click="tabButtonClicked('clients')"
@@ -83,20 +83,8 @@
             </button>
           </div>
 
-          <!-- MARK:ROW-2-Client Select -->
-          <div class="flex flex-col items-center justify-center">
-            <div x-show="sideBar" class="flex flex-col items-center">
-              <button class="tab-button w-full justify-center" @click="openSelectClient = !openSelectClient">
-                <div class="mr-1.5" x-html="$store.svgCache.getSvgContent('refresh-ccw.svg')"></div>
-                Select Client
-              </button>
-            </div>
-            <div x-show="!sideBar" @click="openSelectClient = !openSelectClient" class="tab-button flex justify-center">
-              <button title="Open Sidebar">
-                <div x-html="$store.svgCache.getSvgContent('refresh-ccw-copy.svg')"></div>
-              </button>
-            </div>
-          </div>
+          <!-- MARK:ROW-2-Placeholder Item -->
+          <div class="flex flex-col items-center justify-center"></div>
 
           <!-- MARK:ROW-3-DarkMode -->
           <div class="grid h-full grid-cols-1 grid-rows-2 place-items-center justify-center">
@@ -130,9 +118,6 @@
         </div>
       </div>
 
-      <!-- MARK: SELECT CLIENT MODAL -->
-      <div hx-get="/htmx-alpine-components/selectClient.html" hx-trigger="load" x-show="selectClientModal = true"></div>
-
       <!-- MARK: TOASTS HTMX -->
       <div
         hx-target="this"
@@ -142,9 +127,7 @@
         hx-get="/htmx-alpine-components/toast.html"></div>
       <!--  MARK: TOASTS END  -->
     </div>
-    <script>
-      feather.replace()
-    </script>
+
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <script type="module" src="./app.js" defer></script>
     <!--  Alpine Plugins  -->
