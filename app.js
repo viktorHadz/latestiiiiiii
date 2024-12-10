@@ -88,9 +88,51 @@ document.addEventListener('alpine:init', () => {
         console.error(error.message)
       }
     },
-    getSvgContent(name) {
-      const svg = this.svgCache.find(item => item.name === name)
-      return svg ? svg.content : ''
+    getDimensions(svgString) {
+      // Regex
+      const heightRegx = /height="([^"]+)"/
+      const widthRegx = /width="([^"]+)/
+      // Extract from string
+      const heightMatch = svgString.match(heightRegx)
+      const widthMatch = svgString.match(widthRegx)
+      // Parse matches or null if no match
+      const height = heightMatch ? heightMatch[1] : null
+      const width = widthMatch ? widthMatch[1] : null
+
+      return { height, width }
+    },
+    // Helper function to get the string only (called on the clientside)
+    getSvgContent(name, options = {}) {
+      return this.getSvg(name, options).svg
+    },
+    getSvg(name, options = {}) {
+      // Find the SVG in the cache
+      const svgObj = this.svgCache.find(item => item.name === name)
+      if (!svgObj) {
+        throw new Error('SVG not found')
+      }
+
+      let svgContent = svgObj.content
+
+      // Replaces height and width in the SVG if options are provided
+      if (options.height || options.width) {
+        if (options.height) {
+          svgContent = svgContent.replace(
+            /height="([^"]+)"/,
+            `height="${options.height}"`,
+          )
+        }
+        if (options.width) {
+          svgContent = svgContent.replace(
+            /width="([^"]+)"/,
+            `width="${options.width}"`,
+          )
+        }
+      }
+      // Extracts updated or existing height and width
+      const { height, width } = this.getDimensions(svgContent)
+
+      return { svg: svgContent, height, width }
     },
   })
   Alpine.data('tabManager', () => ({

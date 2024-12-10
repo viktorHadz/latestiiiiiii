@@ -1,7 +1,7 @@
 <div x-data="stylesManager" class="relative w-full px-12 py-4 2xl:px-20">
-  <div class="flex justify-between mb-12 align-baseline">
+  <div class="mb-12 flex justify-between align-baseline">
     <div>
-      <button @click="openModal" class="flex items-baseline butt-style">
+      <button @click="openModal" class="butt-style flex items-baseline">
         <object data-feather="user" class="mr-1.5 h-4 w-4"></object>
         Select Client
       </button>
@@ -16,7 +16,7 @@
   <!-- Conditional display for when a client is selected -->
   <template x-if="selectedClient">
     <div>
-      <div class="relative w-full max-w-full mb-4">
+      <div class="relative mb-4 w-full max-w-full">
         <div x-ref="tabButtons" class="toggler">
           <!-- Styles Tab Button -->
           <button
@@ -35,20 +35,20 @@
             Samples
           </button>
           <!-- Slider Background -->
-          <div x-ref="tabMarker" class="z-0 toggler-handle-bg" x-cloak>
+          <div x-ref="tabMarker" class="toggler-handle-bg z-0" x-cloak>
             <div class="toggler-handle-inner"></div>
           </div>
         </div>
-        <div class="relative text-xs border rounded-md border-vls/80 text-vlp dark:border-vdp3 dark:text-vds">
+        <div class="relative rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
-            <div class="flex justify-between p-2 mb-4 align-middle">
+            <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
                   type="text"
                   placeholder="Search Styles..."
-                  class="transition-all duration-500 srch-style"
+                  class="srch-style transition-all duration-500"
                   x-model="styleSearch"
                   @input="searchStyles"
                   x-transition />
@@ -64,13 +64,13 @@
                 </button>
               </div>
             </div>
-            <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 65vh">
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 65vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="sticky top-0 table-head-style">
+                <thead class="table-head-style sticky top-0">
                   <tr>
-                    <th class="p-2 border border-transparent round-left-border border-clipper">Style Name</th>
+                    <th class="round-left-border border-clipper border border-transparent p-2">Style Name</th>
                     <th class="w-56 p-2 text-lg">Price</th>
-                    <th class="p-2 text-lg round-right-border border-clipper w-36">Actions</th>
+                    <th class="round-right-border border-clipper w-36 p-2 text-lg">Actions</th>
                   </tr>
                 </thead>
                 <!-- MARK: TBODY STYLES -->
@@ -78,12 +78,12 @@
                   <template x-for="style in filteredStyles" :key="style.id">
                     <tr class="border-hover-ring-efect">
                       <!-- Name -->
-                      <td class="w-2/3 p-2 py-1 text-sm round-left-border">
+                      <td class="round-left-border w-2/3 p-2 py-1 text-sm">
                         <template x-if="style.isEditing">
                           <input type="text" x-model="style.name" class="table-edit-input-style" />
                         </template>
                         <template x-if="!style.isEditing">
-                          <span x-text="style.name" class="p-1 text-sm cursor-default"></span>
+                          <span x-text="style.name" class="cursor-default p-1 text-sm"></span>
                         </template>
                       </td>
                       <!-- Price -->
@@ -96,23 +96,23 @@
                         </template>
                       </td>
                       <!-- Actions -->
-                      <td class="px-2 py-1 text-sm text-left round-right-border">
+                      <td class="round-right-border px-2 py-1 text-left text-sm">
                         <template x-if="style.isEditing">
                           <div class="flex justify-between">
-                            <button @click="saveStyle(style)" class="table-interaction-icon-blue">
+                            <button @click="saveStyle(style)" class="table-interaction-icon-blue p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('save.svg')"></div>
                             </button>
-                            <button @click="cancelEditStyle(style)" class="table-interaction-icon-red">
+                            <button @click="cancelEditStyle(style)" class="table-interaction-icon-red p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('x-circle.svg')"></div>
                             </button>
                           </div>
                         </template>
                         <template x-if="!style.isEditing">
                           <div class="flex justify-between">
-                            <button @click="editStyle(style)" class="table-interaction-icon-blue">
+                            <button @click="editStyle(style)" class="table-interaction-icon-blue p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('edit-2.svg')"></div>
                             </button>
-                            <button @click="deleteStyle(style.id)" class="table-interaction-icon-red">
+                            <button @click="deleteStyle(style.id)" class="table-interaction-icon-red p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('trash-2.svg')"></div>
                             </button>
                           </div>
@@ -126,13 +126,13 @@
           </div>
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
             <!-- MARK: SAMPLES SECTION -->
-            <div class="flex justify-between p-2 mb-4 align-middle">
+            <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
                   type="text"
                   placeholder="Search Styles..."
-                  class="transition-all duration-500 srch-style"
+                  class="srch-style transition-all duration-500"
                   x-model="sampleSearch"
                   @input="searchSamples" />
               </div>
@@ -147,15 +147,15 @@
                 </button>
               </div>
             </div>
-            <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 65vh">
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 65vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="sticky top-0 table-head-style">
+                <thead class="table-head-style sticky top-0">
                   <tr>
-                    <th class="p-2 border border-transparent round-left-border border-clipper">Sample Name</th>
+                    <th class="round-left-border border-clipper border border-transparent p-2">Sample Name</th>
                     <th class="p-2 text-lg">Time</th>
                     <th class="p-2 text-lg">Price</th>
                     <th
-                      class="p-2 text-lg round-right-border border-clipper w-36"
+                      class="round-right-border border-clipper w-36 p-2 text-lg"
                       style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                       Actions
                     </th>
@@ -166,7 +166,7 @@
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr class="border-hover-ring-efect">
                       <!-- Name -->
-                      <td class="p-1 text-sm round-left-border">
+                      <td class="round-left-border p-1 text-sm">
                         <template x-if="sample.isEditing">
                           <input type="text" x-model="sample.name" class="table-edit-input-style" />
                         </template>
@@ -201,20 +201,20 @@
                       <td class="round-right-border w-[10%] px-2 py-1 text-left text-sm">
                         <template x-if="sample.isEditing">
                           <div class="flex justify-between">
-                            <button @click="saveSample(sample)" class="table-interaction-icon-blue">
+                            <button @click="saveSample(sample)" class="table-interaction-icon-blue p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('save.svg')"></div>
                             </button>
-                            <button @click="cancelEditSample(sample)" class="table-interaction-icon-red">
+                            <button @click="cancelEditSample(sample)" class="table-interaction-icon-red p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('x-circle.svg')"></div>
                             </button>
                           </div>
                         </template>
                         <template x-if="!sample.isEditing">
                           <div class="flex justify-between">
-                            <button @click="editSample(sample)" class="table-interaction-icon-blue">
+                            <button @click="editSample(sample)" class="table-interaction-icon-blue p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('edit-2.svg')"></div>
                             </button>
-                            <button @click="deleteSample(sample.id)" class="table-interaction-icon-red">
+                            <button @click="deleteSample(sample.id)" class="table-interaction-icon-red p-1.5">
                               <div x-html="$store.svgCache.getSvgContent('trash-2.svg')"></div>
                             </button>
                           </div>
@@ -231,21 +231,21 @@
     </div>
   </template>
 
-  <!-- MARK: CLIENT MODAL -->
-  <div x-show="showClientModal" x-transition.opacity.duration.300ms class="z-50 outter-modal-overlay-blur-fixed">
+  <!-- MARK: ADD CLIENT MODAL -->
+  <div x-show="showClientModal" x-transition.opacity.duration.300ms class="outter-modal-overlay-blur-fixed z-50">
     <!-- Clients Modal Body -->
     <div
       class="inner-modal-size-positioning-relative modal-bg-and-borders"
       @keydown.escape.window="showClientModal = false">
       <div class="p-6">
-        <h2 class="mb-4 modal-title">Select Client</h2>
+        <h2 class="modal-title mb-4">Select Client</h2>
         <div class="relative">
           <button
             x-ref="clientModalButton"
             @click="showDropdown = !showDropdown"
             :class="{ 'mb-4 w-full rounded-md inner-modal-dropdown-open': showDropdown, 'justify-center modal-dropdown flex': !showDropdown }">
             Clients
-            <object data-feather="chevron-down" class="flex items-end self-center w-4 h-4 ml-2"></object>
+            <object data-feather="chevron-down" class="ml-2 flex h-4 w-4 items-end self-center"></object>
           </button>
           <div
             x-anchor.offset.5="$refs.clientModalButton"
@@ -256,7 +256,7 @@
               <template x-for="client in clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
-                  class="p-2 text-left rounded-md cursor-pointer dark:bg-vd text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
+                  class="dark:bg-vd cursor-pointer rounded-md p-2 text-left text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
                   x-text="client.name"></li>
               </template>
             </ul>
@@ -270,11 +270,11 @@
   </div>
 
   <!-- MARK: ADD STYLE MODAL -->
-  <div x-show="showAddStyleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
+  <div x-show="showAddStyleModal" x-transition.opacity.duration.300 class="outter-modal-overlay-blur-fixed z-50">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div class="text-center" @click.outside="showAddStyleModal = false">
         <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Style</h3>
+          <h3 class="modal-title mb-4">Add Style</h3>
           <form @submit.prevent="addStyle">
             <input
               x-model="newStyle.name"
@@ -282,7 +282,7 @@
               name="name"
               type="text"
               placeholder="Style Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newStyle.price"
@@ -291,9 +291,9 @@
               min="0"
               step="0.01"
               placeholder="Price"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
-            <div class="flex justify-end gap-8 mt-2">
+            <div class="mt-2 flex justify-end gap-8">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddStyleModal = false" class="modal-btn-sec">Close</button>
             </div>
@@ -303,11 +303,11 @@
     </div>
   </div>
   <!-- MARK: ADD SAMPLE MODAL -->
-  <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
+  <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="outter-modal-overlay-blur-fixed z-50">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div class="text-center" @click.outside="showAddSampleModal = false">
         <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Sample</h3>
+          <h3 class="modal-title mb-4">Add Sample</h3>
           <form @submit.prevent="addSample">
             <input
               x-model="newSample.name"
@@ -315,7 +315,7 @@
               name="name"
               type="text"
               placeholder="Sample Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newSample.time"
@@ -324,7 +324,7 @@
               min="0"
               step="0.01"
               placeholder="Time"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newSample.price"
@@ -333,9 +333,9 @@
               min="0"
               step="0.01"
               placeholder="Price"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
-            <div class="flex justify-end gap-8 mt-2">
+            <div class="mt-2 flex justify-end gap-8">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddSampleModal = false" class="modal-btn-sec">Close</button>
             </div>

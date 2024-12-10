@@ -206,18 +206,34 @@ input::-webkit-inner-spin-button {
 }
 
 .table-interaction-icon-blue {
-  @apply rounded-full p-1.5 text-vls2 transition duration-100;
+  @apply rounded-full text-vls2 transition duration-100;
   @apply hover:bg-vlp2/60 hover:text-vla;
   @apply dark:text-vds;
   @apply dark:hover:bg-vlp2/20 dark:hover:text-blue-400;
   @apply active:scale-95;
+
+  width: 28px;
+  height: 28px;
+  padding: 0; /* Reset default padding */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .table-interaction-icon-red {
-  @apply rounded-full p-1.5 text-vls2 transition duration-100;
+  @apply rounded-full text-vls2 transition duration-100;
   @apply hover:bg-vlp2/60 hover:text-vda2;
   @apply dark:text-vds;
   @apply dark:hover:bg-vlp2/20 dark:hover:text-vda2;
   @apply active:scale-95;
+
+  width: 28px;
+  height: 28px;
+  padding: 0; /* Reset default padding */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 /* Buttons */
 .butt-style {

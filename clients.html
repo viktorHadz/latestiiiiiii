@@ -72,27 +72,27 @@
             <td class="round-right-border text-center text-sm">
               <template x-if="client.isEditing">
                 <div class="flex items-center justify-evenly">
-                  <button @click="saveClient(client)" class="table-interaction-icon-blue">
+                  <button @click="saveClient(client)" class="table-interaction-icon-blue p-1.5">
                     <div
                       class="flex items-center justify-center"
                       x-html="$store.svgCache.getSvgContent('save.svg')"></div>
                   </button>
                   <button
-                    class="table-interaction-icon-red flex items-center justify-center"
+                    class="table-interaction-icon-red flex items-center justify-center p-1.5"
                     @click="cancelEdit(client)"
-                    class="table-interaction-icon-red">
+                    class="table-interaction-icon-red p-1.5">
                     <div x-html="$store.svgCache.getSvgContent('x-circle.svg')"></div>
                   </button>
                 </div>
               </template>
               <template x-if="!client.isEditing">
                 <div class="flex items-center justify-evenly">
-                  <button @click="editClient(client)" class="table-interaction-icon-blue">
+                  <button @click="editClient(client)" class="table-interaction-icon-blue p-1.5">
                     <div
                       class="flex items-center justify-center"
                       x-html="$store.svgCache.getSvgContent('edit-2.svg')"></div>
                   </button>
-                  <button @click="removeClient(client.id)" class="table-interaction-icon-red">
+                  <button @click="removeClient(client.id)" class="table-interaction-icon-red p-1.5">
                     <div
                       class="flex items-center justify-center"
                       x-html="$store.svgCache.getSvgContent('trash-2.svg')"></div>

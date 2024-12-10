@@ -138,7 +138,7 @@ export default function stylesManager() {
         this.styles.push({ ...newStyle, isEditing: false })
         this.filteredStyles = this.styles
         this.showAddStyleModal = false
-        callSuccess('Added new style:', `${this.newStyle.name}`)
+        callSuccess('Added new style:', this.newStyle.name)
         this.newStyle = { name: '', price: null } // Clear the form
       } catch (error) {
         console.error('Error adding style:', error)
@@ -158,7 +158,7 @@ export default function stylesManager() {
         this.samples.push({ ...newSample, isEditing: false })
         this.filteredSamples = this.samples
         this.showAddSampleModal = false
-        callSuccess(`Added new sample: ${this.newSample.name}`)
+        callSuccess('Added new sample:', this.newSample.name)
         this.newSample = { name: '', time: null, price: null } // Clear the form
       } catch (error) {
         console.error('Error adding sample:', error)
