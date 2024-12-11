@@ -42,71 +42,69 @@
         </div>
         <div class="relative rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
-            <!-- MARK: TAB 1 - STYLES -->
-            <div class="w-full">
+            <!-- MARK:STYLES -->
+            <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Selected Client's Styles Information -->
-              <div class="mb-4 flex justify-between p-2 align-middle">
-                <!-- Style Search Input -->
-                <div class="transition-all duration-500">
-                  <input
-                    type="text"
-                    placeholder="Search Styles..."
-                    class="srch-style transition-all duration-500"
-                    x-model="styleSearch"
-                    @input="searchStyles"
-                    x-transition />
-                </div>
+              <!-- Style Search Input -->
+              <div class="transition-all duration-500">
+                <input
+                  type="text"
+                  placeholder="Search Styles..."
+                  class="srch-style transition-all duration-500"
+                  x-model="styleSearch"
+                  @input="searchStyles"
+                  x-transition />
+              </div>
 
-                <!-- Add Style Button -->
-                <div class="flex">
-                  <button
-                    @click="showAddStyleModal = true; if(showAddStyleModal) $nextTick(() => { ($refs.newStyleName.focus()) });"
-                    @keydown.escape.window="showAddStyleModal = false"
-                    class="butt-style flex items-center !p-1.5">
-                    Add Style
-                  </button>
-                </div>
+              <!-- Add Style Button -->
+              <div class="flex">
+                <button
+                  @click="showAddStyleModal = true; if(showAddStyleModal) $nextTick(() => { ($refs.newStyleName.focus()) });"
+                  @keydown.escape.window="showAddStyleModal = false"
+                  class="butt-style flex items-center !p-1.5">
+                  Add Style
+                </button>
               </div>
-              <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 40vh">
-                <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                  <thead class="table-head-style sticky top-0">
-                    <tr>
-                      <th class="round-left-border border-clipper border border-transparent p-2">Style Name</th>
-                      <th class="w-56 p-2 text-lg">Price</th>
-                      <th class="round-right-border border-clipper w-36 p-2 text-lg">Actions</th>
+            </div>
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 40vh">
+              <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
+                <thead class="table-head-style sticky top-0">
+                  <tr>
+                    <th class="round-left-border border-clipper border border-transparent p-2">Style Name</th>
+                    <th class="w-56 p-2 text-lg">Price</th>
+                    <th class="round-right-border border-clipper w-36 p-2 text-lg">Actions</th>
+                  </tr>
+                </thead>
+                <!-- MARK: TBODY STYLES -->
+                <tbody class="table-body-style table-scrollbar">
+                  <template x-for="style in filteredStyles" :key="style.id">
+                    <tr :id="'rowid-' + style.id" class="border-hover-ring-efect">
+                      <td class="round-left-border w-[70%] p-2 py-1 text-sm" x-text="style.name"></td>
+                      <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
+                      <td class="round-right-border w-[15%] px-2 text-left text-sm">
+                        <div class="flex justify-between align-middle">
+                          <button
+                            @click="addItemToInvoice(style, 'style')"
+                            class="table-interaction-icon-blue mx-1 flex place-self-center"
+                            x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
+                          <input
+                            type="number"
+                            placeholder="1"
+                            x-model.number="quantities[style.id]"
+                            @input="handleInvoQtySubmit(style)"
+                            class="modal-input-style flex h-6 w-10 place-self-center" />
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <!-- MARK: TBODY STYLES -->
-                  <tbody class="table-body-style table-scrollbar">
-                    <template x-for="style in filteredStyles" :key="style.id">
-                      <tr :id="'rowid-' + style.id" class="border-hover-ring-efect">
-                        <td class="round-left-border w-[70%] p-2 py-1 text-sm" x-text="style.name"></td>
-                        <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
-                        <td class="round-right-border w-[15%] px-2 text-left text-sm">
-                          <div class="flex justify-between align-middle">
-                            <button
-                              @click="addItemToInvoice(style, 'style')"
-                              class="table-interaction-icon-blue mx-1 flex place-self-center"
-                              x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
-                            <input
-                              type="number"
-                              placeholder="1"
-                              x-model.number="quantities[style.id]"
-                              @input="handleInvoQtySubmit(style)"
-                              class="modal-input-style flex h-6 w-10 place-self-center" />
-                          </div>
-                        </td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
-              </div>
+                  </template>
+                </tbody>
+              </table>
             </div>
           </div>
 
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
             <!-- MARK: TAB 2 - SAMPLES -->
-            <div class="mb-4 flex justify-between align-middle">
+            <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Sample Search Input -->
               <div>
                 <input
@@ -124,22 +122,15 @@
                 Add Sample
               </button>
             </div>
-            <div class="table-scrollbar overflow-y-auto" style="max-height: 500px">
-              <table
-                class="w-[calc(100%-10px)] table-auto border-separate text-vls"
-                style="max-height: 500px; border-spacing: 0 10px">
-                <thead
-                  class="sticky top-0 rounded bg-vlp text-left text-base font-medium text-vls dark:bg-zinc-900 dark:text-vds">
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 65vh">
+              <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
+                <thead class="table-head-style sticky top-0">
                   <tr>
+                    <th class="round-left-border border-clipper border border-transparent p-2">Sample Name</th>
+                    <th class="w-1/12 text-lg">Time</th>
+                    <th class="w-1/12 text-lg">Price</th>
                     <th
-                      class="round-left-border border-clipper w-3/4 border border-transparent p-2 text-lg"
-                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
-                      Sample Name
-                    </th>
-                    <th class="w-1/12 py-2 pl-0 pr-2 text-lg">Time</th>
-                    <th class="w-1/12 py-2 pl-0 pr-2 text-lg">Price</th>
-                    <th
-                      class="round-right-border border-clipper w-1/12 px-2 py-2 text-left text-lg"
+                      class="round-right-border border-clipper w-36 p-2 text-lg"
                       style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                       Actions
                     </th>
