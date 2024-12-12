@@ -274,7 +274,7 @@ input::-webkit-inner-spin-button {
   @apply absolute inset-0 z-10 h-full w-1/2 duration-500 ease-out; /* Align within parent */
 }
 .toggler-handle-inner {
-  @apply z-10 !h-full w-full rounded-md bg-vls2 shadow-sm dark:bg-zinc-900;
+  @apply z-10 !h-full !w-full rounded-md bg-vls2 shadow-sm dark:bg-zinc-900;
 }
 .toggler-active,
 .toggler-inactive {
@@ -401,23 +401,23 @@ input[type='radio']:checked {
 /* MARK: Animations */
 @keyframes glowEffect {
   0% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset; /* Start with no glow */
+    box-shadow: 0 0 3px 3px rgb(83, 207, 110, 0) inset; /* Start with no glow */
     border-radius: 0.375rem;
   }
   20% {
-    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset; /* Glow peaks here */
+    box-shadow: 0 0 3px 3px rgb(83, 207, 110) inset; /* Glow peaks here */
     border-radius: 0.375rem;
   }
   50% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset; /* Intense glow */
+    box-shadow: 0 0 3px 3px rgba(83, 207, 110, 0.763) inset; /* Intense glow */
     border-radius: 0.375rem;
   }
   80% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset; /* Start to fade */
+    box-shadow: 0 0 3px 3px rgba(83, 207, 110, 0.514) inset; /* Start to fade */
     border-radius: 0.375rem;
   }
   100% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et; /* End with no glow */
+    box-shadow: 0 0 3px 3px rgba(83, 207, 110, 0) et; /* End with no glow */
     border-radius: 0.375rem;
   }
 }

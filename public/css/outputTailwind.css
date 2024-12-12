@@ -1061,6 +1061,10 @@ video {
   width: 18px;
 }
 
+.w-\[55\%\] {
+  width: 55%;
+}
+
 .w-\[70\%\] {
   width: 70%;
 }
@@ -1659,10 +1663,6 @@ video {
 .py-4 {
   padding-top: 1rem;
   padding-bottom: 1rem;
-}
-
-.pl-0 {
-  padding-left: 0px;
 }
 
 .pl-1\.5 {
@@ -2741,7 +2741,7 @@ input::-webkit-inner-spin-button {
 .toggler-handle-inner {
   z-index: 10;
   height: 100% !important;
-  width: 100%;
+  width: 100% !important;
   border-radius: 0.375rem;
   --tw-bg-opacity: 1;
   background-color: rgb(43 52 64 / var(--tw-bg-opacity, 1));
@@ -3324,31 +3324,31 @@ input[type='radio']:checked {
 
 @keyframes glowEffect {
   0% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) inset;
+    box-shadow: 0 0 3px 3px rgb(83, 207, 110, 0) inset;
     /* Start with no glow */
     border-radius: 0.375rem;
   }
 
   20% {
-    box-shadow: 0 0 5px 5px rgb(254, 127, 118) inset;
+    box-shadow: 0 0 3px 3px rgb(83, 207, 110) inset;
     /* Glow peaks here */
     border-radius: 0.375rem;
   }
 
   50% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.763) inset;
+    box-shadow: 0 0 3px 3px rgba(83, 207, 110, 0.763) inset;
     /* Intense glow */
     border-radius: 0.375rem;
   }
 
   80% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0.514) inset;
+    box-shadow: 0 0 3px 3px rgba(83, 207, 110, 0.514) inset;
     /* Start to fade */
     border-radius: 0.375rem;
   }
 
   100% {
-    box-shadow: 0 0 5px 5px rgba(254, 127, 118, 0) et;
+    box-shadow: 0 0 3px 3px rgba(83, 207, 110, 0) et;
     /* End with no glow */
     border-radius: 0.375rem;
   }
@@ -3509,11 +3509,6 @@ input[type='radio']:checked {
   color: rgb(139 145 151 / var(--tw-text-opacity, 1));
 }
 
-.hover\:border-slate-100:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(241 245 249 / var(--tw-border-opacity, 1));
-}
-
 .hover\:border-vla:hover {
   --tw-border-opacity: 1;
   border-color: rgb(83 207 110 / var(--tw-border-opacity, 1));
@@ -3636,11 +3631,6 @@ input[type='radio']:checked {
 .focus\:border-vla:focus {
   --tw-border-opacity: 1;
   border-color: rgb(83 207 110 / var(--tw-border-opacity, 1));
-}
-
-.focus\:border-vlp:focus {
-  --tw-border-opacity: 1;
-  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
 }
 
 .focus\:border-vred-300:focus {

@@ -82,7 +82,7 @@
                       <td class="round-left-border w-[70%] p-2 py-1 text-sm" x-text="style.name"></td>
                       <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
                       <td class="round-right-border w-[15%] px-2 text-left text-sm">
-                        <div class="flex justify-between align-middle">
+                        <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(style, 'style')"
                             class="table-interaction-icon-blue mx-1 flex place-self-center"
@@ -103,74 +103,55 @@
           </div>
 
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
-            <!-- MARK: TAB 2 - SAMPLES -->
+            <!-- MARK: SAMPLES SECTION -->
             <div class="mb-4 flex justify-between p-2 align-middle">
-              <!-- Sample Search Input -->
-              <div>
+              <!-- Style Search Input -->
+              <div class="transition-all duration-500">
                 <input
                   type="text"
-                  placeholder="Search Samples..."
+                  placeholder="Search Styles..."
                   class="srch-style transition-all duration-500"
                   x-model="sampleSearch"
                   @input="searchSamples" />
               </div>
               <!-- Add Sample Button -->
-              <button
-                @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
-                @keydown.escape.window="showAddSampleModal = false"
-                class="butt-style flex items-center !p-1.5">
-                Add Sample
-              </button>
+              <div class="flex">
+                <button
+                  @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
+                  @keydown.escape.window="showAddSampleModal = false"
+                  class="butt-style flex items-center !p-1.5">
+                  Add Sample
+                </button>
+              </div>
             </div>
-            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 65vh">
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 40vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
                 <thead class="table-head-style sticky top-0">
                   <tr>
                     <th class="round-left-border border-clipper border border-transparent p-2">Sample Name</th>
                     <th class="w-1/12 text-lg">Time</th>
                     <th class="w-1/12 text-lg">Price</th>
-                    <th
-                      class="round-right-border border-clipper w-36 p-2 text-lg"
-                      style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
-                      Actions
-                    </th>
+                    <th class="round-right-border border-clipper w-36 p-2 text-lg">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="bg-slate-600 pr-2 text-vls dark:bg-neutral-700">
+                <tbody class="table-body-style table-scrollbar">
                   <template x-for="sample in filteredSamples" :key="sample.id">
-                    <tr
-                      :id="'sampleRowId-' + sample.id"
-                      class="cursor-default transition duration-200 hover:bg-slate-500 dark:hover:bg-neutral-600 dark:hover:text-white">
-                      <td class="round-left-border w-3/4 px-2 py-1 text-sm" x-text="sample.name"></td>
-                      <td class="px-2 py-1 text-sm" x-text="sample.time"></td>
-                      <td class="px-2 py-1 text-sm" x-text="'£' + sample.price"></td>
-                      <td class="round-right-border px-2 py-1 text-left text-sm">
+                    <tr :id="'sampleRowId-' + sample.id" class="border-hover-ring-efect">
+                      <td class="round-left-border w-[55%] p-2 py-1 text-sm" x-text="sample.name"></td>
+                      <td class="w-[15%] px-2 py-1 text-sm" x-text="sample.time"></td>
+                      <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + sample.price"></td>
+                      <td class="round-right-border w-[15%] px-2 text-left text-sm">
                         <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(sample, 'sample')"
-                            class="mr-4 p-1 text-sm text-white transition duration-300 hover:text-blue-400">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="18"
-                              height="18"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              class="feather feather-plus-circle">
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <line x1="12" y1="8" x2="12" y2="16"></line>
-                              <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                          </button>
+                            class="table-interaction-icon-blue mx-1 flex place-self-center"
+                            x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
                           <input
                             type="number"
                             placeholder="1"
                             x-model.number="quantities[sample.id]"
                             @input="handleInvoQtySubmit(sample)"
-                            class="placeholder-vls-100 dark:text-vpalered-300 dark:placeholder-vpalered-300 w-10 rounded border border-slate-300 bg-slate-500 p-0.5 text-vls transition duration-300 hover:border-slate-100 hover:bg-slate-400 focus:border-vlp focus:bg-slate-400 focus:outline-none dark:border-neutral-400 dark:bg-neutral-600 dark:hover:border-vred-300 dark:focus:border-vred-300" />
+                            class="modal-input-style flex h-6 w-10 place-self-center" />
                         </div>
                       </td>
                     </tr>
