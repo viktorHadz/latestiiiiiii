@@ -732,6 +732,10 @@ export default function invoiceManager() {
         )
         return
       }
+      if ((this.invoiceItems = [])) {
+        callInfo('No items to remove.')
+        return
+      }
       if (confirm('Remove all items from invoice?')) {
         this.invoiceItems = []
         this.filteredInvoiceItems = []
