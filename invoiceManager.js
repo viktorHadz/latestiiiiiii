@@ -497,56 +497,42 @@ export default function invoiceManager() {
         this.clients = await response.json()
       } catch (error) {
         console.error('Error fetching clients:', error)
-        callToast({
-          type: 'danger',
-          message: 'Main menu: Error!',
-          description:
-            'Cannot get client. Try again, restart program or call support.',
-          position: 'top-center',
-          html: '',
-        })
+        callError(
+          'Cannot get client. Try again, restart program or call support.',
+        )
       }
     },
 
-    selectClient(client) {
-      let selectedClient = this.selectedClient.name
-      let beforeSelect = this.selectedClient.name
-      if (this.subtotal != 0) {
-        let result = confirm(
-          `You are working on ${selectedClient}'s invoice. Switching clients will reset unsaved progress. Continue?`,
-        )
-        if (result === false) {
-          this.showDropdown = false
-          this.showClientModal = false
-          return
-        }
+    async selectClient(client) {
+      const handleClientChange = async () => {
+        this.showClientModal = false
+        // Reset prices and discounts
+        this.invoiceItems = []
+        this.filteredInvoiceItems = []
+        this.resetDiscounts()
+        this.resetTemporaryDiscounts()
+        // this.calculateTotals()
+
+        // get samples and styles for new client
+        await this.fetchStyles(client.id)
+        await this.fetchSamples(client.id)
+        // Select new client
+        this.saveSelectedClient(client)
+        this.selectedClient = client
+
+        callSuccess('Selected client:', `${this.selectedClient.name}.`)
       }
-      // Select new client
-      this.selectedClient = client
-      this.showDropdown = false
-      this.showClientModal = false
-      this.saveSelectedClient(client)
-      this.fetchStyles(client.id)
-      this.fetchSamples(client.id)
-      // Reset prices and discounts
-      this.invoiceItems = []
-      this.resetDiscounts()
-      this.resetTemporaryDiscounts()
-      this.calculateTotals()
-      let afterSelect = this.selectedClient.name
-      if (beforeSelect != afterSelect) {
-        callToast({
-          type: 'success',
-          message: `Client changed to ${this.selectedClient.name}.`,
-          position: 'top-center',
-          html: '',
-        })
+
+      if (this.subtotal != 0) {
+        if (
+          confirm('Changing clients will erase the current invoice. Proceed?')
+        ) {
+          await handleClientChange()
+          this.closeModal()
+        }
       } else {
-        callToast({
-          type: 'success',
-          message: `Client remains ${this.selectedClient.name}.`,
-          position: 'top-center',
-        })
+        await handleClientChange()
+        this.closeModal()
       }
     },
 
@@ -554,23 +540,27 @@ export default function invoiceManager() {
       localStorage.setItem('selectedClient', JSON.stringify(client))
     },
 
-    loadSelectedClient() {
+    async loadSelectedClient() {
       const client = JSON.parse(localStorage.getItem('selectedClient'))
       if (client) {
         this.selectedClient = client
-        this.fetchStyles(client.id)
-        this.fetchSamples(client.id)
+        await this.fetchStyles(client.id)
+        await this.fetchSamples(client.id)
       }
     },
     openModal() {
       this.showClientModal = true
+      if (this.showDropdown === true) {
+        this.showDropdown = false
+      }
     },
     closeModal() {
       this.showClientModal = false
+      if (this.showDropdown === true) {
+        this.showDropdown = false
+      }
     },
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown
-    },
+
     async fetchStyles(clientId) {
       try {
         const response = await fetch(`/api/styles/client/${clientId}`)
@@ -596,15 +586,11 @@ export default function invoiceManager() {
         this.filteredSamples = this.samples
       } catch (error) {
         console.error('Error fetching samples:', error)
-        callToast({
-          type: 'danger',
-          message: 'Error fetching samples.',
-          description: 'Please try again or contact support.',
-          position: 'top-center',
-        })
+        callError('Please try again or contact support.')
       }
     },
-    /*-------------------------PRICE FORMING LOGIC---------------------------------*/
+
+    /*MARK: PRICE FORMING LOGIC*/
     handleInvoQtySubmit(item) {
       return this.quantities[item.id] || 1
     },
@@ -724,7 +710,40 @@ export default function invoiceManager() {
         )
       }
     },
-
+    removeAllInvoiceItems() {
+      if (this.discount != 0) {
+        callError(
+          'Cannot remove items.',
+          'Please clear any existing discount/deposit first.',
+        )
+        return
+      }
+      if (this.deposit != 0) {
+        callError(
+          'Cannot remove items.',
+          'Please clear any existing discount/deposit first.',
+        )
+        return
+      }
+      if (this.subtotal < 0) {
+        callError(
+          'Cannot remove item.',
+          'Total cannot be a negative value. Check your discounts.',
+        )
+        return
+      }
+      if (confirm('Remove all items from invoice?')) {
+        this.invoiceItems = []
+        this.filteredInvoiceItems = []
+        this.resetDeposit()
+        this.resetDiscounts()
+        this.calculateTotals()
+        callSuccess('All items removed.')
+      } else {
+        callInfo('No items removed.')
+        return
+      }
+    },
     // Rounds numbers to two decimal spaces. Only use after all math ops. are done.
     roundToTwo(value) {
       return Math.round((value + Number.EPSILON) * 100) / 100
@@ -897,11 +916,6 @@ export default function invoiceManager() {
         'hover:bg-gray-300',
         'text-gray-950',
       )
-      callToast({
-        type: 'success',
-        message: 'Discount reset successfully.',
-        position: 'top-center',
-      })
     },
     showTemporarySubtotalAndDiscount() {
       const discBubbleSubTotal = document.getElementById(

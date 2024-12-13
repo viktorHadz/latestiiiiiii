@@ -141,14 +141,9 @@ document.addEventListener('alpine:init', () => {
     isLoading: true, // Set initial loading state to true for animation at the start of the app
     mode: localStorage.getItem('theme') || 'light',
 
-    sideBar: false,
     svgCache: [],
 
-    // MARK: Select Client
-    openSelectClient: false,
-    showDropdown: false,
-    selectedClient: {},
-    clients: [],
+    sideBar: false,
     sideBarOpen() {
       this.sideBar = !this.sideBar
     },
@@ -159,10 +154,6 @@ document.addEventListener('alpine:init', () => {
       if (this.mode === 'dark') {
         document.documentElement.classList.add('dark')
       }
-    },
-    // MARK: Clients
-    getClients() {
-      this.clients = clientsManager.clients
     },
 
     toggleTheme() {
