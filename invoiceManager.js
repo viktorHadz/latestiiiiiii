@@ -1099,27 +1099,17 @@ export default function invoiceManager() {
           const invoice = await response.json()
           this.generatePDF(invoice.id)
         } else {
-          console.error(
-            'Error generating invoice, data sent from invoiceData was shit:',
-            await response.json(),
+          console.error('Error generating invoice:', await response.json())
+          callError(
+            'Server error.',
+            'Failed to generate invoice. Try again, restart or call support.',
           )
-          callToast({
-            type: 'danger',
-            message: 'Server Error!',
-            description:
-              'Failed to generate invoice. Please try again or contact support.',
-            position: 'top-center',
-          })
         }
       } catch (error) {
         console.error('Error generating invoice:', error)
-        callToast({
-          type: 'danger',
-          message: 'Invoice Error!',
-          description:
-            'Unable to generate invoice. Try again or contact support.',
-          position: 'top-center',
-        })
+        callError(
+          'Unable to generate invoice. Try again, restart or contact support.',
+        )
       }
     },
 

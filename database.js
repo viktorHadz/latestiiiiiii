@@ -58,6 +58,7 @@ function getDb() {
           type TEXT,
           time REAL,
           quantity REAL,
+          total_item_price REAL,
           invoice_id INTEGER,
           FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
         )`)

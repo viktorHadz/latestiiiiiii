@@ -213,7 +213,7 @@ const insertInvoice = (
 // Inserts into invoice_items
 const insertItems = (invoiceId, items) => {
   return new Promise((resolve, reject) => {
-    const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?)').join(',')
+    const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(',')
     const values = items.flatMap(item => [
       item.name,
       item.price,
@@ -221,9 +221,11 @@ const insertItems = (invoiceId, items) => {
       item.time,
       invoiceId,
       item.quantity,
+      // calculates item_total_price price x qty
+      (item.total_item_price = item.price * item.quantity),
     ])
     db.run(
-      `INSERT INTO invoice_items (name, price, type, time, invoice_id, quantity) VALUES ${placeholders}`,
+      `INSERT INTO invoice_items (name, price, type, time, invoice_id, quantity, total_item_price) VALUES ${placeholders}`,
       values,
       function (error) {
         if (error) {
@@ -301,11 +303,9 @@ router.post('/api/saveInvoice', async (req, res) => {
     }
     res.status(201).json(newInvoice)
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: 'Error saving invoice /api/saveInvoice: ' + error.message,
-      })
+    res.status(500).json({
+      error: 'Error saving invoice /api/saveInvoice: ' + error.message,
+    })
   }
 })
 
@@ -452,11 +452,20 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       startX + columnWidths[0] + columnWidths[1] + columnWidths[2],
       startY,
     )
+    doc.text(
+      'Item Total',
+      startX +
+        columnWidths[0] +
+        columnWidths[1] +
+        columnWidths[2] +
+        columnWidths[2],
+      startY,
+    )
 
     // Draw a line under the headers
     doc
       .moveTo(startX, startY + 15)
-      .lineTo(startX + columnWidths.reduce((a, b) => a + b, 0), startY + 15)
+      .lineTo(585, startY + 15)
       .stroke()
 
     startY += 25
@@ -476,6 +485,15 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
         startX + columnWidths[0] + columnWidths[1] + columnWidths[2],
         startY,
       )
+      doc.text(
+        `£${item.total_item_price}`,
+        startX +
+          columnWidths[0] +
+          columnWidths[1] +
+          columnWidths[2] +
+          columnWidths[2],
+        startY,
+      )
       startY += 20
     })
 
@@ -487,7 +505,9 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       align: 'left',
     })
 
-    // show % if discount is percentage
+    // show % if discount is percentage !TODO! - :D FIXIT
+    // MARK: OVERALL
+    // Want to keep the displayed subtotal static. After which you want to apply the discount and the deposits
     if (
       invoice.discount_percent === 1 &&
       invoice.discount_flat === 0 &&
@@ -611,12 +631,10 @@ router.post('/api/invoices/:invoiceNumber/updateStatus', (req, res) => {
   const { status } = req.body
   if (!status) {
     // Added check to ensure status is provided
-    return res
-      .status(400)
-      .send({
-        error:
-          'Status is required, look at /api/invoices/:invoiceNumber/updateStatus in the routes for invoicing.',
-      })
+    return res.status(400).send({
+      error:
+        'Status is required, look at /api/invoices/:invoiceNumber/updateStatus in the routes for invoicing.',
+    })
   }
   db.run(
     'UPDATE invoices SET status = ? WHERE invoice_number = ?',
