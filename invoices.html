@@ -1,7 +1,7 @@
 <div x-data="invoiceManager" class="relative w-full px-12 py-4 2xl:px-20">
-  <div class="flex justify-between mb-12 align-baseline">
+  <div class="mb-12 flex justify-between align-baseline">
     <div>
-      <button @click="openModal()" class="flex items-baseline butt-style">
+      <button @click="openModal()" class="butt-style flex items-baseline">
         <object data-feather="user" class="mr-1.5 h-4 w-4"></object>
         Select Client
       </button>
@@ -17,7 +17,7 @@
   <template x-if="selectedClient">
     <div>
       <!-- MARK: TABS ALPINE -->
-      <div class="relative w-full max-w-full mb-12">
+      <div class="relative mb-12 w-full max-w-full">
         <div x-ref="tabButtons" class="toggler">
           <!-- Styles Tab Button -->
           <button
@@ -36,21 +36,21 @@
             Samples
           </button>
           <!-- Slider Background -->
-          <div x-ref="tabMarker" class="z-0 toggler-handle-bg" x-cloak>
+          <div x-ref="tabMarker" class="toggler-handle-bg z-0" x-cloak>
             <div class="toggler-handle-inner"></div>
           </div>
         </div>
-        <div class="relative text-xs border rounded-md border-vls/80 text-vlp dark:border-vdp3 dark:text-vds">
+        <div class="relative rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
-            <div class="flex justify-between p-2 mb-4 align-middle">
+            <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Selected Client's Styles Information -->
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
                   type="text"
                   placeholder="Search Styles..."
-                  class="transition-all duration-500 srch-style"
+                  class="srch-style transition-all duration-500"
                   x-model="styleSearch"
                   @input="searchStyles"
                   x-transition />
@@ -66,13 +66,13 @@
                 </button>
               </div>
             </div>
-            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 40vh">
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 30vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="sticky top-0 table-head-style">
+                <thead class="table-head-style sticky top-0">
                   <tr>
-                    <th class="p-2 border border-transparent round-left-border border-clipper">Style Name</th>
-                    <th class="w-56 p-2 text-lg">Price</th>
-                    <th class="p-2 text-lg round-right-border border-clipper">Actions</th>
+                    <th class="round-left-border border-clipper border border-transparent p-2">Style Name</th>
+                    <th class="text-lg">Price</th>
+                    <th class="round-right-border border-clipper px-1 text-lg">Actions</th>
                   </tr>
                 </thead>
                 <!-- MARK: TBODY STYLES -->
@@ -81,18 +81,18 @@
                     <tr :id="'rowid-' + style.id" class="border-hover-ring-efect">
                       <td class="round-left-border w-[75%] p-2 py-1 text-sm" x-text="style.name"></td>
                       <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
-                      <td class="round-right-border w-[5%] px-2 text-left text-sm">
+                      <td class="round-right-border w-[5%] pr-1 text-left text-sm">
                         <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(style, 'style')"
-                            class="flex mx-1 table-interaction-icon-blue place-self-center"
+                            class="table-interaction-icon-blue mx-1 flex place-self-center"
                             x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
                           <input
                             type="number"
                             placeholder="1"
                             x-model.number="quantities[style.id]"
                             @input="handleInvoQtySubmit(style)"
-                            class="flex w-10 h-6 modal-input-style place-self-center" />
+                            class="modal-input-style flex h-6 w-12 place-self-center dark:!border dark:!border-vds2 dark:hover:!border-vds" />
                         </div>
                       </td>
                     </tr>
@@ -104,13 +104,13 @@
 
           <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
             <!-- MARK: SAMPLES SECTION -->
-            <div class="flex justify-between p-2 mb-4 align-middle">
+            <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
                   type="text"
                   placeholder="Search Styles..."
-                  class="transition-all duration-500 srch-style"
+                  class="srch-style transition-all duration-500"
                   x-model="sampleSearch"
                   @input="searchSamples" />
               </div>
@@ -124,34 +124,34 @@
                 </button>
               </div>
             </div>
-            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 40vh">
+            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 30vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="sticky top-0 table-head-style">
+                <thead class="table-head-style sticky top-0">
                   <tr>
-                    <th class="p-2 border border-transparent round-left-border border-clipper">Sample Name</th>
+                    <th class="round-left-border border-clipper border border-transparent p-2">Sample Name</th>
                     <th class="text-lg">Time</th>
                     <th class="text-lg">Price</th>
-                    <th class="p-2 text-lg round-right-border border-clipper">Actions</th>
+                    <th class="round-right-border border-clipper px-1 text-lg">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr :id="'sampleRowId-' + sample.id" class="border-hover-ring-efect">
-                      <td class="round-left-border w-[65%] p-2 py-1 text-sm" x-text="sample.name"></td>
-                      <td class="w-[15%] px-2 py-1 text-sm" x-text="sample.time + 'mins'"></td>
-                      <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + sample.price"></td>
-                      <td class="round-right-border w-[5%] px-2 text-left text-sm">
+                      <td class="round-left-border w-[65%] p-1 text-sm" x-text="sample.name"></td>
+                      <td class="w-[15%] py-1 text-sm" x-text="sample.time + 'mins'"></td>
+                      <td class="w-[15%] py-1 text-sm" x-text="'£' + sample.price"></td>
+                      <td class="round-right-border w-[5%] pr-1 text-left text-sm">
                         <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(sample, 'sample')"
-                            class="flex mx-1 table-interaction-icon-blue place-self-center"
+                            class="table-interaction-icon-blue flex place-self-center"
                             x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
                           <input
                             type="number"
                             placeholder="1"
                             x-model.number="quantities[sample.id]"
                             @input="handleInvoQtySubmit(sample)"
-                            class="flex w-10 h-6 modal-input-style place-self-center" />
+                            class="modal-input-style flex h-6 w-12 place-self-center dark:!border dark:!border-vds2 dark:hover:!border-vds" />
                         </div>
                       </td>
                     </tr>
@@ -165,14 +165,14 @@
       <!--TABS ALPINE  END-->
 
       <!-- MARK:INVOICING SECTION -->
-      <div class="mb-12 text-xs border rounded-md border-vls/80 text-vlp dark:border-vdp3 dark:text-vds">
-        <div class="grid grid-cols-3 p-2 mb-4">
+      <div class="mb-12 rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
+        <div class="mb-4 grid grid-cols-3 p-2">
           <!-- INVOICE ITEMS -->
           <div>
             <input
               type="text"
               placeholder="Search Invoice Items..."
-              class="transition-all duration-500 srch-style"
+              class="srch-style transition-all duration-500"
               x-model="invoiceSearch"
               @input="searchInvoiceItems" />
           </div>
@@ -185,20 +185,20 @@
           </div>
         </div>
         <!-- Invoice Items Table Section -->
-        <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 40vh">
+        <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 25vh">
           <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-            <thead class="sticky top-0 table-head-style">
+            <thead class="table-head-style sticky top-0">
               <tr>
                 <th
-                  class="w-3/4 p-2 text-lg border border-transparent round-left-border border-clipper"
+                  class="round-left-border border-clipper max-w-[50%] border border-transparent p-2 text-lg"
                   style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                   Name
                 </th>
-                <th class="w-1/12 px-2 py-2 text-lg">Type</th>
-                <th class="w-1/12 px-2 py-2 text-lg">Price</th>
-                <th class="w-1/12 px-2 py-2 text-lg">Quantity</th>
+                <th class="w-[5%] px-2 py-2 text-lg">Type</th>
+                <th class="w-[5%] px-2 py-2 text-right text-lg">Price</th>
+                <th class="mx-2 w-[5%] py-2 text-right text-lg">Qty</th>
                 <th
-                  class="w-1/12 px-2 py-2 text-lg round-right-border border-clipper"
+                  class="round-right-border border-clipper w-[5%] px-2 py-2 text-lg"
                   style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                   Actions
                 </th>
@@ -207,14 +207,14 @@
             <tbody class="table-body-style table-scrollbar">
               <template x-for="item in filteredInvoiceItems" :key="item.uniqueId">
                 <tr class="border-hover-ring-efect">
-                  <td class="w-3/4 px-2 py-1 text-sm round-left-border" x-text="item.name"></td>
-                  <td class="px-2 py-1 text-sm text-left" x-text="item.type"></td>
-                  <td class="px-2 py-1 text-sm text-left" x-text="'£' + item.price"></td>
-                  <td class="px-2 py-1 text-sm text-left" x-text="item.quantity"></td>
-                  <td class="px-2 text-sm text-left round-right-border">
+                  <td class="round-left-border w-[50%] px-2 py-1 text-sm" x-text="item.name"></td>
+                  <td class="max-w-[5%] px-2 py-1 text-left text-sm" x-text="item.type"></td>
+                  <td class="max-w-[5%] px-2 py-1 text-right text-sm" x-text="'£' + item.price"></td>
+                  <td class="mx-2 max-w-[5%] py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
+                  <td class="round-right-border max-w-[5%] px-2 text-sm">
                     <button
                       @click="removeItemFromInvoice(item)"
-                      class="table-interaction-icon-red"
+                      class="table-interaction-icon-red ml-4"
                       x-html="$store.svgCache.getSvgContent('minus-circle.svg', {height: 18, width: 18})"></button>
                   </td>
                 </tr>
@@ -224,10 +224,11 @@
         </div>
       </div>
       <!-- TOTALS -->
-      <div class="p-2 text-xs border rounded-md border-vls/80 text-vls3 dark:border-vdp3 dark:text-vds">
-        <div class="grid items-end grid-cols-4">
+      <div
+        class="rounded-md bg-vlp p-2 text-xs text-vls3 outline outline-1 outline-offset-8 outline-vls/80 dark:bg-vdp dark:text-vds dark:outline-vdp3">
+        <div class="grid grid-cols-4 items-end">
           <!--MARK: MAIN PRICE MENU COL 1 -->
-          <div class="flex-col self-center text-lg font-medium align-middle">
+          <div class="flex-col self-center align-middle text-lg font-medium">
             <h3>
               Subtotal:
               <span x-text="'£' + subtotal"></span>
@@ -263,7 +264,7 @@
               <h3
                 x-show="discount !== 0"
                 x-transition.duration.300
-                class="ml-1 line-through text-vls dark:text-neutral-400">
+                class="ml-1 text-vls line-through dark:text-neutral-400">
                 <span x-text="preDiscountTotal"></span>
               </h3>
             </div>
@@ -289,7 +290,7 @@
             <div class="relative inline-block">
               <button
                 @click="popoverOpen = !popoverOpen; calculateTemporaryValues(); if(popoverOpen) $nextTick(() => $refs.discountInput.focus())"
-                class="flex self-center gap-2 butt-style"
+                class="butt-style flex gap-2 self-center"
                 x-html="$store.svgCache.getSvgContent('trending-down.svg', {height: 18, width: 18}) + 'Discount'"></button>
               <div
                 x-cloak
@@ -302,10 +303,10 @@
                 x-transition:leave="transition ease-in duration-145"
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 -translate-y-10"
-                class="absolute z-10 flex flex-col items-center justify-center origin-bottom bottom-full start-1/2 -ms-32 w-52 will-change-transform">
+                class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
                 <div class="modal-bg-and-borders overflow-hidden !p-6">
                   <div class="relative">
-                    <div class="flex flex-col items-center justify-center mb-2">
+                    <div class="mb-2 flex flex-col items-center justify-center">
                       <h3 class="modal-title mb-4 !text-xl">Discount</h3>
                       <!-- Input Value Discount -->
                       <div class="relative mb-2">
@@ -320,45 +321,45 @@
                           :placeholder="temporaryDiscount === 0 ? 'Enter value' : 0"
                           @input="handleDiscountInput(event); calculateTemporaryValues(); showTemporarySubtotalAndDiscount();" />
                         <!-- PERCENT SYMBOL CONTROL WITH PADDING -->
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                           <span
                             x-text="symbol"
                             id="symbolId"
                             class="text-lg text-vls2/80 hover:text-gray-200 focus:text-gray-200 dark:text-vds"></span>
                           <!-- PIPE SYMBOL CONTROL WITH MARGIN -->
-                          <span class="absolute h-4 mx-2 ml-6 border-l border-gray-300"></span>
+                          <span class="absolute mx-2 ml-6 h-4 border-l border-gray-300"></span>
                         </div>
                       </div>
                     </div>
                     <!-- Temporary Discount Menu Popover -->
-                    <div class="flex-col justify-start hidden w-full mb-2 text-sm">
+                    <div class="mb-2 hidden w-full flex-col justify-start text-sm">
                       <h1
                         id="subtotal-discount-buble"
-                        class="p-1 mb-2 border rounded-lg border-slate-300 dark:border-vred-300">
+                        class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
                         Subtotal:
                         <span x-text="subtotal"></span>
                       </h1>
                       <h1
                         x-show="showNewSubtotal"
                         x-transition.duration.250
-                        class="p-1 mb-2 border rounded-lg border-slate-300 dark:border-vred-300">
+                        class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
                         Subtotal:
                         <span x-text="temporarySubtotal" x-transition.duration.200></span>
                       </h1>
-                      <h1 class="p-1 mb-2 border rounded-lg border-slate-300 dark:border-vred-300">
+                      <h1 class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
                         Discount:
                         <span x-text="temporaryDiscount"></span>
                       </h1>
-                      <h1 class="p-1 mb-2 border rounded-lg border-slate-300 dark:border-vred-300">
+                      <h1 class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
                         VAT:
                         <span x-text="temporaryVat"></span>
                       </h1>
-                      <h1 class="p-1 mb-2 border rounded-lg border-slate-300 dark:border-vred-300">
+                      <h1 class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
                         Total:
                         <span x-text="temporaryTotal"></span>
                       </h1>
                     </div>
-                    <div class="flex justify-between mt-2">
+                    <div class="mb-4 flex justify-between">
                       <button
                         id="toggle-discount-btn"
                         @click="
@@ -387,47 +388,20 @@
                         id="confirm-discount"
                         @click="confirmDiscount()"
                         x-transition
-                        class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="22"
-                          height="22"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="feather feather-check">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </button>
+                        class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
+                        x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
                       <button
                         @click="popoverOpen = false"
-                        class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="22"
-                          height="22"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="feather feather-x">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
+                        class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700"
+                        x-html="$store.svgCache.getSvgContent('x.svg', {height: 18, width: 18})"></button>
                     </div>
                   </div>
                 </div>
                 <div
-                  class="relative z-10 flex-none w-0 h-0 -mt-px border-t-8 border-e-8 border-s-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
+                  class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                   aria-hidden="true"></div>
                 <div
-                  class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-300 dark:border-t-vds2"
+                  class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vls2 dark:border-t-vds2"
                   aria-hidden="true"></div>
               </div>
             </div>
@@ -440,23 +414,8 @@
                 @mouseenter="(trigger === 'hover focus') ? depositOpen = true : null"
                 @click="(trigger === 'click') ? depositOpen = !depositOpen : null; if (depositOpen) { $nextTick(() => { $refs.tempDeposit.focus()}); }"
                 type="button"
-                class="flex self-center butt-style">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="mr-1 feather feather-dollar-sign">
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span class="flex self-center justify-center align-middle">Deposit</span>
-              </button>
+                class="butt-style flex gap-2 self-center"
+                x-html="$store.svgCache.getSvgContent('dollar-sign.svg', {height: 18, width: 18}) + 'Deposit'"></button>
               <div
                 x-cloak
                 x-show="depositOpen"
@@ -468,14 +427,13 @@
                 x-transition:leave="transition ease-in duration-145"
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 -translate-y-10"
-                class="absolute z-10 flex flex-col items-center justify-center origin-bottom bottom-full start-1/2 -ms-32 w-52 will-change-transform">
-                <div
-                  class="px-4 py-4 overflow-hidden text-sm border rounded-md border-slate-300 bg-vlp text-vls dark:border-vred-300 dark:bg-zinc-900 dark:text-vds">
-                  <h3 class="text-lg font-medium text-center text-vls dark:text-vds">Deposit</h3>
+                class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
+                <div class="modal-bg-and-borders overflow-hidden !p-6">
+                  <h3 class="modal-title mb-4 text-center !text-xl">Deposit</h3>
                   <div class="relative my-4">
                     <input
                       x-ref="tempDeposit"
-                      class="w-full py-1 pl-12 text-gray-400 transition duration-300 rounded focus:border-v-red-400 border-slate-300 bg-slate-500 hover:bg-slate-600 hover:text-vls focus:bg-slate-600 focus:text-vls focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
+                      class="modal-input-style w-full !py-2 !pl-12"
                       type="number"
                       min="0"
                       placeholder="Enter deposit..."
@@ -484,20 +442,20 @@
                       :placeholder="tempDeposit === 0 ? 'Enter deposit...' : 0"
                       @input="handleDepositInput(event)" />
                     <!-- PERCENT SYMBOL CONTROL WITH PADDING -->
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                       <span
                         x-text="depositSymbol"
                         id="symbolIdDeposit"
-                        class="text-lg text-gray-400 hover:text-gray-200 focus:text-gray-200"></span>
+                        class="text-lg text-vls2/80 hover:text-gray-200 focus:text-gray-200 dark:text-vds"></span>
                       <!-- PIPE SYMBOL CONTROL WITH MARGIN -->
-                      <span class="absolute h-6 mx-2 ml-6 border-l border-gray-300"></span>
+                      <span class="absolute mx-2 ml-6 h-6 border-l border-gray-300"></span>
                     </div>
                   </div>
-                  <div class="flex justify-between mb-4">
+                  <div class="mb-4 flex justify-between">
                     <button
-                      id="toggle-deposit-"
+                      id="toggle-deposit"
                       @click="isDepositPercent = ! isDepositPercent; handleDepositType()"
-                      :class="!isDepositPercent ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-blue-800 text-white text-sm hover:bg-blue-900 transition duration-300 font-semibold'"
+                      :class="!isDepositPercent ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-vla2 text-white text-sm hover:bg-vla3 transition duration-300 font-semibold'"
                       class="px-1.5 py-1 transition duration-300">
                       <svg
                         id="toggle-deposit-btn"
@@ -519,54 +477,28 @@
                       id="confirm-deposit"
                       @click="calculateDeposit()"
                       x-transition
-                      class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="feather feather-check">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                    </button>
+                      class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
+                      x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
                     <button
                       @click="depositOpen = false"
-                      class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="feather feather-x">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
+                      class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700"
+                      x-html="$store.svgCache.getSvgContent('x.svg', {height: 18, width: 18})"></button>
                   </div>
                 </div>
                 <div
-                  class="relative z-10 flex-none w-0 h-0 -mt-px border-t-8 border-e-8 border-s-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
+                  class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-vds2"
                   aria-hidden="true"></div>
                 <div
-                  class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-300 dark:border-t-vred-300"
+                  class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vls2 dark:border-t-vds2"
                   aria-hidden="true"></div>
               </div>
             </div>
           </div>
+
           <!-- MARK: COL 4 NOTE PDF -->
-          <div class="grid h-full grid-cols-1 grid-rows-2">
-            <div class="flex justify-between mb-4">
-              <!-- MESSAGE HOVER -->
+          <div class="flex h-full justify-between">
+            <!-- MARK: NOTE BUTTON -->
+            <div>
               <div :class="invoiceNote !== '' ? 'hidden' : 'block'"></div>
               <div
                 class="relative"
@@ -575,7 +507,7 @@
                 :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'"
                 x-show="invoiceNote != ''">
                 <div
-                  class="flex align-top transition-colors duration-300 text-vls hover:fill-vls hover:text-vla dark:text-vds dark:hover:fill-vred-300 dark:hover:text-vred-300"
+                  class="flex align-top text-vls transition-colors duration-300 hover:fill-vls hover:text-vla dark:text-vds dark:hover:fill-vred-300 dark:hover:text-vred-300"
                   :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -596,7 +528,7 @@
                   </svg>
                   <button
                     @click="removeMessage()"
-                    class="flex transition duration-300 fade-in-hidden fade-out-hidden justify-items-end text-vls hover:text-vla dark:text-vred-300"
+                    class="fade-in-hidden fade-out-hidden flex justify-items-end text-vls transition duration-300 hover:text-vla dark:text-vred-300"
                     x-ref="removeBtn">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -618,17 +550,17 @@
 
                 <div
                   x-show="hoverCardHovered"
-                  class="absolute top-0 mt-5 translate-y-3 left-1/2 -z-50 w-72 max-w-72 -translate-x-3/4"
+                  class="absolute left-1/2 top-0 -z-50 mt-5 w-72 max-w-72 -translate-x-3/4 translate-y-3"
                   x-cloak>
                   <div
                     x-show="hoverCardHovered"
                     class="flex h-auto w-[full] items-start space-x-3 rounded-md border border-slate-300 bg-vlp p-4 shadow-sm dark:border-neutral-600 dark:bg-zinc-900"
                     x-transition>
-                    <div class="flex w-full h-full text-vls dark:text-vred-300">
+                    <div class="flex h-full w-full text-vls dark:text-vred-300">
                       <div class="flex items-center justify-center text-sm">
                         <p
                           x-text="invoiceNote"
-                          class="italic font-normal fade-in-hidden fade-out-hidden text-wrap"
+                          class="fade-in-hidden fade-out-hidden text-wrap font-normal"
                           :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'"
                           x-ref="noteText"
                           x-show="invoiceNote != ''"></p>
@@ -637,28 +569,16 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div class="flex h-full flex-col items-end justify-between">
               <!-- MARK:NOTE POPOVER -->
               <div class="relative inline-block">
                 <button
                   @click=" invoiceNoteOpen = !invoiceNoteOpen; if (invoiceNoteOpen) { $nextTick(() => { $refs.invoiceNotePopover.focus()}); }"
                   type="button"
-                  class="flex self-center butt-style">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="mr-2 feather feather-clipboard">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                  </svg>
-                  Invoice Note
-                </button>
+                  class="butt-style flex gap-2 self-center"
+                  x-html="$store.svgCache.getSvgContent('clipboard.svg', {height: 18, width: 18}) + 'Invoice Note'"></button>
                 <div
                   x-cloak
                   x-show="invoiceNoteOpen"
@@ -670,57 +590,14 @@
                   x-transition:leave="transition ease-in duration-145"
                   x-transition:leave-start="opacity-100 translate-y-0"
                   x-transition:leave-end="opacity-0 -translate-y-10"
-                  class="absolute z-10 flex flex-col items-center justify-center origin-bottom bottom-full start-1/2 -ms-32 w-52 will-change-transform">
-                  <div
-                    class="px-4 py-4 overflow-hidden text-sm border rounded-md border-slate-300 bg-vlp text-vls dark:border-vred-300 dark:bg-zinc-900 dark:text-vds">
+                  class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
+                  <div class="modal-bg-and-borders overflow-hidden !p-6">
                     <!-- TOOLTIP QUESTIONMARK -->
-                    <div class="absolute block -translate-x-1.5 -translate-y-1">
-                      <div
-                        x-data="{
-                          tooltipVisible: false,
-                          tooltipText: 'Leave a note for your client, inside the invoice.',
-                          tooltipArrow: true,
-                          tooltipPosition: 'top',
-                      }"
-                        x-init="$refs.content.addEventListener('mouseenter', () => { tooltipVisible = true; }); $refs.content.addEventListener('mouseleave', () => { tooltipVisible = false; });"
-                        class="relative">
-                        <div
-                          x-ref="tooltip"
-                          x-show="tooltipVisible"
-                          :class="{ 'top-0 left-1/2 -translate-x-1/2 -mt-0.5 -translate-y-full' : tooltipPosition == 'top', 'top-1/2 -translate-y-1/2 -ml-0.5 left-0 -translate-x-full' : tooltipPosition == 'left', 'bottom-0 left-1/2 -translate-x-1/2 -mb-0.5 translate-y-full' : tooltipPosition == 'bottom', 'top-1/2 -translate-y-1/2 -mr-0.5 right-0 translate-x-full' : tooltipPosition == 'right' }"
-                          class="absolute w-auto text-sm"
-                          x-cloak>
-                          <div
-                            x-show="tooltipVisible"
-                            x-transition
-                            class="relative px-2 py-1 text-white bg-black rounded bg-opacity-90">
-                            <p x-text="tooltipText" class="flex-shrink-0 block text-xs whitespace-nowrap"></p>
-                            <div
-                              x-ref="tooltipArrow"
-                              x-show="tooltipArrow"
-                              :class="{ 'bottom-0 -translate-x-1/2 left-1/2 w-2.5 translate-y-full' : tooltipPosition == 'top', 'right-0 -translate-y-1/2 top-1/2 h-2.5 -mt-px translate-x-full' : tooltipPosition == 'left', 'top-0 -translate-x-1/2 left-1/2 w-2.5 -translate-y-full' : tooltipPosition == 'bottom', 'left-0 -translate-y-1/2 top-1/2 h-2.5 -mt-px -translate-x-full' : tooltipPosition == 'right' }"
-                              class="absolute inline-flex items-center justify-center overflow-hidden">
-                              <div
-                                :class="{ 'origin-top-left -rotate-45' : tooltipPosition == 'top', 'origin-top-left rotate-45' : tooltipPosition == 'left', 'origin-bottom-left rotate-45' : tooltipPosition == 'bottom', 'origin-top-right -rotate-45' : tooltipPosition == 'right' }"
-                                class="h-1.5 w-1.5 transform bg-black bg-opacity-90"></div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div
-                          x-ref="content"
-                          class="text-xs text-gray-800 transition duration-300 bg-gray-100 border rounded-full cursor-pointer border-slate-800 hover:bg-gray-300">
-                          <p class="flex justify-center w-4 h-4 font-bold align-middle">
-                            <span class="flex items-center">?</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
                     <!-- MARK: INVOICE MESSAGE -->
                     <!-- Custom Message for Deposit -->
                     <div>
                       <div>
-                        <h3 class="mb-2 text-lg font-medium text-center text-vls dark:text-vds">Client Note</h3>
+                        <h3 class="modal-title mb-4 text-center !text-xl">Client Note</h3>
                       </div>
                       <input
                         type="text"
@@ -728,53 +605,36 @@
                         x-model="invoiceNotePopover"
                         x-ref="invoiceNotePopover"
                         @input="trackLength()"
-                        class="w-full py-1 mb-2 text-base font-medium text-center transition duration-300 rounded focus:border-v-red-400 text-vls-300 border-slate-300 bg-slate-500 hover:bg-slate-600 focus:bg-slate-600 focus:text-vls focus:outline-none focus:ring dark:border-vred-300 dark:bg-neutral-600 dark:hover:bg-neutral-700 dark:focus:border-vred-300 dark:focus:bg-neutral-700"
+                        class="modal-input-style w-full !py-2 !pl-12"
                         placeholder="Invoice note..." />
                     </div>
-                    <div class="mb-2">
-                      <h1 x-transition.duration.300 class="text-center text-small text-vls dark:text-vred-300">
+                    <div class="mb-4">
+                      <h1 x-transition.duration.300 class="text-small mt-2 text-center text-vls dark:text-vred-300">
                         Characters:
                         <span x-text="noteMaxLength"></span>
                         /
                         <span x-text="noteMaxLength - noteLength"></span>
                       </h1>
                     </div>
-
                     <!-- Confirm Button -->
                     <div class="flex justify-center">
                       <button
                         @click="handleMessageSubmit()"
-                        class="rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="22"
-                          height="22"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="feather feather-check">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </button>
+                        class="rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
+                        x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
                     </div>
                   </div>
                   <div
-                    class="relative z-10 flex-none w-0 h-0 -mt-px border-t-8 border-e-8 border-s-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
+                    class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                     aria-hidden="true"></div>
                   <div
-                    class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-slate-300 dark:border-t-vred-300"
+                    class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vls2 dark:border-t-vds2"
                     aria-hidden="true"></div>
                 </div>
               </div>
-            </div>
-            <!-- MARK: GENERATE PDF -->
-            <!-- GENERATE PDF  -->
-            <div class="flex justify-end">
-              <div class="flex-0 flex items-end p-0.5">
-                <button @click="generateInvoice" class="flex self-center butt-style">
+              <!-- GENERATE PDF  -->
+              <div>
+                <button @click="generateInvoice" class="butt-style">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
@@ -785,7 +645,7 @@
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="mr-2 feather feather-download">
+                    class="feather feather-download mr-2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -800,20 +660,20 @@
     </div>
   </template>
   <!-- MARK: Select CLIENT MODAL -->
-  <div x-show="showClientModal" x-transition.opacity.duration.300ms class="z-50 outter-modal-overlay-blur-fixed">
+  <div x-show="showClientModal" x-transition.opacity.duration.300ms class="outter-modal-overlay-blur-fixed z-50">
     <!-- Clients Modal Body -->
     <div
       class="inner-modal-size-positioning-relative modal-bg-and-borders"
       @keydown.escape.window="showClientModal = false">
       <div class="p-6">
-        <h2 class="mb-4 modal-title">Select Client</h2>
+        <h2 class="modal-title mb-4">Select Client</h2>
         <div class="relative">
           <button
             x-ref="clientModalButton"
             @click="showDropdown = !showDropdown"
             :class="{ 'mb-4 w-full rounded-md inner-modal-dropdown-open': showDropdown, 'justify-center modal-dropdown flex': !showDropdown }">
             Clients
-            <object data-feather="chevron-down" class="flex items-end self-center w-4 h-4 ml-2"></object>
+            <object data-feather="chevron-down" class="ml-2 flex h-4 w-4 items-end self-center"></object>
           </button>
           <div
             x-anchor.offset.5="$refs.clientModalButton"
@@ -824,7 +684,7 @@
               <template x-for="client in clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
-                  class="p-2 text-left rounded-md cursor-pointer dark:bg-vd text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
+                  class="dark:bg-vd cursor-pointer rounded-md p-2 text-left text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
                   x-text="client.name"></li>
               </template>
             </ul>
@@ -837,11 +697,11 @@
     </div>
   </div>
   <!-- MARK: ADD STYLE MODAL -->
-  <div x-show="showAddStyleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
+  <div x-show="showAddStyleModal" x-transition.opacity.duration.300 class="outter-modal-overlay-blur-fixed z-50">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div class="text-center" @click.outside="showAddStyleModal = false">
         <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Style</h3>
+          <h3 class="modal-title mb-4">Add Style</h3>
           <form @submit.prevent="invoAddStyle">
             <input
               x-model="newStyle.name"
@@ -849,7 +709,7 @@
               name="name"
               type="text"
               placeholder="Style Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newStyle.price"
@@ -858,9 +718,9 @@
               min="0"
               step="0.01"
               placeholder="Price"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
-            <div class="flex justify-end gap-8 mt-2">
+            <div class="mt-2 flex justify-end gap-8">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddStyleModal = false" class="modal-btn-sec">Close</button>
             </div>
@@ -870,11 +730,11 @@
     </div>
   </div>
   <!-- MARK: ADD SAMPLE MODAL -->
-  <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
+  <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="outter-modal-overlay-blur-fixed z-50">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div class="text-center" @click.outside="showAddSampleModal = false">
         <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Sample</h3>
+          <h3 class="modal-title mb-4">Add Sample</h3>
           <form @submit.prevent="invoAddSample">
             <input
               x-model="newSample.name"
@@ -882,7 +742,7 @@
               name="name"
               type="text"
               placeholder="Sample Name"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newSample.time"
@@ -891,7 +751,7 @@
               min="0"
               step="0.01"
               placeholder="Time"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
             <input
               x-model="newSample.price"
@@ -900,9 +760,9 @@
               min="0"
               step="0.01"
               placeholder="Price"
-              class="w-full mb-2 modal-input-style"
+              class="modal-input-style mb-2 w-full"
               required />
-            <div class="flex justify-end gap-8 mt-2">
+            <div class="mt-2 flex justify-end gap-8">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddSampleModal = false" class="modal-btn-sec">Close</button>
             </div>
