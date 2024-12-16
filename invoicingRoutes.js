@@ -506,8 +506,6 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     })
 
     // show % if discount is percentage !TODO! - :D FIXIT
-    // MARK: OVERALL
-    // Want to keep the displayed subtotal static. After which you want to apply the discount and the deposits
     if (
       invoice.discount_percent === 1 &&
       invoice.discount_flat === 0 &&
@@ -515,9 +513,14 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     ) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(`Discount: ${invoice.discount}%`, startX, startY, {
-        align: 'left',
-      })
+      doc.text(
+        `Discount: £${invoice.discount} (${invoice.discount_percent_value}%)`,
+        startX,
+        startY,
+        {
+          align: 'left',
+        },
+      )
     }
 
     // show £ if discount is flat
@@ -556,9 +559,14 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     if (invoice.deposit !== 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(`Deposit: £${invoice.deposit}`, startX, startY, {
-        align: 'left',
-      })
+      doc.text(
+        `Deposit: £${invoice.deposit} (${invoice.deposit_percent_value}%)`,
+        startX,
+        startY,
+        {
+          align: 'left',
+        },
+      )
     }
 
     if (invoice.note !== '') {

@@ -24,6 +24,7 @@ export default function invoiceManager() {
     newSample: { name: '', time: null, price: null },
     // Price forming menu - final values after all operations have been added to them
     subtotal: 0,
+    staticSubtotal: 0,
     vat: 0,
     vatPercent: 20,
     preDiscountTotal: 0,
@@ -643,6 +644,8 @@ export default function invoiceManager() {
       if (this.discount === 0) {
         this.calculateTotals()
         this.applyEffect(item)
+        // MARK: Static subtotal add
+        this.staticSubtotal = this.subtotal
         console.log('I am totals when there is no previous discount!')
         console.log(`Subtotal: ${this.subtotal}`)
         console.log(`Vat: ${this.vat}`)
@@ -650,13 +653,7 @@ export default function invoiceManager() {
         console.log(`Discount${this.symbol}: ${this.discount}`)
         return
       } else {
-        callToast({
-          type: 'danger',
-          message: 'Error adding item.',
-          description: 'Failed to add item to the invoice.',
-          position: 'top-center',
-        })
-        console.log('I am error if no previous discount!')
+        callError('Error adding item', 'Failed to add item to the invoice.')
         return
       }
       // add invoice items to localstorage by calling a function bellow
@@ -686,6 +683,7 @@ export default function invoiceManager() {
           i => i.uniqueId !== item.uniqueId,
         )
         this.calculateTotals()
+        this.roundToTwo((this.staticSubtotal = this.subtotal))
         callSuccess('Item removed', 'Successfully removed item from invoice.')
       } else {
         return
@@ -734,15 +732,16 @@ export default function invoiceManager() {
       }
 
       if (confirm('Remove all items from invoice?')) {
-        if ((this.filteredInvoiceItems = [])) {
+        if (this.filteredInvoiceItems.length === 0) {
           callInfo('No items to remove.')
           return
         }
-        this.invoiceItems = []
         this.filteredInvoiceItems = []
+        this.invoiceItems = []
         this.resetDeposit()
         this.resetDiscounts()
         this.calculateTotals()
+        this.roundToTwo((this.staticSubtotal = this.subtotal))
         callSuccess('All items removed.')
       } else {
         callInfo('No items removed.')
@@ -759,12 +758,15 @@ export default function invoiceManager() {
         let sampleTotal = this.invoiceItems
           .filter(item => item.type === 'sample')
           .reduce((total, item) => total + item.price * item.quantity, 0)
+
         // Calculate the subtotal for styles
         let styleTotal = this.invoiceItems
           .filter(item => item.type === 'style')
           .reduce((total, item) => total + item.price * item.quantity, 0)
+
         // Calculate the overall subtotal by summing both
         let subTotal = sampleTotal + styleTotal
+
         this.discValSub = subTotal
         console.log('Samples: ', sampleTotal)
         console.log('Styles: ', styleTotal)
@@ -776,6 +778,9 @@ export default function invoiceManager() {
           'Failed to calculate subtotal. Please check the input data.',
         )
       }
+    },
+    calculateStaticSubtotal() {
+      let staticSubtotalPrivate = 0
     },
     calculateTotals() {
       // recalculate prices if there already is a discount present
@@ -995,19 +1000,10 @@ export default function invoiceManager() {
         this.filteredStyles = this.styles
         this.showAddStyleModal = false
         this.newStyle = { name: '', price: null }
-        callToast({
-          type: 'success',
-          message: 'Style added successfully.',
-          position: 'top-center',
-        })
+        callSuccess('Successfully added style.')
       } catch (error) {
         console.error('Error adding style:', error)
-        callToast({
-          type: 'danger',
-          message: 'Error adding style.',
-          description: 'Please try again or contact support.',
-          position: 'top-center',
-        })
+        callError('Error adding style.', 'Try again or call support.')
       }
     },
     async invoAddSample() {
@@ -1023,19 +1019,10 @@ export default function invoiceManager() {
         this.filteredSamples = this.samples
         this.showAddSampleModal = false
         this.newSample = { name: '', style: null, price: null }
-        callToast({
-          type: 'success',
-          message: 'Sample added successfully.',
-          position: 'top-center',
-        })
+        callSuccess('Successfully added sample.')
       } catch (error) {
         console.error('Error adding sample:', error)
-        callToast({
-          type: 'danger',
-          message: 'Error adding sample.',
-          description: 'Please try again or contact support.',
-          position: 'top-center',
-        })
+        callError('Error adding sample.', 'Try again or call support.')
       }
     },
 
@@ -1072,7 +1059,7 @@ export default function invoiceManager() {
         discountPercent: this.isDiscountPercent, // doesnt exist in current data itteration
         discountFlat: this.isDiscountFlat, // doesnt exist in current data itteration
         vatPercent: this.vatPercent,
-        subtotal: this.subtotal,
+        subtotal: this.staticSubtotal,
         discount: this.discountValue,
         discountPercentValue: this.discount !== 0 ? this.discount : 0,
         vat: this.vat,
