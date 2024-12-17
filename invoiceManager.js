@@ -29,7 +29,7 @@ export default function invoiceManager() {
     vatPercent: 20,
     preDiscountTotal: 0,
     total: 0,
-    // Use for deposits popover menu. Not YET added
+    // Use for deposits popover menu
     popoverOpenDeposit: false,
     // Discount section
     popoverOpen: false,

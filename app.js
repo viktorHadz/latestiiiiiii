@@ -140,13 +140,8 @@ document.addEventListener('alpine:init', () => {
     tabContent: '',
     isLoading: true, // Set initial loading state to true for animation at the start of the app
     mode: localStorage.getItem('theme') || 'light',
-
     svgCache: [],
-
-    sideBar: false,
-    sideBarOpen() {
-      this.sideBar = !this.sideBar
-    },
+    sideBar: JSON.parse(localStorage.getItem('sideBar')) || false,
 
     async init() {
       // Ensure isLoading is initially set to true, then trigger content load
@@ -155,7 +150,10 @@ document.addEventListener('alpine:init', () => {
         document.documentElement.classList.add('dark')
       }
     },
-
+    sideBarOpen() {
+      this.sideBar = !this.sideBar
+      localStorage.setItem('sideBar', this.sideBar)
+    },
     toggleTheme() {
       this.mode = this.mode === 'light' ? 'dark' : 'light'
       document.documentElement.classList.toggle('dark', this.mode === 'dark')
