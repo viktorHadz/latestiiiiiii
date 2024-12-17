@@ -198,7 +198,7 @@
                 <th class="w-[5%] px-2 py-2 text-right text-lg">Price</th>
                 <th class="mx-2 w-[5%] py-2 text-right text-lg">Qty</th>
                 <th
-                  class="round-right-border border-clipper w-[5%] px-2 py-2 text-lg"
+                  class="round-right-border border-clipper w-[5%] px-2 py-2 text-center text-lg"
                   style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
                   Actions
                 </th>
@@ -212,10 +212,16 @@
                   <td class="max-w-[5%] px-2 py-1 text-right text-sm" x-text="'£' + item.price"></td>
                   <td class="mx-2 max-w-[5%] py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
                   <td class="round-right-border max-w-[5%] px-2 text-sm">
-                    <button
-                      @click="removeItemFromInvoice(item)"
-                      class="table-interaction-icon-red ml-4"
-                      x-html="$store.svgCache.getSvgContent('minus-circle.svg', {height: 18, width: 18})"></button>
+                    <div class="flex">
+                      <button
+                        @click="removeSingleInvoiceItem(item)"
+                        class="table-interaction-icon-red ml-4"
+                        x-html="$store.svgCache.getSvgContent('minus-circle.svg', {height: 18, width: 18})"></button>
+                      <button
+                        @click="removeItemFromInvoice(item)"
+                        class="table-interaction-icon-red ml-4"
+                        x-html="$store.svgCache.getSvgContent('x-circle.svg', {height: 18, width: 18})"></button>
+                    </div>
                   </td>
                 </tr>
               </template>

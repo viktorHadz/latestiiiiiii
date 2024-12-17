@@ -658,6 +658,39 @@ export default function invoiceManager() {
       }
       // add invoice items to localstorage by calling a function bellow
     },
+    removeSingleInvoiceItem(targetItem) {
+      // Prevent removal if discounts or deposits exist
+      if (this.discount !== 0 || this.deposit !== 0) {
+        callError(
+          'Cannot remove item.',
+          'Please clear any existing discount/deposit first.',
+        )
+        return
+      }
+
+      // Step 1: Decrease the quantity of the targeted item
+      this.invoiceItems = this.invoiceItems
+        .map(item => {
+          if (item.uniqueId === targetItem.uniqueId) {
+            return { ...item, quantity: item.quantity - 1 }
+          }
+          return item
+        })
+        // Step 2: Remove items with quantity 0
+        .filter(item => item.quantity > 0)
+
+      this.filteredInvoiceItems = this.filteredInvoiceItems
+        .map(item => {
+          if (item.uniqueId === targetItem.uniqueId) {
+            return { ...item, quantity: item.quantity - 1 }
+          }
+          return item
+        })
+        .filter(item => item.quantity > 0)
+
+      this.calculateTotals()
+      this.roundToTwo((this.staticSubtotal = this.subtotal))
+    },
 
     removeItemFromInvoice(item) {
       let confirmText = 'Are you sure you want to remove this item?'
@@ -702,10 +735,6 @@ export default function invoiceManager() {
       if (this.invoiceItems.length === 0) {
         this.resetDeposit()
         this.resetDiscounts()
-        callInfo(
-          'No items in invoice list.',
-          'Discounts and deposits have been reset.',
-        )
       }
     },
     removeAllInvoiceItems() {
