@@ -82,8 +82,27 @@ export default function invoiceManager() {
     init() {
       this.fetchClients()
       this.loadSelectedClient()
+
+      // LOAD INVOICE ITEMS FROM LOCALSTORAGE
+      this.invoiceItems =
+        Alpine.store('globalState').loadFromLocalStorage('invoiceItems')
+      this.filteredInvoiceItems = Alpine.store(
+        'globalState',
+      ).loadFromLocalStorage('filteredInvoiceItems')
+      // WATCH FOR CHANGES IN INVOICE ITEMS
+      this.$watch('invoiceItems', newItems => {
+        Alpine.store('globalState').updateLocalStorage('invoiceItems', newItems)
+      })
+      this.$watch('filteredInvoiceItems', newFiltered => {
+        Alpine.store('globalState').updateLocalStorage(
+          'filteredInvoiceItems',
+          newFiltered,
+        )
+      })
+
       console.log('icons replaced')
       feather.replace()
+
       this.tabId = this.$id('tabs')
       // Ensure that the $refs are fully loaded before accessing them
       this.$nextTick(() => {
@@ -468,11 +487,11 @@ export default function invoiceManager() {
       return true
     },
 
-    /**         
-        
-     TO DO LIST: 
+    /**
+
+     TO DO LIST:
     ------------
-    Saving/Reseting/Deleting Invoice State - How will this work. 
+    Saving/Reseting/Deleting Invoice State - How will this work.
     ---------------------------------------------------------------
       Saving
         1. When user adds a new item to the invoice list to keep track of invoice items and discounts
@@ -482,13 +501,13 @@ export default function invoiceManager() {
         1. When user changes clients - or should I save the user progress
         2. When user generates an invoice - Yes
 
-    Selecting client needs to empty all totals - Or does it? 
+    Selecting client needs to empty all totals - Or does it?
       Check if there is any subtotal or not if not ...do not accept anything
 
       Conditionals:
           If user presses confirm with no input throw error toast and return
-          If user inputs negative value do not calculate 
-          If user inputs negative value and presses confirm throw error   
+          If user inputs negative value do not calculate
+          If user inputs negative value and presses confirm throw error
     */
 
     /*------------------------------CLIENT FETCHING LOGIC------------------------*/
@@ -656,7 +675,6 @@ export default function invoiceManager() {
         callError('Error adding item', 'Failed to add item to the invoice.')
         return
       }
-      // add invoice items to localstorage by calling a function bellow
     },
     removeSingleInvoiceItem(targetItem) {
       // Prevent removal if discounts or deposits exist
@@ -1075,7 +1093,7 @@ export default function invoiceManager() {
     },
 
     /*---------------------------GENERATE INVOICE LOGIC-----------------------------*/
-    /* TODO: 
+    /* TODO:
       1. If value is 0 and it returns error the invoice still makes an invoice in the backend
       2. NOTE! ---> Added Deposit and NOTE to DB
     */

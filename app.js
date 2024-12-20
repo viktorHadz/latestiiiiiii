@@ -70,6 +70,18 @@ document.addEventListener('alpine:init', () => {
   //   console.log('HTMX Request Completed:', e.target, e.detail)
   // })
   // Icons called after content loaded
+
+  // Updates Localstorage
+  Alpine.store('globalState', {
+    updateLocalStorage(key, value) {
+      localStorage.setItem(key, JSON.stringify(value))
+    },
+
+    loadFromLocalStorage(key) {
+      return JSON.parse(localStorage.getItem(key)) || []
+    },
+  })
+
   Alpine.store('svgCache', {
     svgCache: [],
 
