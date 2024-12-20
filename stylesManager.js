@@ -187,7 +187,7 @@ export default function stylesManager() {
       sample.isEditing = false
       callSuccess('Sample Edit canceled.', 'No changes were saved.')
     },
-
+    // this.$watch('')
     async saveStyle(style) {
       try {
         const updatedStyle = {
@@ -203,15 +203,14 @@ export default function stylesManager() {
         })
         if (response.ok) {
           style.isEditing = false
-          callSuccess('Style edit successful', 'Changes saved.')
         } else {
           console.error('Error saving style:', await response.json())
         }
       } catch (error) {
         console.error('Error saving style:', error)
       }
+      // when editing style watch for changes of styles8 and samples if changed update the localstorage by calling the alpine store functions
     },
-
     async saveSample(sample) {
       try {
         const updatedSample = {
@@ -228,7 +227,6 @@ export default function stylesManager() {
         })
         if (response.ok) {
           sample.isEditing = false
-          callSuccess('Sample edit successful', 'Changes saved.')
         } else {
           console.error('Error saving sample:', await response.json())
         }
