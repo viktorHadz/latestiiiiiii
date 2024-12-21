@@ -84,17 +84,17 @@ export default function invoiceManager() {
       this.loadSelectedClient()
 
       // LOAD INVOICE ITEMS FROM LOCALSTORAGE
-      this.invoiceItems =
-        Alpine.store('globalState').loadFromLocalStorage('invoiceItems')
-      this.filteredInvoiceItems = Alpine.store(
-        'globalState',
-      ).loadFromLocalStorage('filteredInvoiceItems')
+      this.invoiceItems = Alpine.store('invoLocalStore').load('invoiceItems')
+      this.filteredInvoiceItems = Alpine.store('invoLocalStore').load(
+        'filteredInvoiceItems',
+      )
+
       // WATCH FOR CHANGES IN INVOICE ITEMS
       this.$watch('invoiceItems', newItems => {
-        Alpine.store('globalState').updateLocalStorage('invoiceItems', newItems)
+        Alpine.store('invoLocalStore').update('invoiceItems', newItems)
       })
       this.$watch('filteredInvoiceItems', newFiltered => {
-        Alpine.store('globalState').updateLocalStorage(
+        Alpine.store('invoLocalStore').update(
           'filteredInvoiceItems',
           newFiltered,
         )

@@ -72,13 +72,17 @@ document.addEventListener('alpine:init', () => {
   // Icons called after content loaded
 
   // Updates Localstorage
-  Alpine.store('globalState', {
-    updateLocalStorage(key, value) {
+  Alpine.store('invoLocalStore', {
+    update(key, value) {
       localStorage.setItem(key, JSON.stringify(value))
     },
 
-    loadFromLocalStorage(key) {
+    load(key) {
       return JSON.parse(localStorage.getItem(key)) || []
+    },
+
+    delete(key) {
+      localStorage.removeItem(key)
     },
   })
 
