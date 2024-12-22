@@ -10,7 +10,7 @@ export default function invoiceManager() {
     selectedClient: null,
     // Invoice items - collects both styles and samples
     invoiceItems: [],
-    filteredInvoiceItems: [],
+    invoiceSearchQuery: '',
     quantities: {},
     // Search Bar
     styleSearch: '',
@@ -76,8 +76,8 @@ export default function invoiceManager() {
     hoverCardTimout: null,
     hoverCardLeaveTimeout: null,
     // Tab section
-    pineTabSelected: '1',
-    tabId: null,
+    invoicingTabSelected: '1',
+    invoicingTabId: 'invoTabs',
 
     init() {
       this.fetchClients()
@@ -85,37 +85,32 @@ export default function invoiceManager() {
 
       // LOAD INVOICE ITEMS FROM LOCALSTORAGE
       this.invoiceItems = Alpine.store('invoLocalStore').load('invoiceItems')
-      this.filteredInvoiceItems = Alpine.store('invoLocalStore').load(
-        'filteredInvoiceItems',
-      )
 
       // WATCH FOR CHANGES IN INVOICE ITEMS
       this.$watch('invoiceItems', newItems => {
         Alpine.store('invoLocalStore').update('invoiceItems', newItems)
       })
-      this.$watch('filteredInvoiceItems', newFiltered => {
-        Alpine.store('invoLocalStore').update(
-          'filteredInvoiceItems',
-          newFiltered,
-        )
-      })
 
       console.log('icons replaced')
       feather.replace()
 
-      this.tabId = this.$id('tabs')
       // Ensure that the $refs are fully loaded before accessing them
       this.$nextTick(() => {
-        this.tabRepositionMarker(this.$refs.tabButtons.firstElementChild)
+        this.invoicingtabRepositionMarker(
+          this.$refs.invoiceTabButtons.firstElementChild,
+        )
       })
     },
 
-    tabButtonClicked(tabButton) {
-      this.pineTabSelected = tabButton.id.replace(this.tabId + '-', '')
-      this.tabRepositionMarker(tabButton)
+    invoicingTabButtonClicked(tabButton) {
+      this.invoicingTabSelected = tabButton.id.replace(
+        this.invoicingTabId + '-',
+        '',
+      )
+      this.invoicingtabRepositionMarker(tabButton)
     },
 
-    tabRepositionMarker(tabButton) {
+    invoicingtabRepositionMarker(tabButton) {
       if (this.$refs.tabMarker) {
         this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px'
         this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px'
@@ -123,16 +118,16 @@ export default function invoiceManager() {
       }
     },
 
-    tabContentActive(tabContent) {
+    invoicingTabContentActive(tabContent) {
       return (
-        this.pineTabSelected ==
-        tabContent.id.replace(this.tabId + '-content-', '')
+        this.invoicingTabSelected ==
+        tabContent.id.replace(this.invoicingTabId + '-content-', '')
       )
     },
 
-    tabButtonActive(tabContent) {
-      const tabId = tabContent.id.split('-').slice(-1)
-      return this.pineTabSelected == tabId
+    invoicingTabButtonActive(tabContent) {
+      const invoicingTabId = tabContent.id.split('-').slice(-1)
+      return this.invoicingTabSelected == invoicingTabId
     },
 
     applyEffect(item) {
@@ -528,7 +523,7 @@ export default function invoiceManager() {
         this.showClientModal = false
         // Reset prices and discounts
         this.invoiceItems = []
-        this.filteredInvoiceItems = []
+
         this.resetDiscounts()
         this.resetTemporaryDiscounts()
         // this.calculateTotals()
@@ -646,7 +641,6 @@ export default function invoiceManager() {
         }
         return invoiceItem
       })
-      this.filteredInvoiceItems = this.invoiceItems
       // 4. If the item does not exist, add it to the invoiceItems array
       if (!itemExists) {
         this.invoiceItems.push({
@@ -697,15 +691,6 @@ export default function invoiceManager() {
         // Step 2: Remove items with quantity 0
         .filter(item => item.quantity > 0)
 
-      this.filteredInvoiceItems = this.filteredInvoiceItems
-        .map(item => {
-          if (item.uniqueId === targetItem.uniqueId) {
-            return { ...item, quantity: item.quantity - 1 }
-          }
-          return item
-        })
-        .filter(item => item.quantity > 0)
-
       this.calculateTotals()
       this.roundToTwo((this.staticSubtotal = this.subtotal))
     },
@@ -730,9 +715,7 @@ export default function invoiceManager() {
         this.invoiceItems = this.invoiceItems.filter(
           i => i.uniqueId !== item.uniqueId,
         )
-        this.filteredInvoiceItems = this.filteredInvoiceItems.filter(
-          i => i.uniqueId !== item.uniqueId,
-        )
+
         this.calculateTotals()
         this.roundToTwo((this.staticSubtotal = this.subtotal))
         callSuccess('Item removed', 'Successfully removed item from invoice.')
@@ -779,11 +762,10 @@ export default function invoiceManager() {
       }
 
       if (confirm('Remove all items from invoice?')) {
-        if (this.filteredInvoiceItems.length === 0) {
+        if (this.invoiceItems.length === 0) {
           callInfo('No items to remove.')
           return
         }
-        this.filteredInvoiceItems = []
         this.invoiceItems = []
         this.resetDeposit()
         this.resetDiscounts()
@@ -1087,9 +1069,7 @@ export default function invoiceManager() {
       )
     },
     searchInvoiceItems() {
-      this.filteredInvoiceItems = this.invoiceItems.filter(item =>
-        item.name.toLowerCase().includes(this.invoiceSearch.toLowerCase()),
-      )
+      this.invoiceSearchQuery = this.invoiceSearchQuery.trim().toLowerCase()
     },
 
     /*---------------------------GENERATE INVOICE LOGIC-----------------------------*/

@@ -18,21 +18,21 @@
     <div>
       <!-- MARK: TABS ALPINE -->
       <div class="relative mb-12 w-full max-w-full">
-        <div x-ref="tabButtons" class="toggler">
+        <div x-ref="invoiceTabButtons" class="toggler">
           <!-- Styles Tab Button -->
           <button
-            :id="$id(tabId)"
-            @click="tabButtonClicked($el);"
+            :id="$id(invoicingTabId)"
+            @click="invoicingTabButtonClicked($el);"
             type="button"
-            :class="{ 'toggler-active' : tabButtonActive($el), 'toggler-inactive': !tabButtonActive($el) }">
+            :class="{ 'toggler-active' : invoicingTabButtonActive($el), 'toggler-inactive': !invoicingTabButtonActive($el) }">
             Styles
           </button>
           <!-- Samples Tab Button -->
           <button
-            :id="$id(tabId)"
-            @click="tabButtonClicked($el);"
+            :id="$id(invoicingTabId)"
+            @click="invoicingTabButtonClicked($el);"
             type="button"
-            :class="{ 'toggler-active' : tabButtonActive($el), 'toggler-inactive': !tabButtonActive($el) }">
+            :class="{ 'toggler-active' : invoicingTabButtonActive($el), 'toggler-inactive': !invoicingTabButtonActive($el) }">
             Samples
           </button>
           <!-- Slider Background -->
@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="relative rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
-          <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
+          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
             <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Selected Client's Styles Information -->
@@ -102,7 +102,7 @@
             </div>
           </div>
 
-          <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
+          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative" x-cloak>
             <!-- MARK: SAMPLES SECTION -->
             <div class="mb-4 flex justify-between p-2 align-middle">
               <!-- Style Search Input -->
@@ -173,8 +173,7 @@
               type="text"
               placeholder="Search Invoice Items..."
               class="srch-style transition-all duration-500"
-              x-model="invoiceSearch"
-              @input="searchInvoiceItems" />
+              x-model="invoiceSearchQuery" />
           </div>
           <!--  Invoice Items -->
           <div class="flex items-center justify-center text-center">
@@ -205,7 +204,9 @@
               </tr>
             </thead>
             <tbody class="table-body-style table-scrollbar">
-              <template x-for="item in filteredInvoiceItems" :key="item.uniqueId">
+              <template
+                x-for="item in invoiceItems.filter(item => invoiceSearchQuery === '' || item.name.toLowerCase().includes(invoiceSearchQuery))"
+                :key="item.uniqueId">
                 <tr class="border-hover-ring-efect">
                   <td class="round-left-border w-[50%] px-2 py-1 text-sm" x-text="item.name"></td>
                   <td class="max-w-[5%] px-2 py-1 text-left text-sm" x-text="item.type"></td>

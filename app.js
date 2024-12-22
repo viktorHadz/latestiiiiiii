@@ -153,7 +153,7 @@ document.addEventListener('alpine:init', () => {
   })
   Alpine.data('tabManager', () => ({
     tabSelected: 'clients',
-    tabContent: '',
+    globalTabContent: '',
     isLoading: true, // Set initial loading state to true for animation at the start of the app
     mode: localStorage.getItem('theme') || 'light',
     svgCache: [],
@@ -182,45 +182,45 @@ document.addEventListener('alpine:init', () => {
       this.isLoading = false // Enter transition
     },
 
-    async tabButtonClicked(tabName) {
-      await this.changeTab(tabName)
+    async tabButtonClicked(globalTabName) {
+      await this.changeTab(globalTabName)
     },
 
-    tabContentActive(tabName) {
-      return this.tabSelected === tabName
+    tabContentActive(globalTabName) {
+      return this.tabSelected === globalTabName
     },
 
-    async changeTab(tabName) {
+    async changeTab(globalTabName) {
       this.isLoading = true // Trigger leave transition
 
       setTimeout(async () => {
-        await this.loadTabContent(tabName)
+        await this.loadTabContent(globalTabName)
         this.isLoading = false // Trigger enter transition
       }, 200) // Adjust timeout to match transition duration
     },
 
-    async loadTabContent(tabName) {
-      const response = await fetch(`/${tabName}.html`)
+    async loadTabContent(globalTabName) {
+      const response = await fetch(`/${globalTabName}.html`)
       const content = await response.text()
-      this.tabSelected = tabName
+      this.tabSelected = globalTabName
 
       this.$nextTick(() => {
-        this.tabContent = content
-        this.initTabComponent(tabName)
+        this.globalTabContent = content
+        this.initTabComponent(globalTabName)
         // Neeed to also call it inside the init statement of each
         // console.log('loading icons')
         // feather.replace()
       })
     },
 
-    initTabComponent(tabName) {
-      if (tabName === 'styles') {
+    initTabComponent(globalTabName) {
+      if (globalTabName === 'styles') {
         Alpine.data('stylesManager', stylesManager)
-      } else if (tabName === 'clients') {
+      } else if (globalTabName === 'clients') {
         Alpine.data('clientManager', clientManager)
-      } else if (tabName === 'invoices') {
+      } else if (globalTabName === 'invoices') {
         Alpine.data('invoiceManager', invoiceManager)
-      } else if (tabName === 'editor') {
+      } else if (globalTabName === 'editor') {
         Alpine.data('editorManager', editorManager)
       }
     },
