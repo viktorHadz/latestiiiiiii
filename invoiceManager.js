@@ -8,7 +8,6 @@ export default function invoiceManager() {
     samples: [],
     filteredSamples: [],
     selectedClient: null,
-    // Invoice items - collects both styles and samples
     invoiceItems: [],
     invoiceSearchQuery: '',
     quantities: {},
@@ -77,24 +76,27 @@ export default function invoiceManager() {
     hoverCardLeaveTimeout: null,
     // Tab section
     invoicingTabSelected: '1',
-    invoicingTabId: 'invoTabs',
+    invoicingTabId: null,
 
     init() {
+      console.log('Initializing')
+
       this.fetchClients()
       this.loadSelectedClient()
 
-      // LOAD INVOICE ITEMS FROM LOCALSTORAGE
-      this.invoiceItems = Alpine.store('invoLocalStore').load('invoiceItems')
+      const storedItems =
+        Alpine.store('invoLocalStore').load('invoiceItems') || []
+      if (Array.isArray(storedItems)) {
+        // Use array reassignment for clearer reactivity
+        this.invoiceItems = [...storedItems]
+      }
 
-      // WATCH FOR CHANGES IN INVOICE ITEMS
       this.$watch('invoiceItems', newItems => {
         Alpine.store('invoLocalStore').update('invoiceItems', newItems)
       })
 
-      console.log('icons replaced')
       feather.replace()
-
-      // Ensure that the $refs are fully loaded before accessing them
+      this.invoicingTabId = this.$id('invoicingTabId')
       this.$nextTick(() => {
         this.invoicingtabRepositionMarker(
           this.$refs.invoiceTabButtons.firstElementChild,
@@ -130,55 +132,35 @@ export default function invoiceManager() {
       return this.invoicingTabSelected == invoicingTabId
     },
 
-    applyEffect(item) {
-      let styles = this.filteredStyles.map(style => style.id)
-      let samples = this.filteredSamples.map(sample => sample.id)
+    applyEffect(idOfItem) {
+      this.$nextTick(() => {
+        const targetItem = document.getElementById(idOfItem)
 
-      let itemId
-      let sampleId
+        if (!targetItem) {
+          console.error(`Element with ID "${idOfItem}" not found.`)
+          return
+        }
 
-      if (styles.includes(item.id)) {
-        itemId = `rowid-${item.id}`
-      }
-      let rowEl = document.getElementById(itemId)
-      if (samples.includes(item.id)) {
-        sampleId = `sampleRowId-${item.id}`
-      }
-      let sampleRowEl = document.getElementById(sampleId)
+        console.log('Target Item:', targetItem)
 
-      const applyClassAndRemove = (el, className) => {
-        // Remove any previous instance of the class
-        el.classList.remove(className)
-        void el.offsetWidth // Force a reflow to reset animation
-        el.classList.add(className) // Reapply the class to trigger animation
+        // Determine the correct class based on the current mode
+        const glowClass =
+          this.mode === 'dark' ? 'add-item-glow-dark' : 'add-item-glow'
+
+        // Apply the glow effect
+        targetItem.classList.remove(glowClass) // Ensure no duplicate animation
+        void targetItem.offsetWidth // Force a reflow to reset animation
+        targetItem.classList.add(glowClass) // Apply the glow class
 
         // Remove the class once the animation finishes
-        el.addEventListener(
+        targetItem.addEventListener(
           'animationend',
           () => {
-            el.classList.remove(className)
+            targetItem.classList.remove(glowClass)
           },
-          { once: true },
-        ) // `once: true` ensures the listener is removed after one execution
-      }
-
-      if (rowEl) {
-        if (this.mode === 'light') {
-          applyClassAndRemove(rowEl, 'add-item-glow')
-        }
-        if (this.mode === 'dark') {
-          applyClassAndRemove(rowEl, 'add-item-glow-dark')
-        }
-      }
-
-      if (sampleRowEl) {
-        if (this.mode === 'light') {
-          applyClassAndRemove(sampleRowEl, 'add-item-glow')
-        }
-        if (this.mode === 'dark') {
-          applyClassAndRemove(sampleRowEl, 'add-item-glow-dark')
-        }
-      }
+          { once: true }, // Ensure the listener is removed after one execution
+        )
+      })
     },
 
     hoverCardEnter() {
@@ -596,7 +578,6 @@ export default function invoiceManager() {
         const response = await fetch(`/api/samples/client/${clientId}`)
         this.samples = (await response.json()).map(sample => ({
           ...sample,
-          sampleName: sample.name,
         }))
         this.filteredSamples = this.samples
       } catch (error) {
@@ -611,65 +592,51 @@ export default function invoiceManager() {
     },
 
     addItemToInvoice(item, type) {
-      // Disables adding items to invoice if discount is applied
-      if (this.deposit !== 0) {
-        callError('Cannot add items.', 'Remove deposit/discount and try again.')
+      // 1) Check discount/deposit FIRST and return if blocked
+      if (this.deposit !== 0 || this.discount !== 0) {
+        this.deposit !== 0
+          ? callError('Cannot add items.', 'Remove deposit and try again.')
+          : callError('Cannot add items.', 'Remove discount and try again.')
         return
       }
-      if (this.discount !== 0) {
-        this.calculateTotals()
-        callError('Cannot add items.', 'Remove discount and try again.')
-        return
-      }
-      // 1. Unique id to identify items by an id - TODO: THIS SHOULD BE STORED TOO
+
+      // 2) Prepare the unique ID and quantity
       const uniqueId = `${type}-${item.id}`
-      let qty = this.quantities[item.id] || 1
-      let itemExists = false
-      // 2. Map over the invoiceItems
-      this.invoiceItems = this.invoiceItems.map(invoiceItem => {
-        // 3. if the item exists is in the lsit:
-        if (invoiceItem.uniqueId === uniqueId) {
-          itemExists = true
-          return {
-            ...invoiceItem,
-            quantity: invoiceItem.quantity + qty,
-            price:
-              invoiceItem.type === 'sample'
-                ? parseFloat(item.price) * parseFloat(item.time)
-                : invoiceItem.price,
-          }
-        }
-        return invoiceItem
-      })
-      // 4. If the item does not exist, add it to the invoiceItems array
-      if (!itemExists) {
-        this.invoiceItems.push({
-          ...item,
-          type,
-          uniqueId,
-          quantity: qty,
-          price:
-            parseFloat(item.price) *
-            (type === 'sample' ? parseFloat(item.time) : 1),
-        })
-        this.applyEffect(item)
-      }
-      if (this.discount === 0) {
-        this.calculateTotals()
-        this.applyEffect(item)
-        // MARK: Static subtotal add
-        this.staticSubtotal = this.subtotal
-        console.log('I am totals when there is no previous discount!')
-        console.log(`Subtotal: ${this.subtotal}`)
-        console.log(`Vat: ${this.vat}`)
-        console.log(`Total: ${this.total}`)
-        console.log(`Discount${this.symbol}: ${this.discount}`)
-        return
+      const qty = this.quantities[item.id] || 1
+
+      // 3) Check if item already exists
+      let existingItem = this.invoiceItems.find(i => i.uniqueId === uniqueId)
+
+      // 4) If not found, create a shallow copy, then push via array spread
+      if (!existingItem) {
+        const newItem = { ...item }
+        newItem.type = type
+        newItem.uniqueId = uniqueId
+        newItem.quantity = qty
+        newItem.price =
+          parseFloat(item.price) *
+          (type === 'sample' ? parseFloat(item.time) : 1)
+        // Use array reassignment for better reactivity
+        this.invoiceItems = [...this.invoiceItems, newItem]
       } else {
-        callError('Error adding item', 'Failed to add item to the invoice.')
-        return
+        // 5) If found, update quantity and price in-place
+        existingItem.quantity += qty
+        if (type === 'sample') {
+          existingItem.price = parseFloat(item.price) * parseFloat(item.time)
+        }
       }
+      // // Optional highlight effect
+      // this.$nextTick(() => {
+      //   this.applyEffect(item)
+      //   console.log('AddToInvoice Apply Argument: ', item)
+      // })
+
+      // 6) Recalculate totals normally
+      this.calculateTotals()
+      this.staticSubtotal = this.subtotal
+      console.log(`Updated Subtotal: ${this.subtotal}`)
     },
+
     removeSingleInvoiceItem(targetItem) {
       // Prevent removal if discounts or deposits exist
       if (this.discount !== 0 || this.deposit !== 0) {
@@ -808,9 +775,7 @@ export default function invoiceManager() {
         )
       }
     },
-    calculateStaticSubtotal() {
-      let staticSubtotalPrivate = 0
-    },
+
     calculateTotals() {
       // recalculate prices if there already is a discount present
       if (this.discount !== 0) {
@@ -1063,9 +1028,7 @@ export default function invoiceManager() {
 
     searchSamples() {
       this.filteredSamples = this.samples.filter(sample =>
-        sample.sampleName
-          .toLowerCase()
-          .includes(this.sampleSearch.toLowerCase()),
+        sample.name.toLowerCase().includes(this.sampleSearch.toLowerCase()),
       )
     },
     searchInvoiceItems() {

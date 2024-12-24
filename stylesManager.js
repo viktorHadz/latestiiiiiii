@@ -216,7 +216,7 @@ export default function stylesManager() {
 
           // LocalStorage - pass edit to invoiceItems
           this.invoiceItems.forEach(item => {
-            if (item.id === style.id) {
+            if (item.id === style.id && item.type === 'style') {
               item.name = style.name
               item.price = style.price
             }
@@ -252,7 +252,7 @@ export default function stylesManager() {
           sample.isEditing = false
           // LocalsStorage - Sample edit input to invoiceItems
           this.invoiceItems.forEach(item => {
-            if (item.id === sample.id) {
+            if (item.id === sample.id && item.type === 'sample') {
               item.name = sample.name
               item.time = sample.time
               item.price = sample.time * sample.price
@@ -284,7 +284,7 @@ export default function stylesManager() {
 
             // Update invoiceItems in localStorage
             this.invoiceItems = this.invoiceItems.filter(
-              item => item.id !== styleId,
+              item => !(item.id === styleId && item.type === 'style'),
             )
             Alpine.store('invoLocalStore').update(
               'invoiceItems',
@@ -310,14 +310,20 @@ export default function stylesManager() {
           if (response.ok) {
             this.samples = this.samples.filter(sample => sample.id !== sampleId)
             this.filteredSamples = this.samples
+
+            this.invoiceItems = this.invoiceItems.filter(
+              item => !(item.id === sampleId && item.type === 'sample'),
+            )
+            Alpine.store('invoLocalStore').update(
+              'invoiceItems',
+              this.invoiceItems,
+            )
           } else {
             console.error('Error deleting sample:', await response.json())
           }
         } catch (error) {
           console.error('Error deleting sample:', error)
         }
-      } else {
-        return
       }
     },
 

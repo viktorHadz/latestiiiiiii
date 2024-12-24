@@ -78,13 +78,13 @@
                 <!-- MARK: TBODY STYLES -->
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="style in filteredStyles" :key="style.id">
-                    <tr :id="'rowid-' + style.id" class="border-hover-ring-efect">
+                    <tr :id="`styleRowId-${style.id}`" class="border-hover-ring-efect">
                       <td class="round-left-border w-[75%] p-2 py-1 text-sm" x-text="style.name"></td>
                       <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
                       <td class="round-right-border w-[5%] pr-1 text-left text-sm">
                         <div class="flex align-middle">
                           <button
-                            @click="addItemToInvoice(style, 'style')"
+                            @click="addItemToInvoice(style, 'style'); $nextTick(() => applyEffect(`styleRowId-${style.id}`))"
                             class="table-interaction-icon-blue mx-1 flex place-self-center"
                             x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
                           <input
@@ -129,21 +129,21 @@
                 <thead class="table-head-style sticky top-0">
                   <tr>
                     <th class="round-left-border border-clipper border border-transparent p-2">Sample Name</th>
-                    <th class="text-lg">Time</th>
-                    <th class="text-lg">Price</th>
+                    <th class="text-right text-lg">Time</th>
+                    <th class="pr-4 text-right text-lg">Price</th>
                     <th class="round-right-border border-clipper px-1 text-lg">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="sample in filteredSamples" :key="sample.id">
-                    <tr :id="'sampleRowId-' + sample.id" class="border-hover-ring-efect">
+                    <tr :id="`sampleRowId-${sample.id}`" class="border-hover-ring-efect">
                       <td class="round-left-border w-[65%] p-1 text-sm" x-text="sample.name"></td>
-                      <td class="w-[15%] py-1 text-sm" x-text="sample.time + 'mins'"></td>
-                      <td class="w-[15%] py-1 text-sm" x-text="'£' + sample.price"></td>
-                      <td class="round-right-border w-[5%] pr-1 text-left text-sm">
-                        <div class="flex align-middle">
+                      <td class="w-[10%] text-right text-sm" x-text="sample.time"></td>
+                      <td class="w-[10%] pr-4 text-right text-sm" x-text="'£' + sample.price"></td>
+                      <td class="round-right-border w-[10%] pr-1 text-left text-sm">
+                        <div class="flex justify-between align-middle">
                           <button
-                            @click="addItemToInvoice(sample, 'sample')"
+                            @click="addItemToInvoice(sample, 'sample'); $nextTick(() => applyEffect(`sampleRowId-${sample.id}`))"
                             class="table-interaction-icon-blue flex place-self-center"
                             x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
                           <input
@@ -755,7 +755,7 @@
               type="number"
               min="0"
               step="0.01"
-              placeholder="Time"
+              placeholder="Time (in minutes)"
               class="modal-input-style mb-2 w-full"
               required />
             <input
