@@ -91,6 +91,14 @@ export default function invoiceManager() {
         this.invoiceItems = [...storedItems]
       }
 
+      // NEW-IDATA
+      const storedInvoiceData =
+        Alpine.store('invoLocalStore').load('invoiceData') || null
+
+      if (storedInvoiceData) {
+        this.restoreInvoiceData(storedInvoiceData)
+      }
+
       this.$watch('invoiceItems', newItems => {
         Alpine.store('invoLocalStore').update('invoiceItems', newItems)
       })
@@ -102,6 +110,72 @@ export default function invoiceManager() {
           this.$refs.invoiceTabButtons.firstElementChild,
         )
       })
+    },
+    // NEW-IDATA
+    buildInvoiceData() {
+      return {
+        // Values from your invoice state
+        subtotal: this.subtotal,
+        staticSubtotal: this.staticSubtotal,
+        vat: this.vat,
+        vatPercent: this.vatPercent,
+        preDiscountTotal: this.preDiscountTotal,
+        total: this.total,
+        switchOpen: this.switchOpen,
+        isDiscountPercent: this.isDiscountPercent,
+        isDiscountFlat: this.isDiscountFlat,
+        symbol: this.symbol,
+        discount: this.discount,
+        discountValue: this.discountValue,
+        deposit: this.deposit,
+        depositSymbol: this.depositSymbol,
+        depositPercent: this.depositPercent,
+        depositFlat: this.depositFlat,
+        tempDeposit: this.tempDeposit,
+        depositNumericValue: this.depositNumericValue,
+        depositDisplay: this.depositDisplay,
+        invoiceNote: this.invoiceNote,
+      }
+    },
+    persistInvoiceData() {
+      const data = this.buildInvoiceData()
+      Alpine.store('invoLocalStore').update('invoiceData', data)
+    },
+    restoreInvoiceData(data) {
+      // Safe merge - restores localStorage fields into Alpine state.
+      // Only restore fields that exist in stored data
+      // (This prevents overwriting defaults if a field wasn't saved)
+      if (data.subtotal !== undefined) this.subtotal = data.subtotal
+      if (data.staticSubtotal !== undefined)
+        this.staticSubtotal = data.staticSubtotal
+      if (data.vat !== undefined) this.vat = data.vat
+      if (data.vatPercent !== undefined) this.vatPercent = data.vatPercent
+      if (data.preDiscountTotal !== undefined)
+        this.preDiscountTotal = data.preDiscountTotal
+      if (data.total !== undefined) this.total = data.total
+      if (data.switchOpen !== undefined) this.switchOpen = data.switchOpen
+      if (data.isDiscountPercent !== undefined)
+        this.isDiscountPercent = data.isDiscountPercent
+      if (data.isDiscountFlat !== undefined)
+        this.isDiscountFlat = data.isDiscountFlat
+      if (data.symbol !== undefined) this.symbol = data.symbol
+      if (data.discount !== undefined) this.discount = data.discount
+      if (data.discountValue !== undefined)
+        this.discountValue = data.discountValue
+      if (data.deposit !== undefined) this.deposit = data.deposit
+      if (data.depositSymbol !== undefined)
+        this.depositSymbol = data.depositSymbol
+      if (data.depositPercent !== undefined)
+        this.depositPercent = data.depositPercent
+      if (data.depositFlat !== undefined) this.depositFlat = data.depositFlat
+      if (data.tempDeposit !== undefined) this.tempDeposit = data.tempDeposit
+      if (data.depositNumericValue !== undefined)
+        this.depositNumericValue = data.depositNumericValue
+      if (data.depositDisplay !== undefined)
+        this.depositDisplay = data.depositDisplay
+      if (data.invoiceNote !== undefined) this.invoiceNote = data.invoiceNote
+
+      console.log('Restored invoice data from localStorage:', data)
     },
 
     invoicingTabButtonClicked(tabButton) {
@@ -135,22 +209,19 @@ export default function invoiceManager() {
     applyEffect(idOfItem) {
       this.$nextTick(() => {
         const targetItem = document.getElementById(idOfItem)
-
         if (!targetItem) {
           console.error(`Element with ID "${idOfItem}" not found.`)
           return
         }
 
         console.log('Target Item:', targetItem)
-
-        // Determine the correct class based on the current mode
         const glowClass =
           this.mode === 'dark' ? 'add-item-glow-dark' : 'add-item-glow'
 
         // Apply the glow effect
-        targetItem.classList.remove(glowClass) // Ensure no duplicate animation
-        void targetItem.offsetWidth // Force a reflow to reset animation
-        targetItem.classList.add(glowClass) // Apply the glow class
+        targetItem.classList.remove(glowClass)
+        void targetItem.offsetWidth
+        targetItem.classList.add(glowClass)
 
         // Remove the class once the animation finishes
         targetItem.addEventListener(
@@ -246,6 +317,8 @@ export default function invoiceManager() {
         'hover:bg-green-600',
       )
       callSuccess('Deposit reset.')
+      // NEW-IDATA
+      this.persistInvoiceData() // <-- MANUAL PERSIST
     },
 
     handleDepositType() {
@@ -317,7 +390,6 @@ export default function invoiceManager() {
         )
         callSuccess('Deposit added to invoice.')
         inputFocus.focus()
-        inputFocus.focus()
       } catch (error) {
         console.error(error)
         callError(
@@ -325,6 +397,8 @@ export default function invoiceManager() {
           'Try again, refresh the program or call support.',
         )
         inputFocus.focus()
+        // NEW-IDATA
+        this.persistInvoiceData() // <-- MANUAL PERSIST
       }
     },
 
@@ -600,14 +674,12 @@ export default function invoiceManager() {
         return
       }
 
-      // 2) Prepare the unique ID and quantity
       const uniqueId = `${type}-${item.id}`
       const qty = this.quantities[item.id] || 1
 
       // 3) Check if item already exists
       let existingItem = this.invoiceItems.find(i => i.uniqueId === uniqueId)
 
-      // 4) If not found, create a shallow copy, then push via array spread
       if (!existingItem) {
         const newItem = { ...item }
         newItem.type = type
@@ -616,29 +688,24 @@ export default function invoiceManager() {
         newItem.price =
           parseFloat(item.price) *
           (type === 'sample' ? parseFloat(item.time) : 1)
-        // Use array reassignment for better reactivity
+
         this.invoiceItems = [...this.invoiceItems, newItem]
       } else {
-        // 5) If found, update quantity and price in-place
         existingItem.quantity += qty
         if (type === 'sample') {
           existingItem.price = parseFloat(item.price) * parseFloat(item.time)
         }
       }
-      // // Optional highlight effect
-      // this.$nextTick(() => {
-      //   this.applyEffect(item)
-      //   console.log('AddToInvoice Apply Argument: ', item)
-      // })
 
-      // 6) Recalculate totals normally
+      // Recalculate & Persist
       this.calculateTotals()
       this.staticSubtotal = this.subtotal
+      // NEW-IDATA
+      this.persistInvoiceData() // <-- MANUAL PERSIST
       console.log(`Updated Subtotal: ${this.subtotal}`)
     },
 
     removeSingleInvoiceItem(targetItem) {
-      // Prevent removal if discounts or deposits exist
       if (this.discount !== 0 || this.deposit !== 0) {
         callError(
           'Cannot remove item.',
@@ -647,7 +714,6 @@ export default function invoiceManager() {
         return
       }
 
-      // Step 1: Decrease the quantity of the targeted item
       this.invoiceItems = this.invoiceItems
         .map(item => {
           if (item.uniqueId === targetItem.uniqueId) {
@@ -655,11 +721,12 @@ export default function invoiceManager() {
           }
           return item
         })
-        // Step 2: Remove items with quantity 0
         .filter(item => item.quantity > 0)
 
       this.calculateTotals()
       this.roundToTwo((this.staticSubtotal = this.subtotal))
+      // NEW-IDATA
+      this.persistInvoiceData() // <-- MANUAL PERSIST
     },
 
     removeItemFromInvoice(item) {
@@ -704,6 +771,8 @@ export default function invoiceManager() {
         this.resetDeposit()
         this.resetDiscounts()
       }
+      // NEW-IDATA
+      this.persistInvoiceData() // <-- MANUAL PERSIST
     },
     removeAllInvoiceItems() {
       if (this.discount != 0) {
@@ -743,6 +812,8 @@ export default function invoiceManager() {
         callInfo('No items removed.')
         return
       }
+      // NEW-IDATA
+      this.persistInvoiceData() // <-- MANUAL PERSIST
     },
     // Rounds numbers to two decimal spaces. Only use after all math ops. are done.
     roundToTwo(value) {
@@ -815,6 +886,7 @@ export default function invoiceManager() {
         this.temporaryDiscount = parseFloat(inputValue)
       }
     },
+
     // Calculates temporary subtotal and VAT and Total
     calculateTemporaryValues() {
       if (this.isDiscountPercent === true) {
@@ -826,16 +898,15 @@ export default function invoiceManager() {
       this.temporaryVat = (this.vatPercent / 100) * this.temporarySubtotal
       this.temporaryTotal = this.temporarySubtotal + this.temporaryVat
     },
+
     // Checks if discount is an acceptible value based on this we
     // Confirm all prices to send to main screen Prices menu
     confirmDiscount() {
       let inputFocus = this.$refs.discountInput
-      // Discount validation using VALIDATOR :D
       if (!this.validator(this, 'confirmDiscount')) {
         inputFocus.focus()
         return
       }
-      // Pass temporary values to main price forming menu
       let totalContainer = this.total
       const confirmBtn = document.getElementById('confirm-discount')
       this.preDiscountTotal = totalContainer // reference to the total before calculations
@@ -866,6 +937,10 @@ export default function invoiceManager() {
         position: 'top-center',
       })
       inputFocus.focus()
+      // Recalc & persist
+      // NEW-IDATA
+      this.calculateTotals()
+      this.persistInvoiceData() // <-- MANUAL PERSIST
       console.log('Subtotal: ' + this.subtotal)
       console.log('Vat: ' + this.vat)
       console.log('Discount: ' + this.discount)
@@ -909,6 +984,7 @@ export default function invoiceManager() {
       this.resetTemporaryDiscounts()
       this.temporaryVat = this.vat
       this.temporaryTotal = this.total
+      this.discountValue = 0
       this.calculateTotals()
       confirmBtn.classList.remove(
         'bg-green-500',
@@ -920,6 +996,8 @@ export default function invoiceManager() {
         'hover:bg-gray-300',
         'text-gray-950',
       )
+      // NEW-IDATA
+      this.persistInvoiceData() // <-- MANUAL PERSIST
     },
     showTemporarySubtotalAndDiscount() {
       const discBubbleSubTotal = document.getElementById(
@@ -1045,9 +1123,8 @@ export default function invoiceManager() {
       const invoiceData = {
         clientId: this.selectedClient.id,
         items: this.invoiceItems,
-        // need to edit this based on discounts
-        discountPercent: this.isDiscountPercent, // doesnt exist in current data itteration
-        discountFlat: this.isDiscountFlat, // doesnt exist in current data itteration
+        discountPercent: this.isDiscountPercent,
+        discountFlat: this.isDiscountFlat,
         vatPercent: this.vatPercent,
         subtotal: this.staticSubtotal,
         discount: this.discountValue,
@@ -1062,7 +1139,7 @@ export default function invoiceManager() {
         depositFlat: this.depositFlat,
         depositPercent: this.depositPercent,
       }
-      console.log(invoiceData)
+      console.log('generateInvoice => invoiceData: ', invoiceData)
       try {
         const response = await fetch('/api/saveInvoice', {
           method: 'POST',
@@ -1095,7 +1172,6 @@ export default function invoiceManager() {
         const response = await fetch(`/api/invoices/${invoiceId}/pdf`, {
           method: 'GET',
         })
-
         const blob = await response.blob()
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
@@ -1114,8 +1190,7 @@ export default function invoiceManager() {
         callToast({
           type: 'danger',
           message: 'PDF Generation Error!',
-          description:
-            'Failed to generate PDF. Please try again or contact support.',
+          description: 'Failed to generate PDF. Try again or contact support.',
           position: 'top-center',
         })
       }
