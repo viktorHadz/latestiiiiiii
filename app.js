@@ -81,6 +81,12 @@ document.addEventListener('alpine:init', () => {
       return JSON.parse(localStorage.getItem(key)) || []
     },
 
+    checkEmpty(key) {
+      const item = localStorage.getItem(key)
+      console.log('checking empty:', key)
+      return !item || JSON.parse(item).length === 0
+    },
+
     delete(key) {
       localStorage.removeItem(key)
     },

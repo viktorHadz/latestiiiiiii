@@ -296,7 +296,7 @@
           <div class="flex justify-center">
             <div class="relative inline-block">
               <button
-                @click="popoverOpen = !popoverOpen; calculateTemporaryValues(); if(popoverOpen) $nextTick(() => $refs.discountInput.focus())"
+                @click="popoverOpen = !popoverOpen; if(popoverOpen) $nextTick(() => $refs.discountInput.focus())"
                 class="butt-style flex gap-2 self-center"
                 x-html="$store.svgCache.getSvgContent('trending-down.svg', {height: 18, width: 18}) + 'Discount'"></button>
               <div
@@ -321,58 +321,26 @@
                         <input
                           id="discount-input"
                           type="number"
-                          x-model.number="temporaryDiscount"
+                          placeholder="0"
+                          x-model.number="tempDiscount"
                           x-ref="discountInput"
-                          class="modal-input-style w-full !py-2 !pl-12"
-                          :value="temporaryDiscount === 0 ? 0 : temporaryDiscount"
-                          :placeholder="temporaryDiscount === 0 ? 'Enter value' : 0"
-                          @input="handleDiscountInput(event); calculateTemporaryValues(); showTemporarySubtotalAndDiscount();" />
+                          class="modal-input-style w-full !py-2 !pl-12" />
                         <!-- PERCENT SYMBOL CONTROL WITH PADDING -->
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                           <span
                             x-text="symbol"
-                            id="symbolId"
+                            id="symbolIdDiscount"
                             class="text-lg text-vls2/80 hover:text-gray-200 focus:text-gray-200 dark:text-vds"></span>
                           <!-- PIPE SYMBOL CONTROL WITH MARGIN -->
                           <span class="absolute mx-2 ml-6 h-4 border-l border-gray-300"></span>
                         </div>
                       </div>
                     </div>
-                    <!-- Temporary Discount Menu Popover -->
-                    <div class="mb-2 hidden w-full flex-col justify-start text-sm">
-                      <h1
-                        id="subtotal-discount-buble"
-                        class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
-                        Subtotal:
-                        <span x-text="subtotal"></span>
-                      </h1>
-                      <h1
-                        x-show="showNewSubtotal"
-                        x-transition.duration.250
-                        class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
-                        Subtotal:
-                        <span x-text="temporarySubtotal" x-transition.duration.200></span>
-                      </h1>
-                      <h1 class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
-                        Discount:
-                        <span x-text="temporaryDiscount"></span>
-                      </h1>
-                      <h1 class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
-                        VAT:
-                        <span x-text="temporaryVat"></span>
-                      </h1>
-                      <h1 class="mb-2 rounded-lg border border-slate-300 p-1 dark:border-vred-300">
-                        Total:
-                        <span x-text="temporaryTotal"></span>
-                      </h1>
-                    </div>
+
                     <div class="mb-4 flex justify-between">
                       <button
                         id="toggle-discount-btn"
-                        @click="
-                    switchOpen = !switchOpen;
-                    changeDiscount();
-                    calculateTemporaryValues()"
+                        @click="switchOpen = !switchOpen; changeDiscount(); revolveSymbol(symbolIdDiscount)"
                         :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-vla2 text-white text-sm hover:bg-vla3 transition duration-300 font-semibold'"
                         class="px-1.5 py-1 transition duration-300">
                         <svg
@@ -396,9 +364,10 @@
                         @click="confirmDiscount()"
                         x-transition
                         class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
+                        :class="discount !== 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-100 hover:bg-gray-300 text-gray-950'"
                         x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
                       <button
-                        @click="popoverOpen = false"
+                        @click="resetDiscounts()"
                         class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700"
                         x-html="$store.svgCache.getSvgContent('x.svg', {height: 18, width: 18})"></button>
                     </div>
@@ -461,7 +430,7 @@
                   <div class="mb-4 flex justify-between">
                     <button
                       id="toggle-deposit"
-                      @click="isDepositPercent = ! isDepositPercent; handleDepositType()"
+                      @click="isDepositPercent = ! isDepositPercent; handleDepositType(); revolveSymbol('symbolIdDeposit')"
                       :class="!isDepositPercent ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-vla2 text-white text-sm hover:bg-vla3 transition duration-300 font-semibold'"
                       class="px-1.5 py-1 transition duration-300">
                       <svg

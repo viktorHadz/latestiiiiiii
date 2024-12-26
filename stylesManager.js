@@ -22,6 +22,7 @@ export default function stylesManager() {
     invoiceItems: [],
 
     init() {
+      console.log('Initializing stylesManager')
       this.fetchClients()
       this.loadSelectedClient()
       // Feather icons re-render
@@ -80,13 +81,31 @@ export default function stylesManager() {
       this.showClientModal = false
     },
 
-    selectClient(client) {
+    async selectClient(client) {
+      if (
+        !Alpine.store('invoLocalStore').checkEmpty('invoiceItems') ||
+        !Alpine.store('invoLocalStore').checkEmpty('invoiceData')
+      ) {
+        if (
+          confirm(
+            'There are still items in your invoice that will be deleted. Continue?',
+          )
+        ) {
+          Alpine.store('invoLocalStore').delete('invoiceItems')
+          Alpine.store('invoLocalStore').delete('invoiceData')
+        }
+      }
+
       this.selectedClient = client
       this.showDropdown = false
 
       this.saveSelectedClient(client)
-      this.fetchStyles(client.id)
-      this.fetchSamples(client.id)
+      try {
+        await this.fetchStyles(client.id)
+        await this.fetchSamples(client.id)
+      } catch (error) {
+        console.error('Error fetching styles or samples:', error)
+      }
       this.$nextTick(() => {
         this.closeModal()
       })
@@ -174,11 +193,25 @@ export default function stylesManager() {
     },
 
     editStyle(style) {
+      if (
+        !Alpine.store('invoLocalStore').checkEmpty('invoiceItems') ||
+        !Alpine.store('invoLocalStore').checkEmpty('invoiceData')
+      ) {
+        callWarning('Cannot edit style', 'Please clear your invoice first.')
+        return
+      }
       style.original = { ...style } // Store original data
       style.isEditing = true
     },
 
     editSample(sample) {
+      if (
+        !Alpine.store('invoLocalStore').checkEmpty('invoiceItems') ||
+        !Alpine.store('invoLocalStore').checkEmpty('invoiceData')
+      ) {
+        callWarning('Cannot edit style', 'Please clear your invoice first.')
+        return
+      }
       sample.original = { ...sample } // Store original data
       sample.isEditing = true
       console.log('Editing sample:', sample)
