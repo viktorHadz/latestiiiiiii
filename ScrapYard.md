@@ -161,3 +161,21 @@ document.addEventListener('alpine:init', () => {
 </div>
 
 Just use @Apply after and im on the way to simplify my code a lot
+
+
+
+
+Styles removed
+<button
+              @click="tabButtonClicked('styles')"
+              :class="{ 'tab-button-active': tabContentActive('styles') }"
+              class="tab-button flex items-center">
+              <div x-show="sideBar" class="flex items-center p-2">
+                <object data-feather="package" class="mr-1.5 w-4"></object>
+
+                <span>Items</span>
+              </div>
+              <div x-show="!sideBar" class="p-2">
+                <object data-feather="package"></object>
+              </div>
+            </button>

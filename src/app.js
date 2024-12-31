@@ -1,6 +1,9 @@
 // import componentManager from './public/componentsLibrary/components.js';
+// import { fetchHtml } from './Store/fetchHtml.js'
+
 import clientManager from './Managers/clientManager.js'
-import stylesManager from './Managers/stylesManager.js'
+// import stylesManager from './Managers/stylesManager.js'
+import itemEditor from './components/items/itemEditor.js'
 import invoiceManager from './Managers/invoiceManager.js'
 import editorManager from './Managers/editorManager.js'
 import toastManager from './Managers/toastManager.js'
@@ -60,6 +63,25 @@ function hasHTMXAttributes(node) {
 
 // MARK: Alpine load
 document.addEventListener('alpine:init', () => {
+  Alpine.store('fetchHtml', {
+    init() {},
+    async goGitAndSave(what, where) {
+      try {
+        console.log(`Fetching: /${what}`)
+        const response = await fetch(`/${what}`)
+        if (response.ok) {
+          const content = await response.text()
+          where.value = content
+          console.log(where.value)
+        } else {
+          throw new Error(`goGit --> Failed to fetch: ${response.status}`)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+  })
+
   Alpine.store('svgCache', {
     svgCache: [],
 
@@ -107,16 +129,10 @@ document.addEventListener('alpine:init', () => {
       // Replaces height and width in the SVG if options are provided
       if (options.height || options.width) {
         if (options.height) {
-          svgContent = svgContent.replace(
-            /height="([^"]+)"/,
-            `height="${options.height}"`,
-          )
+          svgContent = svgContent.replace(/height="([^"]+)"/, `height="${options.height}"`)
         }
         if (options.width) {
-          svgContent = svgContent.replace(
-            /width="([^"]+)"/,
-            `width="${options.width}"`,
-          )
+          svgContent = svgContent.replace(/width="([^"]+)"/, `width="${options.width}"`)
         }
       }
       // Extracts updated or existing height and width
@@ -139,6 +155,9 @@ document.addEventListener('alpine:init', () => {
       if (this.mode === 'dark') {
         document.documentElement.classList.add('dark')
       }
+    },
+    loadHtml() {
+      console.log('slider opan baby')
     },
     sideBarOpen() {
       this.sideBar = !this.sideBar
@@ -188,9 +207,10 @@ document.addEventListener('alpine:init', () => {
     },
 
     initTabComponent(globalTabName) {
-      if (globalTabName === 'styles') {
-        Alpine.data('stylesManager', stylesManager)
-      } else if (globalTabName === 'clients') {
+      // if (globalTabName === 'styles') {
+      //   Alpine.data('stylesManager', stylesManager)
+      // } else
+      if (globalTabName === 'clients') {
         Alpine.data('clientManager', clientManager)
       } else if (globalTabName === 'invoices') {
         Alpine.data('invoiceManager', invoiceManager)
@@ -199,9 +219,11 @@ document.addEventListener('alpine:init', () => {
       }
     },
   }))
-
   Alpine.data('clientManager', clientManager)
-  Alpine.data('stylesManager', stylesManager)
+  // Alpine.data('stylesManager', stylesManager)
+  //InvoManagerDeps
+  Alpine.data('itemEditor', itemEditor)
+  console.log(itemEditor)
   Alpine.data('invoiceManager', invoiceManager)
   Alpine.data('editorManager', editorManager)
   Alpine.data('toastManager', toastManager)

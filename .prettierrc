@@ -4,14 +4,29 @@
   "tabWidth": 2,
   "semi": false,
   "bracketSameLine": true,
-  "printWidth": 80,
+  "printWidth": 120,
   "bracketSpacing": true,
   "htmlWhitespaceSensitivity": "ignore",
-  "tailwindPreserveWhitespace": false,
   "arrowParens": "avoid",
-  "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
-    { "files": "*.html", "options": { "parser": "html", "printWidth": 120 } },
-    { "files": "*.js", "options": { "parser": "babel", "tabWidth": 2 } }
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "html",
+        "printWidth": 120,
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.js",
+      "options": {
+        "parser": "babel",
+        "tabWidth": 2,
+        "trailingComma": "all",
+        "arrowParens": "avoid",
+        "bracketSpacing": true,
+        "semi": false
+      }
+    }
   ]
 }

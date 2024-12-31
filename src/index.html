@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoicing</title>
-    <link rel="icon" type="image/x-icon" href="/images/invoicer.ico"></link>
+    <link rel="icon" type="image/x-icon" href="/images/invoicer.ico" />
     <script src="./node_modules/feather-icons/dist/feather.min.js"></script>
     <link rel="stylesheet" href="/css/outputTailwind.css" />
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
@@ -43,19 +43,7 @@
               </div>
             </button>
             <!-- STYLES -->
-            <button
-              @click="tabButtonClicked('styles')"
-              :class="{ 'tab-button-active': tabContentActive('styles') }"
-              class="tab-button flex items-center">
-              <div x-show="sideBar" class="flex items-center p-2">
-                <object data-feather="package" class="mr-1.5 w-4"></object>
 
-                <span>Items</span>
-              </div>
-              <div x-show="!sideBar" class="p-2">
-                <object data-feather="package"></object>
-              </div>
-            </button>
             <!-- INVOICES -->
             <button
               @click="tabButtonClicked('invoices')"
@@ -84,8 +72,11 @@
             </button>
           </div>
 
-          <!-- MARK:ROW-2-Placeholder Item -->
-          <div class="flex flex-col items-center justify-center"></div>
+          <!-- MARK:ROW-2 Item Edits -->
+          <div class="flex flex-col items-center justify-center" x-data="itemEditor">
+            <button class="tab-button" @click="slideOverOpen = !slideOverOpen">Item Edits</button>
+            <div x-html="htmlSlideOver"></div>
+          </div>
 
           <!-- MARK:ROW-3-DarkMode -->
           <div class="grid h-full grid-cols-1 grid-rows-2 place-items-center justify-center">

@@ -88,9 +88,7 @@ export default function invoiceManager() {
       feather.replace()
       this.invoicingTabId = this.$id('invoicingTabId')
       this.$nextTick(() => {
-        this.invoicingtabRepositionMarker(
-          this.$refs.invoiceTabButtons.firstElementChild,
-        )
+        this.invoicingtabRepositionMarker(this.$refs.invoiceTabButtons.firstElementChild)
       })
     },
 
@@ -122,10 +120,7 @@ export default function invoiceManager() {
     },
 
     invoicingTabButtonClicked(tabButton) {
-      this.invoicingTabSelected = tabButton.id.replace(
-        this.invoicingTabId + '-',
-        '',
-      )
+      this.invoicingTabSelected = tabButton.id.replace(this.invoicingTabId + '-', '')
       this.invoicingtabRepositionMarker(tabButton)
     },
 
@@ -138,10 +133,7 @@ export default function invoiceManager() {
     },
 
     invoicingTabContentActive(tabContent) {
-      return (
-        this.invoicingTabSelected ==
-        tabContent.id.replace(this.invoicingTabId + '-content-', '')
-      )
+      return this.invoicingTabSelected == tabContent.id.replace(this.invoicingTabId + '-content-', '')
     },
 
     invoicingTabButtonActive(tabContent) {
@@ -158,8 +150,7 @@ export default function invoiceManager() {
         }
 
         console.log('Target Item:', targetItem)
-        const glowClass =
-          this.mode === 'dark' ? 'add-item-glow-dark' : 'add-item-glow'
+        const glowClass = this.mode === 'dark' ? 'add-item-glow-dark' : 'add-item-glow'
 
         // Apply the glow effect
         targetItem.classList.remove(glowClass)
@@ -249,25 +240,14 @@ export default function invoiceManager() {
       let depositBtn = document.getElementById('confirm-deposit')
       this.tempDeposit = 0
       this.deposit = 0
-      depositBtn.classList.add(
-        'bg-gray-100',
-        'hover:bg-gray-300',
-        'text-gray-950',
-      )
-      depositBtn.classList.remove(
-        'bg-green-500',
-        'text-white',
-        'hover:bg-green-600',
-      )
+      depositBtn.classList.add('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
+      depositBtn.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600')
       callSuccess('Deposit reset.')
     },
 
     handleDepositType() {
       if (this.deposit !== 0) {
-        callError(
-          'Cannot change deposit type',
-          'Remove any existing deposits first.',
-        )
+        callError('Cannot change deposit type', 'Remove any existing deposits first.')
         return
       }
       let inputFocus = this.$refs.tempDeposit
@@ -319,24 +299,13 @@ export default function invoiceManager() {
           ? `${tempDeposit}% (£${this.depositNumericValue})`
           : `£${this.deposit}`
 
-        depositBtn.classList.remove(
-          'bg-gray-100',
-          'hover:bg-gray-300',
-          'text-gray-950',
-        )
-        depositBtn.classList.add(
-          'bg-green-500',
-          'text-white',
-          'hover:bg-green-600',
-        )
+        depositBtn.classList.remove('bg-gray-100', 'hover:bg-gray-300', 'text-gray-950')
+        depositBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600')
         callSuccess('Deposit added to invoice.')
         inputFocus.focus()
       } catch (error) {
         console.error(error)
-        callError(
-          'Error calculating deposit.',
-          'Try again, refresh the program or call support.',
-        )
+        callError('Error calculating deposit.', 'Try again, refresh the program or call support.')
         inputFocus.focus()
       }
     },
@@ -356,53 +325,29 @@ export default function invoiceManager() {
         removeItemFromInvoice: [
           {
             condition: context.discount !== 0,
-            toast: () =>
-              callError(
-                'Cannot remove item.',
-                'Please clear any existing discount/deposit first.',
-              ),
+            toast: () => callError('Cannot remove item.', 'Please clear any existing discount/deposit first.'),
           },
           {
             condition: context.deposit !== 0,
-            toast: () =>
-              callError(
-                'Cannot remove item.',
-                'Please clear any existing discount/deposit first.',
-              ),
+            toast: () => callError('Cannot remove item.', 'Please clear any existing discount/deposit first.'),
           },
           {
             condition: context.subtotal < 0,
-            toast: () =>
-              callError(
-                'Cannot remove item.',
-                'Total cannot be a negative value. Check your discounts.',
-              ),
+            toast: () => callError('Cannot remove item.', 'Total cannot be a negative value. Check your discounts.'),
           },
         ],
         removeAllInvoiceItems: [
           {
             condition: context.discount !== 0,
-            toast: () =>
-              callError(
-                'Cannot remove items.',
-                'Please clear any existing discount/deposit first.',
-              ),
+            toast: () => callError('Cannot remove items.', 'Please clear any existing discount/deposit first.'),
           },
           {
             condition: context.deposit !== 0,
-            toast: () =>
-              callError(
-                'Cannot remove items.',
-                'Please clear any existing discount/deposit first.',
-              ),
+            toast: () => callError('Cannot remove items.', 'Please clear any existing discount/deposit first.'),
           },
           {
             condition: context.subtotal < 0,
-            toast: () =>
-              callError(
-                'Cannot remove items.',
-                'Total cannot be a negative value. Check your discounts.',
-              ),
+            toast: () => callError('Cannot remove items.', 'Total cannot be a negative value. Check your discounts.'),
           },
           {
             condition: context.invoiceItems.length === 0,
@@ -413,11 +358,7 @@ export default function invoiceManager() {
         calculateDeposit: [
           {
             condition: context.deposit !== 0,
-            toast: () =>
-              callError(
-                'Cannot change deposit.',
-                'Remove any existing deposits first.',
-              ),
+            toast: () => callError('Cannot change deposit.', 'Remove any existing deposits first.'),
           },
           {
             condition: context.total === 0,
@@ -428,15 +369,12 @@ export default function invoiceManager() {
             toast: () => callError('Deposit cannot exceed 100%.'),
           },
           {
-            condition:
-              context.isDepositPercent === false &&
-              context.tempDeposit > context.total,
+            condition: context.isDepositPercent === false && context.tempDeposit > context.total,
             toast: () => callError('Deposit cannot exceed the total.'),
           },
           {
             condition: context.tempDeposit <= 0,
-            toast: () =>
-              callError('Deposit cannot be zero or a negative value.'),
+            toast: () => callError('Deposit cannot be zero or a negative value.'),
           },
         ],
 
@@ -444,76 +382,44 @@ export default function invoiceManager() {
           {
             // Must have items
             condition: context.subtotal <= 0,
-            toast: () =>
-              callError(
-                'Cannot apply discount.',
-                'Insert items into invoice first.',
-              ),
+            toast: () => callError('Cannot apply discount.', 'Insert items into invoice first.'),
           },
           {
             // Must not have deposit
             condition: context.deposit !== 0,
-            toast: () =>
-              callError('Cannot apply discount.', 'Remove the deposit first.'),
+            toast: () => callError('Cannot apply discount.', 'Remove the deposit first.'),
           },
           {
             // Must not already have a discount
             condition: context.discount !== 0,
-            toast: () =>
-              callError(
-                'Discount already applied.',
-                'Only one discount allowed.',
-              ),
+            toast: () => callError('Discount already applied.', 'Only one discount allowed.'),
           },
           {
             // Positive, non-zero numeric discount
             condition:
-              typeof context.tempDiscount !== 'number' ||
-              isNaN(context.tempDiscount) ||
-              context.tempDiscount <= 0,
-            toast: () =>
-              callError(
-                'Invalid discount.',
-                'Discount must be greater than 0.',
-              ),
+              typeof context.tempDiscount !== 'number' || isNaN(context.tempDiscount) || context.tempDiscount <= 0,
+            toast: () => callError('Invalid discount.', 'Discount must be greater than 0.'),
           },
           {
             // If percent, discount <= 100
             condition: context.isDiscountPercent && context.tempDiscount > 100,
-            toast: () =>
-              callError(
-                'Discount cannot exceed 100%.',
-                'Check discount value.',
-              ),
+            toast: () => callError('Discount cannot exceed 100%.', 'Check discount value.'),
           },
           {
             // If flat, discount <= subtotal
-            condition:
-              context.isDiscountFlat && context.tempDiscount > context.subtotal,
-            toast: () =>
-              callError(
-                'Discount cannot exceed subtotal.',
-                'Adjust discount value.',
-              ),
+            condition: context.isDiscountFlat && context.tempDiscount > context.subtotal,
+            toast: () => callError('Discount cannot exceed subtotal.', 'Adjust discount value.'),
           },
         ],
 
         handleMessageSubmit: [
           {
             condition: context.subtotal === 0,
-            toast: () =>
-              callError(
-                'Cannot insert note.',
-                'Please add some items into your invoice first.',
-              ),
+            toast: () => callError('Cannot insert note.', 'Please add some items into your invoice first.'),
           },
           {
             condition: context.invoiceNotePopover === '',
-            toast: () =>
-              callError(
-                'Invoice note cannot be empty.',
-                'Please input a message first.',
-              ),
+            toast: () => callError('Invoice note cannot be empty.', 'Please input a message first.'),
           },
         ],
       }
@@ -536,9 +442,7 @@ export default function invoiceManager() {
         this.clients = await response.json()
       } catch (error) {
         console.error('Error fetching clients:', error)
-        callError(
-          'Cannot get client. Try again, restart program or call support.',
-        )
+        callError('Cannot get client. Try again, restart program or call support.')
       }
     },
 
@@ -563,9 +467,7 @@ export default function invoiceManager() {
       }
 
       if (this.subtotal != 0) {
-        if (
-          confirm('Changing clients will erase the current invoice. Proceed?')
-        ) {
+        if (confirm('Changing clients will erase the current invoice. Proceed?')) {
           await handleClientChange()
           this.closeModal()
         }
@@ -607,10 +509,7 @@ export default function invoiceManager() {
         this.filteredStyles = this.styles
       } catch (error) {
         console.error('Error fetching styles:', error)
-        callError(
-          'Error fetching styles.',
-          'Please try again or contact support.',
-        )
+        callError('Error fetching styles.', 'Please try again or contact support.')
       }
     },
     async fetchSamples(clientId) {
@@ -651,9 +550,7 @@ export default function invoiceManager() {
         newItem.type = type
         newItem.uniqueId = uniqueId
         newItem.quantity = qty
-        newItem.price =
-          parseFloat(item.price) *
-          (type === 'sample' ? parseFloat(item.time) : 1)
+        newItem.price = parseFloat(item.price) * (type === 'sample' ? parseFloat(item.time) : 1)
 
         this.invoiceItems = [...this.invoiceItems, newItem]
       } else {
@@ -669,10 +566,7 @@ export default function invoiceManager() {
 
     removeSingleInvoiceItem(targetItem) {
       if (this.discount !== 0 || this.deposit !== 0) {
-        callError(
-          'Cannot remove item.',
-          'Please clear any existing discount/deposit first.',
-        )
+        callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
         return
       }
 
@@ -692,9 +586,7 @@ export default function invoiceManager() {
       let confirmText = 'Are you sure you want to remove this item?'
       if (!this.validator(this, 'removeItemFromInvoice')) return
       if (confirm(confirmText) === true) {
-        this.invoiceItems = this.invoiceItems.filter(
-          i => i.uniqueId !== item.uniqueId,
-        )
+        this.invoiceItems = this.invoiceItems.filter(i => i.uniqueId !== item.uniqueId)
         this.calculateTotals()
         callSuccess('Item removed', 'Successfully removed item from invoice.')
       } else {
@@ -702,10 +594,7 @@ export default function invoiceManager() {
       }
 
       if (this.subtotal < 0) {
-        callError(
-          'Cannot remove item.',
-          'Total cannot be a negative value. Check your discounts.',
-        )
+        callError('Cannot remove item.', 'Total cannot be a negative value. Check your discounts.')
         this.invoiceItems.push(item)
         this.calculateTotals()
         return
@@ -718,24 +607,15 @@ export default function invoiceManager() {
     },
     removeAllInvoiceItems() {
       if (this.discount != 0) {
-        callError(
-          'Cannot remove items.',
-          'Please clear any existing discount/deposit first.',
-        )
+        callError('Cannot remove items.', 'Please clear any existing discount/deposit first.')
         return
       }
       if (this.deposit != 0) {
-        callError(
-          'Cannot remove items.',
-          'Please clear any existing discount/deposit first.',
-        )
+        callError('Cannot remove items.', 'Please clear any existing discount/deposit first.')
         return
       }
       if (this.subtotal < 0) {
-        callError(
-          'Cannot remove item.',
-          'Total cannot be a negative value. Check your discounts.',
-        )
+        callError('Cannot remove item.', 'Total cannot be a negative value. Check your discounts.')
         return
       }
 
@@ -780,9 +660,7 @@ export default function invoiceManager() {
         return this.roundToTwo(subTotal)
       } catch (error) {
         console.error('Error calculating subtotal:', error)
-        throw new Error(
-          'Failed to calculate subtotal. Please check the input data.',
-        )
+        throw new Error('Failed to calculate subtotal. Please check the input data.')
       }
     },
 
@@ -894,10 +772,7 @@ export default function invoiceManager() {
     changeDiscount() {
       let inputFocus = this.$refs.discountInput
       if (this.discount != 0) {
-        callError(
-          'Cannot change discount type.',
-          'Reset the existing discount first.',
-        )
+        callError('Cannot change discount type.', 'Reset the existing discount first.')
         inputFocus.focus()
         return
       }
@@ -1024,16 +899,11 @@ export default function invoiceManager() {
           this.generatePDF(invoice.id)
         } else {
           console.error('Error generating invoice:', await response.json())
-          callError(
-            'Server error.',
-            'Failed to generate invoice. Try again, restart or call support.',
-          )
+          callError('Server error.', 'Failed to generate invoice. Try again, restart or call support.')
         }
       } catch (error) {
         console.error('Error generating invoice:', error)
-        callError(
-          'Unable to generate invoice. Try again, restart or contact support.',
-        )
+        callError('Unable to generate invoice. Try again, restart or contact support.')
       }
     },
 
