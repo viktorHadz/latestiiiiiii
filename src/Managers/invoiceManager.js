@@ -85,38 +85,6 @@ export default function invoiceManager() {
       this.fetchClients()
       this.loadSelectedClient()
 
-      // NEW-IDATA
-      // Items
-      const storedItems =
-        Alpine.store('invoLocalStore').load('invoiceItems') || []
-      if (Array.isArray(storedItems)) {
-        // Use array reassignment for clearer reactivity
-        this.invoiceItems = [...storedItems]
-        console.log('invoiceItems: ', this.invoiceItems)
-      }
-      // Totals
-      const storedData = Alpine.store('invoLocalStore').load('invoiceData')
-      if (storedData) {
-        this.restoreInvoiceData(storedData)
-      }
-
-      // Watchers for items and totals
-      this.$watch('invoiceItems', newItems => {
-        Alpine.store('invoLocalStore').update('invoiceItems', newItems)
-        this.calculateTotals()
-      })
-      // Now watch the entire object (buildInvoiceData) for changes
-      this.$watch(
-        () => this.buildInvoiceData(),
-        newData => {
-          console.log('Watcher totals triggered => calling calculateTotals():')
-          this.calculateTotals()
-          // update localStorage whenever any part of buildInvoiceData() changes
-          Alpine.store('invoLocalStore').update('invoiceData', newData)
-          console.log('Result: \n', newData)
-        },
-      )
-
       feather.replace()
       this.invoicingTabId = this.$id('invoicingTabId')
       this.$nextTick(() => {
@@ -125,10 +93,11 @@ export default function invoiceManager() {
         )
       })
     },
-    // NEW-IDATA
+
     buildInvoiceData() {
       return {
         // Values from your invoice state
+        invoiceItems: this.invoiceItems,
         subtotal: this.subtotal,
         staticSubtotal: this.staticSubtotal,
         vat: this.vat,
@@ -150,42 +119,6 @@ export default function invoiceManager() {
         depositDisplay: this.depositDisplay,
         invoiceNote: this.invoiceNote,
       }
-    },
-
-    restoreInvoiceData(data) {
-      // Safe merge - restores localStorage fields into Alpine state.
-      // Only restore fields that exist in stored data
-      // (This prevents overwriting defaults if a field wasn't saved)
-      if (data.subtotal !== undefined) this.subtotal = data.subtotal
-      if (data.staticSubtotal !== undefined)
-        this.staticSubtotal = data.staticSubtotal
-      if (data.vat !== undefined) this.vat = data.vat
-      if (data.vatPercent !== undefined) this.vatPercent = data.vatPercent
-      if (data.preDiscountTotal !== undefined)
-        this.preDiscountTotal = data.preDiscountTotal
-      if (data.total !== undefined) this.total = data.total
-      if (data.switchOpen !== undefined) this.switchOpen = data.switchOpen
-      if (data.isDiscountPercent !== undefined)
-        this.isDiscountPercent = data.isDiscountPercent
-      if (data.isDiscountFlat !== undefined)
-        this.isDiscountFlat = data.isDiscountFlat
-      if (data.symbol !== undefined) this.symbol = data.symbol
-      if (data.discount !== undefined) this.discount = data.discount
-      if (data.discountValue !== undefined)
-        this.discountValue = data.discountValue
-      if (data.deposit !== undefined) this.deposit = data.deposit
-      if (data.depositSymbol !== undefined)
-        this.depositSymbol = data.depositSymbol
-      if (data.depositPercent !== undefined)
-        this.depositPercent = data.depositPercent
-      if (data.depositFlat !== undefined) this.depositFlat = data.depositFlat
-      if (data.tempDeposit !== undefined) this.tempDeposit = data.tempDeposit
-      if (data.depositNumericValue !== undefined)
-        this.depositNumericValue = data.depositNumericValue
-      if (data.depositDisplay !== undefined)
-        this.depositDisplay = data.depositDisplay
-      if (data.invoiceNote !== undefined) this.invoiceNote = data.invoiceNote
-      console.log('Restored invoice data from localStorage:', data)
     },
 
     invoicingTabButtonClicked(tabButton) {
@@ -596,29 +529,6 @@ export default function invoiceManager() {
       return true
     },
 
-    /**
-
-     TO DO LIST:
-    ------------
-    Saving/Reseting/Deleting Invoice State - How will this work.
-    ---------------------------------------------------------------
-      Saving
-        1. When user adds a new item to the invoice list to keep track of invoice items and discounts
-      Reseting
-        1.
-      Deleting
-        1. When user changes clients - or should I save the user progress
-        2. When user generates an invoice - Yes
-
-    Selecting client needs to empty all totals - Or does it?
-      Check if there is any subtotal or not if not ...do not accept anything
-
-      Conditionals:
-          If user presses confirm with no input throw error toast and return
-          If user inputs negative value do not calculate
-          If user inputs negative value and presses confirm throw error
-    */
-
     /*------------------------------CLIENT FETCHING LOGIC------------------------*/
     async fetchClients() {
       try {
@@ -697,12 +607,10 @@ export default function invoiceManager() {
         this.filteredStyles = this.styles
       } catch (error) {
         console.error('Error fetching styles:', error)
-        callToast({
-          type: 'danger',
-          message: 'Error fetching styles.',
-          description: 'Please try again or contact support.',
-          position: 'top-center',
-        })
+        callError(
+          'Error fetching styles.',
+          'Please try again or contact support.',
+        )
       }
     },
     async fetchSamples(clientId) {
@@ -787,7 +695,6 @@ export default function invoiceManager() {
         this.invoiceItems = this.invoiceItems.filter(
           i => i.uniqueId !== item.uniqueId,
         )
-
         this.calculateTotals()
         callSuccess('Item removed', 'Successfully removed item from invoice.')
       } else {
@@ -921,29 +828,6 @@ export default function invoiceManager() {
       logger('!NO! discount')
     },
 
-    // MARK: DISCOUNT
-    // // Helps keep discount input value to 0
-    // handleDiscountInput(event) {
-    //   const inputValue = event.target.value
-    //   if (inputValue === '' || null) {
-    //     this.temporaryDiscount = 0
-    //   } else {
-    //     // Update discount normally based on input
-    //     this.temporaryDiscount = parseFloat(inputValue)
-    //   }
-    // },
-
-    // Calculates temporary subtotal vat and total
-    // calculateTemporaryValues() {
-    //   if (this.isDiscountPercent === true) {
-    //     this.temporarySubtotal =
-    //       this.subtotal - (this.temporaryDiscount / 100) * this.subtotal
-    //   } else if (this.isDiscountFlat === true) {
-    //     this.temporarySubtotal = this.subtotal - this.temporaryDiscount
-    //   }
-    //   this.temporaryVat = (this.vatPercent / 100) * this.temporarySubtotal
-    //   this.temporaryTotal = this.temporarySubtotal + this.temporaryVat
-    // },
     confirmDiscount() {
       let inputFocus = this.$refs.discountInput
       if (!this.validator(this, 'confirmDiscount')) {
@@ -982,95 +866,6 @@ export default function invoiceManager() {
       this.calculateTotals()
     },
 
-    // Confirm all prices to send to main screen Prices menu
-    // confirmDiscount() {
-    //   let inputFocus = this.$refs.discountInput
-    //   if (!this.validator(this, 'confirmDiscount')) {
-    //     inputFocus.focus()
-    //     return
-    //   }
-    //   let totalContainer = this.total
-    //   const confirmBtn = document.getElementById('confirm-discount')
-    //   this.preDiscountTotal = totalContainer // reference to the total before calculations
-    //   this.subtotal = this.roundToTwo(this.temporarySubtotal)
-    //   this.discount = this.roundToTwo(this.temporaryDiscount)
-    //   // MARK: Discount Value - gets the numberic value for discounts when discount === percent
-    //   if (this.isDiscountPercent === true) {
-    //     this.discountValue = (this.discValSub / 100) * this.discount
-    //   }
-    //   this.vat = this.roundToTwo(this.temporaryVat)
-    //   this.total = this.roundToTwo(this.temporaryTotal)
-    //   this.resetTemporaryDiscounts()
-
-    //   confirmBtn.classList.remove(
-    //     'bg-gray-100',
-    //     'hover:bg-gray-300',
-    //     'text-gray-950',
-    //   )
-    //   confirmBtn.classList.add(
-    //     'bg-green-500',
-    //     'text-white',
-    //     'hover:bg-green-600',
-    //   )
-    //   callSuccess('Discount applied.')
-
-    //   inputFocus.focus()
-    //   // Recalc & persist
-    //   // NEW-IDATA
-    //   this.calculateTotals()
-    //   console.log('Subtotal: ' + this.subtotal)
-    //   console.log('Vat: ' + this.vat)
-    //   console.log('Discount: ' + this.discount)
-    //   console.log('Total: ' + this.total)
-    //   console.log('Total before discount: ' + this.preDiscountTotal)
-    //   // HANDLE ERROR HERE
-    // },
-
-    // // Handlers for reseting discount
-    // resetTemporaryDiscounts() {
-    //   const discBubbleSubTotal = document.getElementById(
-    //     'subtotal-discount-buble',
-    //   )
-    //   this.temporaryDiscount = 0
-    //   this.temporarySubtotal = this.subtotal
-    //   this.temporaryVat = this.vat
-    //   this.temporaryTotal = this.total
-    //   this.showNewSubtotal = false
-    //   discBubbleSubTotal.classList.remove('line-through', 'text-gray-500')
-    //   discBubbleSubTotal.classList.add('text-slate-300')
-    // },
-    // logTemps() {
-    //   console.log('Logging Temps:')
-    //   console.log('Discount:', this.temporaryDiscount)
-    //   console.log('Subtotal', this.temporarySubtotal)
-    //   console.log('Vat', this.temporaryVat)
-    //   console.log('Total', this.temporaryTotal)
-    //   console.log('New subtotal:', this.showNewSubtotal)
-    // },
-
-    // resetDiscounts() {
-    //   const confirmBtn = document.getElementById('confirm-discount')
-
-    //   if (this.deposit != 0) {
-    //     this.resetDeposit()
-    //   }
-    //   this.discount = 0
-    //   this.resetTemporaryDiscounts()
-    //   this.temporaryVat = this.vat
-    //   this.temporaryTotal = this.total
-    //   this.discountValue = 0
-    //   this.calculateTotals()
-    //   confirmBtn.classList.remove(
-    //     'bg-green-500',
-    //     'text-white',
-    //     'hover:bg-green-600',
-    //   )
-    //   confirmBtn.classList.add(
-    //     'bg-gray-100',
-    //     'hover:bg-gray-300',
-    //     'text-gray-950',
-    //   )
-    // },
     resetDiscounts() {
       const confirmBtn = document.getElementById('confirm-discount')
 
@@ -1179,7 +974,6 @@ export default function invoiceManager() {
         style.name.toLowerCase().includes(this.styleSearch.toLowerCase()),
       )
     },
-
     searchSamples() {
       this.filteredSamples = this.samples.filter(sample =>
         sample.name.toLowerCase().includes(this.sampleSearch.toLowerCase()),

@@ -18,8 +18,6 @@ export default function stylesManager() {
     // Tab section
     pineTabSelected: '1',
     tabId: null,
-    // Invoice section for LocalStorage purposes
-    invoiceItems: [],
 
     init() {
       console.log('Initializing stylesManager')
@@ -27,12 +25,8 @@ export default function stylesManager() {
       this.loadSelectedClient()
       // Feather icons re-render
       feather.replace()
-      this.invoiceItems = Alpine.store('invoLocalStore').load('invoiceItems')
-
-      console.log('Invoice items:', this.invoiceItems)
 
       this.tabId = this.$id('tabs')
-
       // Ensure that the $refs are fully loaded before accessing them
       this.$nextTick(() => {
         this.tabRepositionMarker(this.$refs.tabButtons.firstElementChild)
@@ -82,20 +76,6 @@ export default function stylesManager() {
     },
 
     async selectClient(client) {
-      if (
-        !Alpine.store('invoLocalStore').checkEmpty('invoiceItems') ||
-        !Alpine.store('invoLocalStore').checkEmpty('invoiceData')
-      ) {
-        if (
-          confirm(
-            'There are still items in your invoice that will be deleted. Continue?',
-          )
-        ) {
-          Alpine.store('invoLocalStore').delete('invoiceItems')
-          Alpine.store('invoLocalStore').delete('invoiceData')
-        }
-      }
-
       this.selectedClient = client
       this.showDropdown = false
 
@@ -164,7 +144,7 @@ export default function stylesManager() {
         this.styles.push({ ...newStyle, isEditing: false })
         this.filteredStyles = this.styles
         this.showAddStyleModal = false
-        callSuccess('Added new style:', this.newStyle.name)
+        callSuccess('New style added:', this.newStyle.name)
         this.newStyle = { name: '', price: null } // Clear the form
       } catch (error) {
         console.error('Error adding style:', error)
@@ -184,7 +164,7 @@ export default function stylesManager() {
         this.samples.push({ ...newSample, isEditing: false })
         this.filteredSamples = this.samples
         this.showAddSampleModal = false
-        callSuccess('Added new sample:', this.newSample.name)
+        callSuccess('New sample added:', this.newSample.name)
         this.newSample = { name: '', time: null, price: null } // Clear the form
       } catch (error) {
         console.error('Error adding sample:', error)
@@ -193,25 +173,11 @@ export default function stylesManager() {
     },
 
     editStyle(style) {
-      if (
-        !Alpine.store('invoLocalStore').checkEmpty('invoiceItems') ||
-        !Alpine.store('invoLocalStore').checkEmpty('invoiceData')
-      ) {
-        callWarning('Cannot edit style', 'Please clear your invoice first.')
-        return
-      }
       style.original = { ...style } // Store original data
       style.isEditing = true
     },
 
     editSample(sample) {
-      if (
-        !Alpine.store('invoLocalStore').checkEmpty('invoiceItems') ||
-        !Alpine.store('invoLocalStore').checkEmpty('invoiceData')
-      ) {
-        callWarning('Cannot edit style', 'Please clear your invoice first.')
-        return
-      }
       sample.original = { ...sample } // Store original data
       sample.isEditing = true
       console.log('Editing sample:', sample)

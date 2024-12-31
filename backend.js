@@ -3,10 +3,10 @@ const path = require('path')
 const cors = require('cors')
 const { exec } = require('child_process') // Add this line
 
-const clientsRoutes = require('./clientsRoutes')
-const stylesRoutes = require('./stylesRoutes')
-const invoicingRoutes = require('./invoicingRoutes')
-const editorRoutes = require('./editorRoutes')
+const clientsRoutes = require('./routes/clientsRoutes')
+const stylesRoutes = require('./routes/stylesRoutes')
+const invoicingRoutes = require('./routes/invoicingRoutes')
+const editorRoutes = require('./routes/editorRoutes')
 const globalRoutes = require('./routes/globalRoutes')
 
 const connection = require('./database')
@@ -23,6 +23,9 @@ app.use(globalRoutes)
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')))
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'src')))
+app.use(express.static(path.join(__dirname, 'src/html')))
 
 // Serve index.html on the root route
 app.get('/', (req, res) => {

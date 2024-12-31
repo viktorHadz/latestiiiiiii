@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const getDb = require('./database')
+const getDb = require('../database')
 const db = getDb()
 const PDFDocument = require('pdfkit')
 const { resolve } = require('path')

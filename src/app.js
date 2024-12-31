@@ -1,9 +1,9 @@
 // import componentManager from './public/componentsLibrary/components.js';
-import clientManager from './clientManager.js'
-import stylesManager from './stylesManager.js'
-import invoiceManager from './invoiceManager.js'
-import editorManager from './editorManager.js'
-import toastManager from './toastManager.js'
+import clientManager from './Managers/clientManager.js'
+import stylesManager from './Managers/stylesManager.js'
+import invoiceManager from './Managers/invoiceManager.js'
+import editorManager from './Managers/editorManager.js'
+import toastManager from './Managers/toastManager.js'
 // TEMPLATING: Put the logic of select client into the reusable element's html using an alpine data and then just load the element. This will allow me to template
 
 // window.componentManager = componentManager()
@@ -15,12 +15,6 @@ window.callError = window.toastManager.toastError.bind(window.toastManager)
 window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager)
 window.callWarning = window.toastManager.toastWarning.bind(window.toastManager)
 window.callInfo = window.toastManager.toastInfo.bind(window.toastManager)
-
-// document.body.addEventListener('htmx:afterOnLoad', function (e) {
-//   if (e.target.matches('[hx-get="/public/images/edit-2.svg"]')) {
-//     console.log('HTMX Load Event:', e.target, e.detail)
-//   }
-// })
 
 // Create a MutationObserver to automatically process HTMX attributes
 const htmxObserver = new MutationObserver(mutationsList => {
@@ -66,32 +60,6 @@ function hasHTMXAttributes(node) {
 
 // MARK: Alpine load
 document.addEventListener('alpine:init', () => {
-  // document.body.addEventListener('htmx:afterRequest', function (e) {
-  //   console.log('HTMX Request Completed:', e.target, e.detail)
-  // })
-  // Icons called after content loaded
-
-  // Updates Localstorage
-  Alpine.store('invoLocalStore', {
-    update(key, value) {
-      localStorage.setItem(key, JSON.stringify(value))
-    },
-
-    load(key) {
-      return JSON.parse(localStorage.getItem(key)) || []
-    },
-
-    checkEmpty(key) {
-      const item = localStorage.getItem(key)
-      console.log('checking empty:', key)
-      return !item || JSON.parse(item).length === 0
-    },
-
-    delete(key) {
-      localStorage.removeItem(key)
-    },
-  })
-
   Alpine.store('svgCache', {
     svgCache: [],
 
@@ -123,7 +91,7 @@ document.addEventListener('alpine:init', () => {
 
       return { height, width }
     },
-    // Helper function to get the string only (called on the clientside)
+    // Wrapper called on the frontend
     getSvgContent(name, options = {}) {
       return this.getSvg(name, options).svg
     },
