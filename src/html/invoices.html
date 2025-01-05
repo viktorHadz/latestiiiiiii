@@ -634,10 +634,10 @@
     </div>
   </template>
   <!-- MARK: Select CLIENT MODAL -->
-  <div x-show="showClientModal" x-transition.opacity.duration.300ms class="outter-modal-overlay-blur-fixed z-50">
+  <div x-show="showClientModal" x-transition.opacity.duration.300ms class="z-50">
     <!-- Clients Modal Body -->
     <div
-      class="inner-modal-size-positioning-relative modal-bg-and-borders"
+      class="inner-modal-size-positioning-relative modal-bg-and-borders "
       @keydown.escape.window="showClientModal = false">
       <div class="p-6">
         <h2 class="modal-title mb-4">Select Client</h2>

@@ -1,27 +1,26 @@
 <div x-data="clientManager" class="relative w-full px-12 py-4 2xl:px-20">
-  <div class="mb-12 flex max-h-[20vh] justify-between align-middle">
-    <!-- Style Search Input -->
-    <div class="transition-all duration-500">
-      <input
-        type="text"
-        placeholder="Search Clients..."
-        class="srch-style transition-all duration-500"
-        x-model="clientSearch"
-        @input="searchClients"
-        x-transition />
-    </div>
-    <!-- CLIENTS CENTER TEXT -->
-    <button
-      @click="showAddClientModal = true; 
-        if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
-      @keydown.escape.window="showAddClientModal = false"
-      class="butt-style flex items-baseline justify-center">
-      <object data-feather="user-plus" class="mr-1.5 h-4 w-4"></object>
-      <span class="flex self-center">Add Client</span>
-    </button>
-  </div>
-  <!-- Clients Table -->
   <div class="table-scrollbar relative overflow-y-auto px-2 py-0" style="max-height: 80vh">
+    <div class="mb-12 flex max-h-[20vh] justify-between align-middle">
+      <div class="transition-all duration-500">
+        <input
+          type="text"
+          placeholder="Search Clients..."
+          class="srch-style transition-all duration-500"
+          x-model="clientSearch"
+          @input="searchClients"
+          x-transition />
+      </div>
+      <button
+        @click="showAddClientModal = true; 
+          if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
+        @keydown.escape.window="showAddClientModal = false"
+        class="butt-style flex items-baseline justify-center">
+        <object data-feather="user-plus" class="mr-1.5 h-4 w-4"></object>
+        <span class="flex self-center">Add Client</span>
+      </button>
+    </div>
+    <!-- Clients Table -->
+
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
       <thead class="table-head-style">
         <tr>

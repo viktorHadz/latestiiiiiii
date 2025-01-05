@@ -80,7 +80,7 @@ export default function invoiceManager() {
     invoicingTabId: null,
 
     init() {
-      console.log('Initializing invoiceManager')
+      console.log('>>---- Invoice Manager --> initialized')
 
       this.fetchClients()
       this.loadSelectedClient()

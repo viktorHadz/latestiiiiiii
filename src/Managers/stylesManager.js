@@ -20,7 +20,7 @@ export default function stylesManager() {
     tabId: null,
 
     init() {
-      console.log('Initializing stylesManager')
+      console.log('>>---- Styles Manager --> initialized')
       this.fetchClients()
       this.loadSelectedClient()
       // Feather icons re-render

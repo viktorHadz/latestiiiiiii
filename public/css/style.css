@@ -247,7 +247,7 @@ input::-webkit-inner-spin-button {
 
 /* MARK: Tab Buttons */
 .tab-button {
-  @apply transform rounded-md text-vls2 transition-all duration-300 ease-in-out;
+  @apply transform my-4 rounded-md flex text-vls2 transition-all duration-300 ease-in-out;
   @apply hover:bg-vlp2 hover:text-vls3;
   @apply active:scale-90;
 }
@@ -258,12 +258,12 @@ input::-webkit-inner-spin-button {
 
 /* Dark tab buttons */
 .dark .tab-button {
-  @apply my-4 flex flex-row items-baseline font-bold text-vds3light transition duration-300 ease-in-out;
+  @apply transform my-4 flex items-baseline font-bold text-vds3light transition duration-300 ease-in-out;
   @apply hover:bg-vdp3 hover:text-vda;
 }
 .dark .tab-button-active {
   @apply flex rounded-md bg-vdp3 text-vda2;
-  @apply hover:text-vds3light;
+  @apply hover:text-vda;
 }
 /* MARK: Tab Toggler Tabs */
 .toggler {

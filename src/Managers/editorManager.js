@@ -78,6 +78,7 @@ export default function editorManager() {
         */
     // MARK: INIT FUNC
     init() {
+      console.log('>>---- Editor Manager --> initialized')
       this.fetchClients()
       this.loadSelectedClient()
       this.fetchListById()

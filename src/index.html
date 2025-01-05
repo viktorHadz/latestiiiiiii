@@ -6,19 +6,18 @@
     <title>Invoicing</title>
     <link rel="icon" type="image/x-icon" href="/images/invoicer.ico" />
     <script src="./node_modules/feather-icons/dist/feather.min.js"></script>
+
     <link rel="stylesheet" href="/css/outputTailwind.css" />
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script src="/public/alpinejs/plugins/morph.js"></script>
   </head>
 
   <body>
-    <div x-cloak x-data="tabManager" x-init="init()" class="flex h-screen">
-      <!-- Palette below -->
-      <!-- https://coolors.co/visualizer/2d2d3b-5c757f-fe5f55-e8f0ff-f8e9e9 -->
+    <div x-cloak x-data="tabManager" class="flex h-screen">
       <!-- MARK: SIDEBAR -->
       <div
         :class="{'w-72': sideBar, 'w-16': !sideBar}"
-        class="h-screen bg-vlp transition-all duration-500 dark:bg-vdp"
+        class="h-screen flex flex-col bg-vlp transition-all duration-500 dark:bg-vdp"
         x-ref="mainSidebar"
         x-transition:enter="transition-all ease-in-out duration-500"
         x-transition:enter-start="w-16"
@@ -26,73 +25,63 @@
         x-transition:leave="transition-all ease-in-out duration-500"
         x-transition:leave-start="w-72"
         x-transition:leave-end="w-16">
-        <div class="grid h-full grid-cols-1 grid-rows-3 items-center gap-20">
-          <!-- MARK:ROW-1-ContentButtons -->
-          <div class="mt-4 grid h-full w-full grid-cols-1 grid-rows-4 place-items-center items-center">
-            <!-- CLIENTS -->
-            <button
-              @click="tabButtonClicked('clients')"
-              :class="{ 'tab-button-active': tabContentActive('clients') }"
-              class="tab-button flex items-center">
-              <div x-show="sideBar" class="flex items-center p-2">
-                <object data-feather="users" class="mr-1.5 w-4"></object>
-                <span>Clients</span>
-              </div>
-              <div x-show="!sideBar" class="p-2">
-                <object data-feather="users"></object>
-              </div>
-            </button>
-            <!-- STYLES -->
+        <!-- MARK:ROW-1-ContentButtons -->
+        <div class="flex flex-col gap-4 flex-1 items-center justify-start">
+          <!-- CLIENTS -->
+          <button
+            @click="tabButtonClicked('clients')"
+            :class="{ 'tab-button-active': tabContentActive('clients') }"
+            class="tab-button flex items-center">
+            <div x-show="sideBar" class="flex items-center p-2">
+              <object data-feather="users" class="mr-1.5 w-4"></object>
+              <span>Clients</span>
+            </div>
+            <div x-show="!sideBar" class="p-2">
+              <object data-feather="users"></object>
+            </div>
+          </button>
+          <!-- STYLES -->
 
-            <!-- INVOICES -->
-            <button
-              @click="tabButtonClicked('invoices')"
-              :class="{ 'tab-button-active': tabContentActive('invoices') }"
-              class="tab-button flex items-center">
-              <div x-show="sideBar" class="flex items-center p-2">
-                <object data-feather="file-text" class="mr-1.5 w-4"></object>
-                <span x-show="sideBar">Invoices</span>
-              </div>
-              <div x-show="!sideBar" class="p-2">
-                <object data-feather="file-text"></object>
-              </div>
-            </button>
-            <!-- EDITOR -->
-            <button
-              @click="tabButtonClicked('editor')"
-              :class="{ 'tab-button-active': tabContentActive('editor') }"
-              class="tab-button">
-              <div x-show="sideBar" class="flex items-center p-2">
-                <object data-feather="edit" class="mr-1.5 w-4"></object>
-                <span x-show="sideBar">Editor</span>
-              </div>
-              <div x-show="!sideBar" class="p-2">
-                <object data-feather="edit"></object>
-              </div>
-            </button>
-          </div>
-
-          <!-- MARK:ROW-2 Item Edits -->
-          <div class="flex flex-col items-center justify-center" x-data="itemEditor">
-            <button class="tab-button" @click="slideOverOpen = !slideOverOpen">Item Edits</button>
+          <!-- INVOICES -->
+          <button
+            @click="tabButtonClicked('invoices')"
+            :class="{ 'tab-button-active': tabContentActive('invoices') }"
+            class="tab-button flex items-center">
+            <div x-show="sideBar" class="flex items-center p-2">
+              <object data-feather="file-text" class="mr-1.5 w-4"></object>
+              <span x-show="sideBar">Invoices</span>
+            </div>
+            <div x-show="!sideBar" class="p-2">
+              <object data-feather="file-text"></object>
+            </div>
+          </button>
+          <!-- EDITOR -->
+          <button
+            @click="tabButtonClicked('editor')"
+            :class="{ 'tab-button-active': tabContentActive('editor') }"
+            class="tab-button">
+            <div x-show="sideBar" class="flex items-center p-2">
+              <object data-feather="edit" class="mr-1.5 w-4"></object>
+              <span x-show="sideBar">Editor</span>
+            </div>
+            <div x-show="!sideBar" class="p-2">
+              <object data-feather="edit"></object>
+            </div>
+          </button>
+          <div x-data="itemEditor" class="flex flex-col items-center justify-center">
             <div x-html="htmlSlideOver"></div>
           </div>
-
-          <!-- MARK:ROW-3-DarkMode -->
-          <div class="grid h-full grid-cols-1 grid-rows-2 place-items-center justify-center">
-            <!-- DARKMODE -->
-            <button @click="toggleTheme()" title="Dark mode toggle" class="tab-button p-2">
-              <object x-show="mode === 'light'" data-feather="moon"></object>
-              <object x-show="mode === 'dark'" data-feather="sun"></object>
-            </button>
-            <!-- SIDEBAR EXPANDED-->
-            <button :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'" @click="sideBarOpen()" class="tab-button p-2">
-              <object data-feather="sidebar"></object>
-            </button>
+        </div>
+        <!-- MARK:ROW-3 (Push to Bottom) -->
+        <div class="flex flex-col items-center justify-end self-end mt-auto mb-4 w-full">
+          <div x-data="themeToggler">
+            <div x-html="togglerHtml"></div>
           </div>
+          <button :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'" @click="sideBarOpen()" class="tab-button p-2">
+            <object data-feather="sidebar"></object>
+          </button>
         </div>
       </div>
-
       <!--MARK: CONTENT -->
       <div class="flex w-full flex-col overflow-auto bg-vlp3 p-6 will-change-auto dark:bg-vdp2">
         <div
@@ -121,6 +110,11 @@
     </div>
 
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
+    <!-- Storage -->
+    <script type="module" src="store/clientStore.js"></script>
+    <script type="module" src="store/globStore.js"></script>
+    <script type="module" src="store/fetcHtml.js"></script>
+    <script type="module" src="store/svgCache.js"></script>
     <script type="module" src="./app.js" defer></script>
     <!--  Alpine Plugins  -->
     <script src="/public/alpinejs/plugins/alpine-morph.js" defer></script>
@@ -128,6 +122,9 @@
     <script src="./alpinejs/plugins/persist.js" defer></script>
     <script src="./alpinejs/plugins/collapse.js" defer></script>
     <!--  Alpine Core  -->
+    <script>
+      console.log('##----------------------->Alpine to begin loading (index.html)<-----------------------##')
+    </script>
     <script src="./alpinejs/dist/cdn.min.js" defer></script>
   </body>
 </html>

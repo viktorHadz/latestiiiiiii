@@ -3,7 +3,7 @@ export default function itemEditor() {
     slideOverOpen: false, // Controls the visibility
     htmlSlideOver: '', // Holds the fetched HTML content
     async init() {
-      console.log('Item Editor Initialized')
+      console.log('[] -- component itemEditor.js -->  initialized') // Log when the component initializes  
       // IF THE CURENT TAB IS INVOICE PUT THIS AS IF
       await this.loadHtmlSlideOver() // Load HTML when the component initializes
     },
@@ -12,7 +12,6 @@ export default function itemEditor() {
         const response = await fetch('src/components/items/itemEditor.html') // Fetch the HTML file
         if (response.ok) {
           this.htmlSlideOver = await response.text() // Assign the fetched HTML to the property
-          console.log('HTML loaded:', this.htmlSlideOver)
         } else {
           throw new Error(`Failed to fetch: ${response.status}`)
         }

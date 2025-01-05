@@ -17,7 +17,10 @@ export default function toastManager() {
 
   return {
     toasts: [],
-
+    init() {
+      console.log('>>---- Toast Manager --> initialized')
+    },
+    
     // Method to add a toast with details
     addToast(toastDetail) {
       const id = 'toast-' + Math.random().toString(36).substring(2, 15)
