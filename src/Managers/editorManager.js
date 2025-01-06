@@ -29,9 +29,7 @@ export default function editorManager() {
       // Send item to styles or samples table in db
 
       this.invoiceItems.invoiceItems.push(newItem)
-      const index = this.existingItems.combinedItems.findIndex(
-        i => i.frontEndId === item.frontEndId,
-      )
+      const index = this.existingItems.combinedItems.findIndex(i => i.frontEndId === item.frontEndId)
       if (index !== -1) {
         this.existingItems.combinedItems[index].quantity = 1 // Reset quantity to default
       }
@@ -39,10 +37,9 @@ export default function editorManager() {
 
     searchItems() {
       const query = this.existingItems.searchQuery.toLowerCase()
-      this.existingItems.filteredItems =
-        this.existingItems.combinedItems.filter(item =>
-          item.name.toLowerCase().includes(query),
-        )
+      this.existingItems.filteredItems = this.existingItems.combinedItems.filter(item =>
+        item.name.toLowerCase().includes(query),
+      )
     },
 
     editing: false,
@@ -82,13 +79,10 @@ export default function editorManager() {
       this.fetchClients()
       this.loadSelectedClient()
       this.fetchListById()
-      feather.replace()
     },
 
     removeInvoiceItem(id) {
-      this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(
-        item => item.id !== id,
-      )
+      this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(item => item.id !== id)
       this.calculateTotals()
     },
     requestEditedInvoiceData() {
@@ -99,11 +93,7 @@ export default function editorManager() {
     },
     // MARK: SAVE EDIT
     saveEdit() {
-      if (
-        confirm(
-          'Saving edits cannot be undone. Are you sure you want to proceed?',
-        )
-      ) {
+      if (confirm('Saving edits cannot be undone. Are you sure you want to proceed?')) {
         // Create object to send into the backend
         const data = {
           // client info
@@ -132,10 +122,7 @@ export default function editorManager() {
         try {
           // conditionally send different types of data depending on whether editing as copy or overwrite
           if (this.editMode === 'editOverwrite') {
-            callSuccess(
-              `Invoice - ${this.initialValuesInvItems.invoice.invoice_number}`,
-              'Overwritten successfully.',
-            )
+            callSuccess(`Invoice - ${this.initialValuesInvItems.invoice.invoice_number}`, 'Overwritten successfully.')
             // Give the invoice number an altered tag
             // Give altered date too
             // renameEditedInvoice()
@@ -152,10 +139,7 @@ export default function editorManager() {
           this.editMode = ''
         } catch (error) {
           console.error('Error saving edit: ', error)
-          callError(
-            'Error saving edits.',
-            'Please call support or restart the program and try again.',
-          )
+          callError('Error saving edits.', 'Please call support or restart the program and try again.')
         }
         // If copy
       }
@@ -164,18 +148,14 @@ export default function editorManager() {
     // MARK: EDIT
     editInvoice() {
       if (this.editMode === 'editOverwrite') {
-        this.initialValuesInvItems = JSON.parse(
-          JSON.stringify(this.invoiceItems),
-        )
+        this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
         this.editing = true
         this.openEditModal = false
         callSuccess(
           `Editing invoice. Overwriting the current invoice - (${this.initialValuesInvItems.invoice.invoice_number}).`,
         )
       } else if (this.editMode === 'editCopy') {
-        this.initialValuesInvItems = JSON.parse(
-          JSON.stringify(this.invoiceItems),
-        )
+        this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
         this.editing = true
         this.openEditModal = false
         callSuccess(
@@ -190,9 +170,7 @@ export default function editorManager() {
       return new Promise(resolve => {
         if (this.editing === true) {
           if (confirm('Current edit will be lost. Continue?')) {
-            this.invoiceItems = JSON.parse(
-              JSON.stringify(this.initialValuesInvItems),
-            )
+            this.invoiceItems = JSON.parse(JSON.stringify(this.initialValuesInvItems))
             this.editing = false
             callWarning(
               `Edit canceled.`,
@@ -234,13 +212,9 @@ export default function editorManager() {
         }
       }
       try {
-        const response = await fetch(
-          `/editor/invoices/${clientId}/${invoiceId}`,
-        )
+        const response = await fetch(`/editor/invoices/${clientId}/${invoiceId}`)
         if (!response.ok) {
-          throw new Error(
-            `Error fetching incoice items: ${response.statusText}`,
-          )
+          throw new Error(`Error fetching incoice items: ${response.statusText}`)
         }
         const data = await response.json()
         this.invoiceItems = data
@@ -267,10 +241,7 @@ export default function editorManager() {
     calculateTotals() {
       let invoice = this.invoiceItems
       // Calculate subtotal by summing the price * quantity of all invoice items
-      let subtotal = invoice.invoiceItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      )
+      let subtotal = invoice.invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
       // Calculate VAT as 20% of the subtotal
       let vat = subtotal * (invoice.invoice.vat_percent / 100)
@@ -309,9 +280,7 @@ export default function editorManager() {
 
     applyEffect(item) {
       let items = this.listItems.map(itemFromList => itemFromList.id)
-      let combinedItems = this.existingItems.combinedItems.map(
-        newItem => newItem.frontEndId,
-      )
+      let combinedItems = this.existingItems.combinedItems.map(newItem => newItem.frontEndId)
 
       let itemId
       let frontEndItemId
@@ -428,10 +397,7 @@ export default function editorManager() {
         this.existingItems.filteredItems = [...combined]
       } catch (error) {
         console.error('Error fetching styles:', error)
-        callError(
-          'Error getting styles',
-          'Contact support or refresh the page and try again.',
-        )
+        callError('Error getting styles', 'Contact support or refresh the page and try again.')
       }
     },
   }

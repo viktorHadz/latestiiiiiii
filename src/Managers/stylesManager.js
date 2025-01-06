@@ -24,7 +24,6 @@ export default function stylesManager() {
       this.fetchClients()
       this.loadSelectedClient()
       // Feather icons re-render
-      feather.replace()
 
       this.tabId = this.$id('tabs')
       // Ensure that the $refs are fully loaded before accessing them
@@ -46,10 +45,7 @@ export default function stylesManager() {
     },
 
     tabContentActive(tabContent) {
-      return (
-        this.pineTabSelected ==
-        tabContent.id.replace(this.tabId + '-content-', '')
-      )
+      return this.pineTabSelected == tabContent.id.replace(this.tabId + '-content-', '')
     },
 
     tabButtonActive(tabContent) {
@@ -221,10 +217,7 @@ export default function stylesManager() {
             }
           })
           // Update localstorage with style
-          Alpine.store('invoLocalStore').update(
-            'invoiceItems',
-            this.invoiceItems,
-          )
+          Alpine.store('invoLocalStore').update('invoiceItems', this.invoiceItems)
         } else {
           console.error('Error saving style:', await response.json())
         }
@@ -259,10 +252,7 @@ export default function stylesManager() {
           })
 
           // Update localstorage with sample
-          Alpine.store('invoLocalStore').update(
-            'invoiceItems',
-            this.invoiceItems,
-          )
+          Alpine.store('invoLocalStore').update('invoiceItems', this.invoiceItems)
         } else {
           console.error('Error saving sample:', await response.json())
         }
@@ -282,13 +272,8 @@ export default function stylesManager() {
             this.filteredStyles = this.styles
 
             // Update invoiceItems in localStorage
-            this.invoiceItems = this.invoiceItems.filter(
-              item => !(item.id === styleId && item.type === 'style'),
-            )
-            Alpine.store('invoLocalStore').update(
-              'invoiceItems',
-              this.invoiceItems,
-            )
+            this.invoiceItems = this.invoiceItems.filter(item => !(item.id === styleId && item.type === 'style'))
+            Alpine.store('invoLocalStore').update('invoiceItems', this.invoiceItems)
           } else {
             console.error('Error deleting style:', await response.json())
           }
@@ -310,13 +295,8 @@ export default function stylesManager() {
             this.samples = this.samples.filter(sample => sample.id !== sampleId)
             this.filteredSamples = this.samples
 
-            this.invoiceItems = this.invoiceItems.filter(
-              item => !(item.id === sampleId && item.type === 'sample'),
-            )
-            Alpine.store('invoLocalStore').update(
-              'invoiceItems',
-              this.invoiceItems,
-            )
+            this.invoiceItems = this.invoiceItems.filter(item => !(item.id === sampleId && item.type === 'sample'))
+            Alpine.store('invoLocalStore').update('invoiceItems', this.invoiceItems)
           } else {
             console.error('Error deleting sample:', await response.json())
           }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoicing</title>
     <link rel="icon" type="image/x-icon" href="/images/invoicer.ico" />
-    <script src="./node_modules/feather-icons/dist/feather.min.js"></script>
+    <!-- <script src="./node_modules/feather-icons/dist/feather.min.js"></script> -->
 
     <link rel="stylesheet" href="/css/outputTailwind.css" />
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
@@ -17,7 +17,7 @@
       <!-- MARK: SIDEBAR -->
       <div
         :class="{'w-72': sideBar, 'w-16': !sideBar}"
-        class="h-screen flex flex-col bg-vlp transition-all duration-500 dark:bg-vdp"
+        class="flex flex-col bg-vlp transition-all duration-500 dark:bg-vdp"
         x-ref="mainSidebar"
         x-transition:enter="transition-all ease-in-out duration-500"
         x-transition:enter-start="w-16"
@@ -26,22 +26,22 @@
         x-transition:leave-start="w-72"
         x-transition:leave-end="w-16">
         <!-- MARK:ROW-1-ContentButtons -->
-        <div class="flex flex-col gap-4 flex-1 items-center justify-start">
+        <div class="flex flex-col gap-4 items-center justify-start">
           <!-- CLIENTS -->
           <button
             @click="tabButtonClicked('clients')"
             :class="{ 'tab-button-active': tabContentActive('clients') }"
             class="tab-button flex items-center">
             <div x-show="sideBar" class="flex items-center p-2">
-              <object data-feather="users" class="mr-1.5 w-4"></object>
+              <svg class="w-8 h-8 text-green-500">
+                <use href="#user-group"></use>
+              </svg>
               <span>Clients</span>
             </div>
             <div x-show="!sideBar" class="p-2">
               <object data-feather="users"></object>
             </div>
           </button>
-          <!-- STYLES -->
-
           <!-- INVOICES -->
           <button
             @click="tabButtonClicked('invoices')"
@@ -68,21 +68,26 @@
               <object data-feather="edit"></object>
             </div>
           </button>
-          <div x-data="itemEditor" class="flex flex-col items-center justify-center">
-            <div x-html="htmlSlideOver"></div>
-          </div>
         </div>
-        <!-- MARK:ROW-3 (Push to Bottom) -->
+        <!-- MARK:ROW-2--ITEMS-->
+        <div x-data="itemEditor" class="flex h-full flex-col items-center justify-center">
+          <div x-html="htmlSlideOver"></div>
+        </div>
+        <!-- MARK:ROW-3-->
         <div class="flex flex-col items-center justify-end self-end mt-auto mb-4 w-full">
-          <div x-data="themeToggler">
-            <div x-html="togglerHtml"></div>
-          </div>
+          <!-- colorTheme-->
+          <button @click="Alpine.store('colorTheme').toggleTheme()" title="Toggle theme" class="tab-button p-2">
+            <object x-show="Alpine.store('colorTheme').darkTheme" data-feather="moon" class="w-6"></object>
+            <object x-show="!Alpine.store('colorTheme').darkTheme" data-feather="sun" class="w-6"></object>
+          </button>
+
+          <!-- Sidebar Button -->
           <button :title="sideBar ? 'Close Sidebar' : 'Open Sidebar'" @click="sideBarOpen()" class="tab-button p-2">
             <object data-feather="sidebar"></object>
           </button>
         </div>
       </div>
-      <!--MARK: CONTENT -->
+      <!--MARK: VIEWS -->
       <div class="flex w-full flex-col overflow-auto bg-vlp3 p-6 will-change-auto dark:bg-vdp2">
         <div
           x-ref="tabContentContainer"
@@ -93,12 +98,53 @@
           x-transition:leave="transition ease-out duration-100 transform"
           x-transition:leave-start="opacity-100 translate-y-0"
           x-transition:leave-end="opacity-0 translate-y-20"
-          class="w-full">
-          <!-- Using htmx.process($el) to enable htmx detection on injected elements-->
-          <div x-html="globalTabContent"></div>
+          class="w-full h-full">
+          <!-- Main View -->
+          <div
+            x-show="$store.clientStore.clients.length > 0 && $store.clientStore.selectedClient !== null"
+            x-html="globalTabContent"></div>
+          <!-- Modal that pops off if no client has been selected -->
+          <div
+            x-show="$store.clientStore.showClientModal"
+            x-transition.opacity.duration.300ms
+            class="z-[99] w-full h-full place-self-center">
+            <!-- Clients Modal Body -->
+            <div
+              class="inner-modal-size-positioning-relative modal-bg-and-borders"
+              @keydown.escape.window="$store.clientStore.showClientModal = false">
+              <div class="p-6">
+                <h2 class="modal-title !text-md mb-4">Select Client</h2>
+                <div class="relative">
+                  <button
+                    x-ref="clientModalButton"
+                    @click="$store.clientStore.showDropdown = !$store.clientStore.showDropdown"
+                    :class="{ 'mb-4 w-full rounded-md inner-modal-dropdown-open': $store.clientStore.showDropdown, 'justify-center modal-dropdown flex': !$store.clientStore.showDropdown }">
+                    Clients
+                    <object data-feather="chevron-down" class="ml-2 flex h-4 w-4 items-end self-center"></object>
+                  </button>
+                  <div
+                    x-anchor.offset.5="$refs.clientModalButton"
+                    x-show="$store.clientStore.showDropdown"
+                    x-collapse.duration.500ms
+                    class="table-scrollbar modal-dropdown max-h-80 w-full overflow-auto bg-vlp dark:bg-vds2">
+                    <ul>
+                      <template x-for="client in $store.clientStore.clients" :key="client.id">
+                        <li
+                          @click="$store.clientStore.selectClient(client)"
+                          class="dark:bg-vd cursor-pointer rounded-md p-2 text-left text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
+                          x-text="client.name"></li>
+                      </template>
+                    </ul>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button @click="$store.clientStore.showClientModal = false" class="modal-btn-sec">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
       <!-- MARK: TOASTS HTMX -->
       <div
         hx-target="this"
@@ -106,15 +152,15 @@
         hx-swap="morph"
         hx-trigger="load"
         hx-get="/src/components/toast.html"></div>
-      <!--  MARK: TOASTS END  -->
     </div>
 
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <!-- Storage -->
+    <script type="module" src="store/svgCache.js"></script>
+    <script type="module" src="store/colorTheme.js"></script>
     <script type="module" src="store/clientStore.js"></script>
     <script type="module" src="store/globStore.js"></script>
     <script type="module" src="store/fetcHtml.js"></script>
-    <script type="module" src="store/svgCache.js"></script>
     <script type="module" src="./app.js" defer></script>
     <!--  Alpine Plugins  -->
     <script src="/public/alpinejs/plugins/alpine-morph.js" defer></script>

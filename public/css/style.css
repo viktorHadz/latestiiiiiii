@@ -244,8 +244,27 @@ input::-webkit-inner-spin-button {
   @apply flex items-center rounded-md border border-vds2 bg-vdp p-2 text-sm font-medium text-vds3light duration-500;
   @apply hover:border-vda hover:text-vda active:scale-95;
 }
+.icon {
+  color: #4a5568; /* Default color */
+  transition: color 0.3s ease-in-out;
 
-/* MARK: Tab Buttons */
+  .tab-button:hover & {
+    color: #2d3748; /* Hover color */
+  }
+
+  .tab-button-active & {
+    color: #ffffff; /* Active color */
+  }
+
+  .dark .tab-button:hover & {
+    color: #a0aec0; /* Dark mode hover color */
+  }
+
+  .dark .tab-button-active & {
+    color: #e2e8f0; /* Dark mode active color */
+  }
+}
+/* MARK: TAB BUTTONS */
 .tab-button {
   @apply transform my-4 rounded-md flex text-vls2 transition-all duration-300 ease-in-out;
   @apply hover:bg-vlp2 hover:text-vls3;
@@ -255,10 +274,9 @@ input::-webkit-inner-spin-button {
   @apply flex rounded-md bg-vls2 text-vla;
   @apply hover:bg-vls2 hover:text-vla;
 }
-
 /* Dark tab buttons */
 .dark .tab-button {
-  @apply transform my-4 flex items-baseline font-bold text-vds3light transition duration-300 ease-in-out;
+  @apply transform my-4 flex items-baseline text-vds3light transition duration-300 ease-in-out;
   @apply hover:bg-vdp3 hover:text-vda;
 }
 .dark .tab-button-active {
@@ -291,7 +309,6 @@ input::-webkit-inner-spin-button {
   @apply dark:text-vda;
 }
 /* Togglers Ends */
-
 /* MARK:Search Input*/
 .srch-style {
   @apply flex rounded-md border border-transparent bg-vls2 p-2 text-sm font-medium text-vlp2 transition duration-500 placeholder:text-vlp2;
@@ -310,7 +327,6 @@ input::-webkit-inner-spin-button {
   @apply hover:bg-blue-100 hover:placeholder-vls2/80 hover:ring-vls2/70;
   @apply focus:bg-blue-100 focus:placeholder-vls2/80 focus:outline-none focus:ring-vls2/70;
 }
-
 .dark .modal-input-style {
   @apply rounded-md bg-vds3neu700 p-2 text-vds placeholder-vds3light ring-1 ring-transparent transition duration-500;
   @apply hover:bg-vds2 hover:text-vds hover:placeholder-vds;
@@ -398,7 +414,7 @@ input[type='radio']:checked {
   background-color: #fea09a; /* Background color when checked */
 }
 
-/* MARK: Animations */
+/* MARK: ANIMATIONS */
 @keyframes glowEffect {
   0% {
     box-shadow: 0 0 2px 2px rgb(83, 207, 110, 0) inset; /* Start with no glow */

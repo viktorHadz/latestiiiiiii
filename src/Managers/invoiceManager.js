@@ -77,7 +77,7 @@ export default function invoiceManager() {
     hoverCardLeaveTimeout: null,
     // Tab section
     invoicingTabSelected: '1',
-    invoicingTabId: null,
+    invoicingTabId: 'taab',
 
     init() {
       console.log('>>---- Invoice Manager --> initialized')
@@ -85,11 +85,7 @@ export default function invoiceManager() {
       this.fetchClients()
       this.loadSelectedClient()
 
-      feather.replace()
       this.invoicingTabId = this.$id('invoicingTabId')
-      this.$nextTick(() => {
-        this.invoicingtabRepositionMarker(this.$refs.invoiceTabButtons.firstElementChild)
-      })
     },
 
     buildInvoiceData() {
@@ -121,15 +117,13 @@ export default function invoiceManager() {
 
     invoicingTabButtonClicked(tabButton) {
       this.invoicingTabSelected = tabButton.id.replace(this.invoicingTabId + '-', '')
-      this.invoicingtabRepositionMarker(tabButton)
+      this.tabRepositionMarker(tabButton)
     },
 
-    invoicingtabRepositionMarker(tabButton) {
-      if (this.$refs.tabMarker) {
-        this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px'
-        this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px'
-        this.$refs.tabMarker.style.left = tabButton.offsetLeft + 'px'
-      }
+    tabRepositionMarker(tabButton) {
+      this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px'
+      this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px'
+      this.$refs.tabMarker.style.left = tabButton.offsetLeft + 'px'
     },
 
     invoicingTabContentActive(tabContent) {
@@ -792,13 +786,11 @@ export default function invoiceManager() {
         this.symbol = '£'
         this.isDiscountPercent = false
         this.isDiscountFlat = true
-        this.revolveSymbol()
       }
       if (this.switchOpen === false) {
         this.symbol = '%'
         this.isDiscountPercent = true
         this.isDiscountFlat = false
-        this.revolveSymbol()
       }
       inputFocus.focus()
     },
@@ -937,3 +929,4 @@ export default function invoiceManager() {
     },
   }
 }
+document.addEventListener('DOMContentLoaded', () => {})

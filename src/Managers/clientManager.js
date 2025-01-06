@@ -5,12 +5,12 @@ export default function clientManager() {
     showAddClientModal: false,
     clientSearch: '',
     filteredClients: [],
+    showClientModal: false,
 
     async init() {
       console.log('>>---- ClientManager --> initialized')
       await this.fetchClients()
       console.log('icons replaced')
-      feather.replace()
     },
     // Search clients
     searchClients() {
@@ -75,16 +75,12 @@ export default function clientManager() {
 
     async addClient() {
       try {
-        const newClient = await this.sendRequest(
-          '/clients',
-          'POST',
-          this.newClient,
-        )
+        const newClient = await this.sendRequest('/clients', 'POST', this.newClient)
         this.clients.push({ ...newClient, isEditing: false })
         this.showAddClientModal = false
         // Clear the form
         this.newClient = { name: '', company_name: '', address: '', email: '' }
-        callsucc('Client added', 'New client added.')
+        callSuccess('Client added', 'New client added.')
       } catch (error) {
         console.error('Error adding client:', error)
         this.callError('Error adding client', 'Failed to add client.')
@@ -100,7 +96,6 @@ export default function clientManager() {
         body: JSON.stringify(body),
       })
       return await response.json()
-    },    
-
+    },
   }
 }

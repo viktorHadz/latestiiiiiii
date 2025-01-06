@@ -1,14 +1,11 @@
-import clientManager from './Managers/clientManager.js'
 import itemEditor from './components/items/itemEditor.js'
-import themeToggler from './components/toggleTheme/themeToggler.js'
+import clientManager from './Managers/clientManager.js'
 import invoiceManager from './Managers/invoiceManager.js'
 import editorManager from './Managers/editorManager.js'
 import toastManager from './Managers/toastManager.js'
 
-// window.componentManager = componentManager()
 // Initialize toastManager and assigns it to window
 window.toastManager = toastManager()
-// Bind calls to the toast manager
 window.callToast = window.toastManager.callToast.bind(window.toastManager)
 window.callError = window.toastManager.toastError.bind(window.toastManager)
 window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager)
@@ -60,68 +57,60 @@ function hasHTMXAttributes(node) {
 document.addEventListener('alpine:init', () => {
   console.log('##---- App.js --> Alpine initializes in App js')
   Alpine.data('tabManager', () => ({
-    tabSelected: Alpine.$persist(''),
-    globalTabContent: '',
-    isLoading: true, // Set initial loading state to true for animation at the start of the app
+    tabSelected: Alpine.$persist('').as('tabSelected'), // No default forced here
+    globalTabContent: Alpine.$persist('').as('globalTabContent'),
+    isLoading: true,
     svgCache: [],
-    sideBar: JSON.parse(localStorage.getItem('sideBar')) || false,
+    sideBar: Alpine.$persist(true).as('sideBar'),
 
     async init() {
-      console.log('>>!!---- Tab Manager --> initialized')
-      const store = Alpine.store('clientStore')
-      
-      const selectedClient = JSON.parse(localStorage.getItem('selectedClient'))
-      if (store.clients && store.clients.length) {
-        alert('Clients in db')
+      console.log('>>---- Tab Manager Initialized')
+
+      const clientsExist = await Alpine.store('clientStore').fetchClients()
+      const selectedClient = localStorage.getItem('selectedClient')
+      if (!clientsExist) {
+        console.warn('No clients exist. Redirecting to clients manager for creation.')
+        await this.loadTabContent('clients')
+        Alpine.store('clientStore').openClientCreationModal()
+        return
       }
+
+      // If clients exist but no client is selected
       if (!selectedClient) {
-        alert('Please select a client first')
+        console.warn('Clients available but no client selected. Opening client selection modal.')
+        await this.loadTabContent('clients')
+        Alpine.store('clientStore').openModal()
+        return
       }
-      await this.loadInitialContent()
-    },
-    loadHtml() {
-      console.log('slider opan baby')
-    },
-    sideBarOpen() {
-      this.sideBar = !this.sideBar
-      localStorage.setItem('sideBar', this.sideBar)
-    },
-    
-    async loadInitialContent() {
-      // Load initial content
-      await this.loadTabContent('clients')
-      this.isLoading = false // Enter transition
-    },
 
-    async tabButtonClicked(globalTabName) {
-      await this.changeTab(globalTabName)
-    },
+      // If a client exists and is selected, proceed normally
+      if (!this.tabSelected) {
+        await this.loadTabContent('clients')
+      } else {
+        await this.loadTabContent(this.tabSelected)
+      }
 
+      this.isLoading = false
+    },
     tabContentActive(globalTabName) {
       return this.tabSelected === globalTabName
     },
 
-    async changeTab(globalTabName) {
-      this.isLoading = true // Trigger leave transition
-
-      setTimeout(async () => {
-        await this.loadTabContent(globalTabName)
-        this.isLoading = false // Trigger enter transition
-      }, 200) // Adjust timeout to match transition duration
-    },
-
     async loadTabContent(globalTabName) {
-      const response = await fetch(`/${globalTabName}.html`)
-      const content = await response.text()
-      this.tabSelected = globalTabName
+      try {
+        const response = await fetch(`/${globalTabName}.html`)
+        const content = await response.text()
+        this.tabSelected = globalTabName // Persist tab selection
+        this.globalTabContent = content // Persist content
 
-      this.$nextTick(() => {
-        this.globalTabContent = content
         this.initTabComponent(globalTabName)
-      })
+      } catch (error) {
+        console.error(`Error loading tab content for ${globalTabName}:`, error)
+      }
     },
 
-    initTabComponent(globalTabName) {
+    async initTabComponent(globalTabName) {
+      this.isLoading = false
       if (globalTabName === 'clients') {
         Alpine.data('clientManager', clientManager)
       } else if (globalTabName === 'invoices') {
@@ -130,10 +119,28 @@ document.addEventListener('alpine:init', () => {
         Alpine.data('editorManager', editorManager)
       }
     },
+
+    sideBarOpen() {
+      this.sideBar = !this.sideBar
+    },
+
+    async tabButtonClicked(globalTabName) {
+      if (this.tabSelected !== globalTabName) {
+        await this.changeTab(globalTabName)
+      }
+    },
+
+    async changeTab(globalTabName) {
+      this.isLoading = true
+      setTimeout(async () => {
+        await this.loadTabContent(globalTabName)
+        this.isLoading = false
+      }, 200)
+    },
   }))
+  // Initialization of component managers
   Alpine.data('clientManager', clientManager)
   Alpine.data('itemEditor', itemEditor)
-  Alpine.data('themeToggler', themeToggler)
   Alpine.data('invoiceManager', invoiceManager)
   Alpine.data('editorManager', editorManager)
   Alpine.data('toastManager', toastManager)

@@ -958,8 +958,9 @@ video {
   max-height: 90%;
 }
 
-.max-h-screen {
-  max-height: 100vh;
+.max-h-fit {
+  max-height: -moz-fit-content;
+  max-height: fit-content;
 }
 
 .\!w-11\/12 {
@@ -1038,8 +1039,16 @@ video {
   width: 14rem;
 }
 
+.w-6 {
+  width: 1.5rem;
+}
+
 .w-72 {
   width: 18rem;
+}
+
+.w-8 {
+  width: 2rem;
 }
 
 .w-\[10\%\] {
@@ -1093,6 +1102,10 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-2 {
+  width: 0.5rem;
 }
 
 .max-w-72 {
@@ -1236,10 +1249,6 @@ video {
   resize: both;
 }
 
-.grid-cols-1 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
 .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1248,32 +1257,12 @@ video {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.grid-rows-3 {
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-}
-
-.grid-rows-4 {
-  grid-template-rows: repeat(4, minmax(0, 1fr));
-}
-
 .flex-row {
   flex-direction: row;
 }
 
 .flex-col {
   flex-direction: column;
-}
-
-.flex-col-reverse {
-  flex-direction: column-reverse;
-}
-
-.place-content-end {
-  place-content: end;
-}
-
-.place-items-center {
-  place-items: center;
 }
 
 .items-start {
@@ -1320,12 +1309,12 @@ video {
   gap: 0.5rem;
 }
 
-.gap-8 {
-  gap: 2rem;
-}
-
 .gap-4 {
   gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
 }
 
 .space-x-1 > :not([hidden]) ~ :not([hidden]) {
@@ -1340,10 +1329,6 @@ video {
   margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
-.place-self-end {
-  place-self: end;
-}
-
 .place-self-center {
   place-self: center;
 }
@@ -1354,10 +1339,6 @@ video {
 
 .self-center {
   align-self: center;
-}
-
-.justify-self-end {
-  justify-self: end;
 }
 
 .overflow-auto {
@@ -1761,10 +1742,6 @@ video {
 
 .align-middle {
   vertical-align: middle;
-}
-
-.align-bottom {
-  vertical-align: bottom;
 }
 
 .\!text-sm {
@@ -2672,7 +2649,29 @@ input::-webkit-inner-spin-button {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-/* MARK: Tab Buttons */
+.icon {
+  color: #4a5568;
+  /* Default color */
+  transition: color 0.3s ease-in-out;
+  .tab-button:hover & {
+    color: #2d3748;
+    /* Hover color */
+  }
+  .tab-button-active & {
+    color: #ffffff;
+    /* Active color */
+  }
+  .dark .tab-button:hover & {
+    color: #a0aec0;
+    /* Dark mode hover color */
+  }
+  .dark .tab-button-active & {
+    color: #e2e8f0;
+    /* Dark mode active color */
+  }
+}
+
+/* MARK: TAB BUTTONS */
 
 .tab-button {
   margin-top: 1rem;
@@ -2724,7 +2723,6 @@ input::-webkit-inner-spin-button {
   display: flex;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   align-items: baseline;
-  font-weight: 700;
   --tw-text-opacity: 1;
   color: rgb(163 163 163 / var(--tw-text-opacity, 1));
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
@@ -3378,7 +3376,7 @@ input[type='radio']:checked {
   /* Background color when checked */
 }
 
-/* MARK: Animations */
+/* MARK: ANIMATIONS */
 
 @keyframes glowEffect {
   0% {

@@ -1,10 +1,10 @@
-<div x-data="invoiceManager" class="relative w-full px-12 py-4 2xl:px-20">
+<div
+  x-data="invoiceManager"
+  x-init="$nextTick(() => {lucide.createIcons()})"
+  class="relative w-full px-12 py-4 2xl:px-20">
   <div class="mb-12 flex justify-between align-baseline">
     <div>
-      <button @click="openModal()" class="butt-style flex items-baseline">
-        <object data-feather="user" class="mr-1.5 h-4 w-4"></object>
-        Select Client
-      </button>
+      <button @click="openModal()" class="butt-style flex items-baseline">Select Client</button>
     </div>
     <div class="flex align-middle">
       <h3
@@ -18,7 +18,7 @@
     <div>
       <!-- MARK: TABS ALPINE -->
       <div class="relative mb-12 w-full max-w-full">
-        <div x-ref="invoiceTabButtons" class="toggler">
+        <div x-ref="tabButtons" class="toggler">
           <!-- Styles Tab Button -->
           <button
             :id="$id(invoicingTabId)"
@@ -85,8 +85,10 @@
                         <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(style, 'style'); $nextTick(() => applyEffect(`styleRowId-${style.id}`))"
-                            class="table-interaction-icon-blue mx-1 flex place-self-center"
-                            x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
+                            class="table-interaction-icon-blue mx-1 flex place-self-center">
+                            <object data-feather="users" class="mr-1.5 w-4"></object>
+                          </button>
+
                           <input
                             type="number"
                             placeholder="1"
@@ -144,8 +146,9 @@
                         <div class="flex justify-between align-middle">
                           <button
                             @click="addItemToInvoice(sample, 'sample'); $nextTick(() => applyEffect(`sampleRowId-${sample.id}`))"
-                            class="table-interaction-icon-blue flex place-self-center"
-                            x-html="$store.svgCache.getSvgContent('plus-circle.svg', {height: 18, width: 18})"></button>
+                            class="table-interaction-icon-blue flex place-self-center">
+                            <object data-feather="plus-circle" class="h-4 w-4"></object>
+                          </button>
                           <input
                             type="number"
                             placeholder="1"
@@ -214,14 +217,12 @@
                   <td class="mx-2 max-w-[5%] py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
                   <td class="round-right-border max-w-[5%] px-2 text-sm">
                     <div class="flex">
-                      <button
-                        @click="removeSingleInvoiceItem(item)"
-                        class="table-interaction-icon-red ml-4"
-                        x-html="$store.svgCache.getSvgContent('minus-circle.svg', {height: 18, width: 18})"></button>
-                      <button
-                        @click="removeItemFromInvoice(item)"
-                        class="table-interaction-icon-red ml-4"
-                        x-html="$store.svgCache.getSvgContent('x-circle.svg', {height: 18, width: 18})"></button>
+                      <button @click="removeSingleInvoiceItem(item)" class="table-interaction-icon-red ml-4">
+                        <object data-feather="minus-circle" class="h-4 w-4"></object>
+                      </button>
+                      <button @click="removeItemFromInvoice(item)" class="table-interaction-icon-red ml-4">
+                        <object data-feather="trash-2" class="h-4 w-4"></object>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -252,8 +253,9 @@
                 x-show="discount != 0"
                 x-transition.duration.300
                 @click="resetDiscounts();"
-                class="table-interaction-icon-red"
-                x-html="$store.svgCache.getSvgContent('trash-2.svg', {height: 18, width: 18})"></button>
+                class="table-interaction-icon-red">
+                <object data-feather="trash-2" class="h-4 w-4"></object>
+              </button>
             </div>
             <!-- MARK: Vat -->
             <h3 class="text-lg font-medium">
@@ -288,8 +290,9 @@
                 x-show="deposit !== 0"
                 x-transition.opacity.duration.300
                 @click="resetDeposit();"
-                class="table-interaction-icon-red"
-                x-html="$store.svgCache.getSvgContent('trash-2.svg', {height: 18, width: 18})"></button>
+                class="table-interaction-icon-red">
+                <object data-feather="trash-2" class="h-4 w-4"></object>
+              </button>
             </div>
           </div>
           <!-- MARK: DISCOUNT MODAL -->
@@ -297,8 +300,10 @@
             <div class="relative inline-block">
               <button
                 @click="popoverOpen = !popoverOpen; if(popoverOpen) $nextTick(() => $refs.discountInput.focus())"
-                class="butt-style flex gap-2 self-center"
-                x-html="$store.svgCache.getSvgContent('trending-down.svg', {height: 18, width: 18}) + 'Discount'"></button>
+                class="butt-style flex gap-2 self-center">
+                <object data-feather="trending-down" class="h-4 w-4"></object>
+                Discount
+              </button>
               <div
                 x-cloak
                 x-show="popoverOpen"
@@ -340,7 +345,7 @@
                     <div class="mb-4 flex justify-between">
                       <button
                         id="toggle-discount-btn"
-                        @click="switchOpen = !switchOpen; changeDiscount(); revolveSymbol(symbolIdDiscount)"
+                        @click="switchOpen = !switchOpen; changeDiscount(); revolveSymbol('symbolIdDiscount')"
                         :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-vla2 text-white text-sm hover:bg-vla3 transition duration-300 font-semibold'"
                         class="px-1.5 py-1 transition duration-300">
                         <svg
@@ -364,12 +369,14 @@
                         @click="confirmDiscount()"
                         x-transition
                         class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
-                        :class="discount !== 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-100 hover:bg-gray-300 text-gray-950'"
-                        x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
+                        :class="discount !== 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-100 hover:bg-gray-300 text-gray-950'">
+                        <object data-feather="check" class="h-4 w-4"></object>
+                      </button>
                       <button
                         @click="resetDiscounts()"
-                        class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700"
-                        x-html="$store.svgCache.getSvgContent('x.svg', {height: 18, width: 18})"></button>
+                        class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
+                        <object data-feather="x" class="h-4 w-4"></object>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -390,8 +397,10 @@
                 @mouseenter="(trigger === 'hover focus') ? depositOpen = true : null"
                 @click="(trigger === 'click') ? depositOpen = !depositOpen : null; if (depositOpen) { $nextTick(() => { $refs.tempDeposit.focus()}); }"
                 type="button"
-                class="butt-style flex gap-2 self-center"
-                x-html="$store.svgCache.getSvgContent('dollar-sign.svg', {height: 18, width: 18}) + 'Deposit'"></button>
+                class="butt-style flex gap-2 self-center">
+                <object data-feather="dollar-sign" class="h-4 w-4"></object>
+                Deposit
+              </button>
               <div
                 x-cloak
                 x-show="depositOpen"
@@ -453,12 +462,14 @@
                       id="confirm-deposit"
                       @click="calculateDeposit()"
                       x-transition
-                      class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
-                      x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
+                      class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
+                      <object data-feather="check" class="h-4 w-4"></object>
+                    </button>
                     <button
                       @click="depositOpen = false"
-                      class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700"
-                      x-html="$store.svgCache.getSvgContent('x.svg', {height: 18, width: 18})"></button>
+                      class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
+                      <object data-feather="x" class="h-4 w-4"></object>
+                    </button>
                   </div>
                 </div>
                 <div
@@ -553,8 +564,10 @@
                 <button
                   @click=" invoiceNoteOpen = !invoiceNoteOpen; if (invoiceNoteOpen) { $nextTick(() => { $refs.invoiceNotePopover.focus()}); }"
                   type="button"
-                  class="butt-style flex gap-2 self-center"
-                  x-html="$store.svgCache.getSvgContent('clipboard.svg', {height: 18, width: 18}) + 'Invoice Note'"></button>
+                  class="butt-style flex gap-2 self-center">
+                  <object data-feather="clipboard" class="h-4 w-4"></object>
+                  Invoicing Note
+                </button>
                 <div
                   x-cloak
                   x-show="invoiceNoteOpen"
@@ -594,8 +607,9 @@
                     <div class="flex justify-center">
                       <button
                         @click="handleMessageSubmit()"
-                        class="rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
-                        x-html="$store.svgCache.getSvgContent('check.svg', {height: 18, width: 18})"></button>
+                        class="rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
+                        <object data-feather="check" class="h-4 w-4"></object>
+                      </button>
                     </div>
                   </div>
                   <div
@@ -637,7 +651,7 @@
   <div x-show="showClientModal" x-transition.opacity.duration.300ms class="z-50">
     <!-- Clients Modal Body -->
     <div
-      class="inner-modal-size-positioning-relative modal-bg-and-borders "
+      class="inner-modal-size-positioning-relative modal-bg-and-borders"
       @keydown.escape.window="showClientModal = false">
       <div class="p-6">
         <h2 class="modal-title mb-4">Select Client</h2>
