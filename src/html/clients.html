@@ -1,13 +1,13 @@
 <div x-data="clientManager" class="relative w-full px-12 py-4 2xl:px-20">
   <!-- If no client is selected, show the selection modal -->
 
-  <div class="table-scrollbar relative overflow-y-auto px-2 py-0" style="max-height: 80vh">
+  <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 80vh">
     <div class="mb-12 flex max-h-[20vh] justify-between align-middle">
       <div class="transition-all duration-500">
         <input
           type="text"
           placeholder="Search Clients..."
-          class="srch-style transition-all duration-500"
+          class="transition-all duration-500 srch-style"
           x-model="clientSearch"
           @input="searchClients"
           x-transition />
@@ -16,8 +16,10 @@
         @click="showAddClientModal = true; 
           if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
         @keydown.escape.window="showAddClientModal = false"
-        class="butt-style flex items-baseline justify-center">
-        <object data-feather="user-plus" class="mr-1.5 h-4 w-4"></object>
+        class="flex items-baseline justify-center butt-style">
+        <svg width="16" height="16" class="mr-1.5">
+          <use href="/public/icons/icons.svg#user-plus" />
+        </svg>
         <span class="flex self-center">Add Client</span>
       </button>
     </div>
@@ -26,19 +28,19 @@
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
       <thead class="table-head-style">
         <tr>
-          <th class="max-w-1/12 hidden">ID</th>
-          <th id="sortNameClients" class="max-w-2/12 round-left-border p-2 pl-2 text-left text-lg">Name</th>
-          <th class="max-w-2/12 p-2 text-left text-base">Company Name</th>
-          <th class="max-w-2/12 p-2 text-left text-base">Address</th>
-          <th class="max-w-2/12 p-2 text-left text-base">Email</th>
-          <th class="max-w-2/12 round-right-border p-2 pr-2 text-center text-base">Actions</th>
+          <th class="hidden max-w-1/12">ID</th>
+          <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Company Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Address</th>
+          <th class="p-2 text-base text-left max-w-2/12">Email</th>
+          <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
         </tr>
       </thead>
       <tbody class="table-scrollbar table-body-style">
         <template x-for="client in filteredClients" :key="client.id">
           <tr class="border-hover-ring-efect">
             <td class="hidden" x-text="client.id"></td>
-            <td class="round-left-border p-2 text-sm">
+            <td class="p-2 text-sm round-left-border">
               <template x-if="client.isEditing">
                 <input type="text" x-model="client.name" class="table-edit-input-style" />
               </template>
@@ -70,7 +72,7 @@
                 <span x-text="client.email" class="mr-6"></span>
               </template>
             </td>
-            <td class="round-right-border text-center text-sm">
+            <td class="text-sm text-center round-right-border">
               <template x-if="client.isEditing">
                 <div class="flex items-center justify-evenly">
                   <button @click="saveClient(client)" class="table-interaction-icon-blue p-1.5">
@@ -110,13 +112,13 @@
   <div
     x-show="showAddClientModal"
     x-transition.opacity.duration.300
-    class="outter-modal-overlay-blur-fixed z-50"
+    class="z-50 outter-modal-overlay-blur-fixed"
     id="my-modal">
     <!-- Modal content -->
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div @keyup.escape="showAddClientModal = false">
         <div class="p-6">
-          <h3 class="modal-title mb-4">Add Client</h3>
+          <h3 class="mb-4 modal-title">Add Client</h3>
           <form @submit.prevent="addClient">
             <input
               x-model="newClient.name"
@@ -124,30 +126,30 @@
               name="name"
               type="text"
               placeholder="Name"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newClient.company_name"
               name="company_name"
               type="text"
               placeholder="Company Name"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newClient.address"
               name="address"
               type="text"
               placeholder="Address"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newClient.email"
               name="email"
               type="email"
               placeholder="Email"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
-            <div class="mt-2 flex justify-end gap-8">
+            <div class="flex justify-end gap-8 mt-2">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddClientModal = false" class="dark:modal-btn-sec modal-btn-sec">Close</button>
             </div>

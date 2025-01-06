@@ -1,11 +1,13 @@
-<button @click="slideOverOpen=true" class="tab-button flex justify-center items-center">
-  <div x-show="sideBar" class="flex items-center p-2">
-    <object data-feather="scissors" class="mr-1.5 w-4"></object>
-    <span x-show="sideBar">Items</span>
+<button @click="slideOverOpen=true" class="p-2 tab-button">
+  <div x-show="sideBar" class="flex items-center justify-center">
+    <svg width="22" height="22" class="mr-1.5">
+      <use href="/public/icons/icons.svg#scissors" />
+    </svg>
+    <span>Items</span>
   </div>
-  <div x-show="!sideBar" class="p-2">
-    <object data-feather="scissors" type=""></object>
-  </div>
+  <svg x-show="!sideBar" width="28" height="28">
+    <use href="/public/icons/icons.svg#scissors" />
+  </svg>
 </button>
 <div class="relative z-50 w-auto h-auto">
   <template x-if="$store.globStore.getCurrentTab()" x-teleport="body">

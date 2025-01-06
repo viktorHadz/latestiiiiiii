@@ -285,8 +285,8 @@ input::-webkit-inner-spin-button {
 }
 /* MARK: Tab Toggler Tabs */
 .toggler {
-  @apply relative inline-grid h-10 w-full select-none grid-cols-2 items-center justify-center rounded-md border border-vls text-vdp2;
-  @apply dark:border-vds2 dark:bg-vdp2 dark:text-vds;
+  @apply relative inline-grid h-10 w-full select-none grid-cols-2 items-center justify-center rounded-md border border-vls/40 text-vdp2;
+  @apply dark:bg-vdp2 dark:text-vds;
 }
 .toggler-handle-bg {
   @apply absolute inset-0 z-10 h-full w-1/2 duration-500 ease-out; /* Align within parent */

@@ -1,14 +1,16 @@
-<div
-  x-data="invoiceManager"
-  x-init="$nextTick(() => {lucide.createIcons()})"
-  class="relative w-full px-12 py-4 2xl:px-20">
-  <div class="mb-12 flex justify-between align-baseline">
+<div x-data="invoiceManager" class="relative w-full px-12 py-4 2xl:px-20">
+  <div class="inset-0 flex justify-between p-1 mb-12 align-baseline border rounded-md border-vls/40 dark:border-vls/40">
     <div>
-      <button @click="openModal()" class="butt-style flex items-baseline">Select Client</button>
+      <button @click="openModal()" class="flex items-baseline butt-style">
+        <svg width="16" height="16" class="mr-1.5">
+          <use href="/public/icons/icons.svg#select-client" />
+        </svg>
+        Select Client
+      </button>
     </div>
     <div class="flex align-middle">
       <h3
-        class="self-center text-lg font-semibold text-vls2 dark:text-vds"
+        class="self-center text-md text-vls2 dark:text-vds"
         x-text="`${selectedClient.name || 'No selected client'}`"></h3>
     </div>
   </div>
@@ -17,8 +19,8 @@
   <template x-if="selectedClient">
     <div>
       <!-- MARK: TABS ALPINE -->
-      <div class="relative mb-12 w-full max-w-full">
-        <div x-ref="tabButtons" class="toggler">
+      <div class="relative w-full max-w-full mb-12">
+        <div x-ref="tabButtons" class="mb-2 toggler">
           <!-- Styles Tab Button -->
           <button
             :id="$id(invoicingTabId)"
@@ -36,21 +38,21 @@
             Samples
           </button>
           <!-- Slider Background -->
-          <div x-ref="tabMarker" class="toggler-handle-bg z-0" x-cloak>
+          <div x-ref="tabMarker" class="z-0 toggler-handle-bg" x-cloak>
             <div class="toggler-handle-inner"></div>
           </div>
         </div>
-        <div class="relative rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
+        <div class="relative text-xs border rounded-md border-vls/40 text-vlp dark:text-vds">
           <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
-            <div class="mb-4 flex justify-between p-2 align-middle">
+            <div class="flex justify-between p-2 mb-4 align-middle">
               <!-- Selected Client's Styles Information -->
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
                   type="text"
                   placeholder="Search Styles..."
-                  class="srch-style transition-all duration-500"
+                  class="transition-all duration-500 srch-style"
                   x-model="styleSearch"
                   @input="searchStyles"
                   x-transition />
@@ -66,13 +68,13 @@
                 </button>
               </div>
             </div>
-            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 30vh">
+            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 30vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="table-head-style sticky top-0">
+                <thead class="sticky top-0 table-head-style">
                   <tr>
-                    <th class="round-left-border border-clipper border border-transparent p-2">Style Name</th>
+                    <th class="p-2 border border-transparent round-left-border border-clipper">Style Name</th>
                     <th class="text-lg">Price</th>
-                    <th class="round-right-border border-clipper px-1 text-lg">Actions</th>
+                    <th class="px-1 text-lg round-right-border border-clipper">Actions</th>
                   </tr>
                 </thead>
                 <!-- MARK: TBODY STYLES -->
@@ -85,8 +87,10 @@
                         <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(style, 'style'); $nextTick(() => applyEffect(`styleRowId-${style.id}`))"
-                            class="table-interaction-icon-blue mx-1 flex place-self-center">
-                            <object data-feather="users" class="mr-1.5 w-4"></object>
+                            class="flex mx-1 table-interaction-icon-blue place-self-center">
+                            <svg width="20" height="20">
+                              <use href="/public/icons/icons.svg#plus-circle" />
+                            </svg>
                           </button>
 
                           <input
@@ -106,13 +110,13 @@
 
           <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative" x-cloak>
             <!-- MARK: SAMPLES SECTION -->
-            <div class="mb-4 flex justify-between p-2 align-middle">
+            <div class="flex justify-between p-2 mb-4 align-middle">
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
                   type="text"
                   placeholder="Search Styles..."
-                  class="srch-style transition-all duration-500"
+                  class="transition-all duration-500 srch-style"
                   x-model="sampleSearch"
                   @input="searchSamples" />
               </div>
@@ -126,14 +130,14 @@
                 </button>
               </div>
             </div>
-            <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 30vh">
+            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 30vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="table-head-style sticky top-0">
+                <thead class="sticky top-0 table-head-style">
                   <tr>
-                    <th class="round-left-border border-clipper border border-transparent p-2">Sample Name</th>
-                    <th class="text-right text-lg">Time</th>
-                    <th class="pr-4 text-right text-lg">Price</th>
-                    <th class="round-right-border border-clipper px-1 text-lg">Actions</th>
+                    <th class="p-2 border border-transparent round-left-border border-clipper">Sample Name</th>
+                    <th class="text-lg text-right">Time</th>
+                    <th class="pr-4 text-lg text-right">Price</th>
+                    <th class="px-1 text-lg round-right-border border-clipper">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="table-body-style table-scrollbar">
@@ -146,8 +150,10 @@
                         <div class="flex justify-between align-middle">
                           <button
                             @click="addItemToInvoice(sample, 'sample'); $nextTick(() => applyEffect(`sampleRowId-${sample.id}`))"
-                            class="table-interaction-icon-blue flex place-self-center">
-                            <object data-feather="plus-circle" class="h-4 w-4"></object>
+                            class="flex table-interaction-icon-blue place-self-center">
+                            <svg width="20" height="20">
+                              <use href="/public/icons/icons.svg#plus-circle" />
+                            </svg>
                           </button>
                           <input
                             type="number"
@@ -168,14 +174,14 @@
       <!--TABS ALPINE  END-->
 
       <!-- MARK:INVOICING SECTION -->
-      <div class="mb-12 rounded-md border border-vls/80 text-xs text-vlp dark:border-vdp3 dark:text-vds">
-        <div class="mb-4 grid grid-cols-3 p-2">
+      <div class="mb-12 text-xs border rounded-md border-vls/40 text-vlp dark:border-vls/40 dark:text-vds">
+        <div class="grid grid-cols-3 p-2 mb-4">
           <!-- INVOICE ITEMS -->
           <div>
             <input
               type="text"
               placeholder="Search Invoice Items..."
-              class="srch-style transition-all duration-500"
+              class="transition-all duration-500 srch-style"
               x-model="invoiceSearchQuery" />
           </div>
           <!--  Invoice Items -->
@@ -187,9 +193,9 @@
           </div>
         </div>
         <!-- Invoice Items Table Section -->
-        <div class="table-scrollbar relative mb-2 overflow-y-auto px-2 py-0" style="max-height: 25vh">
+        <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 25vh">
           <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-            <thead class="table-head-style sticky top-0">
+            <thead class="sticky top-0 table-head-style">
               <tr>
                 <th
                   class="round-left-border border-clipper max-w-[50%] border border-transparent p-2 text-lg"
@@ -217,11 +223,15 @@
                   <td class="mx-2 max-w-[5%] py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
                   <td class="round-right-border max-w-[5%] px-2 text-sm">
                     <div class="flex">
-                      <button @click="removeSingleInvoiceItem(item)" class="table-interaction-icon-red ml-4">
-                        <object data-feather="minus-circle" class="h-4 w-4"></object>
+                      <button @click="removeSingleInvoiceItem(item)" class="ml-4 table-interaction-icon-red">
+                        <svg width="20" height="20">
+                          <use href="/public/icons/icons.svg#minus-circle" />
+                        </svg>
                       </button>
-                      <button @click="removeItemFromInvoice(item)" class="table-interaction-icon-red ml-4">
-                        <object data-feather="trash-2" class="h-4 w-4"></object>
+                      <button @click="removeItemFromInvoice(item)" class="ml-4 table-interaction-icon-red">
+                        <svg width="20" height="20">
+                          <use href="/public/icons/icons.svg#trash" />
+                        </svg>
                       </button>
                     </div>
                   </td>
@@ -233,10 +243,10 @@
       </div>
       <!-- TOTALS -->
       <div
-        class="rounded-md bg-vlp p-2 text-xs text-vls3 outline outline-1 outline-offset-8 outline-vls/80 dark:bg-vdp dark:text-vds dark:outline-vdp3">
-        <div class="grid grid-cols-4 items-end">
+        class="p-2 text-xs rounded-md bg-vlp text-vls3 outline outline-1 outline-offset-8 outline-vls/80 dark:bg-vdp dark:text-vds dark:outline-vdp3">
+        <div class="grid items-end grid-cols-4">
           <!--MARK: MAIN PRICE MENU COL 1 -->
-          <div class="flex-col self-center align-middle text-lg font-medium">
+          <div class="flex-col self-center text-lg font-medium align-middle">
             <h3>
               Subtotal:
               <span x-text="'£' + staticSubtotal"></span>
@@ -254,7 +264,9 @@
                 x-transition.duration.300
                 @click="resetDiscounts();"
                 class="table-interaction-icon-red">
-                <object data-feather="trash-2" class="h-4 w-4"></object>
+                <svg width="20" height="20">
+                  <use href="/public/icons/icons.svg#trash" />
+                </svg>
               </button>
             </div>
             <!-- MARK: Vat -->
@@ -273,7 +285,7 @@
               <h3
                 x-show="discount !== 0"
                 x-transition.duration.300
-                class="ml-1 text-vls line-through dark:text-neutral-400">
+                class="ml-1 line-through text-vls dark:text-neutral-400">
                 <span x-text="preDiscountTotal"></span>
               </h3>
             </div>
@@ -291,7 +303,9 @@
                 x-transition.opacity.duration.300
                 @click="resetDeposit();"
                 class="table-interaction-icon-red">
-                <object data-feather="trash-2" class="h-4 w-4"></object>
+                <svg width="20" height="20">
+                  <use href="/public/icons/icons.svg#trash" />
+                </svg>
               </button>
             </div>
           </div>
@@ -300,8 +314,10 @@
             <div class="relative inline-block">
               <button
                 @click="popoverOpen = !popoverOpen; if(popoverOpen) $nextTick(() => $refs.discountInput.focus())"
-                class="butt-style flex gap-2 self-center">
-                <object data-feather="trending-down" class="h-4 w-4"></object>
+                class="flex self-center gap-2 butt-style">
+                <svg width="20" height="20">
+                  <use href="/public/icons/icons.svg#trending-down" />
+                </svg>
                 Discount
               </button>
               <div
@@ -315,10 +331,10 @@
                 x-transition:leave="transition ease-in duration-145"
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 -translate-y-10"
-                class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
+                class="absolute z-10 flex flex-col items-center justify-center origin-bottom bottom-full start-1/2 -ms-32 w-52 will-change-transform">
                 <div class="modal-bg-and-borders overflow-hidden !p-6">
                   <div class="relative">
-                    <div class="mb-2 flex flex-col items-center justify-center">
+                    <div class="flex flex-col items-center justify-center mb-2">
                       <h3 class="modal-title mb-4 !text-xl">Discount</h3>
                       <!-- Input Value Discount -->
                       <div class="relative mb-2">
@@ -331,57 +347,49 @@
                           x-ref="discountInput"
                           class="modal-input-style w-full !py-2 !pl-12" />
                         <!-- PERCENT SYMBOL CONTROL WITH PADDING -->
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <span
                             x-text="symbol"
                             id="symbolIdDiscount"
                             class="text-lg text-vls2/80 hover:text-gray-200 focus:text-gray-200 dark:text-vds"></span>
                           <!-- PIPE SYMBOL CONTROL WITH MARGIN -->
-                          <span class="absolute mx-2 ml-6 h-4 border-l border-gray-300"></span>
+                          <span class="absolute h-4 mx-2 ml-6 border-l border-gray-300"></span>
                         </div>
                       </div>
                     </div>
 
-                    <div class="mb-4 flex justify-between">
+                    <div class="flex justify-between mb-4">
                       <button
                         id="toggle-discount-btn"
                         @click="switchOpen = !switchOpen; changeDiscount(); revolveSymbol('symbolIdDiscount')"
                         :class="switchOpen ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-vla2 text-white text-sm hover:bg-vla3 transition duration-300 font-semibold'"
                         class="px-1.5 py-1 transition duration-300">
-                        <svg
-                          id="rotateIcon"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="feather feather-rotate-cw">
-                          <polyline points="23 4 23 10 17 10"></polyline>
-                          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        <svg id="rotateIcon" width="20" height="20">
+                          <use href="/public/icons/icons.svg#rotate" />
                         </svg>
                       </button>
                       <button
                         id="confirm-discount"
                         @click="confirmDiscount()"
                         x-transition
-                        class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300"
+                        class="ml-4 rounded bg-vls2 dark:bg-vds2 px-1.5 py-1 text-sm font-semibold text-white dark:text-vds transition duration-300 hover:bg-gray-300"
                         :class="discount !== 0 ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-100 hover:bg-gray-300 text-gray-950'">
-                        <object data-feather="check" class="h-4 w-4"></object>
+                        <svg width="20" height="20">
+                          <use href="/public/icons/icons.svg#check" />
+                        </svg>
                       </button>
                       <button
                         @click="resetDiscounts()"
                         class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
-                        <object data-feather="x" class="h-4 w-4"></object>
+                        <svg width="20" height="20">
+                          <use href="/public/icons/icons.svg#x-mark" />
+                        </svg>
                       </button>
                     </div>
                   </div>
                 </div>
                 <div
-                  class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
+                  class="relative z-10 flex-none w-0 h-0 -mt-px border-t-8 border-e-8 border-s-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                   aria-hidden="true"></div>
                 <div
                   class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vls2 dark:border-t-vds2"
@@ -397,8 +405,10 @@
                 @mouseenter="(trigger === 'hover focus') ? depositOpen = true : null"
                 @click="(trigger === 'click') ? depositOpen = !depositOpen : null; if (depositOpen) { $nextTick(() => { $refs.tempDeposit.focus()}); }"
                 type="button"
-                class="butt-style flex gap-2 self-center">
-                <object data-feather="dollar-sign" class="h-4 w-4"></object>
+                class="flex self-center gap-2 butt-style">
+                <svg width="20" height="20">
+                  <use href="/public/icons/icons.svg#cash-bill" />
+                </svg>
                 Deposit
               </button>
               <div
@@ -412,7 +422,7 @@
                 x-transition:leave="transition ease-in duration-145"
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 -translate-y-10"
-                class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
+                class="absolute z-10 flex flex-col items-center justify-center origin-bottom bottom-full start-1/2 -ms-32 w-52 will-change-transform">
                 <div class="modal-bg-and-borders overflow-hidden !p-6">
                   <h3 class="modal-title mb-4 text-center !text-xl">Deposit</h3>
                   <div class="relative my-4">
@@ -427,35 +437,23 @@
                       :placeholder="tempDeposit === 0 ? 'Enter deposit...' : 0"
                       @input="handleDepositInput(event)" />
                     <!-- PERCENT SYMBOL CONTROL WITH PADDING -->
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <span
                         x-text="depositSymbol"
                         id="symbolIdDeposit"
                         class="text-lg text-vls2/80 hover:text-gray-200 focus:text-gray-200 dark:text-vds"></span>
                       <!-- PIPE SYMBOL CONTROL WITH MARGIN -->
-                      <span class="absolute mx-2 ml-6 h-6 border-l border-gray-300"></span>
+                      <span class="absolute h-6 mx-2 ml-6 border-l border-gray-300"></span>
                     </div>
                   </div>
-                  <div class="mb-4 flex justify-between">
+                  <div class="flex justify-between mb-4">
                     <button
                       id="toggle-deposit"
                       @click="isDepositPercent = ! isDepositPercent; handleDepositType(); revolveSymbol('symbolIdDeposit')"
                       :class="!isDepositPercent ? ' rounded bg-gray-100 text-gray-950 text-sm hover:bg-gray-300 transition duration-300 font-semibold' : ' rounded bg-vla2 text-white text-sm hover:bg-vla3 transition duration-300 font-semibold'"
                       class="px-1.5 py-1 transition duration-300">
-                      <svg
-                        id="toggle-deposit-btn"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="feather feather-rotate-cw">
-                        <polyline points="23 4 23 10 17 10"></polyline>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                      <svg id="toggle-deposit-btn" width="20" height="20">
+                        <use href="/public/icons/icons.svg#rotate" />
                       </svg>
                     </button>
                     <button
@@ -463,17 +461,21 @@
                       @click="calculateDeposit()"
                       x-transition
                       class="ml-4 rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
-                      <object data-feather="check" class="h-4 w-4"></object>
+                      <svg width="20" height="20">
+                        <use href="/public/icons/icons.svg#check" />
+                      </svg>
                     </button>
                     <button
                       @click="depositOpen = false"
                       class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
-                      <object data-feather="x" class="h-4 w-4"></object>
+                      <svg width="20" height="20">
+                        <use href="/public/icons/icons.svg#x-mark" />
+                      </svg>
                     </button>
                   </div>
                 </div>
                 <div
-                  class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-vds2"
+                  class="relative z-10 flex-none w-0 h-0 -mt-px border-t-8 border-e-8 border-s-8 border-e-transparent border-s-transparent border-t-vlp dark:border-vds2"
                   aria-hidden="true"></div>
                 <div
                   class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vls2 dark:border-t-vds2"
@@ -483,7 +485,7 @@
           </div>
 
           <!-- MARK: COL 4 NOTE PDF -->
-          <div class="flex h-full justify-between">
+          <div class="flex justify-between h-full">
             <!-- MARK: NOTE BUTTON -->
             <div>
               <div :class="invoiceNote !== '' ? 'hidden' : 'block'"></div>
@@ -494,7 +496,7 @@
                 :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'"
                 x-show="invoiceNote != ''">
                 <div
-                  class="flex align-top text-vls transition-colors duration-300 hover:fill-vls hover:text-vla dark:text-vds dark:hover:fill-vred-300 dark:hover:text-vred-300"
+                  class="flex align-top transition-colors duration-300 text-vls hover:fill-vls hover:text-vla dark:text-vds dark:hover:fill-vred-300 dark:hover:text-vred-300"
                   :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -515,7 +517,7 @@
                   </svg>
                   <button
                     @click="removeMessage()"
-                    class="fade-in-hidden fade-out-hidden flex justify-items-end text-vls transition duration-300 hover:text-vla dark:text-vred-300"
+                    class="flex transition duration-300 fade-in-hidden fade-out-hidden justify-items-end text-vls hover:text-vla dark:text-vred-300"
                     x-ref="removeBtn">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -537,17 +539,17 @@
 
                 <div
                   x-show="hoverCardHovered"
-                  class="absolute left-1/2 top-0 -z-50 mt-5 w-72 max-w-72 -translate-x-3/4 translate-y-3"
+                  class="absolute top-0 mt-5 translate-y-3 left-1/2 -z-50 w-72 max-w-72 -translate-x-3/4"
                   x-cloak>
                   <div
                     x-show="hoverCardHovered"
                     class="flex h-auto w-[full] items-start space-x-3 rounded-md border border-slate-300 bg-vlp p-4 shadow-sm dark:border-neutral-600 dark:bg-zinc-900"
                     x-transition>
-                    <div class="flex h-full w-full text-vls dark:text-vds">
+                    <div class="flex w-full h-full text-vls dark:text-vds">
                       <div class="flex items-center justify-center text-sm">
                         <p
                           x-text="invoiceNote"
-                          class="fade-in-hidden fade-out-hidden text-wrap font-normal"
+                          class="font-normal fade-in-hidden fade-out-hidden text-wrap"
                           :class="invoiceNote !== '' ? 'fade-in-visible' : 'fade-out-hidden'"
                           x-ref="noteText"
                           x-show="invoiceNote != ''"></p>
@@ -558,14 +560,16 @@
               </div>
             </div>
 
-            <div class="flex h-full flex-col items-end justify-between">
+            <div class="flex flex-col items-end justify-between h-full">
               <!-- MARK:NOTE POPOVER -->
               <div class="relative inline-block">
                 <button
                   @click=" invoiceNoteOpen = !invoiceNoteOpen; if (invoiceNoteOpen) { $nextTick(() => { $refs.invoiceNotePopover.focus()}); }"
                   type="button"
-                  class="butt-style flex gap-2 self-center">
-                  <object data-feather="clipboard" class="h-4 w-4"></object>
+                  class="flex self-center gap-2 butt-style">
+                  <svg width="20" height="20">
+                    <use href="/public/icons/icons.svg#clipboard" />
+                  </svg>
                   Invoicing Note
                 </button>
                 <div
@@ -579,7 +583,7 @@
                   x-transition:leave="transition ease-in duration-145"
                   x-transition:leave-start="opacity-100 translate-y-0"
                   x-transition:leave-end="opacity-0 -translate-y-10"
-                  class="absolute bottom-full start-1/2 z-10 -ms-32 flex w-52 origin-bottom flex-col items-center justify-center will-change-transform">
+                  class="absolute z-10 flex flex-col items-center justify-center origin-bottom bottom-full start-1/2 -ms-32 w-52 will-change-transform">
                   <div class="modal-bg-and-borders overflow-hidden !p-6">
                     <!-- TOOLTIP QUESTIONMARK -->
                     <!-- MARK: INVOICE MESSAGE -->
@@ -596,7 +600,7 @@
                         style="resize: vertical; min-height: 100px; max-height: 300px"></textarea>
                     </div>
                     <div class="mb-4">
-                      <h1 x-transition.duration.300 class="text-small mt-2 text-center text-vls dark:text-vds">
+                      <h1 x-transition.duration.300 class="mt-2 text-center text-small text-vls dark:text-vds">
                         Characters:
                         <span x-text="noteMaxLength"></span>
                         /
@@ -608,12 +612,14 @@
                       <button
                         @click="handleMessageSubmit()"
                         class="rounded bg-gray-100 px-1.5 py-1 text-sm font-semibold text-gray-950 transition duration-300 hover:bg-gray-300">
-                        <object data-feather="check" class="h-4 w-4"></object>
+                        <svg width="20" height="20" class="">
+                          <use href="/public/icons/icons.svg#check" />
+                        </svg>
                       </button>
                     </div>
                   </div>
                   <div
-                    class="relative z-10 -mt-px h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
+                    class="relative z-10 flex-none w-0 h-0 -mt-px border-t-8 border-e-8 border-s-8 border-e-transparent border-s-transparent border-t-vlp dark:border-t-zinc-900"
                     aria-hidden="true"></div>
                   <div
                     class="relative z-0 -mt-[7px] h-0 w-0 flex-none border-e-8 border-s-8 border-t-8 border-e-transparent border-s-transparent border-t-vls2 dark:border-t-vds2"
@@ -623,21 +629,10 @@
               <!-- GENERATE PDF  -->
               <div>
                 <button @click="generateInvoice" class="butt-style">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-download mr-2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  <svg width="20" height="20" class="mr-1.5">
+                    <use href="/public/icons/icons.svg#download-document" />
                   </svg>
+
                   Generate PDF
                 </button>
               </div>
@@ -654,14 +649,14 @@
       class="inner-modal-size-positioning-relative modal-bg-and-borders"
       @keydown.escape.window="showClientModal = false">
       <div class="p-6">
-        <h2 class="modal-title mb-4">Select Client</h2>
+        <h2 class="mb-4 modal-title">Select Client</h2>
         <div class="relative">
           <button
             x-ref="clientModalButton"
             @click="showDropdown = !showDropdown"
             :class="{ 'mb-4 w-full rounded-md inner-modal-dropdown-open': showDropdown, 'justify-center modal-dropdown flex': !showDropdown }">
             Clients
-            <object data-feather="chevron-down" class="ml-2 flex h-4 w-4 items-end self-center"></object>
+            <object data-feather="chevron-down" class="flex items-end self-center w-4 h-4 ml-2"></object>
           </button>
           <div
             x-anchor.offset.5="$refs.clientModalButton"
@@ -672,7 +667,7 @@
               <template x-for="client in clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
-                  class="dark:bg-vd cursor-pointer rounded-md p-2 text-left text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
+                  class="p-2 text-left rounded-md cursor-pointer dark:bg-vd text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
                   x-text="client.name"></li>
               </template>
             </ul>
@@ -685,11 +680,11 @@
     </div>
   </div>
   <!-- MARK: ADD STYLE MODAL -->
-  <div x-show="showAddStyleModal" x-transition.opacity.duration.300 class="outter-modal-overlay-blur-fixed z-50">
+  <div x-show="showAddStyleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div class="text-center" @click.outside="showAddStyleModal = false">
         <div class="p-6">
-          <h3 class="modal-title mb-4">Add Style</h3>
+          <h3 class="mb-4 modal-title">Add Style</h3>
           <form @submit.prevent="invoAddStyle">
             <input
               x-model="newStyle.name"
@@ -697,7 +692,7 @@
               name="name"
               type="text"
               placeholder="Style Name"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newStyle.price"
@@ -706,9 +701,9 @@
               min="0"
               step="0.01"
               placeholder="Price"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
-            <div class="mt-2 flex justify-end gap-8">
+            <div class="flex justify-end gap-8 mt-2">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddStyleModal = false" class="modal-btn-sec">Close</button>
             </div>
@@ -718,11 +713,11 @@
     </div>
   </div>
   <!-- MARK: ADD SAMPLE MODAL -->
-  <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="outter-modal-overlay-blur-fixed z-50">
+  <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
       <div class="text-center" @click.outside="showAddSampleModal = false">
         <div class="p-6">
-          <h3 class="modal-title mb-4">Add Sample</h3>
+          <h3 class="mb-4 modal-title">Add Sample</h3>
           <form @submit.prevent="invoAddSample">
             <input
               x-model="newSample.name"
@@ -730,7 +725,7 @@
               name="name"
               type="text"
               placeholder="Sample Name"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newSample.time"
@@ -739,7 +734,7 @@
               min="0"
               step="0.01"
               placeholder="Time (in minutes)"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
             <input
               x-model="newSample.price"
@@ -748,9 +743,9 @@
               min="0"
               step="0.01"
               placeholder="Price"
-              class="modal-input-style mb-2 w-full"
+              class="w-full mb-2 modal-input-style"
               required />
-            <div class="mt-2 flex justify-end gap-8">
+            <div class="flex justify-end gap-8 mt-2">
               <button type="submit" class="modal-btn-prim">Add</button>
               <button @click="showAddSampleModal = false" class="modal-btn-sec">Close</button>
             </div>
