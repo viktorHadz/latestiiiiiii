@@ -1,9 +1,15 @@
 export default function itemEditor() {
   return {
-    slideOverOpen: false, // Controls the visibility
+    slideOverOpen: true, // Controls the visibility
     htmlSlideOver: '', // Holds the fetched HTML content
+    currentClient: localStorage.getItem('selectedClient'),
+    styles: [],
+    samples: [],
+    editingStyles: false,
+    editingSamples: false,
+
     async init() {
-      console.log('[] -- component itemEditor.js -->  initialized') // Log when the component initializes  
+      console.log('[] -- component itemEditor.js -->  initialized') // Log when the component initializes
       // IF THE CURENT TAB IS INVOICE PUT THIS AS IF
       await this.loadHtmlSlideOver() // Load HTML when the component initializes
     },
@@ -17,6 +23,22 @@ export default function itemEditor() {
         }
       } catch (error) {
         console.error('Error loading HTML SlideOver:', error)
+      }
+    },
+    async getStyles() {
+      const client = JSON.parse(this.currentClient)
+      const response = await fetch(`/styles/client/${client.id}`)
+      if (response.ok) {
+        this.styles = await response.json()
+        console.log(this.styles)
+      }
+    },
+    async getSamples() {
+      const client = JSON.parse(this.currentClient)
+      const response = await fetch(`/samples/client/${client.id}`)
+      if (response.ok) {
+        this.samples = await response.json()
+        console.log(this.styles)
       }
     },
   }

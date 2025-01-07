@@ -98,7 +98,7 @@
                             placeholder="1"
                             x-model.number="quantities[style.id]"
                             @input="handleInvoQtySubmit(style)"
-                            class="modal-input-style flex h-6 w-12 place-self-center dark:!border dark:!border-vds2 dark:hover:!border-vds" />
+                            class="flex w-12 h-6 table-input-standard place-self-center" />
                         </div>
                       </td>
                     </tr>
@@ -382,7 +382,7 @@
                         @click="resetDiscounts()"
                         class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
                         <svg width="20" height="20">
-                          <use href="/public/icons/icons.svg#x-mark" />
+                          <use href="/public/icons/icons.svg#xmark" />
                         </svg>
                       </button>
                     </div>
@@ -469,7 +469,7 @@
                       @click="depositOpen = false"
                       class="ml-4 rounded bg-gray-600 px-1.5 py-1 text-white transition duration-300 hover:bg-gray-700">
                       <svg width="20" height="20">
-                        <use href="/public/icons/icons.svg#x-mark" />
+                        <use href="/public/icons/icons.svg#xmark" />
                       </svg>
                     </button>
                   </div>
