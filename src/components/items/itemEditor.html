@@ -69,21 +69,21 @@
                             return this.tabSelected == tabContent.id.replace(this.tabId + '-content-', '');
                           }
                         }"
-                        x-init="tabRepositionMarker($refs.tabButtons.firstElementChild);"
+                        x-init="tabRepositionMarker($refs.tabButtons.firstElementChild); $nextTick(() => { getStyles(currentClient) });"
                         class="relative w-full max-w-sm">
                         <div
                           x-ref="tabButtons"
                           class="relative inline-grid items-center justify-center w-full h-10 grid-cols-2 p-1 bg-gray-100 rounded-lg select-none text-vls3 dark:text-vdp dark:bg-vds3neu700">
                           <button
                             :id="$id(tabId)"
-                            @click="tabButtonClicked($el);"
+                            @click="tabButtonClicked($el); getStyles(currentClient)"
                             type="button"
                             class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap">
                             Styles
                           </button>
                           <button
                             :id="$id(tabId)"
-                            @click="tabButtonClicked($el);"
+                            @click="tabButtonClicked($el); getSamples(currentClient)"
                             type="button"
                             class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap">
                             Samples
@@ -146,7 +146,7 @@
                                       <button
                                         class="mr-1.5 table-interaction-icon-blue"
                                         x-show="editing"
-                                        @click="editing = false">
+                                        @click="updateStyle(style.id, style.name, style.price); editing = false">
                                         <svg width="18" height="18">
                                           <use href="/public/icons/icons.svg#check-circle" />
                                         </svg>

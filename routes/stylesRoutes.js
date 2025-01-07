@@ -110,7 +110,6 @@ router.post("/styles/bulk", (req, res) => {
       console.error("Error inserting styles in bulk", err);
       return res.status(500).json({ error: err.message });
     }
-
     // Success
     const insertedRows = this.changes;
     res.status(201).json({ message: `Successfully inserted ${insertedRows} styles.` });

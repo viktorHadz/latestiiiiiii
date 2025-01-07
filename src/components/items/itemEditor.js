@@ -41,5 +41,36 @@ export default function itemEditor() {
         console.log(this.styles)
       }
     },
+    async updateStyle(styleId, name, price) {
+     try {
+       const response = fetch(`/styles/${styleId}`, {
+         method: 'POST',
+         body: JSON.stringify({
+           name: name,
+           price: price,
+         }),
+         headers: { 'Content-Type': 'application/json' },
+       })
+       if (response.ok) {
+         console.log(response.status)
+       } else {
+        console.error('Error saving style:', await response.json())
+       }
+     } catch (error) {
+      
+     }
+    },
+
+    // router.put("/styles/:id", (req, res) => {
+    //   const { name, price } = req.body;
+    //   const styleId = req.params.id;
+
+    //   db.run("UPDATE styles SET name = ?, price = ? WHERE id = ?", [name, price, styleId], function(error) {
+    //     if (error) {
+    //       return res.status(500).send(error);
+    //     }
+    //     res.status(201).json({ message: `Style updated with ID: ${styleId}` });
+    //   });
+    // })
   }
 }
