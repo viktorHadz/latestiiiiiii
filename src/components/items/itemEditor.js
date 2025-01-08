@@ -41,36 +41,36 @@ export default function itemEditor() {
         console.log(this.styles)
       }
     },
-    async updateStyle(styleId, name, price) {
-     try {
-       const response = fetch(`/styles/${styleId}`, {
-         method: 'POST',
-         body: JSON.stringify({
-           name: name,
-           price: price,
-         }),
-         headers: { 'Content-Type': 'application/json' },
-       })
-       if (response.ok) {
-         console.log(response.status)
-       } else {
-        console.error('Error saving style:', await response.json())
-       }
-     } catch (error) {
-      
-     }
+    async updateStyle(id, name, price) {
+      // send data to the backend
+
+      const data = {
+        id: id,
+        name: name,
+        price: price,
+      }
+      console.log('Style data before update: ', data)
+      const response = await fetch(`/styles/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      })
+      console.log('StyleResponse from db: ', response)
     },
-
-    // router.put("/styles/:id", (req, res) => {
-    //   const { name, price } = req.body;
-    //   const styleId = req.params.id;
-
-    //   db.run("UPDATE styles SET name = ?, price = ? WHERE id = ?", [name, price, styleId], function(error) {
-    //     if (error) {
-    //       return res.status(500).send(error);
-    //     }
-    //     res.status(201).json({ message: `Style updated with ID: ${styleId}` });
-    //   });
-    // })
+    async updateSample(id, name, time, price) {
+      const data = {
+        id: id,
+        name: name,
+        time: time,
+        price: price,
+      }
+      
+      const response = await fetch(`/samples/${id}`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      })
+      console.log('Sample dB response: ', response)
+    },
   }
 }

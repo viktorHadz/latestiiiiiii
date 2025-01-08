@@ -225,9 +225,9 @@
                                       class="w-1/4 text-right table-input-standard" />
                                     <div x-show="editing" class="flex justify-end w-1/4 text-right">
                                       <button
-                                        class="mr-1.5 table-interaction-icon-blue"
                                         x-show="editing"
-                                        @click="editing = false">
+                                        @click="updateSample(sample.id, sample.name, sample.time, sample.price); editing = false"
+                                        class="mr-1.5 table-interaction-icon-blue">
                                         <svg width="18" height="18">
                                           <use href="/public/icons/icons.svg#check-circle" />
                                         </svg>
