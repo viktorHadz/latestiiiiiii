@@ -14,9 +14,13 @@ export default function itemEditor() {
       return this.styles.filter(style => style.name.includes(this.search))
     },
     async init() {
-      console.log('[] -- component itemEditor.js -->  initialized') // Log when the component initializes
-      // IF THE CURRENT TAB IS INVOICE PUT THIS AS IF
+      console.log('[] -- component itemEditor.js -->  initialized')
       await this.loadHtmlSlideOver() // Load HTML when the component initializes
+      if (this.currentClient === null && this.slideOverOpen === true) {
+        console.warn('No client found in localStorage. Closing slideover.')
+        this.slideOverOpen = false
+        return
+      }
     },
     async loadHtmlSlideOver() {
       try {
@@ -33,6 +37,9 @@ export default function itemEditor() {
 
     /// THIS WORKS
     async getStyles() {
+      if (this.currentClient === null) {
+        this.slideOverOpen = false
+      }
       const client = JSON.parse(this.currentClient).id
       console.log('Should be this: ', client)
       try {
@@ -47,7 +54,7 @@ export default function itemEditor() {
 
     async getSamples() {
       const client = JSON.parse(this.currentClient)
-      const response = await fetch(`/samples/client/${client.id}`)
+      const response = await fetch(`/item/samples/client/${client.id}`)
       if (response.ok) {
         this.samples = await response.json()
         console.log(this.styles)
@@ -65,7 +72,7 @@ export default function itemEditor() {
           price: parsedPrice,
         }
         console.log('Style data before update: ', data)
-        const response = await fetch(`/styles/${id}`, {
+        const response = await fetch(`/item/styles/${id}`, {
           method: 'PUT',
           body: JSON.stringify(data),
           headers: { 'Content-type': 'application/json; charset=UTF-8' },

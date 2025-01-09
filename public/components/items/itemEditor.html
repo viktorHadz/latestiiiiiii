@@ -1,14 +1,3 @@
-<button @click="slideOverOpen=true" class="p-2 tab-button">
-  <div x-show="sideBar" class="flex items-center justify-center">
-    <svg width="22" height="22" class="mr-1.5">
-      <use href="/icons/icons.svg#scissors" />
-    </svg>
-    <span>Items</span>
-  </div>
-  <svg x-show="!sideBar" width="28" height="28">
-    <use href="/icons/icons.svg#scissors" />
-  </svg>
-</button>
 <div class="relative z-50 w-auto h-auto">
   <template x-if="$store.globStore.getCurrentTab()" x-teleport="body">
     <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[99]">
@@ -98,7 +87,7 @@
                             x-ref="tabMarker"
                             class="absolute left-0 z-10 w-1/2 h-full duration-300 ease-out"
                             x-cloak>
-                            <div class="w-full h-full rounded-md shadow-sm bg-vdp"></div>
+                            <div class="w-full h-full rounded-md shadow-sm bg-gray-300 dark:bg-vdp"></div>
                           </div>
                         </div>
                         <div class="relative w-full mt-2 content">

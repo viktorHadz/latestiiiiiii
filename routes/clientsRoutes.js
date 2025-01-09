@@ -71,7 +71,7 @@ router.delete('/delete/:id', (req, res) => {
   const clientId = req.params.id
 
   // SQLite query to delete a client
-  db.run('DELETE FROM clients WHERE id = ?', [clientId], function (error) {
+  db.run(`DELETE FROM clients WHERE id = ?`, [clientId], function (error) {
     if (error) {
       console.error('Error deleting client:', error)
       return res.status(500).send(error)

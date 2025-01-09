@@ -50,6 +50,7 @@ export default function clientManager() {
     },
 
     async removeClient(clientId) {
+      console.log('ClientId: ', clientId, '\n Client: ', this.clients)
       if (confirm('Are you sure you want to remove this client?')) {
         await fetch(`/clients/delete/${clientId}`, {
           method: 'DELETE',

@@ -81,6 +81,18 @@
         </div>
         <!-- MARK:ROW-2--ITEMS-->
         <div x-data="itemEditor" class="flex flex-col items-center justify-center h-full">
+          <button @click="slideOverOpen=true" class="p-2 tab-button">
+            <div x-show="sideBar" class="flex items-center justify-center">
+              <svg width="22" height="22" class="mr-1.5">
+                <use href="/icons/icons.svg#scissors" />
+              </svg>
+              <span>Items</span>
+            </div>
+            <svg x-show="!sideBar" width="28" height="28">
+              <use href="/icons/icons.svg#scissors" />
+            </svg>
+          </button>
+
           <div x-html="htmlSlideOver"></div>
         </div>
         <!-- MARK:ROW-3-->
@@ -152,10 +164,12 @@
                   class="w-full overflow-auto table-scrollbar modal-dropdown max-h-80 bg-vlp dark:bg-vds2">
                   <ul>
                     <template x-for="client in $store.clientStore.clients" :key="client.id">
-                      <li
-                        @click="$store.clientStore.selectClient(client)"
-                        class="p-1 text-left rounded-md cursor-pointer dark:bg-vd text-vds hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
-                        x-text="client.name"></li>
+                      <div class="mb-2">
+                        <li
+                          @click="$store.clientStore.selectClient(client)"
+                          class="p-1 text-left rounded-md cursor-pointer dark:bg-vdp2 text-vds hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
+                          x-text="client.name"></li>
+                      </div>
                     </template>
                   </ul>
                 </div>
