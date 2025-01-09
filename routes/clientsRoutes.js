@@ -6,7 +6,7 @@ const db = getDb()
 router.use(express.json())
 
 // Fetch all clients
-router.get('/clients', (req, res) => {
+router.get('/get', (req, res) => {
   // SQLite query to fetch all clients
   db.all('SELECT * FROM clients', [], (error, results) => {
     if (error) {
@@ -18,7 +18,7 @@ router.get('/clients', (req, res) => {
 })
 
 // Fetch a specific client by ID
-router.get('/clients/:id', (req, res) => {
+router.get('/get/:id', (req, res) => {
   const clientId = req.params.id
   db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, result) => {
     if (error) {
@@ -29,7 +29,7 @@ router.get('/clients/:id', (req, res) => {
 })
 
 // Add a new client
-router.post('/clients', (req, res) => {
+router.post('/create', (req, res) => {
   const { name, company_name, address, email } = req.body
 
   // SQLite query to add a new client
@@ -40,15 +40,13 @@ router.post('/clients', (req, res) => {
       if (error) {
         return res.status(500).json({ error: error.message })
       }
-      res
-        .status(201)
-        .json({ id: this.lastID, name, company_name, address, email })
+      res.status(201).json({ id: this.lastID, name, company_name, address, email })
     },
   )
 })
 
 // Update an existing client
-router.put('/clients/:id', (req, res) => {
+router.put('/update/:id', (req, res) => {
   const { name, company_name, address, email } = req.body
   const clientId = req.params.id
 
@@ -69,7 +67,7 @@ router.put('/clients/:id', (req, res) => {
 })
 
 // Delete a client
-router.delete('/clients/:id', (req, res) => {
+router.delete('/delete/:id', (req, res) => {
   const clientId = req.params.id
 
   // SQLite query to delete a client

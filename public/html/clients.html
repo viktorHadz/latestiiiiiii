@@ -1,0 +1,163 @@
+<div x-data="clientManager" class="relative w-full px-12 py-4 2xl:px-20">
+  <!-- If no client is selected, show the selection modal -->
+
+  <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 80vh">
+    <div class="mb-12 flex max-h-[20vh] justify-between align-middle">
+      <div class="transition-all duration-500">
+        <input
+          type="text"
+          placeholder="Search Clients..."
+          class="transition-all duration-500 srch-style"
+          x-model="clientSearch"
+          @input="searchClients"
+          x-transition />
+      </div>
+      <button
+        @click="showAddClientModal = true; 
+          if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
+        @keydown.escape.window="showAddClientModal = false"
+        class="flex items-baseline justify-center butt-style">
+        <svg width="16" height="16" class="mr-1.5">
+          <use href="/icons/icons.svg#user-plus" />
+        </svg>
+        <span class="flex self-center">Add Client</span>
+      </button>
+    </div>
+    <!-- Clients Table -->
+
+    <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
+      <thead class="table-head-style">
+        <tr>
+          <th class="hidden max-w-1/12">ID</th>
+          <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Company Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Address</th>
+          <th class="p-2 text-base text-left max-w-2/12">Email</th>
+          <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="table-scrollbar table-body-style">
+        <template x-for="client in filteredClients" :key="client.id">
+          <tr class="border-hover-ring-efect">
+            <td class="hidden" x-text="client.id"></td>
+            <td class="p-2 text-sm round-left-border">
+              <template x-if="client.isEditing">
+                <input type="text" x-model="client.name" class="table-edit-input-style" />
+              </template>
+              <template x-if="!client.isEditing">
+                <span x-text="client.name" class="mr-6"></span>
+              </template>
+            </td>
+            <td class="p-2 text-sm">
+              <template x-if="client.isEditing">
+                <input type="text" x-model="client.company_name" class="table-edit-input-style" />
+              </template>
+              <template x-if="!client.isEditing">
+                <span x-text="client.company_name" class="mr-6"></span>
+              </template>
+            </td>
+            <td class="p-2 text-sm">
+              <template x-if="client.isEditing">
+                <input type="text" x-model="client.address" class="table-edit-input-style" />
+              </template>
+              <template x-if="!client.isEditing">
+                <span x-text="client.address" class="mr-6"></span>
+              </template>
+            </td>
+            <td class="p-2 text-sm">
+              <template x-if="client.isEditing">
+                <input type="text" x-model="client.email" class="table-edit-input-style" />
+              </template>
+              <template x-if="!client.isEditing">
+                <span x-text="client.email" class="mr-6"></span>
+              </template>
+            </td>
+            <td class="text-sm text-center round-right-border">
+              <template x-if="client.isEditing">
+                <div class="flex items-center justify-evenly">
+                  <button @click="updateClient(client)" class="table-interaction-icon-blue p-1.5">
+                    <svg width="20" height="20" class="">
+                      <use href="/icons/icons.svg#check-circle" />
+                    </svg>
+                  </button>
+                  <button
+                    class="table-interaction-icon-red flex items-center justify-center p-1.5"
+                    @click="cancelEdit(client)"
+                    class="table-interaction-icon-red p-1.5">
+                    <svg width="20" height="20" class="">
+                      <use href="/icons/icons.svg#xmark-circle" />
+                    </svg>
+                  </button>
+                </div>
+              </template>
+              <template x-if="!client.isEditing">
+                <div class="flex items-center justify-evenly">
+                  <button @click="editClient(client)" class="table-interaction-icon-blue p-1.5">
+                    <svg width="20" height="20" class="">
+                      <use href="/icons/icons.svg#pencil" />
+                    </svg>
+                  </button>
+                  <button @click="removeClient(client.id)" class="table-interaction-icon-red p-1.5">
+                    <svg width="20" height="20" class="">
+                      <use href="/icons/icons.svg#trash" />
+                    </svg>
+                  </button>
+                </div>
+              </template>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+  <!-- MARK: ADD CLIENT MODAL -->
+  <div
+    x-show="showAddClientModal"
+    x-transition.opacity.duration.300
+    class="z-50 outter-modal-overlay-blur-fixed"
+    id="my-modal">
+    <!-- Modal content -->
+    <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
+      <div @keyup.escape="showAddClientModal = false">
+        <div class="p-6">
+          <h3 class="mb-4 modal-title">Add Client</h3>
+          <form @submit.prevent="addClient">
+            <input
+              x-model="newClient.name"
+              x-ref="addNewClientName"
+              name="name"
+              type="text"
+              placeholder="Name"
+              class="w-full mb-2 modal-input-style"
+              required />
+            <input
+              x-model="newClient.company_name"
+              name="company_name"
+              type="text"
+              placeholder="Company Name"
+              class="w-full mb-2 modal-input-style"
+              required />
+            <input
+              x-model="newClient.address"
+              name="address"
+              type="text"
+              placeholder="Address"
+              class="w-full mb-2 modal-input-style"
+              required />
+            <input
+              x-model="newClient.email"
+              name="email"
+              type="email"
+              placeholder="Email"
+              class="w-full mb-2 modal-input-style"
+              required />
+            <div class="flex justify-end gap-8 mt-2">
+              <button type="submit" class="modal-btn-prim">Add</button>
+              <button @click="showAddClientModal = false" class="dark:modal-btn-sec modal-btn-sec">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

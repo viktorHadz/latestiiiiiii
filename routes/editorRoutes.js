@@ -26,27 +26,22 @@ For this I need routes:
 // 2. Get invoices by client id
 router.get('/editor/invoices/:clientId', (req, res) => {
   const clientId = req.params.clientId
-  const dbQueryInvoices =
-    'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
+  const dbQueryInvoices = 'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
   const dbQueryClient = 'SELECT name, address FROM clients WHERE id = ?'
 
   db.get(dbQueryClient, [clientId], (err, clientDetails) => {
     if (err) {
-      res
-        .status(500)
-        .json({
-          error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}`,
-        })
+      res.status(500).json({
+        error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}`,
+      })
       return
     }
 
     db.all(dbQueryInvoices, [clientId], (err, invoiceDetails) => {
       if (err) {
-        res
-          .status(500)
-          .json({
-            error: `Couldn't fetch invoices for client ${clientId}. Status: ${err.message}`,
-          })
+        res.status(500).json({
+          error: `Couldn't fetch invoices for client ${clientId}. Status: ${err.message}`,
+        })
         return
       }
       const listData = invoiceDetails.map(invoice => ({
@@ -70,9 +65,7 @@ router.get('/editor/invoices/:clientId/:invoiceId', (req, res) => {
 
   db.get(clientsQuery, [clientId], (err, client) => {
     if (err) {
-      res
-        .status(500)
-        .json({ error: `Issue with client details. Status: ${err.message}` })
+      res.status(500).json({ error: `Issue with client details. Status: ${err.message}` })
       return
     }
     if (!client) {
@@ -85,11 +78,9 @@ router.get('/editor/invoices/:clientId/:invoiceId', (req, res) => {
     const invoiceQuery = 'SELECT * FROM invoices WHERE id = ? AND client_id = ?'
     db.get(invoiceQuery, [invoiceId, clientId], (err, invoice) => {
       if (err) {
-        res
-          .status(500)
-          .json({
-            error: `Error in route while getting items from invoices with client id and invoice id. Status: ${err.message}`,
-          })
+        res.status(500).json({
+          error: `Error in route while getting items from invoices with client id and invoice id. Status: ${err.message}`,
+        })
         return
       }
       if (!invoice) {
@@ -101,11 +92,9 @@ router.get('/editor/invoices/:clientId/:invoiceId', (req, res) => {
       const itemsQuery = 'SELECT * FROM invoice_items WHERE invoice_id = ?'
       db.all(itemsQuery, [invoiceId], (err, items) => {
         if (err) {
-          res
-            .status(500)
-            .json({
-              error: `Error in route while getting items from invoice_items. Status: ${err.message}`,
-            })
+          res.status(500).json({
+            error: `Error in route while getting items from invoice_items. Status: ${err.message}`,
+          })
           return
         }
 
@@ -121,31 +110,23 @@ router.get('/editor/invoices/:clientId/:invoiceId', (req, res) => {
 // Fetch styles for a specific client
 router.get('/api/styles/client/:clientId', (req, res) => {
   const clientId = req.params.clientId
-  db.all(
-    'SELECT * FROM styles WHERE client_id = ?',
-    [clientId],
-    (error, results) => {
-      if (error) {
-        return res.status(500).send({ error: 'Error fetching styles' })
-      }
-      res.json(results)
-    },
-  )
+  db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (error, results) => {
+    if (error) {
+      return res.status(500).send({ error: 'Error fetching styles' })
+    }
+    res.json(results)
+  })
 })
 
 // Fetch samples for a specific client
-router.get('/api/samples/client/:clientId', (req, res) => {
+router.get('/api/items/client/:clientId', (req, res) => {
   const clientId = req.params.clientId
-  db.all(
-    'SELECT * FROM samples WHERE client_id = ?',
-    [clientId],
-    (error, results) => {
-      if (error) {
-        return res.status(500).send({ error: 'Error fetching samples' })
-      }
-      res.json(results)
-    },
-  )
+  db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (error, results) => {
+    if (error) {
+      return res.status(500).send({ error: 'Error fetching samples' })
+    }
+    res.json(results)
+  })
 })
 
 // 2. Get invoices by client id

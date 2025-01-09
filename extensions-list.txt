@@ -4,14 +4,9 @@ bradlc.vscode-tailwindcss
 christian-kohler.npm-intellisense
 divyamrit.alpine-snippets
 donjayamanne.githistory
-dunstontc.vscode-go-syntax
-dzhavat.bracket-pair-toggler
-eamodio.gitlens
 ecmel.vscode-html-css
 emmanuelbeziat.vscode-great-icons
 esbenp.prettier-vscode
-golang.go
-mechatroner.rainbow-csv
 mohsen1.prettify-json
 natizyskunk.sftp
 otovo-oss.htmx-tags
