@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require('path')
+const createDbBackup = require('./backupScript')
 
 const clientsRoutes = require('./routes/clientsRoutes')
 const invoicingRoutes = require('./routes/invoicingRoutes')
@@ -23,6 +24,7 @@ app.use('/item', itemRoutes)
 app.use(globalRoutes)
 
 app.listen(port, () => {
+  createDbBackup()
   console.log(`Server running on http://localhost:${port}`)
 })
 // const express = require('express')
