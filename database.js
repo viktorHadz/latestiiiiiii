@@ -48,7 +48,7 @@ function getDb() {
           date TEXT,
           deposit_flat,
           deposit_percent,
-          FOREIGN KEY (client_id) REFERENCES clients(id)
+          FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
         )`)
 
         db.run(`CREATE TABLE IF NOT EXISTS invoice_items (

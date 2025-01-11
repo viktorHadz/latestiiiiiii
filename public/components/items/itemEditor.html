@@ -1,6 +1,6 @@
 <div class="relative z-50 w-auto h-auto">
   <template x-if="$store.globStore.getCurrentTab()" x-teleport="body">
-    <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[99]">
+    <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[60]">
       <div
         x-show="slideOverOpen"
         x-transition.opacity.duration.600ms
@@ -17,10 +17,10 @@
               x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
               x-transition:leave-start="translate-x-0"
               x-transition:leave-end="translate-x-full"
-              class="w-screen max-w-lg">
+              class="w-screen max-w-xl">
               <div
                 class="flex flex-col h-full py-5 overflow-y-scroll bg-white border-l shadow-lg dark:bg-vdp2 border-neutral-100/70 dark:border-vds2/70 px-4">
-                <div class="">
+                <div>
                   <h2 class="text-2xl pb-6 leading-6 text-center text-gray-900 dark:text-vds" id="slide-over-title">
                     Edit & Remove Items
                   </h2>
@@ -65,7 +65,7 @@
                           }
                         }"
                         x-init="tabRepositionMarker($refs.tabButtons.firstElementChild); $nextTick(() => { getStyles(currentClient) });"
-                        class="relative w-full max-w-md">
+                        class="relative w-full max-w-lg">
                         <div
                           x-ref="tabButtons"
                           class="relative inline-grid items-center justify-center w-full h-10 grid-cols-2 p-1 bg-gray-100 rounded-lg select-none text-vls3 dark:text-vds dark:bg-vds3neu700">
@@ -106,7 +106,10 @@
                                   <div class="flex py-2" x-data="{editing: false}">
                                     <!-- Preview -->
                                     <div x-show="!editing" x-text="style.name" class="w-2/4 text-left"></div>
-                                    <div x-show="!editing" x-text="'£' + style.price" class="w-1/4 text-right"></div>
+                                    <div
+                                      x-show="!editing"
+                                      x-text="Alpine.store('price').displayPrice(style.price)"
+                                      class="w-1/4 text-right"></div>
                                     <div x-show="!editing" class="flex justify-end w-1/4 text-right">
                                       <button
                                         class="mr-1.5 table-interaction-icon-blue flex"
@@ -116,7 +119,10 @@
                                           <use href="/icons/icons.svg#pencil" />
                                         </svg>
                                       </button>
-                                      <button class="table-interaction-icon-red" x-show="!editing">
+                                      <button
+                                        class="table-interaction-icon-red"
+                                        @click="deleteStyle(style.id)"
+                                        x-show="!editing">
                                         <svg width="18" height="18">
                                           <use href="/icons/icons.svg#trash" />
                                         </svg>
@@ -135,7 +141,10 @@
                                       x-model.number="style.price"
                                       :id="'style-price-' + style.id"
                                       :name="'style-price-' + style.id"
-                                      class="w-[25%] text-right table-input-standard" />
+                                      type="number"
+                                      class="w-[25%] text-right table-input-standard"
+                                      @input="Alpine.store('price').validate(style.price)"
+                                      @blur="style.price = Alpine.store('price').roundToTwo(style.price)" />
                                     <div x-show="editing" class="flex justify-end w-1/4 text-right">
                                       <button
                                         class="mr-1.5 table-interaction-icon-blue"
@@ -167,7 +176,7 @@
                             <div
                               class="p-2 border rounded-lg shadow-sm border-vls dark:border-vds/50 bg-card text-vls3 dark:text-vds">
                               <div class="flex justify-between">
-                                <span class="w-1/4">Name</span>
+                                <span class="w-1/2">Name</span>
                                 <span class="w-1/4 text-right">
                                   Time
                                   <span class="text-xs">(min)</span>
@@ -176,13 +185,16 @@
                                 <span class="w-1/4 text-right">Actions</span>
                               </div>
                               <hr class="opacity-35" />
-                              <template x-for="sample in samples" :key="sample.id">
+                              <template x-for="sample in searchFilterSample" :key="sample.id">
                                 <div>
                                   <div class="flex w-full py-2" x-data="{editing: false}">
                                     <!-- Preview -->
-                                    <div x-show="!editing" x-text="sample.name" class="w-1/4 text-left"></div>
+                                    <div x-show="!editing" x-text="sample.name" class="w-1/2 text-left"></div>
                                     <div x-show="!editing" x-text="sample.time" class="w-1/4 text-right"></div>
-                                    <div x-show="!editing" x-text="'£' + sample.price" class="w-1/4 text-right"></div>
+                                    <div
+                                      x-show="!editing"
+                                      x-text="Alpine.store('price').displayPrice(sample.price)"
+                                      class="w-1/4 text-right"></div>
                                     <div x-show="!editing" class="flex justify-end w-1/4 text-right">
                                       <button
                                         class="mr-1.5 table-interaction-icon-blue flex"
@@ -192,7 +204,10 @@
                                           <use href="/icons/icons.svg#pencil" />
                                         </svg>
                                       </button>
-                                      <button class="table-interaction-icon-red" x-show="!editing">
+                                      <button
+                                        class="table-interaction-icon-red"
+                                        x-show="!editing"
+                                        @click="deleteSample(sample.id)">
                                         <svg width="18" height="18">
                                           <use href="/icons/icons.svg#trash" />
                                         </svg>
@@ -211,24 +226,30 @@
                                       x-model.number="sample.time"
                                       :id="'sample-time-id-' + sample.id"
                                       :name="'sample-time-' + sample.id"
-                                      class="w-[15%] mr-2 flex justify-self-end table-input-standard" />
+                                      type="number"
+                                      class="w-[15%] mr-2 flex justify-self-end table-input-standard"
+                                      @input="Alpine.store('price').validate(sample.time)"
+                                      @blur="sample.time = Alpine.store('price').roundToTwo(sample.time)" />
                                     <input
                                       x-show="editing"
                                       x-model.number="sample.price"
                                       :id="'sample-price-id-' + sample.id"
                                       :name="'sample-price-' + sample.id"
-                                      class="w-1/4 text-right table-input-standard" />
+                                      class="w-1/4 text-right table-input-standard"
+                                      type="number"
+                                      @input="Alpine.store('price').validate(sample.price)"
+                                      @blur="sample.price = Alpine.store('price').roundToTwo(sample.price)" />
                                     <div x-show="editing" class="flex">
                                       <button
                                         x-show="editing"
                                         @click="updateSample(sample.name, sample.time, sample.price, sample.id); if(editingSampOrStyle === 'passed') {editing=false; editingSampOrStyle = 'static'} "
-                                        class="mr-1.5 table-interaction-icon-blue dark:!text-vds3light">
+                                        class="mr-1.5 table-interaction-icon-blue dark:!text-vds">
                                         <svg width="20" height="20">
                                           <use href="/icons/icons.svg#check-circle" />
                                         </svg>
                                       </button>
                                       <button
-                                        class="table-interaction-icon-red dark:!text-vds3light"
+                                        class="table-interaction-icon-red dark:!text-vds"
                                         x-show="editing"
                                         @click="editing = false">
                                         <svg width="20" height="20">
