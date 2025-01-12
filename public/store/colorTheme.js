@@ -2,7 +2,7 @@ document.addEventListener('alpine:init', () => {
   Alpine.store('colorTheme', {
     darkTheme: localStorage.getItem('darkTheme') === 'true', // Load the theme from localStorage
     async init() {
-      console.log('00--> ColorTheme store initialized')
+      console.log('1. ##STORE## ColorTheme.js-"initializing":\n ')
       document.documentElement.classList.toggle('dark', this.darkTheme)
     },
     toggleTheme() {

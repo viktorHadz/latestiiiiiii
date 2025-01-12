@@ -498,7 +498,7 @@ export default function invoiceManager() {
 
     async fetchStyles(clientId) {
       try {
-        const response = await fetch(`/api/styles/client/${clientId}`)
+        const response = await fetch(`/item/styles/client/${clientId}`)
         this.styles = (await response.json()).map(style => ({ ...style }))
         this.filteredStyles = this.styles
       } catch (error) {
@@ -508,7 +508,7 @@ export default function invoiceManager() {
     },
     async fetchSamples(clientId) {
       try {
-        const response = await fetch(`/api/samples/client/${clientId}`)
+        const response = await fetch(`/item/samples/client/${clientId}`)
         this.samples = (await response.json()).map(sample => ({
           ...sample,
         }))

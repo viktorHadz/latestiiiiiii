@@ -3,7 +3,7 @@ document.addEventListener('alpine:init', () => {
     tabSelected: '',
 
     init() {
-      console.log('2. OO--> globStore is initialized')
+      console.log('4. ##STORE## globStore.js-"initializing":\n ')
 
       this.tabSelected = this.getCurrentTab()
       Alpine.effect(() => {

@@ -1,6 +1,6 @@
 export default function itemEditor() {
   return {
-    slideOverOpen: true, // Controls the visibility
+    slideOverOpen: false, // Controls the visibility
     htmlSlideOver: '', // Holds the fetched HTML content
     currentClient: localStorage.getItem('selectedClient'),
     styles: [],

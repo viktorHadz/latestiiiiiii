@@ -7,7 +7,7 @@ document.addEventListener('alpine:init', () => {
     test: JSON.parse(localStorage.getItem('testRea')) || 0,
 
     async init() {
-      console.log('1. OO--> clientStore is initialized')
+      console.log('3. ##STORE## ClientStore.js-"initializing":\n ')
       await this.fetchClients()
 
       if (!this.selectedClient) {
@@ -57,6 +57,6 @@ document.addEventListener('alpine:init', () => {
   })
 
   Alpine.effect(() => {
-    console.log('ClientStore test value changed:', Alpine.store('clients').test)
+    console.log('ReactiveUpdate ClientStore --> value:\ntest', Alpine.store('clients').test)
   })
 })

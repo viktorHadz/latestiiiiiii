@@ -521,3 +521,52 @@ input[type='radio']:checked {
     opacity 0.3s,
     transform 0.3s;
 }
+/* MARK: Toast animation  */
+/* The class we add to newly inserted toast items */
+.toast-animate-enter {
+  /* Slightly slower so the 'falling in' feels more deliberate */
+  animation: toast-fall-in 0.4s cubic-bezier(0.75, 0.25, 0.25, 0.75) forwards;
+}
+
+@keyframes toast-fall-in {
+  0% {
+    opacity: 0;
+    /* Start way off-screen to the right + a big tilt */
+    transform: translateX(150%) rotate(25deg);
+  }
+  50% {
+    /* Already fully opaque by the halfway point */
+    opacity: 1;
+    /* Overshoot left a bit as if it’s swinging into place */
+    transform: translateX(-3%) rotate(5deg);
+  }
+  70% {
+    /* Come back to center but tilt the other direction briefly */
+    transform: translateX(0) rotate(-5deg);
+  }
+  100% {
+    /* End perfectly horizontal and centered */
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+.toast-animate-leave {
+  /* A little quicker so it zips away */
+  animation: toast-fall-out 0.3s cubic-bezier(0.75, 0.25, 0.25, 0.75) forwards;
+}
+
+@keyframes toast-fall-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg);
+  }
+  40% {
+    /* Tilt again as it starts to move out */
+    transform: translateX(3%) rotate(-3deg);
+  }
+  100% {
+    /* End off screen, with a bigger tilt for dramatic effect */
+    opacity: 0;
+    transform: translateX(150%) rotate(-15deg);
+  }
+}

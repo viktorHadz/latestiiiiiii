@@ -2,72 +2,31 @@ import itemEditor from '/components/items/itemEditor.js'
 import clientManager from '/Managers/clientManager.js'
 import invoiceManager from '/Managers/invoiceManager.js'
 import editorManager from '/Managers/editorManager.js'
-import toastManager from '/Managers/toastManager.js'
+// import toastManager from '/Managers/toastManager.js'
+// import tosterMan from '/components/toasts/tosterMan.js'
 
 // Initialize toastManager and assigns it to window
-window.toastManager = toastManager()
-window.callToast = window.toastManager.callToast.bind(window.toastManager)
-window.callError = window.toastManager.toastError.bind(window.toastManager)
-window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager)
-window.callWarning = window.toastManager.toastWarning.bind(window.toastManager)
-window.callInfo = window.toastManager.toastInfo.bind(window.toastManager)
-
-// Create a MutationObserver to automatically process HTMX attributes
-const htmxObserver = new MutationObserver(mutationsList => {
-  for (const mutation of mutationsList) {
-    mutation.addedNodes.forEach(node => {
-      if (node.nodeType !== Node.ELEMENT_NODE) return
-
-      if (hasHTMXAttributes(node)) {
-        htmx.process(node)
-      }
-
-      node.querySelectorAll &&
-        node
-          .querySelectorAll(
-            '[hx-get], [hx-post], [hx-put], [hx-delete], [hx-patch], [hx-trigger], [hx-swap], [hx-target], [hx-select], [hx-include], [hx-push-url], [hx-vals]',
-          )
-          .forEach(el => {
-            htmx.process(el)
-          })
-    })
-  }
-})
-
-htmxObserver.observe(document.body, { childList: true, subtree: true })
-
-function hasHTMXAttributes(node) {
-  return (
-    node.hasAttribute &&
-    (node.hasAttribute('hx-get') ||
-      node.hasAttribute('hx-post') ||
-      node.hasAttribute('hx-put') ||
-      node.hasAttribute('hx-delete') ||
-      node.hasAttribute('hx-patch') ||
-      node.hasAttribute('hx-trigger') ||
-      node.hasAttribute('hx-swap') ||
-      node.hasAttribute('hx-target') ||
-      node.hasAttribute('hx-select') ||
-      node.hasAttribute('hx-include') ||
-      node.hasAttribute('hx-push-url') ||
-      node.hasAttribute('hx-vals'))
-  )
-}
+// window.toastManager = toastManager()
+// window.callToast = window.toastManager.callToast.bind(window.toastManager)
+// window.callError = window.toastManager.toastError.bind(window.toastManager)
+// window.callSuccess = window.toastManager.toastSuccess.bind(window.toastManager)
+// window.callWarning = window.toastManager.toastWarning.bind(window.toastManager)
+// window.callInfo = window.toastManager.toastInfo.bind(window.toastManager)
 
 document.addEventListener('alpine:init', () => {
   console.log('##---- App.js --> Alpine initializes in App js')
+
   Alpine.data('tabManager', () => ({
-    tabSelected: Alpine.$persist('').as('tabSelected'), // No default forced here
+    tabSelected: Alpine.$persist('').as('tabSelected'),
     globalTabContent: Alpine.$persist('').as('globalTabContent'),
     isLoading: true,
-    svgCache: [],
     sideBar: Alpine.$persist(true).as('sideBar'),
 
     async init() {
       console.log('>>---- Tab Manager Initialized')
-
       const clientsExist = await Alpine.store('clients').fetchClients()
       const selectedClient = localStorage.getItem('selectedClient')
+
       if (!clientsExist) {
         console.warn('No clients exist. Redirecting to clients manager for creation.')
         await this.loadTabContent('clients')
@@ -143,12 +102,16 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('itemEditor', itemEditor)
   Alpine.data('invoiceManager', invoiceManager)
   Alpine.data('editorManager', editorManager)
-  Alpine.data('toastManager', toastManager)
+  // Alpine.data('tosterMan', tosterMan)
+  // Alpine.data('toastManager', toastManager)
 })
 document.addEventListener('alpine:initialized', () => {
   if (Alpine) {
     console.log('##----------------------->Alpine and its dependencies started <-----------------------##')
   } else {
-    console.log('No Alpine')
+    console.log('No Alpine whatsup?')
   }
 })
+// document.addEventListener('toast-show', () => {
+//   console.log('Received the event', tosterMan())
+// })

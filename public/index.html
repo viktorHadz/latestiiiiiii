@@ -8,11 +8,11 @@
     <!-- <script src="./node_modules/feather-icons/dist/feather.min.js"></script> -->
 
     <link rel="stylesheet" href="/css/outputTailwind.css" />
-    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script src="/alpinejs/plugins/morph.js"></script>
   </head>
 
-  <body>
+  <body id="bodyElement">
+    <template class="w-full h-screen relative top-0"></template>
     <div x-cloak x-data="tabManager" class="flex h-screen">
       <!-- MARK: SIDEBAR -->
       <div
@@ -94,6 +94,30 @@
           </button>
 
           <div x-html="htmlSlideOver"></div>
+          <button
+            @click="$store.toss.callError('This is error','Im an error bubIm an error bubIm an error bubIm an error bubI')"
+            class="bg-red-500 border border-white rounded-md text-xs p-2">
+            err
+          </button>
+          <button
+            @click="$store.toss.callWarning('Warning!','Im a warning')"
+            class="bg-orange-500 border border-white rounded-md text-xs p-2">
+            wrn
+          </button>
+          <button
+            @click="$store.toss.callSuccess('Success!','Im success buddy')"
+            class="bg-green-500 border border-white rounded-md text-xs p-2">
+            scss
+          </button>
+          <button
+            @click="$store.toss.callInfo('Info','Some information for ya.')"
+            class="bg-blue-500 border border-white rounded-md text-xs p-2">
+            info
+          </button>
+          sss
+          <svg x-show="Alpine.store('colorTheme').darkTheme" width="28" height="28">
+            <use href="/icons/icons.svg#error" />
+          </svg>
         </div>
         <!-- MARK:ROW-3-->
         <div class="flex flex-col items-center self-end justify-end w-full mt-auto mb-4">
@@ -178,27 +202,81 @@
           </div>
         </div>
       </div>
-      <!-- MARK: TOASTS HTMX -->
-      <div hx-target="this" hx-ext="alpine-morph" hx-swap="morph" hx-trigger="load" hx-get="/toast.html"></div>
-    </div>
+      <!-- MARK: TOAST -->
+      <div x-data class="fixed inset-0 z-[999] pointer-events-none">
+        <template x-for="(card, index) in $store.toss.cards" :key="card.id">
+          <!-- Each toast gets an ID so we can find it in JS -->
+          <div
+            :id="'toast-' + card.id"
+            @mouseenter="$store.toss.hoveredIndex = index"
+            @mouseleave="$store.toss.hoveredIndex = null"
+            class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform -translate-x-1/2 origin-top bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg toast-animate-enter /* start with this 'enter' animation class */ transition-transform duration-300 ease-in-out"
+            :style="`
+              top: ${1 + index * 1.5}rem; 
+              z-index: ${999 - index};
+            `"
+            @animationend="(evt) => {
+        
+              if (evt.animationName === 'toast-slide-in') {
+                evt.target.classList.remove('toast-animate-enter');
+              }
+        
+              /* Once the leave animation is finished, remove the toast from store. */
+              if (evt.animationName === 'toast-slide-out') {
+                $store.toss.destroyCard(card.id);
+              }
+            }">
+            <!-- Toast Content -->
+            <div class="relative w-full p-3">
+              <div class="flex items-center space-x-3">
+                <!-- Icon Section -->
+                <div
+                  x-html="card.svg"
+                  :class="card.colors"
+                  class="flex-shrink-0 bg-gradient-to-tr rounded-full flex items-center justify-center text-white dark:text-gray-900 w-8 h-8"></div>
 
+                <!-- Title / Body -->
+                <div class="flex flex-col flex-grow min-w-0 text-left">
+                  <p x-text="card.title" class="font-semibold text-gray-900 dark:text-gray-100 text-md truncate"></p>
+                  <p x-text="card.body" class="text-sm text-gray-600 dark:text-gray-300 break-words"></p>
+                </div>
+
+                <!-- Close Button (shows on hover) -->
+                <div
+                  class="absolute top-0 right-0 transition-opacity duration-300 text-gray-900 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
+                  x-show="$store.toss.hoveredIndex === index"
+                  x-transition.opacity>
+                  <button @click="$store.toss.destroyCard(card.id)">
+                    <svg width="20" height="20" class="m-1">
+                      <use href="/icons/icons.svg#xmark-circle" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+    <style></style>
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <!-- Storage -->
-    <script type="module" src="/store/prices.js"></script>
     <script type="module" src="/store/colorTheme.js"></script>
+    <script type="module" src="/store/prices.js"></script>
     <script type="module" src="/store/clientStore.js"></script>
     <script type="module" src="/store/globStore.js"></script>
-    <script type="module" src="/store/fetcHtml.js"></script>
+    <script type="module" src="/components/toasts/tossStore.js" defer></script>
     <script type="module" src="/app.js" defer></script>
     <!--  Alpine Plugins  -->
     <script src="/alpinejs/plugins/mask.js" defer></script>
-    <script src="/alpinejs/plugins/alpine-morph.js" defer></script>
     <script src="/alpinejs/plugins/anchor.js" defer></script>
     <script src="/alpinejs/plugins/persist.js" defer></script>
     <script src="/alpinejs/plugins/collapse.js" defer></script>
     <!--  Alpine Core  -->
     <script>
-      console.log('##----------------------->Alpine to begin loading (index.html)<-----------------------##')
+      console.log('\!!-------Alpine_Start_Index.html----------!!')
+      // $store.toss.toast.title
+      // $store.toss.toast.body
     </script>
     <script src="./alpinejs/dist/alpine.js" defer></script>
   </body>

@@ -24,7 +24,12 @@
       </button>
     </div>
     <div>
-      <button class="bg-vda2 border p-2 rounded-md" @click="$store.clients.add()">increase test value</button>
+      <button
+        class="bg-vda2 border p-2 rounded-md"
+        @click="$store.clients.add();toast('Hello World', { description: 'This is my toast', type: 'success' })
+">
+        increase test value
+      </button>
       <button class="bg-blue-500 border p-2 rounded-md" @click="$store.clients.subtract()">increase test value</button>
     </div>
     <!-- Clients Table -->
