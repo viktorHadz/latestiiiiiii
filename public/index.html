@@ -136,11 +136,11 @@
           class="w-full h-full">
           <!-- Main View -->
           <div
-            x-show="$store.clientStore.clients.length > 0 && $store.clientStore.selectedClient !== null"
+            x-show="$store.clients.clients.length > 0 && $store.clients.selectedClient !== null"
             x-html="globalTabContent"></div>
           <!-- Modal that pops off if no client has been selected -->
           <div
-            x-show="$store.clientStore.showClientModal"
+            x-show="$store.clients.showClientModal"
             x-transition.opacity.duration.300ms
             class="fixed inset-0 z-[99] flex items-center justify-center bg-black bg-opacity-50"
             style="pointer-events: auto">
@@ -150,8 +150,8 @@
               <div class="relative">
                 <button
                   x-ref="clientModalButton"
-                  @click="$store.clientStore.showDropdown = !$store.clientStore.showDropdown"
-                  :class="{ 'mb-4 w-full rounded-md inner-modal-dropdown-open': $store.clientStore.showDropdown, 'justify-center modal-dropdown flex': !$store.clientStore.showDropdown }">
+                  @click="$store.clients.showDropdown = !$store.clients.showDropdown"
+                  :class="{ 'mb-4 w-full rounded-md inner-modal-dropdown-open': $store.clients.showDropdown, 'justify-center modal-dropdown flex': !$store.clients.showDropdown }">
                   Clients
                   <svg width="18" height="18" class="flex self-center ml-2 mt-0.5">
                     <use href="/icons/icons.svg#chev-down" />
@@ -159,14 +159,14 @@
                 </button>
                 <div
                   x-anchor.offset.5="$refs.clientModalButton"
-                  x-show="$store.clientStore.showDropdown"
+                  x-show="$store.clients.showDropdown"
                   x-collapse.duration.500ms
                   class="w-full overflow-auto table-scrollbar modal-dropdown max-h-80 bg-vlp dark:bg-vds2">
                   <ul>
-                    <template x-for="client in $store.clientStore.clients" :key="client.id">
+                    <template x-for="client in $store.clients.clients" :key="client.id">
                       <div class="mb-2">
                         <li
-                          @click="$store.clientStore.selectClient(client)"
+                          @click="$store.clients.selectClient(client)"
                           class="p-1 text-left rounded-md cursor-pointer dark:bg-vdp2 text-vds hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
                           x-text="client.name"></li>
                       </div>

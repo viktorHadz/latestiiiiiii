@@ -42,12 +42,10 @@ export default function itemEditor() {
         this.slideOverOpen = false
       }
       const client = JSON.parse(this.currentClient).id
-      console.log('Should be this: ', client)
       try {
         const response = await fetch(`/item/styles/client/${client}`)
         if (!response.ok) throw new Error('Failed to fetch styles')
         this.styles = await response.json()
-        console.log(this.styles)
       } catch (error) {
         console.error('Error fetching styles:', error)
       }

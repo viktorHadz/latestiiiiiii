@@ -1,19 +1,20 @@
 document.addEventListener('alpine:init', () => {
-  Alpine.store('clientStore', {
+  Alpine.store('clients', {
     clients: [],
     selectedClient: JSON.parse(localStorage.getItem('selectedClient')) || null,
     showClientModal: false,
 
+    test: JSON.parse(localStorage.getItem('testRea')) || 0,
+
     async init() {
       console.log('1. OO--> clientStore is initialized')
       await this.fetchClients()
-      console.log(' _ "Clients fetched from store and ready to use"\n', this.clients)
+
       if (!this.selectedClient) {
         callWarning('No client selected', 'Please select one to continue')
         this.showClientModal = true
       }
     },
-
     async fetchClients() {
       try {
         const response = await fetch('/clients/get')
@@ -44,5 +45,18 @@ document.addEventListener('alpine:init', () => {
         this.showDropdown = false
       }
     },
+    add() {
+      this.test++
+      localStorage.setItem('testRea', JSON.stringify(this.test))
+    },
+
+    subtract() {
+      this.test--
+      localStorage.setItem('testRea', JSON.stringify(this.test))
+    },
+  })
+
+  Alpine.effect(() => {
+    console.log('ClientStore test value changed:', Alpine.store('clients').test)
   })
 })

@@ -66,12 +66,12 @@ document.addEventListener('alpine:init', () => {
     async init() {
       console.log('>>---- Tab Manager Initialized')
 
-      const clientsExist = await Alpine.store('clientStore').fetchClients()
+      const clientsExist = await Alpine.store('clients').fetchClients()
       const selectedClient = localStorage.getItem('selectedClient')
       if (!clientsExist) {
         console.warn('No clients exist. Redirecting to clients manager for creation.')
         await this.loadTabContent('clients')
-        Alpine.store('clientStore').openClientCreationModal()
+        Alpine.store('clients').openClientCreationModal()
         return
       }
 
@@ -79,7 +79,7 @@ document.addEventListener('alpine:init', () => {
       if (!selectedClient) {
         console.warn('Clients available but no client selected. Opening client selection modal.')
         await this.loadTabContent('clients')
-        Alpine.store('clientStore').openModal()
+        Alpine.store('clients').openModal()
         return
       }
 
