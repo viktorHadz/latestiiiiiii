@@ -13,8 +13,8 @@
           x-transition />
       </div>
       <button
-        @click="showAddClientModal = true; 
-          if(showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
+        @click="$store.clients.showAddClientModal = true; 
+          if($store.clients.showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
         @keydown.escape.window="showAddClientModal = false"
         class="flex items-baseline justify-center butt-style">
         <svg width="16" height="16" class="mr-1.5">
@@ -24,13 +24,8 @@
       </button>
     </div>
     <div>
-      <button
-        class="bg-vda2 border p-2 rounded-md"
-        @click="$store.clients.add();toast('Hello World', { description: 'This is my toast', type: 'success' })
-">
-        increase test value
-      </button>
-      <button class="bg-blue-500 border p-2 rounded-md" @click="$store.clients.subtract()">increase test value</button>
+      <button class="bg-vda2 border p-1 rounded-md text-xs" @click="$store.clients.add()">reactivity +</button>
+      <button class="bg-blue-500 border p-1 rounded-md text-xs" @click="$store.clients.subtract()">reactivity -</button>
     </div>
     <!-- Clients Table -->
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
@@ -45,7 +40,7 @@
         </tr>
       </thead>
       <tbody class="table-scrollbar table-body-style">
-        <template x-for="client in filteredClients" :key="client.id">
+        <template x-for="client in $store.clients.clients" :key="client.id">
           <tr class="border-hover-ring-efect">
             <td class="hidden" x-text="client.id"></td>
             <td class="p-2 text-sm round-left-border">
@@ -117,55 +112,5 @@
         </template>
       </tbody>
     </table>
-  </div>
-  <!-- MARK: ADD CLIENT MODAL -->
-  <div
-    x-show="showAddClientModal"
-    x-transition.opacity.duration.300
-    class="z-50 outter-modal-overlay-blur-fixed"
-    id="my-modal">
-    <!-- Modal content -->
-    <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
-      <div @keyup.escape="showAddClientModal = false">
-        <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Client</h3>
-          <form @submit.prevent="addClient">
-            <input
-              x-model="newClient.name"
-              x-ref="addNewClientName"
-              name="name"
-              type="text"
-              placeholder="Name"
-              class="w-full mb-2 modal-input-style"
-              required />
-            <input
-              x-model="newClient.company_name"
-              name="company_name"
-              type="text"
-              placeholder="Company Name"
-              class="w-full mb-2 modal-input-style"
-              required />
-            <input
-              x-model="newClient.address"
-              name="address"
-              type="text"
-              placeholder="Address"
-              class="w-full mb-2 modal-input-style"
-              required />
-            <input
-              x-model="newClient.email"
-              name="email"
-              type="email"
-              placeholder="Email"
-              class="w-full mb-2 modal-input-style"
-              required />
-            <div class="flex justify-end gap-8 mt-2">
-              <button type="submit" class="modal-btn-prim">Add</button>
-              <button @click="showAddClientModal = false" class="dark:modal-btn-sec modal-btn-sec">Close</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

@@ -28,16 +28,20 @@ router.get('/get/:id', (req, res) => {
   })
 })
 
-// Add a new client
 router.post('/create', (req, res) => {
   const { name, company_name, address, email } = req.body
 
-  // SQLite query to add a new client
+  if (!name || !company_name || !address || !email) {
+    console.log('This is the requests body: ', req.body)
+    return res.status(400).json({ error: 'All fields are required' })
+  }
+
   db.run(
     'INSERT INTO clients (name, company_name, address, email) VALUES (?, ?, ?, ?)',
     [name, company_name, address, email],
     function (error) {
       if (error) {
+        console.error('Error inserting client:', error.message)
         return res.status(500).json({ error: error.message })
       }
       res.status(201).json({ id: this.lastID, name, company_name, address, email })

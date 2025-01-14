@@ -94,27 +94,7 @@
           </button>
 
           <div x-html="htmlSlideOver"></div>
-          <button
-            @click="$store.toss.callError('This is error','Im an error bubIm an error bubIm an error bubIm an error bubI')"
-            class="bg-red-500 border border-white rounded-md text-xs p-2">
-            err
-          </button>
-          <button
-            @click="$store.toss.callWarning('Warning!','Im a warning')"
-            class="bg-orange-500 border border-white rounded-md text-xs p-2">
-            wrn
-          </button>
-          <button
-            @click="$store.toss.callSuccess('Success!','Im success buddy')"
-            class="bg-green-500 border border-white rounded-md text-xs p-2">
-            scss
-          </button>
-          <button
-            @click="$store.toss.callInfo('Info','Some information for ya.')"
-            class="bg-blue-500 border border-white rounded-md text-xs p-2">
-            info
-          </button>
-          sss
+
           <svg x-show="Alpine.store('colorTheme').darkTheme" width="28" height="28">
             <use href="/icons/icons.svg#error" />
           </svg>
@@ -162,7 +142,62 @@
           <div
             x-show="$store.clients.clients.length > 0 && $store.clients.selectedClient !== null"
             x-html="globalTabContent"></div>
-          <!-- Modal that pops off if no client has been selected -->
+          <!-- MARK: CREATE CLIENT MODAL -->
+          <div
+            x-show="$store.clients.showAddClientModal"
+            x-transition.opacity.duration.300
+            class="z-50 outter-modal-overlay-blur-fixed"
+            id="my-modal">
+            <!-- Modal content -->
+            <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
+              <div @keyup.escape="$store.clients.showAddClientModal = false">
+                <div class="p-6">
+                  <h3 class="mb-4 modal-title">Add Client</h3>
+                  <form>
+                    <input
+                      x-model="$store.clients.newClient.name"
+                      x-ref="addNewClientName"
+                      name="name"
+                      type="text"
+                      placeholder="Name"
+                      class="w-full mb-2 modal-input-style"
+                      required />
+                    <input
+                      x-model="$store.clients.newClient.company_name"
+                      name="company_name"
+                      type="text"
+                      placeholder="Company Name"
+                      class="w-full mb-2 modal-input-style"
+                      required />
+                    <input
+                      x-model="$store.clients.newClient.address"
+                      name="address"
+                      type="text"
+                      placeholder="Address"
+                      class="w-full mb-2 modal-input-style"
+                      required />
+                    <input
+                      x-model="$store.clients.newClient.email"
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      class="w-full mb-2 modal-input-style"
+                      required />
+                    <div class="flex justify-end gap-8 mt-2">
+                      <button class="modal-btn-prim" @click.prevent="$store.clients.addClient()">Add</button>
+                      <button
+                        @click="$store.clients.showAddClientModal = false"
+                        class="dark:modal-btn-sec modal-btn-sec">
+                        Close
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MARK: SELECT CLIENT MODAL -->
           <div
             x-show="$store.clients.showClientModal"
             x-transition.opacity.duration.300ms
@@ -201,21 +236,20 @@
             </div>
           </div>
         </div>
-      </div>
-      <!-- MARK: TOAST -->
-      <div x-data class="fixed inset-0 z-[999] pointer-events-none">
-        <template x-for="(card, index) in $store.toss.cards" :key="card.id">
-          <!-- Each toast gets an ID so we can find it in JS -->
-          <div
-            :id="'toast-' + card.id"
-            @mouseenter="$store.toss.hoveredIndex = index"
-            @mouseleave="$store.toss.hoveredIndex = null"
-            class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform -translate-x-1/2 origin-top bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg toast-animate-enter /* start with this 'enter' animation class */ transition-transform duration-300 ease-in-out"
-            :style="`
+        <!-- MARK: TOAST -->
+        <div x-data class="fixed inset-0 z-[999] pointer-events-none">
+          <template x-for="(card, index) in $store.toss.cards" :key="card.id">
+            <!-- Each toast gets an ID to be caught in JS -->
+            <div
+              :id="'toast-' + card.id"
+              @mouseenter="$store.toss.hoveredIndex = index"
+              @mouseleave="$store.toss.hoveredIndex = null"
+              class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform -translate-x-1/2 origin-top bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg toast-animate-enter /* start with this 'enter' animation class */ transition-transform duration-300 ease-in-out"
+              :style="`
               top: ${1 + index * 1.5}rem; 
               z-index: ${999 - index};
             `"
-            @animationend="(evt) => {
+              @animationend="(evt) => {
         
               if (evt.animationName === 'toast-slide-in') {
                 evt.target.classList.remove('toast-animate-enter');
@@ -226,46 +260,49 @@
                 $store.toss.destroyCard(card.id);
               }
             }">
-            <!-- Toast Content -->
-            <div class="relative w-full p-3">
-              <div class="flex items-center space-x-3">
-                <!-- Icon Section -->
-                <div
-                  x-html="card.svg"
-                  :class="card.colors"
-                  class="flex-shrink-0 bg-gradient-to-tr rounded-full flex items-center justify-center text-white dark:text-gray-900 w-8 h-8"></div>
+              <!-- Toast Content -->
+              <div class="relative w-full p-3">
+                <div class="flex items-center space-x-3">
+                  <!-- Icon Section -->
+                  <div
+                    x-html="card.svg"
+                    :class="card.colors"
+                    class="flex-shrink-0 bg-gradient-to-tr rounded-full flex items-center justify-center text-white dark:text-gray-900"></div>
 
-                <!-- Title / Body -->
-                <div class="flex flex-col flex-grow min-w-0 text-left">
-                  <p x-text="card.title" class="font-semibold text-gray-900 dark:text-gray-100 text-md truncate"></p>
-                  <p x-text="card.body" class="text-sm text-gray-600 dark:text-gray-300 break-words"></p>
-                </div>
+                  <!-- Title / Body -->
+                  <div class="flex flex-col flex-grow min-w-0 text-left">
+                    <p x-text="card.title" class="font-medium text-gray-900 dark:text-gray-100 text-md truncate"></p>
+                    <p x-text="card.body" class="text-sm text-gray-600 dark:text-gray-300 break-words"></p>
+                  </div>
 
-                <!-- Close Button (shows on hover) -->
-                <div
-                  class="absolute top-0 right-0 transition-opacity duration-300 text-gray-900 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
-                  x-show="$store.toss.hoveredIndex === index"
-                  x-transition.opacity>
-                  <button @click="$store.toss.destroyCard(card.id)">
-                    <svg width="20" height="20" class="m-1">
-                      <use href="/icons/icons.svg#xmark-circle" />
-                    </svg>
-                  </button>
+                  <!-- Close Button (shows on hover) -->
+                  <div
+                    class="absolute top-0 right-0 transition-opacity duration-300 text-gray-900 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
+                    x-show="$store.toss.hoveredIndex === index"
+                    x-transition.opacity>
+                    <button @click="$store.toss.destroyCard(card.id)">
+                      <svg width="20" height="20" class="m-1">
+                        <use href="/icons/icons.svg#xmark-circle" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
     </div>
     <style></style>
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
-    <!-- Storage -->
+    <!-- 1) The store definitions (including clientStore.js) -->
     <script type="module" src="/store/colorTheme.js"></script>
-    <script type="module" src="/store/prices.js"></script>
     <script type="module" src="/store/clientStore.js"></script>
+    <script type="module" src="/store/prices.js"></script>
     <script type="module" src="/store/globStore.js"></script>
-    <script type="module" src="/components/toasts/tossStore.js" defer></script>
+    <script type="module" src="/store/tossStore.js"></script>
+
+    <!-- 2) Then your app.js, which references the store and sets up tabManager, etc -->
     <script type="module" src="/app.js" defer></script>
     <!--  Alpine Plugins  -->
     <script src="/alpinejs/plugins/mask.js" defer></script>
