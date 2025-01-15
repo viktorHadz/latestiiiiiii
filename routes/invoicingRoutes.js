@@ -6,135 +6,16 @@ const PDFDocument = require('pdfkit')
 const { resolve } = require('path')
 const doc = require('pdfkit')
 
-// Fetch all clients
-router.get('/api/clients', (req, res) => {
-  db.all('SELECT * FROM clients', [], (error, results) => {
-    if (error) {
-      return res.status(500).send({ error: 'Error fetching clients' })
-    }
-    res.json(results)
-  })
-})
-
-// Fetch a client information by their ID
-router.get('/api/clients/:id', (req, res) => {
-  const clientId = req.params.id
-  db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, result) => {
-    if (error) {
-      return res.status(500).send(error)
-    }
-    res.json(result)
-  })
-})
-
-// Fetch styles for a specific client
-router.get('/api/styles/client/:clientId', (req, res) => {
-  const clientId = req.params.clientId
-  db.all(
-    'SELECT * FROM styles WHERE client_id = ?',
-    [clientId],
-    (error, results) => {
-      if (error) {
-        return res.status(500).send({ error: 'Error fetching styles' })
-      }
-      res.json(results)
-    },
-  )
-})
-
-// Fetch samples for a specific client
-router.get('/api/samples/client/:clientId', (req, res) => {
-  const clientId = req.params.clientId
-  db.all(
-    'SELECT * FROM samples WHERE client_id = ?',
-    [clientId],
-    (error, results) => {
-      if (error) {
-        return res.status(500).send({ error: 'Error fetching samples' })
-      }
-      res.json(results)
-    },
-  )
-})
-
-// Post a new stye into the styles table
-router.post('/styles', (req, res) => {
-  const { name, price, client_id } = req.body
-
-  db.run(
-    'INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)',
-    [name, price, client_id],
-    function (error) {
-      if (error) {
-        return res.status(500).send(error)
-      }
-      // Fetch the newly added style details
-      db.get(
-        'SELECT * FROM styles WHERE id = ?',
-        [this.lastID],
-        (error, newStyle) => {
-          if (error) {
-            return res.status(500).send(error)
-          }
-          if (newStyle) {
-            res.status(201).json(newStyle)
-          } else {
-            res.status(404).json({ message: 'Newly added style not found.' })
-          }
-        },
-      )
-    },
-  )
-})
-
-// Create new sample from Invoicing menu
-router.post('/samples', (req, res) => {
-  const { name, time, price, client_id } = req.body
-
-  db.run(
-    'INSERT INTO samples (name, time, price, client_id) VALUES (?, ?, ?, ?)',
-    [name, time, price, client_id],
-    function (error) {
-      if (error) {
-        return res.status(500).send(error)
-      }
-      // Fetch the newly added sample details
-      db.get(
-        'SELECT * FROM samples WHERE id = ?',
-        [this.lastID],
-        (error, newSample) => {
-          if (error) {
-            return res.status(500).send(error)
-          }
-          if (newSample) {
-            res.status(201).json(newSample)
-          } else {
-            res.status(404).json({ message: 'Newly added sample not found.' })
-          }
-        },
-      )
-    },
-  )
-})
-
 // Route to get the next invoice number
 router.get('/api/getNextInvoiceNumber', (req, res) => {
-  db.get(
-    'SELECT MAX(invoice_number) AS maxInvoiceNumber FROM invoices',
-    [],
-    (error, result) => {
-      if (error) {
-        return res
-          .status(500)
-          .send({ error: 'Error fetching the max invoice number' })
-      }
-      const maxInvoiceNumber = result.maxInvoiceNumber
-      const nextInvoiceNumber = maxInvoiceNumber
-        ? `SAM${parseInt(maxInvoiceNumber.slice(3)) + 1}`
-        : 'SAM1'
-      res.json({ nextInvoiceNumber })
-    },
-  )
+  db.get('SELECT MAX(invoice_number) AS maxInvoiceNumber FROM invoices', [], (error, result) => {
+    if (error) {
+      return res.status(500).send({ error: 'Error fetching the max invoice number' })
+    }
+    const maxInvoiceNumber = result.maxInvoiceNumber
+    const nextInvoiceNumber = maxInvoiceNumber ? `SAM${parseInt(maxInvoiceNumber.slice(3)) + 1}` : 'SAM1'
+    res.json({ nextInvoiceNumber })
+  })
 })
 // deposit_flat, deposit_percent, discountPercentValue, depositPercentValue
 // Object to insert items into invoices DB table
@@ -179,12 +60,7 @@ const insertInvoice = (
       ],
       function (error) {
         if (error) {
-          return reject(
-            new Error(
-              'Error inserting invoice(Trigered from: insertInvoice): ' +
-                error.message,
-            ),
-          )
+          return reject(new Error('Error inserting invoice(Trigered from: insertInvoice): ' + error.message))
         }
 
         const invoiceId = this.lastID
@@ -196,11 +72,7 @@ const insertInvoice = (
           [invoiceNumber, invoiceId],
           function (updateError) {
             if (updateError) {
-              return reject(
-                new Error(
-                  'Error updating invoice number: ' + updateError.message,
-                ),
-              )
+              return reject(new Error('Error updating invoice number: ' + updateError.message))
             }
 
             resolve(invoiceId)
@@ -229,9 +101,7 @@ const insertItems = (invoiceId, items) => {
       values,
       function (error) {
         if (error) {
-          return reject(
-            new Error('Error inserting invoice items: ' + error.message),
-          )
+          return reject(new Error('Error inserting invoice items: ' + error.message))
         }
         resolve()
       },
@@ -316,16 +186,12 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
   try {
     // Fetch the invoice from the database
     const invoice = await new Promise((resolve, reject) => {
-      db.get(
-        'SELECT * FROM invoices WHERE id = ?',
-        [invoiceId],
-        (error, invoice) => {
-          if (error) {
-            return reject(error)
-          }
-          resolve(invoice)
-        },
-      )
+      db.get('SELECT * FROM invoices WHERE id = ?', [invoiceId], (error, invoice) => {
+        if (error) {
+          return reject(error)
+        }
+        resolve(invoice)
+      })
     })
 
     if (!invoice) {
@@ -334,34 +200,26 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
 
     // Get client information
     const client = await new Promise((resolve, reject) => {
-      db.get(
-        'SELECT company_name, name FROM clients WHERE id = ?',
-        [invoice.client_id],
-        (error, client) => {
-          if (error) {
-            return reject(error)
-          }
-          if (!client) {
-            return reject(new Error('Client not found'))
-          }
-          resolve(client)
-        },
-      )
+      db.get('SELECT company_name, name FROM clients WHERE id = ?', [invoice.client_id], (error, client) => {
+        if (error) {
+          return reject(error)
+        }
+        if (!client) {
+          return reject(new Error('Client not found'))
+        }
+        resolve(client)
+      })
     })
 
     // Fetch items for the creation of the invoice
     const fetchItems = () => {
       return new Promise((resolve, reject) => {
-        db.all(
-          'SELECT * FROM invoice_items WHERE invoice_id = ?',
-          [invoiceId],
-          (error, items) => {
-            if (error) {
-              return reject(error)
-            }
-            resolve(items)
-          },
-        )
+        db.all('SELECT * FROM invoice_items WHERE invoice_id = ?', [invoiceId], (error, items) => {
+          if (error) {
+            return reject(error)
+          }
+          resolve(items)
+        })
       })
     }
 
@@ -370,10 +228,7 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     doc.pipe(res)
     // header
     res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=Invoice-${invoice.invoice_number}.pdf`,
-    )
+    res.setHeader('Content-Disposition', `attachment; filename=Invoice-${invoice.invoice_number}.pdf`)
     doc
       .image('./public/images/samlogonew.png', 25, 25, {
         width: 150,
@@ -447,20 +302,8 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     doc.text('Name', startX, startY)
     doc.text('Type', startX + columnWidths[0], startY)
     doc.text('Price', startX + columnWidths[0] + columnWidths[1], startY)
-    doc.text(
-      'Quantity',
-      startX + columnWidths[0] + columnWidths[1] + columnWidths[2],
-      startY,
-    )
-    doc.text(
-      'Item Total',
-      startX +
-        columnWidths[0] +
-        columnWidths[1] +
-        columnWidths[2] +
-        columnWidths[2],
-      startY,
-    )
+    doc.text('Quantity', startX + columnWidths[0] + columnWidths[1] + columnWidths[2], startY)
+    doc.text('Item Total', startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[2], startY)
 
     // Draw a line under the headers
     doc
@@ -475,23 +318,11 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       startY = checkPageSpace(doc, startY)
       doc.text(item.name, startX, startY)
       doc.text(itemType, startX + columnWidths[0], startY)
-      doc.text(
-        `£${item.price}`,
-        startX + columnWidths[0] + columnWidths[1],
-        startY,
-      )
-      doc.text(
-        `x${item.quantity}`,
-        startX + columnWidths[0] + columnWidths[1] + columnWidths[2],
-        startY,
-      )
+      doc.text(`£${item.price}`, startX + columnWidths[0] + columnWidths[1], startY)
+      doc.text(`x${item.quantity}`, startX + columnWidths[0] + columnWidths[1] + columnWidths[2], startY)
       doc.text(
         `£${item.total_item_price}`,
-        startX +
-          columnWidths[0] +
-          columnWidths[1] +
-          columnWidths[2] +
-          columnWidths[2],
+        startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[2],
         startY,
       )
       startY += 20
@@ -506,29 +337,16 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     })
 
     // show % if discount is percentage !TODO! - :D FIXIT
-    if (
-      invoice.discount_percent === 1 &&
-      invoice.discount_flat === 0 &&
-      invoice.discount > 0
-    ) {
+    if (invoice.discount_percent === 1 && invoice.discount_flat === 0 && invoice.discount > 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(
-        `Discount: £${invoice.discount} (${invoice.discount_percent_value}%)`,
-        startX,
-        startY,
-        {
-          align: 'left',
-        },
-      )
+      doc.text(`Discount: £${invoice.discount} (${invoice.discount_percent_value}%)`, startX, startY, {
+        align: 'left',
+      })
     }
 
     // show £ if discount is flat
-    if (
-      invoice.discount_flat === 1 &&
-      invoice.discount_percent === 0 &&
-      invoice.discount > 0
-    ) {
+    if (invoice.discount_flat === 1 && invoice.discount_percent === 0 && invoice.discount > 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
       doc.text(`Discount: £${invoice.discount}`, startX, startY, {
@@ -559,14 +377,9 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     if (invoice.deposit !== 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(
-        `Deposit: £${invoice.deposit} (${invoice.deposit_percent_value}%)`,
-        startX,
-        startY,
-        {
-          align: 'left',
-        },
-      )
+      doc.text(`Deposit: £${invoice.deposit} (${invoice.deposit_percent_value}%)`, startX, startY, {
+        align: 'left',
+      })
     }
 
     if (invoice.note !== '') {
@@ -619,18 +432,12 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
 
 // Getting the invoice statuses
 router.get('/api/invoices/statuses', (req, res) => {
-  db.all(
-    'SELECT invoice_number, status FROM invoices',
-    [],
-    (error, results) => {
-      if (error) {
-        return res
-          .status(500)
-          .send({ error: 'Error fetching invoice statuses' })
-      }
-      res.json(results)
-    },
-  )
+  db.all('SELECT invoice_number, status FROM invoices', [], (error, results) => {
+    if (error) {
+      return res.status(500).send({ error: 'Error fetching invoice statuses' })
+    }
+    res.json(results)
+  })
 })
 
 // Update invoice status
@@ -640,20 +447,15 @@ router.post('/api/invoices/:invoiceNumber/updateStatus', (req, res) => {
   if (!status) {
     // Added check to ensure status is provided
     return res.status(400).send({
-      error:
-        'Status is required, look at /api/invoices/:invoiceNumber/updateStatus in the routes for invoicing.',
+      error: 'Status is required, look at /api/invoices/:invoiceNumber/updateStatus in the routes for invoicing.',
     })
   }
-  db.run(
-    'UPDATE invoices SET status = ? WHERE invoice_number = ?',
-    [status, invoiceNumber],
-    function (error) {
-      if (error) {
-        return res.status(500).send({ error: 'Error updating invoice status' })
-      }
-      res.json({ message: `Status updated for invoice ${invoiceNumber}` })
-    },
-  )
+  db.run('UPDATE invoices SET status = ? WHERE invoice_number = ?', [status, invoiceNumber], function (error) {
+    if (error) {
+      return res.status(500).send({ error: 'Error updating invoice status' })
+    }
+    res.json({ message: `Status updated for invoice ${invoiceNumber}` })
+  })
 })
 
 module.exports = router

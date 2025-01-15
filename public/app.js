@@ -9,8 +9,8 @@ document.addEventListener('alpine:init', () => {
 
   Alpine.data('tabManager', () => ({
     tabSelected: Alpine.$persist('').as('tabSelected'),
-    globalTabContent: Alpine.$persist('').as('globalTabContent'),
-    isLoading: true,
+    tabHtml: Alpine.$persist('').as('tabHtml'),
+
     sideBar: Alpine.$persist(true).as('sideBar'),
 
     init() {
@@ -25,7 +25,6 @@ document.addEventListener('alpine:init', () => {
 
       // Attempt loading content right away
       this.loadTabContent(this.tabSelected || 'clients')
-      this.isLoading = false
     },
 
     onClientsFetched() {
@@ -48,21 +47,21 @@ document.addEventListener('alpine:init', () => {
         }
         const content = await response.text()
         this.tabSelected = tabName
-        this.globalTabContent = content
+        this.tabHtml = content
         this.initTabComponent(tabName)
       } catch (err) {
         console.error(`[TabManager] Error loading ${tabName} content:`, err)
       }
     },
 
-    // For the highlighted sidebar button
+    // When a tab button is clicked
     tabButtonClicked(globalTabName) {
       if (this.tabSelected !== globalTabName) {
         this.loadTabContent(globalTabName)
       }
     },
 
-    // Quick "active" check for buttons
+    // Quick "active" check for buttons - returns boolean
     tabContentActive(globalTabName) {
       return this.tabSelected === globalTabName
     },

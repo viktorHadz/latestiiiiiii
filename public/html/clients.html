@@ -5,6 +5,7 @@
     <div class="mb-12 flex max-h-[20vh] justify-between align-middle">
       <div class="transition-all duration-500">
         <input
+          id="clientSrch"
           type="text"
           placeholder="Search Clients..."
           class="transition-all duration-500 srch-style"
@@ -45,7 +46,7 @@
             <td class="hidden" x-text="client.id"></td>
             <td class="p-2 text-sm round-left-border">
               <template x-if="client.isEditing">
-                <input type="text" x-model="client.name" class="table-edit-input-style" />
+                <input autocomplete="on" type="text" x-model="client.name" class="table-edit-input-style" />
               </template>
               <template x-if="!client.isEditing">
                 <span x-text="client.name" class="mr-6"></span>
@@ -53,7 +54,7 @@
             </td>
             <td class="p-2 text-sm">
               <template x-if="client.isEditing">
-                <input type="text" x-model="client.company_name" class="table-edit-input-style" />
+                <input autocomplete="on" type="text" x-model="client.company_name" class="table-edit-input-style" />
               </template>
               <template x-if="!client.isEditing">
                 <span x-text="client.company_name" class="mr-6"></span>
@@ -61,7 +62,7 @@
             </td>
             <td class="p-2 text-sm">
               <template x-if="client.isEditing">
-                <input type="text" x-model="client.address" class="table-edit-input-style" />
+                <input autocomplete="on" type="text" x-model="client.address" class="table-edit-input-style" />
               </template>
               <template x-if="!client.isEditing">
                 <span x-text="client.address" class="mr-6"></span>

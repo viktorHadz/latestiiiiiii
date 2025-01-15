@@ -215,11 +215,11 @@ input::-webkit-inner-spin-button {
 }
 /* Buttons */
 .butt-style {
-  @apply flex items-center p-2 text-sm font-medium duration-500 border border-transparent rounded-md bg-vls2 text-vlp;
+  @apply flex items-center text-sm duration-500 border border-transparent rounded-md bg-vls2 text-vlp;
   @apply hover:border-vla hover:bg-vls3 hover:text-vla active:scale-95;
 }
 .dark .butt-style {
-  @apply flex items-center p-2 text-sm font-medium duration-500 border rounded-md border-vds2 bg-vdp text-vds3light;
+  @apply flex items-center text-sm duration-500 border rounded-md border-vds2 bg-vdp text-vds3light;
   @apply hover:border-vda hover:text-vda active:scale-95;
 }
 .icon {

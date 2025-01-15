@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 // Register routes with clean prefixes
 app.use('/clients', clientsRoutes)
-app.use('/invoicing', invoicingRoutes)
+app.use('/invo', invoicingRoutes)
 app.use('/editor', editorRoutes)
 app.use('/item', itemRoutes)
 app.use(globalRoutes)

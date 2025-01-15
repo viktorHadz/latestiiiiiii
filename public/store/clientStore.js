@@ -12,7 +12,7 @@ document.addEventListener('alpine:init', () => {
     showDropdown: false,
     isFetched: false,
 
-    // For debugging
+    // Reactive store
     test: JSON.parse(localStorage.getItem('testRea')) || 0,
 
     async init() {

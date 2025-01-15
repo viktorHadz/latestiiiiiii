@@ -16,7 +16,9 @@ router.get('/styles/client/:id', (req, res) => {
 // Create a new style
 router.post('/styles/new', (req, res) => {
   const { name, price, client_id } = req.body
-
+  if (!name || !price || !client_id) {
+    return res.status(400).json({ error: 'Name, price, and client_id are required' })
+  }
   // Ensure the client exists before inserting the style
   db.get('SELECT * FROM clients WHERE id = ?', [client_id], (error, client) => {
     if (error) return res.status(500).send({ error: error.message })
@@ -65,7 +67,32 @@ router.get('/samples/client/:clientId', (req, res) => {
     res.json(results)
   })
 })
-
+router.post('/samples/new', (req, res) => {
+  const { name, time, price, client_id } = req.body
+  if (!name || !time || !price || !client_id) {
+    return res.status(400).json({ error: 'Name, time, price, and client_id are required' })
+  }
+  db.run(
+    'INSERT INTO samples (name, time, price, client_id) VALUES (?, ?, ?, ?)',
+    [name, time, price, client_id],
+    function (error) {
+      if (error) {
+        return res.status(500).send(error)
+      }
+      // Fetch the newly added sample details
+      db.get('SELECT * FROM samples WHERE id = ?', [this.lastID], (error, newSample) => {
+        if (error) {
+          return res.status(500).send(error)
+        }
+        if (newSample) {
+          res.status(201).json(newSample)
+        } else {
+          res.status(404).json({ message: 'Newly added sample not found.' })
+        }
+      })
+    },
+  )
+})
 // Update a sample (e.g. after editing)
 router.put('/samples/update/:id', (req, res) => {
   const { name, time, price } = req.body

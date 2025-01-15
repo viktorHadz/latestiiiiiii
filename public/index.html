@@ -18,13 +18,7 @@
       <div
         :class="{'w-72': sideBar, 'w-16': !sideBar}"
         class="flex flex-col transition-all duration-500 border-0 border-r border-vls/40 dark:border-vds3neu700 bg-vlp dark:bg-vdp"
-        x-ref="mainSidebar"
-        x-transition:enter="transition-all ease-in-out duration-500"
-        x-transition:enter-start="w-16"
-        x-transition:enter-end="w-72"
-        x-transition:leave="transition-all ease-in-out duration-500"
-        x-transition:leave-start="w-72"
-        x-transition:leave-end="w-16">
+        x-ref="mainSidebar">
         <!-- MARK:ROW-1-ContentButtons -->
         <div class="flex flex-col items-center justify-start gap-4">
           <!-- CLIENTS -->
@@ -128,20 +122,11 @@
       </div>
       <!--MARK: VIEWS -->
       <div class="flex flex-col w-full p-6 overflow-auto bg-[#fafafa] will-change-auto dark:bg-vdp2">
-        <div
-          x-ref="tabContentContainer"
-          x-show="!isLoading"
-          x-transition:enter="transition ease-in duration-200 transform"
-          x-transition:enter-start="opacity-0 translate-y-40"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          x-transition:leave="transition ease-out duration-100 transform"
-          x-transition:leave-start="opacity-100 translate-y-0"
-          x-transition:leave-end="opacity-0 translate-y-20"
-          class="w-full h-full">
+        <div class="w-full h-full">
           <!-- Main View -->
           <div
             x-show="$store.clients.clients.length > 0 && $store.clients.selectedClient !== null"
-            x-html="globalTabContent"></div>
+            x-html="tabHtml"></div>
           <!-- MARK: CREATE CLIENT MODAL -->
           <div
             x-show="$store.clients.showAddClientModal"
@@ -155,6 +140,7 @@
                   <h3 class="mb-4 modal-title">Add Client</h3>
                   <form>
                     <input
+                      id="addCliName"
                       x-model="$store.clients.newClient.name"
                       x-ref="addNewClientName"
                       name="name"
@@ -299,7 +285,6 @@
     <script type="module" src="/store/colorTheme.js"></script>
     <script type="module" src="/store/clientStore.js"></script>
     <script type="module" src="/store/prices.js"></script>
-    <script type="module" src="/store/globStore.js"></script>
     <script type="module" src="/store/tossStore.js"></script>
 
     <!-- 2) Then your app.js, which references the store and sets up tabManager, etc -->

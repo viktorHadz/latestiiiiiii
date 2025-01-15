@@ -2,7 +2,7 @@
   <div class="inset-0 flex justify-between p-1 mb-12 align-baseline border rounded-md border-vls/40 dark:border-vls/40">
     <div>
       <button @click="openModal()" class="flex items-baseline butt-style">
-        <svg width="16" height="16" class="mr-1.5">
+        <svg class="mr-1.5 size-4">
           <use href="/icons/icons.svg#select-client" />
         </svg>
         Select Client
@@ -10,17 +10,17 @@
     </div>
     <div class="flex align-middle">
       <h3
-        class="self-center text-md text-vls2 dark:text-vds"
-        x-text="`${selectedClient.name || 'No selected client'}`"></h3>
+        class="self-center text-md text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
+        x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
     </div>
   </div>
 
   <!-- Conditional display for when a client is selected -->
-  <template x-if="selectedClient">
+  <template x-if="$store.clients.selectedClient !== null">
     <div>
       <!-- MARK: TABS ALPINE -->
       <div class="relative w-full max-w-full mb-12">
-        <div x-ref="tabButtons" class="mb-2 toggler">
+        <div x-ref="invoicingTabButtons" class="mb-2 toggler">
           <!-- Styles Tab Button -->
           <button
             :id="$id(invoicingTabId)"
@@ -46,10 +46,10 @@
           <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative">
             <!-- MARK:STYLES -->
             <div class="flex justify-between p-2 mb-4 align-middle">
-              <!-- Selected Client's Styles Information -->
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
+                  id="styleSearchInput"
                   type="text"
                   placeholder="Search Styles..."
                   class="transition-all duration-500 srch-style"
@@ -63,7 +63,7 @@
                 <button
                   @click="showAddStyleModal = true; if(showAddStyleModal) $nextTick(() => { ($refs.newStyleName.focus()) });"
                   @keydown.escape.window="showAddStyleModal = false"
-                  class="butt-style flex items-center !p-1.5">
+                  class="butt-style flex items-center">
                   Add Style
                 </button>
               </div>
@@ -114,6 +114,7 @@
               <!-- Style Search Input -->
               <div class="transition-all duration-500">
                 <input
+                  id="sampleSearchInput"
                   type="text"
                   placeholder="Search Styles..."
                   class="transition-all duration-500 srch-style"
@@ -125,7 +126,7 @@
                 <button
                   @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
                   @keydown.escape.window="showAddSampleModal = false"
-                  class="butt-style flex items-center !p-1.5">
+                  class="butt-style flex items-center">
                   Add Sample
                 </button>
               </div>
@@ -156,6 +157,7 @@
                             </svg>
                           </button>
                           <input
+                            $id="smplQtyInput + sample.id"
                             type="number"
                             placeholder="1"
                             x-model.number="quantities[sample.id]"
@@ -179,6 +181,7 @@
           <!-- INVOICE ITEMS -->
           <div>
             <input
+              id="invoiceSearchInput"
               type="text"
               placeholder="Search Invoice Items..."
               class="transition-all duration-500 srch-style"
@@ -189,7 +192,7 @@
             <h2 class="self-center text-lg font-semibold text-vls2 dark:text-vds">Invoice</h2>
           </div>
           <div class="flex justify-end">
-            <button @click="removeAllInvoiceItems()" class="butt-style !p-1.5">Remove All</button>
+            <button @click="removeAllInvoiceItems()" class="butt-style">Remove All</button>
           </div>
         </div>
         <!-- Invoice Items Table Section -->
@@ -664,7 +667,7 @@
             x-collapse.duration.500ms
             class="table-scrollbar modal-dropdown max-h-[300px] w-full overflow-auto bg-vlp dark:bg-vds2">
             <ul>
-              <template x-for="client in clients" :key="client.id">
+              <template x-for="client in $store.clients.clients" :key="client.id">
                 <li
                   @click="selectClient(client)"
                   class="p-2 text-left rounded-md cursor-pointer dark:bg-vd text-vls hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
@@ -685,7 +688,7 @@
       <div class="text-center" @click.outside="showAddStyleModal = false">
         <div class="p-6">
           <h3 class="mb-4 modal-title">Add Style</h3>
-          <form @submit.prevent="invoAddStyle">
+          <form @submit.prevent="addStyle">
             <input
               x-model="newStyle.name"
               x-ref="newStyleName"
@@ -718,7 +721,7 @@
       <div class="text-center" @click.outside="showAddSampleModal = false">
         <div class="p-6">
           <h3 class="mb-4 modal-title">Add Sample</h3>
-          <form @submit.prevent="invoAddSample">
+          <form @submit.prevent="addSample">
             <input
               x-model="newSample.name"
               x-ref="newSampleName"
