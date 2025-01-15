@@ -794,8 +794,9 @@ export default function invoiceManager() {
 
     /*MARK: ADD STYLES & SAMPLE */
     // Adds new style/sample in DB and updates UI
+    // THEERROR IS HERE - AND INSIDE ROUTES LOOK THERE 
     async addStyle() {
-      const style = { ...this.newStyle, client_id: this.selectedClient.id }
+      const style = { ...this.newStyle, client_id: Alpine.store('clients').selectedClient.id }
       try {
         const response = await fetch('/item/styles/new', {
           method: 'POST',

@@ -22,11 +22,12 @@ router.post('/styles/new', (req, res) => {
   // Ensure the client exists before inserting the style
   db.get('SELECT * FROM clients WHERE id = ?', [client_id], (error, client) => {
     if (error) return res.status(500).send({ error: error.message })
-    if (!client) return res.status(404).send({ error: 'Client not found --> styles/new' })
+    if (!client) return res.status(404).send({ error: 'Client not found --> item/styles/new' })
 
     db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, client_id], function (error) {
       if (error) return res.status(500).send(error)
-      res.status(201).json({ id: this.lastID, message: 'Style added successfully' })
+      // Copilot bullshit and i believed it what a fool. It inserts this message into your style object on the frontend but performs the correct operation on the frontent. You asked it to refactor for better error handling
+      res.status(201).json({ id: this.lastID, name: name, price: price })
     })
   })
 })
