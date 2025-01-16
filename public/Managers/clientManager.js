@@ -61,7 +61,6 @@ export default function clientManager() {
           }
 
           await Alpine.store('clients').fetchClients()
-          callSuccess('Client removed')
         } catch (error) {
           console.error('Error removing client:', error)
           callError('Failed to remove client.', 'Please try again or call support...')

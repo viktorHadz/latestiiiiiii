@@ -336,9 +336,9 @@ input::-webkit-inner-spin-button {
   @apply active:scale-95 active:border-vla;
 }
 .dark .modal-btn-prim {
-  @apply px-2 py-1 text-base duration-500 border border-transparent rounded-md bg-vds3neu700 text-vlp2;
-  @apply hover:border-vda hover:bg-vds2 hover:text-vda;
-  @apply active:scale-95 active:border-vda;
+  @apply px-2 py-1 text-base duration-500 border border-none rounded-md bg-vds3neu700 text-vds;
+  @apply hover:border-vda2 hover:bg-vdp2 hover:text-vda2;
+  @apply active:scale-95;
 }
 .modal-btn-sec {
   @apply px-2 py-1 text-base transition duration-300 bg-red-800 rounded-md text-vlp;

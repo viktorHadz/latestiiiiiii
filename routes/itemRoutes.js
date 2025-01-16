@@ -13,24 +13,35 @@ router.get('/styles/client/:id', (req, res) => {
     res.json(results) // Corrected from "result" to "results"
   })
 })
-// Create a new style
-router.post('/styles/new', (req, res) => {
-  const { name, price, client_id } = req.body
-  if (!name || !price || !client_id) {
-    return res.status(400).json({ error: 'Name, price, and client_id are required' })
-  }
-  // Ensure the client exists before inserting the style
-  db.get('SELECT * FROM clients WHERE id = ?', [client_id], (error, client) => {
-    if (error) return res.status(500).send({ error: error.message })
-    if (!client) return res.status(404).send({ error: 'Client not found --> item/styles/new' })
 
-    db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, client_id], function (error) {
-      if (error) return res.status(500).send(error)
-      // Copilot bullshit and i believed it what a fool. It inserts this message into your style object on the frontend but performs the correct operation on the frontent. You asked it to refactor for better error handling
-      res.status(201).json({ id: this.lastID, name: name, price: price })
-    })
-  })
+router.post('/styles/new', (req, res) => {
+  const { name, price, clientId } = req.body
+  if (req.body) {
+    console.log('gotit')
+    console.log(req.body)
+    console.log(name)
+    console.log(price)
+    console.log(clientId)
+  }
 })
+// // Create a new style
+// router.post('/styles/new', (req, res) => {
+//   const { name, price, client_id } = req.body
+//   if (!name || !price || !client_id) {
+//     return res.status(400).json({ error: 'Name, price, and client_id are required' })
+//   }
+//   // Ensure the client exists before inserting the style
+//   db.get('SELECT * FROM clients WHERE id = ?', [client_id], (error, client) => {
+//     if (error) return res.status(500).send({ error: error.message })
+//     if (!client) return res.status(404).send({ error: 'Client not found --> item/styles/new' })
+
+//     db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, client_id], function (error) {
+//       if (error) return res.status(500).send(error)
+//       // Copilot bullshit and i believed it what a fool. It inserts this message into your style object on the frontend but performs the correct operation on the frontent. You asked it to refactor for better error handling
+//       res.status(201).json({ id: this.lastId, name: name, price: price })
+//     })
+//   })
+// })
 // Update an existing style
 router.put('/styles/update/:id', (req, res) => {
   const { name, price } = req.body

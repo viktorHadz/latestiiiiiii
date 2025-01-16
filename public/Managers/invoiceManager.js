@@ -794,7 +794,7 @@ export default function invoiceManager() {
 
     /*MARK: ADD STYLES & SAMPLE */
     // Adds new style/sample in DB and updates UI
-    // THEERROR IS HERE - AND INSIDE ROUTES LOOK THERE 
+    // THEERROR IS HERE - AND INSIDE ROUTES LOOK THERE
     async addStyle() {
       const style = { ...this.newStyle, client_id: Alpine.store('clients').selectedClient.id }
       try {
@@ -805,10 +805,10 @@ export default function invoiceManager() {
         })
         if (!response.ok) {
           const errorData = await response.json()
-          throw new Error(errorData.message || 'Failed to add style.')
+          throw new Error(errorData.error || 'Failed to add style.')
         }
         const newStyle = await response.json()
-        this.styles.push({ ...newStyle })
+        this.styles.push(newStyle)
         this.filteredStyles = this.styles
         this.showAddStyleModal = false
         this.newStyle = { name: '', price: null }
@@ -818,6 +818,7 @@ export default function invoiceManager() {
         callError('Error adding style.', error.message || 'Try again or call support.')
       }
     },
+
     async addSample() {
       const sample = { ...this.newSample, client_id: this.selectedClient.id }
       try {

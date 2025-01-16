@@ -27,6 +27,16 @@ document.addEventListener('alpine:init', () => {
       else if (!this.selectedClient) {
         this.showClientModal = true
       }
+
+      Alpine.effect(() => {
+        this.watchClients()
+      })
+    },
+    watchClients() {
+      if (this.clients.length === 0) {
+        callWarning('No clients', 'Please add a client to continue.')
+        this.showAddClientModal = true
+      }
     },
 
     async fetchClients() {
