@@ -7,7 +7,9 @@ document.addEventListener('alpine:init', () => {
       price: null,
       time: null,
     },
+
     selectedClient: JSON.parse(localStorage.getItem('selectedClient')) || null,
+
     async addStyle() {
       console.log({ name: this.item.name, price: this.item.price, client_id: this.selectedClient.id })
       const response = await fetch('/item/styles/new', {
@@ -15,14 +17,20 @@ document.addEventListener('alpine:init', () => {
         body: JSON.stringify({
           name: this.item.name,
           price: this.item.price,
-          client_id: Alpine.store('clients').clients.id,
+          clientId: Alpine.store('clients').selectedClient.id,
         }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
 
       if (!response.ok) {
         console.error('Failed to add style')
       }
+      const dataBack = await response.json()
+      console.log('From server:', dataBack)
     },
+
     // addSample() {},
   })
 })

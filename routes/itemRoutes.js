@@ -15,15 +15,29 @@ router.get('/styles/client/:id', (req, res) => {
 })
 
 router.post('/styles/new', (req, res) => {
-  const { name, price, clientId } = req.body
-  if (req.body) {
-    console.log('gotit')
-    console.log(req.body)
-    console.log(name)
-    console.log(price)
-    console.log(clientId)
+  try {
+    const { name, price, clientId } = req.body
+    if (!name || !price || !clientId) throw 'Error in request body'
+
+    db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, client) => {
+      if (error) {
+        return res.status(500).json({ error: 'Database error' })
+      }
+      if (!client) {
+        return res.status(400).json({ error: 'No client in db.' })
+      }
+      db.run('INSERT INTO styles (name, price, clientId) VALUES (?, ?, ?)', [name, price, clientId], error => {
+        if (error) {
+          return res.status(500).json({ error: 'Failed to insert style' })
+        }
+        res.json({ message: 'Style inserted into db successfully' })
+      })
+    })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
   }
 })
+
 // // Create a new style
 // router.post('/styles/new', (req, res) => {
 //   const { name, price, client_id } = req.body
