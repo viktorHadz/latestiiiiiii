@@ -1,0 +1,41 @@
+<div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
+  <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
+    <div class="text-center" @click.outside="showAddSampleModal = false">
+      <div class="p-6">
+        <h3 class="mb-4 modal-title">Add Sample</h3>
+        <form @submit.prevent="addSample">
+          <input
+            x-model="newSample.name"
+            x-ref="newSampleName"
+            name="name"
+            type="text"
+            placeholder="Sample Name"
+            class="w-full mb-2 modal-input-style"
+            required />
+          <input
+            x-model="newSample.time"
+            name="time"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Time (in minutes)"
+            class="w-full mb-2 modal-input-style"
+            required />
+          <input
+            x-model="newSample.price"
+            name="price"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Price"
+            class="w-full mb-2 modal-input-style"
+            required />
+          <div class="flex justify-end gap-8 mt-2">
+            <button type="submit" class="modal-btn-prim">Add</button>
+            <button @click="showAddSampleModal = false" class="modal-btn-sec">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

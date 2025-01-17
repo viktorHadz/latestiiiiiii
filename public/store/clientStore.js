@@ -185,9 +185,3 @@ document.addEventListener('alpine:init', () => {
     console.log('[ClientStore] reactive test:', Alpine.store('clients').test)
   })
 })
-// async selectClient(client) {
-//   this.selectedClient = client
-//   localStorage.setItem('selectedClient', JSON.stringify(client))
-//   this.showClientModal = false
-//   callSuccess('Client Selected', `${client.name} is now active.`)
-// },

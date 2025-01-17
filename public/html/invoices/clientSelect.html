@@ -1,0 +1,17 @@
+<div x-data="clientSelect">
+  <div class="inset-0 p-0.5 mb-12 align-baseline border rounded-md border-vls/60 dark:border-vls/40">
+    <div class="bg-vls3 dark:bg-vdp flex justify-between p-2 rounded-md">
+      <div>
+        <button @click="$store.clients.showClientModal = true" class="flex items-baseline butt-style p-1">
+          <svg class="mr-1.5 size-4">
+            <use href="/icons/icons.svg#select-client" />
+          </svg>
+          Select Client
+        </button>
+      </div>
+      <h3
+        class="self-center text-md text-vlp2 dark:text-vds underline decoration-vla dark:decoration-vda"
+        x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
+    </div>
+  </div>
+</div>

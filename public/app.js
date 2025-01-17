@@ -85,5 +85,6 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('clientManager', clientManager)
   Alpine.data('itemEditor', itemEditor)
   // Alpine.data('invoiceManager', invoiceManager)
+  Alpine.data('invoiceManager2', invoiceManager2)
   Alpine.data('editorManager', editorManager)
 })

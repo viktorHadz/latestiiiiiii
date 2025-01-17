@@ -57,7 +57,7 @@
           </button> -->
           <!-- INVOICES 2 -->
           <button
-            @click="tabButtonClicked('invoices')"
+            @click="tabButtonClicked('invoices2')"
             :class="{ 'tab-button-active': tabContentActive('invoices') }"
             class="flex items-center tab-button">
             <div x-show="sideBar" class="flex items-center p-2">
@@ -222,7 +222,7 @@
                 <div
                   x-anchor.offset.5="$refs.clientModalButton"
                   x-show="$store.clients.showDropdown"
-                  x-collapse.duration.500ms
+                  x-transition.duration.500ms
                   class="w-full overflow-auto table-scrollbar modal-dropdown max-h-80 bg-vlp dark:bg-vds2">
                   <ul>
                     <template x-for="client in $store.clients.clients" :key="client.id">
@@ -235,6 +235,12 @@
                     </template>
                   </ul>
                 </div>
+                <button
+                  x-show="$store.clients.selectedClient !== null"
+                  @click="$store.clients.showClientModal = false"
+                  class="modal-btn-sec flex place-self-center">
+                  Close
+                </button>
               </div>
             </div>
           </div>
@@ -296,7 +302,6 @@
         </div>
       </div>
     </div>
-    <style></style>
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <!-- 1) The store definitions (including clientStore.js) -->
     <script type="module" src="/store/colorTheme.js"></script>
