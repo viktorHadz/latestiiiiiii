@@ -1,4 +1,4 @@
-<div x-data="invoiceManager" class="relative w-full px-12 py-4 2xl:px-20">
+<div x-data="invoiceManager2" class="relative w-full px-12 py-4 2xl:px-20">
   <div class="inset-0 flex justify-between p-1 mb-12 align-baseline border rounded-md border-vls/40 dark:border-vls/40">
     <div>
       <button @click="openModal()" class="flex items-baseline butt-style p-1">
@@ -61,7 +61,7 @@
               <!-- Add Style Button -->
               <div class="flex">
                 <button
-                  @click="showAddStyleModal = true; if(showAddStyleModal) $nextTick(() => { ($refs.newStyleName.focus()) });"
+                  @click="$store.items.modalStyle = !$store.items.modalStyle; $nextTick(() => { ($refs.styleName.focus()) })"
                   class="butt-style flex items-center">
                   Add Style
                 </button>
@@ -680,41 +680,37 @@
       </div>
     </div>
   </div>
-  <div x-show="$store.items.openModal('style')"></div>
   <!-- MARK: ADD STYLE MODAL -->
-  <div
-    x-show="$store.items.openModal('style')"
-    x-transition.opacity.duration.300
-    class="z-50 outter-modal-overlay-blur-fixed">
-    <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
-      <div class="text-center" @keydown.escape.window="showAddStyleModal = false">
-        <div class="p-6">
-          <h3 class="mb-4 modal-title">Add Style</h3>
-          <input
-            x-model="newStyle.name"
-            x-ref="newStyleName"
-            name="name"
-            type="text"
-            placeholder="Style Name"
-            class="w-full mb-2 modal-input-style"
-            required />
-          <input
-            x-model="newStyle.price"
-            name="price"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="Price"
-            class="w-full mb-2 modal-input-style"
-            required />
-          <div class="flex justify-end gap-8 mt-2">
-            <button @click.prevent="addStyle()" class="modal-btn-prim">Add</button>
-            <button @click="showAddStyleModal = false" class="modal-btn-sec">Close</button>
+  <div>
+    <template x-teleport="body">
+      <div class="outter-modal-overlay-blur-fixed z-[100]" x-show="$store.items.modalStyle">
+        <div class="inner-modal-size-positioning-relative modal-bg-and-borders p-6 space-y-4">
+          <h2 class="modal-title">Add Style</h2>
+          <form @submit.prevet="$store.items.addStyle()" class="space-y-4">
+            <input
+              type="text"
+              x-ref="styleName"
+              x-model="$store.items.item.name"
+              placeholder="Style name..."
+              class="w-full modal-input-style !p-1.5"
+              required />
+            <input
+              required
+              type="text"
+              x-ref="stylePrice"
+              x-model.number="$store.items.item.price"
+              :placeholder="$store.items.item.price === null ? 'Style price...' : ''"
+              class="w-full mb-2 modal-input-style !p-1.5" />
+          </form>
+          <div class="w-full flex items-center justify-end space-x-6">
+            <button @click.prevent="$store.items.addStyle()" class="modal-btn-prim">add</button>
+            <button @click="$store.items.modalStyle = false" class="modal-btn-sec">close</button>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
+
   <!-- MARK: ADD SAMPLE MODAL -->
   <div x-show="showAddSampleModal" x-transition.opacity.duration.300 class="z-50 outter-modal-overlay-blur-fixed">
     <div class="inner-modal-size-positioning-relative modal-bg-and-borders">

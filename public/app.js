@@ -1,18 +1,16 @@
 // app.js
 import itemEditor from '/components/items/itemEditor.js'
 import clientManager from '/Managers/clientManager.js'
-import invoiceManager from '/Managers/invoiceManager.js'
+// import invoiceManager from '/Managers/invoiceManager.js'
+import invoiceManager2 from '/Managers/invoicing/invoiceManager2.js'
 import editorManager from '/Managers/editorManager.js'
 
 document.addEventListener('alpine:init', () => {
   console.log('[App.js] Alpine initialized')
-
   Alpine.data('tabManager', () => ({
     tabSelected: Alpine.$persist('').as('tabSelected'),
     tabHtml: Alpine.$persist('').as('tabHtml'),
-
     sideBar: Alpine.$persist(true).as('sideBar'),
-
     init() {
       console.log('[TabManager] init()')
       // Watch for the store finishing fetch
@@ -70,8 +68,10 @@ document.addEventListener('alpine:init', () => {
       // Once the HTML is inserted, register the relevant Alpine data
       if (tabName === 'clients') {
         Alpine.data('clientManager', clientManager)
-      } else if (tabName === 'invoices') {
-        Alpine.data('invoiceManager', invoiceManager)
+        // } else if (tabName === 'invoices') {
+        // Alpine.data('invoiceManager', invoiceManager)
+      } else if (tabName === 'invoices2') {
+        Alpine.data('invoiceManager2', invoiceManager2)
       } else if (tabName === 'editor') {
         Alpine.data('editorManager', editorManager)
       }
@@ -82,9 +82,8 @@ document.addEventListener('alpine:init', () => {
     },
   }))
 
-  // Initialize other data managers globally (if needed)
   Alpine.data('clientManager', clientManager)
   Alpine.data('itemEditor', itemEditor)
-  Alpine.data('invoiceManager', invoiceManager)
+  // Alpine.data('invoiceManager', invoiceManager)
   Alpine.data('editorManager', editorManager)
 })

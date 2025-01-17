@@ -39,6 +39,23 @@
             </div>
           </button>
           <!-- INVOICES -->
+          <!-- <button
+            @click="tabButtonClicked('invoices')"
+            :class="{ 'tab-button-active': tabContentActive('invoices') }"
+            class="flex items-center tab-button hidden">
+            <div x-show="sideBar" class="flex items-center p-2">
+              <svg width="24" height="24" class="mr-1.5">
+                <use href="/icons/icons.svg#pound-text" />
+              </svg>
+              <span x-show="sideBar">Invoices</span>
+            </div>
+            <div x-show="!sideBar" class="p-2">
+              <svg width="28" height="28">
+                <use href="/icons/icons.svg#pound-text" />
+              </svg>
+            </div>
+          </button> -->
+          <!-- INVOICES 2 -->
           <button
             @click="tabButtonClicked('invoices')"
             :class="{ 'tab-button-active': tabContentActive('invoices') }"
@@ -211,7 +228,7 @@
                     <template x-for="client in $store.clients.clients" :key="client.id">
                       <div class="mb-2">
                         <li
-                          @click="$store.clients.selectClient(client)"
+                          @click="$store.clients.setSelected(client)"
                           class="p-1 text-left rounded-md cursor-pointer dark:bg-vdp2 text-vds hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
                           x-text="client.name"></li>
                       </div>

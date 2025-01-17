@@ -24,6 +24,6 @@ app.use('/item', itemRoutes)
 app.use(globalRoutes)
 
 app.listen(port, () => {
-  createDbBackup()
+  // createDbBackup()
   console.log(`Server running on http://localhost:${port}`)
 })

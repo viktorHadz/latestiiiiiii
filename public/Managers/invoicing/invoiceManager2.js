@@ -1,11 +1,13 @@
-export default function invoiceManager() {
+export default function invoiceManager2() {
   return {
     showClientModal: false,
     showDropdown: false,
+    clients: [],
     styles: [],
     filteredStyles: [],
     samples: [],
     filteredSamples: [],
+    selectedClient: null,
     // Invoicing
     invoiceItems: [],
     invoiceSearchQuery: '',
@@ -77,9 +79,9 @@ export default function invoiceManager() {
     invoicingTabSelected: '1',
     invoicingTabId: 'taab',
 
-    async init() {
+    init() {
       console.log('>>---- Invoice Manager --> initialized')
-      await Alpine.store('clients').init()
+      Alpine.store('clients').clients = this.clients
       // this.fetchClients()
       this.loadSelectedClient()
 
@@ -428,6 +430,15 @@ export default function invoiceManager() {
     },
 
     /*------------------------------CLIENT FETCHING LOGIC------------------------*/
+    // async fetchClients() {
+    //   try {
+    //     const response = await fetch('/api/clients')
+    //     this.clients = await response.json()
+    //   } catch (error) {
+    //     console.error('Error fetching clients:', error)
+    //     callError('Cannot get client. Try again, restart program or call support.')
+    //   }
+    // },
 
     async selectClient(client) {
       const handleClientChange = async () => {
@@ -487,11 +498,7 @@ export default function invoiceManager() {
 
     async fetchStyles(clientId) {
       try {
-        const response = await fetch(`/item/styles/client/${clientId}`)
-        if (!response.ok) {
-          callError('Failed to fetch styles.', 'Please try again or contact support.')
-          throw new Error('Failed to fetch styles.')
-        }
+        const response = await fetch(`/api/styles/client/${clientId}`)
         this.styles = (await response.json()).map(style => ({ ...style }))
         this.filteredStyles = this.styles
       } catch (error) {
@@ -501,11 +508,7 @@ export default function invoiceManager() {
     },
     async fetchSamples(clientId) {
       try {
-        const response = await fetch(`/item/samples/client/${clientId}`)
-        if (!response.ok) {
-          callError('Failed to fetch samples.', 'Please try again or contact support.')
-          throw new Error('Failed to fetch styles.')
-        }
+        const response = await fetch(`/api/samples/client/${clientId}`)
         this.samples = (await response.json()).map(sample => ({
           ...sample,
         }))
@@ -794,43 +797,33 @@ export default function invoiceManager() {
 
     /*MARK: ADD STYLES & SAMPLE */
     // Adds new style/sample in DB and updates UI
-    // THEERROR IS HERE - AND INSIDE ROUTES LOOK THERE
-    async addStyle() {
-      const style = { ...this.newStyle, client_id: Alpine.store('clients').selectedClient.id }
+    async invoAddStyle() {
+      const style = { ...this.newStyle, client_id: this.selectedClient.id }
       try {
-        const response = await fetch('/item/styles/new', {
+        const response = await fetch('/styles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(style),
         })
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || 'Failed to add style.')
-        }
         const newStyle = await response.json()
-        this.styles.push(newStyle)
+        this.styles.push({ ...newStyle })
         this.filteredStyles = this.styles
         this.showAddStyleModal = false
         this.newStyle = { name: '', price: null }
         callSuccess('Successfully added style.')
       } catch (error) {
         console.error('Error adding style:', error)
-        callError('Error adding style.', error.message || 'Try again or call support.')
+        callError('Error adding style.', 'Try again or call support.')
       }
     },
-
-    async addSample() {
+    async invoAddSample() {
       const sample = { ...this.newSample, client_id: this.selectedClient.id }
       try {
-        const response = await fetch('item/samples/new', {
+        const response = await fetch('/samples', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(sample),
         })
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.message || 'Failed to add sample.')
-        }
         const newSample = await response.json()
         this.samples.push({ ...newSample, isEditing: false })
         this.filteredSamples = this.samples
@@ -839,7 +832,7 @@ export default function invoiceManager() {
         callSuccess('Successfully added sample.')
       } catch (error) {
         console.error('Error adding sample:', error)
-        callError('Error adding sample.', error.message || 'Try again or call support.')
+        callError('Error adding sample.', 'Try again or call support.')
       }
     },
 

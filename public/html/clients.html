@@ -24,17 +24,14 @@
         <span class="flex self-center">Add Client</span>
       </button>
     </div>
-    <div>
-      <button class="bg-vda2 border p-1 rounded-md text-xs" @click="$store.clients.add()">reactivity +</button>
-      <button class="bg-blue-500 border p-1 rounded-md text-xs" @click="$store.clients.subtract()">reactivity -</button>
-    </div>
+
     <!-- Clients Table -->
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
       <thead class="table-head-style">
         <tr>
           <th class="hidden max-w-1/12">ID</th>
           <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
-          <th class="p-2 text-base text-left max-w-2/12">Company Name</th>
+          <th class="p-2 text-base text-left max-w-2/12">Company</th>
           <th class="p-2 text-base text-left max-w-2/12">Address</th>
           <th class="p-2 text-base text-left max-w-2/12">Email</th>
           <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
@@ -79,7 +76,7 @@
             <td class="text-sm text-center round-right-border">
               <template x-if="client.isEditing">
                 <div class="flex items-center justify-evenly">
-                  <button @click="updateClient(client)" class="table-interaction-icon-blue p-1.5">
+                  <button @click="$store.clients.updateClient(client)" class="table-interaction-icon-blue p-1.5">
                     <svg width="20" height="20" class="">
                       <use href="/icons/icons.svg#check-circle" />
                     </svg>
@@ -101,7 +98,7 @@
                       <use href="/icons/icons.svg#pencil" />
                     </svg>
                   </button>
-                  <button @click="removeClient(client.id)" class="table-interaction-icon-red p-1.5">
+                  <button @click="$store.clients.removeClient(client.id)" class="table-interaction-icon-red p-1.5">
                     <svg width="20" height="20" class="">
                       <use href="/icons/icons.svg#trash" />
                     </svg>
