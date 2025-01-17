@@ -38,24 +38,6 @@ router.post('/styles/new', (req, res) => {
   }
 })
 
-// // Create a new style
-// router.post('/styles/new', (req, res) => {
-//   const { name, price, client_id } = req.body
-//   if (!name || !price || !client_id) {
-//     return res.status(400).json({ error: 'Name, price, and client_id are required' })
-//   }
-//   // Ensure the client exists before inserting the style
-//   db.get('SELECT * FROM clients WHERE id = ?', [client_id], (error, client) => {
-//     if (error) return res.status(500).send({ error: error.message })
-//     if (!client) return res.status(404).send({ error: 'Client not found --> item/styles/new' })
-
-//     db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, client_id], function (error) {
-//       if (error) return res.status(500).send(error)
-//       // Copilot bullshit and i believed it what a fool. It inserts this message into your style object on the frontend but performs the correct operation on the frontent. You asked it to refactor for better error handling
-//       res.status(201).json({ id: this.lastId, name: name, price: price })
-//     })
-//   })
-// })
 // Update an existing style
 router.put('/styles/update/:id', (req, res) => {
   const { name, price } = req.body
@@ -78,11 +60,6 @@ router.delete('/styles/delete/:id', (req, res) => {
 
 // SAMPLES BELOW
 
-// I THINK INVOICES ARE USING THEIR OWN
-
-// STILL USED IN REWORKED CODE 8/01/2025
-// SAMPLES BABY
-// !!!!!!!SAMPLES!!!!!!!!!!!!!!
 // Fetch all samples for a specific client
 router.get('/samples/client/:clientId', (req, res) => {
   const clientId = req.params.clientId
@@ -93,32 +70,35 @@ router.get('/samples/client/:clientId', (req, res) => {
     res.json(results)
   })
 })
+
 router.post('/samples/new', (req, res) => {
-  const { name, time, price, client_id } = req.body
-  if (!name || !time || !price || !client_id) {
-    return res.status(400).json({ error: 'Name, time, price, and client_id are required' })
-  }
-  db.run(
-    'INSERT INTO samples (name, time, price, client_id) VALUES (?, ?, ?, ?)',
-    [name, time, price, client_id],
-    function (error) {
+  try {
+    const { name, time, price, clientId } = req.body
+    if (!name || !time || !price || !clientId) throw 'Error in request body samples: check routes'
+
+    db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, client) => {
       if (error) {
-        return res.status(500).send(error)
+        return res.status(500).json({ error: 'Database error' })
       }
-      // Fetch the newly added sample details
-      db.get('SELECT * FROM samples WHERE id = ?', [this.lastID], (error, newSample) => {
-        if (error) {
-          return res.status(500).send(error)
-        }
-        if (newSample) {
-          res.status(201).json(newSample)
-        } else {
-          res.status(404).json({ message: 'Newly added sample not found.' })
-        }
-      })
-    },
-  )
+      if (!client) {
+        return res.status(400).json({ error: 'No client in db.' })
+      }
+      db.run(
+        'INSERT INTO samples (name, time, price, clientId) VALUES (?, ?, ?, ?)',
+        [name, time, price, clientId],
+        error => {
+          if (error) {
+            return res.status(500).json({ error: 'Failed to insert sample' })
+          }
+          res.json({ message: 'Sample inserted into db successfully' })
+        },
+      )
+    })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
 })
+
 // Update a sample (e.g. after editing)
 router.put('/samples/update/:id', (req, res) => {
   const { name, time, price } = req.body

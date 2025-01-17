@@ -1,0 +1,163 @@
+<!-- Conditional display for when a client is selected -->
+<div x-data="tabsInvoice">
+  <template x-if="$store.clients.selectedClient !== null">
+    <div>
+      <!-- MARK: TABS ALPINE -->
+      <div class="relative w-full max-w-full mb-12">
+        <div x-ref="invoicingTabButtons" class="mb-2 toggler">
+          <!-- Styles Tab Button -->
+          <button
+            :id="$id(invoicingTabId)"
+            @click="invoicingTabButtonClicked($el);"
+            type="button"
+            :class="{ 'toggler-active' : invoicingTabButtonActive($el), 'toggler-inactive': !invoicingTabButtonActive($el) }">
+            Styles
+          </button>
+          <!-- Samples Tab Button -->
+          <button
+            :id="$id(invoicingTabId)"
+            @click="invoicingTabButtonClicked($el);"
+            type="button"
+            :class="{ 'toggler-active' : invoicingTabButtonActive($el), 'toggler-inactive': !invoicingTabButtonActive($el) }">
+            Samples
+          </button>
+          <!-- Slider Background -->
+          <div x-ref="tabMarker" class="z-0 toggler-handle-bg p-0.5" x-cloak>
+            <div class="toggler-handle-inner"></div>
+          </div>
+        </div>
+        <div class="relative text-xs border rounded-md border-vls/40 text-vlp dark:text-vds">
+          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative">
+            <!-- MARK:STYLES -->
+            <div class="flex justify-between p-2 mb-4 align-middle">
+              <!-- Style Search Input -->
+              <div class="transition-all duration-500">
+                <input
+                  id="styleSearchInput"
+                  type="text"
+                  placeholder="Search Styles..."
+                  class="transition-all duration-500 srch-style"
+                  x-model="styleSearch"
+                  @input="searchStyles"
+                  x-transition />
+              </div>
+
+              <!-- Add Style Button -->
+              <div class="flex">
+                <button
+                  @click="$store.items.modalStyle = !$store.items.modalStyle; $nextTick(() => { ($refs.styleName.focus()) })"
+                  class="butt-style flex items-center">
+                  Add Style
+                </button>
+              </div>
+            </div>
+            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 30vh">
+              <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
+                <thead class="sticky top-0 table-head-style">
+                  <tr>
+                    <th class="p-2 border border-transparent round-left-border border-clipper">Style</th>
+                    <th class="text-lg">Price</th>
+                    <th class="px-1 text-lg round-right-border border-clipper">Actions</th>
+                  </tr>
+                </thead>
+                <!-- MARK: TBODY STYLES -->
+                <tbody class="table-body-style table-scrollbar">
+                  <template x-for="style in filteredStyles" :key="style.id">
+                    <tr :id="`styleRowId-${style.id}`" class="border-hover-ring-efect">
+                      <td class="round-left-border w-[75%] p-2 py-1 text-sm" x-text="style.name"></td>
+                      <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
+                      <td class="round-right-border w-[5%] pr-1 text-left text-sm">
+                        <div class="flex align-middle">
+                          <button
+                            @click="addItemToInvoice(style, 'style'); $nextTick(() => applyEffect(`styleRowId-${style.id}`))"
+                            class="flex mx-1 table-interaction-icon-blue place-self-center">
+                            <svg width="20" height="20">
+                              <use href="/icons/icons.svg#plus-circle" />
+                            </svg>
+                          </button>
+
+                          <input
+                            type="number"
+                            placeholder="1"
+                            x-model.number="quantities[style.id]"
+                            @input="handleInvoQtySubmit(style)"
+                            class="flex w-12 h-6 table-input-standard place-self-center" />
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative" x-cloak>
+            <!-- MARK: SAMPLES SECTION -->
+            <div class="flex justify-between p-2 mb-4 align-middle">
+              <!-- Style Search Input -->
+              <div class="transition-all duration-500">
+                <input
+                  id="sampleSearchInput"
+                  type="text"
+                  placeholder="Search Styles..."
+                  class="transition-all duration-500 srch-style"
+                  x-model="sampleSearch"
+                  @input="searchSamples" />
+              </div>
+              <!-- Add Sample Button -->
+              <div class="flex">
+                <button
+                  @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
+                  class="butt-style flex items-center">
+                  Add Sample
+                </button>
+              </div>
+            </div>
+            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 30vh">
+              <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
+                <thead class="sticky top-0 table-head-style">
+                  <tr>
+                    <th class="p-2 border border-transparent round-left-border border-clipper">Sample Name</th>
+                    <th class="text-lg text-right">Time</th>
+                    <th class="pr-4 text-lg text-right">Price</th>
+                    <th class="px-1 text-lg round-right-border border-clipper">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="table-body-style table-scrollbar">
+                  <template x-for="sample in filteredSamples" :key="sample.id">
+                    <tr :id="`sampleRowId-${sample.id}`" class="border-hover-ring-efect">
+                      <td class="round-left-border w-[65%] p-1 text-sm" x-text="sample.name"></td>
+                      <td class="w-[10%] text-right text-sm" x-text="sample.time"></td>
+                      <td class="w-[10%] pr-4 text-right text-sm" x-text="'£' + sample.price"></td>
+                      <td class="round-right-border w-[10%] pr-1 text-left text-sm">
+                        <div class="flex justify-between align-middle">
+                          <button
+                            @click="addItemToInvoice(sample, 'sample'); $nextTick(() => applyEffect(`sampleRowId-${sample.id}`))"
+                            class="flex table-interaction-icon-blue place-self-center">
+                            <svg width="20" height="20">
+                              <use href="/icons/icons.svg#plus-circle" />
+                            </svg>
+                          </button>
+                          <input
+                            $id="smplQtyInput + sample.id"
+                            type="number"
+                            placeholder="1"
+                            x-model.number="quantities[sample.id]"
+                            @input="handleInvoQtySubmit(sample)"
+                            class="modal-input-style flex h-6 w-12 place-self-center dark:!border dark:!border-vds2 dark:hover:!border-vds" />
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--TABS ALPINE  END-->
+
+      <!-- MARK:INVOICING SECTION -->
+    </div>
+  </template>
+</div>

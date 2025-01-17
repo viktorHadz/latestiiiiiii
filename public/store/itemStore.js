@@ -25,12 +25,30 @@ document.addEventListener('alpine:init', () => {
       })
 
       if (!response.ok) {
-        console.error('Failed to add style')
+        console.table('Failed to add style')
       }
       const dataBack = await response.json()
       console.log('From server:', dataBack)
     },
 
-    // addSample() {},
+    async addSample() {
+      const response = await fetch('/item/samples/new', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: this.item.name,
+          time: this.item.time,
+          price: this.item.price,
+          clientId: Alpine.store('clients').selectedClient.id,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if (!response.ok) {
+        console.table('Failed adding style')
+      }
+      const dataBack = await response.json()
+      console.log('From server: ', dataBack)
+    },
   })
 })

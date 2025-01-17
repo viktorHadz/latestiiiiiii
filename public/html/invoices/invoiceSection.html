@@ -1,0 +1,68 @@
+<div x-data="invoicing" class="mb-12 text-xs border rounded-md border-vls/40 text-vlp dark:border-vls/40 dark:text-vds">
+  <div class="grid grid-cols-3 p-2 mb-4">
+    <!-- INVOICE ITEMS -->
+    <div>
+      <input
+        id="invoiceSearchInput"
+        type="text"
+        placeholder="Search Invoice Items..."
+        class="transition-all duration-500 srch-style"
+        x-model="invoiceSearchQuery" />
+    </div>
+    <!--  Invoice Items -->
+    <div class="flex items-center justify-center text-center">
+      <h2 class="self-center text-lg font-semibold text-vls2 dark:text-vds">Invoice</h2>
+    </div>
+    <div class="flex justify-end">
+      <button @click="removeAllInvoiceItems()" class="butt-style">Remove All</button>
+    </div>
+  </div>
+  <!-- Invoice Items Table Section -->
+  <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 25vh">
+    <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
+      <thead class="sticky top-0 table-head-style">
+        <tr>
+          <th
+            class="round-left-border border-clipper max-w-[50%] border border-transparent p-2 text-lg"
+            style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
+            Name
+          </th>
+          <th class="w-[5%] px-2 py-2 text-lg">Type</th>
+          <th class="w-[5%] px-2 py-2 text-right text-lg">Price</th>
+          <th class="mx-2 w-[5%] py-2 text-right text-lg">Qty</th>
+          <th
+            class="round-right-border border-clipper w-[5%] px-2 py-2 text-center text-lg"
+            style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="table-body-style table-scrollbar">
+        <template
+          x-for="item in invoiceItems.filter(item => invoiceSearchQuery === '' || item.name.toLowerCase().includes(invoiceSearchQuery))"
+          :key="item.uniqueId">
+          <tr class="border-hover-ring-efect">
+            <td class="round-left-border w-[50%] px-2 py-1 text-sm" x-text="item.name"></td>
+            <td class="max-w-[5%] px-2 py-1 text-left text-sm" x-text="item.type"></td>
+            <td class="max-w-[5%] px-2 py-1 text-right text-sm" x-text="'£' + item.price"></td>
+            <td class="mx-2 max-w-[5%] py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
+            <td class="round-right-border max-w-[5%] px-2 text-sm">
+              <div class="flex">
+                <button @click="removeSingleInvoiceItem(item)" class="ml-4 table-interaction-icon-red">
+                  <svg width="20" height="20">
+                    <use href="/icons/icons.svg#minus-circle" />
+                  </svg>
+                </button>
+                <button @click="removeItemFromInvoice(item)" class="ml-4 table-interaction-icon-red">
+                  <svg width="20" height="20">
+                    <use href="/icons/icons.svg#trash" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>
