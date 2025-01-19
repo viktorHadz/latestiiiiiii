@@ -17,7 +17,9 @@ router.get('/styles/client/:id', (req, res) => {
 router.post('/styles/new', (req, res) => {
   try {
     const { name, price, clientId } = req.body
-    if (!name || !price || !clientId) throw 'Error in request body'
+    if (!name) return res.status(400).json({ error: 'Missing name' })
+    if (!price) return res.status(400).json({ error: 'Missing price' })
+    if (!clientId) return res.status(400).json({ error: 'Missing clientId' })
 
     db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, client) => {
       if (error) {
@@ -26,7 +28,7 @@ router.post('/styles/new', (req, res) => {
       if (!client) {
         return res.status(400).json({ error: 'No client in db.' })
       }
-      db.run('INSERT INTO styles (name, price, clientId) VALUES (?, ?, ?)', [name, price, clientId], error => {
+      db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, clientId], error => {
         if (error) {
           return res.status(500).json({ error: 'Failed to insert style' })
         }
@@ -74,8 +76,10 @@ router.get('/samples/client/:clientId', (req, res) => {
 router.post('/samples/new', (req, res) => {
   try {
     const { name, time, price, clientId } = req.body
-    if (!name || !time || !price || !clientId) throw 'Error in request body samples: check routes'
-
+    if (!name) return res.status(400).json({ error: 'Missing name' })
+    if (!time) return res.status(400).json({ error: 'Missing time' })
+    if (!price) return res.status(400).json({ error: 'Missing price' })
+    if (!clientId) return res.status(400).json({ error: 'Missing clientId' })
     db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, client) => {
       if (error) {
         return res.status(500).json({ error: 'Database error' })
@@ -84,7 +88,7 @@ router.post('/samples/new', (req, res) => {
         return res.status(400).json({ error: 'No client in db.' })
       }
       db.run(
-        'INSERT INTO samples (name, time, price, clientId) VALUES (?, ?, ?, ?)',
+        'INSERT INTO samples (name, time, price, client_id) VALUES (?, ?, ?, ?)',
         [name, time, price, clientId],
         error => {
           if (error) {

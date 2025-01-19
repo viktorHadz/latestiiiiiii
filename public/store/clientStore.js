@@ -12,9 +12,6 @@ document.addEventListener('alpine:init', () => {
     showDropdown: false,
     isFetched: false,
 
-    // Reactive store
-    test: JSON.parse(localStorage.getItem('testRea')) || 0,
-
     async init() {
       console.log('[ClientStore] init() is called')
       await this.fetchClients()
@@ -167,21 +164,5 @@ document.addEventListener('alpine:init', () => {
         callError('Error updating client', 'Failed to update client. Please try again.')
       }
     },
-
-    // Just debugging increments
-    add() {
-      this.test++
-      localStorage.setItem('testRea', JSON.stringify(this.test))
-    },
-
-    subtract() {
-      this.test--
-      localStorage.setItem('testRea', JSON.stringify(this.test))
-    },
-  })
-
-  // Debug effect
-  Alpine.effect(() => {
-    console.log('[ClientStore] reactive test:', Alpine.store('clients').test)
   })
 })

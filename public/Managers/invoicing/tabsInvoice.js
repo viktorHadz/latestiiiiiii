@@ -2,10 +2,25 @@ export default function tabsInvoice() {
   return {
     invoicingTabSelected: '1',
     invoicingTabId: 'taab',
+
+    styleSearch: '',
+    quantities: {},
+
+    search: '',
+
     init() {
       console.log('TabsInvoice initialized')
       this.invoicingTabId = this.$id('invoicingTabId')
     },
+    get filteredStyles() {
+      return Alpine.store('items').styles.filter(style => style.name.toLowerCase().includes(this.search.toLowerCase()))
+    },
+    get filteredSamples() {
+      return Alpine.store('items').samples.filter(sample =>
+        sample.name.toLowerCase().includes(this.search.toLowerCase()),
+      )
+    },
+
     invoicingTabButtonClicked(tabButton) {
       this.invoicingTabSelected = tabButton.id.replace(this.invoicingTabId + '-', '')
       this.tabRepositionMarker(tabButton)

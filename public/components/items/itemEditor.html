@@ -5,7 +5,7 @@
         id="slide-over-unknown"
         x-show="slideOverOpen"
         x-transition.opacity.duration.600ms
-        class="fixed inset-0 bg-black bg-opacity-10"></div>
+        class="fixed inset-0 bg-black bg-opacity-40"></div>
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
           <div class="fixed inset-y-0 right-0 flex max-w-full pl-10">
@@ -22,10 +22,10 @@
                 class="flex flex-col h-full py-5 overflow-y-scroll bg-white border-l shadow-lg dark:bg-vdp2 border-neutral-100/70 dark:border-vds2/70 px-4">
                 <div>
                   <h2 class="text-2xl pb-6 leading-6 text-center text-gray-900 dark:text-vds" id="slide-over-title">
-                    Edit & Remove Items
+                    Add, Edit & Remove Items
                   </h2>
 
-                  <div class="flex items-start justify-between px-4">
+                  <div class="flex items-start justify-between pr-4">
                     <div>
                       <input
                         type="text"
@@ -35,7 +35,7 @@
                         @x-on:click="console.log(search)" />
                     </div>
                     <div class="flex items-center h-auto ml-3">
-                      <button @click="slideOverOpen=false" class="butt-style">
+                      <button @click="slideOverOpen=false" class="butt-style p-2">
                         <svg width="16" height="16" class="flex self-center mr-1.5">
                           <use href="/icons/icons.svg#xmark" />
                         </svg>
@@ -44,41 +44,79 @@
                     </div>
                   </div>
                 </div>
-                <div class="relative flex-1 px-4 mt-5">
-                  <div class="absolute inset-0 px-4">
-                    <div class="relative h-full overflow-hidden rounded-md">
+                <div class="relative flex-1 mt-5">
+                  <div class="absolute inset-0">
+                    <div class="relative h-full w-full overflow-hidden rounded-md">
                       <div
                         x-data="{
                           tabSelected: 1,
-                          tabId: $id('tabs'),
-                          tabButtonClicked(tabButton){
-                            this.tabSelected = tabButton.id.replace(this.tabId + '-', '');
+                          currentClient: Alpine.store('clients').selectedClient?.id || null,
+                          init() {
+                            if (this.currentClient) {
+                              this.fetchStylesAndSamples();
+                            }
+                            $nextTick(() => {
+                              const firstTab = $refs.tabButtons?.firstElementChild;
+                              if (firstTab) {
+                                this.tabSelected = parseInt(firstTab.id);
+                                this.tabRepositionMarker(firstTab);
+                              }
+                            });
+                          },
+                          fetchStylesAndSamples() {
+                            Alpine.store('items').setStyles([]);
+                            Alpine.store('items').setSamples([]);
+                            Alpine.store('items').fetchStyles(this.currentClient);
+                            Alpine.store('items').fetchSamples(this.currentClient);
+                          },
+                          tabButtonClicked(tabButton) {
+                            this.tabSelected = parseInt(tabButton.id);
                             this.tabRepositionMarker(tabButton);
                           },
-                          tabRepositionMarker(tabButton){
-                            this.$refs.tabMarker.style.width=tabButton.offsetWidth + 'px';
-                            this.$refs.tabMarker.style.height=tabButton.offsetHeight + 'px';
-                            this.$refs.tabMarker.style.left=tabButton.offsetLeft + 'px';
+                          tabRepositionMarker(tabButton) {
+                            if (tabButton) {
+                              this.$refs.tabMarker.style.width = `${tabButton.offsetWidth}px`;
+                              this.$refs.tabMarker.style.height = `${tabButton.offsetHeight}px`;
+                              this.$refs.tabMarker.style.left = `${tabButton.offsetLeft}px`;
+                            }
                           },
-                          tabContentActive(tabContent){
-                            return this.tabSelected == tabContent.id.replace(this.tabId + '-content-', '');
-                          }
+                          tabContentActive(tabId) {
+                            return this.tabSelected === tabId;
+                          },
                         }"
-                        x-init="tabRepositionMarker($refs.tabButtons.firstElementChild); $nextTick(() => { getStyles(currentClient) });"
+                        x-effect="
+                         if (slideOverOpen) {
+                           $nextTick(() => {
+                             const activeTab = Array.from($refs.tabButtons.children).find(
+                               tab => parseInt(tab.id) === tabSelected
+                             );
+                             if (activeTab) {
+                               tabRepositionMarker(activeTab);
+                             }
+                           });
+                         }
+                       "
+                        x-init="$nextTick(() => { 
+                         const firstTab = $refs.tabButtons?.firstElementChild;
+                         if (firstTab) {
+                          tabRepositionMarker(firstTab)
+                          tabButtonClicked(firstTab)
+                         }
+                        })"
                         class="relative w-full max-w-lg">
                         <div
                           x-ref="tabButtons"
                           class="relative inline-grid items-center justify-center w-full h-10 grid-cols-2 p-1 bg-gray-100 rounded-lg select-none text-vls3 dark:text-vds dark:bg-vds3neu700">
                           <button
-                            :id="$id(tabId)"
-                            @click="tabButtonClicked($el); getStyles(currentClient)"
+                            :id="1"
+                            @click="tabButtonClicked($el)"
                             type="button"
                             class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap">
                             Styles
                           </button>
                           <button
-                            :id="$id(tabId)"
-                            @click="tabButtonClicked($el); getSamples(currentClient)"
+                            :id="2"
+                            @click="tabButtonClicked($el)"
                             type="button"
                             class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap">
                             Samples
@@ -90,184 +128,269 @@
                             <div class="w-full h-full rounded-md shadow-sm bg-gray-300 dark:bg-vdp"></div>
                           </div>
                         </div>
-                        <div class="relative w-full mt-2 content">
-                          <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative">
-                            <!-- Tab Content 1 - Replace with your content -->
+                        <div class="relative w-full mt-2">
+                          <div :id="1" x-show="tabContentActive(1)" class="relative">
+                            <!-- Tab Content 1: Styles -->
                             <div
-                              class="p-2 border rounded-lg shadow-sm border-vls/50 dark:border-vds3light/50 bg-card text-vls3 dark:text-vds h-[80vh] overflow-y-auto table-scrollbar">
-                              <div class="flex justify-between">
-                                <span class="w-2/4">Name</span>
-                                <span class="w-1/4 text-right">Price</span>
-                                <span class="w-1/4 text-right">Actions</span>
-                              </div>
-                              <hr class="dark:opacity-35" />
-                              <template x-for="style in searchFilterStyle" :key="style.id">
-                                <div>
-                                  <div class="flex py-2" x-data="{editing: false}">
-                                    <!-- Preview -->
-                                    <div x-show="!editing" x-text="style.name" class="w-2/4 text-left"></div>
-                                    <div
-                                      x-show="!editing"
-                                      x-text="Alpine.store('price').displayPrice(style.price)"
-                                      class="w-1/4 text-right"></div>
-                                    <div x-show="!editing" class="flex justify-end w-1/4 text-right">
-                                      <button
-                                        class="mr-1.5 table-interaction-icon-blue flex"
-                                        x-show="!editing"
-                                        @click="editing = true">
-                                        <svg width="18" height="18">
-                                          <use href="/icons/icons.svg#pencil" />
-                                        </svg>
-                                      </button>
-                                      <button
-                                        class="table-interaction-icon-red"
-                                        @click="deleteStyle(style.id)"
-                                        x-show="!editing">
-                                        <svg width="18" height="18">
-                                          <use href="/icons/icons.svg#trash" />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                    <!-- Editing -->
-                                    <input
-                                      x-show="editing"
-                                      x-model="style.name"
-                                      :id="'style-name-' + style.id"
-                                      :name="'style-name-' + style.id"
-                                      class="w-2/4 mr-2 text-left table-input-standard" />
-                                    <input
-                                      x-ref="editStylePrice"
-                                      x-show="editing"
-                                      x-model.number="style.price"
-                                      :id="'style-price-' + style.id"
-                                      :name="'style-price-' + style.id"
-                                      type="number"
-                                      class="w-[25%] text-right table-input-standard"
-                                      @input="Alpine.store('price').validate(style.price)"
-                                      @blur="style.price = Alpine.store('price').roundToTwo(style.price)" />
-                                    <div x-show="editing" class="flex justify-end w-1/4 text-right">
-                                      <button
-                                        class="mr-1.5 table-interaction-icon-blue"
-                                        x-show="editing"
-                                        @click="updateStyle(style.id, style.name, style.price); if(editingSampOrStyle === 'passed') {editing=false; editingSampOrStyle = 'static';}">
-                                        <svg width="20" height="20">
-                                          <use href="/icons/icons.svg#check-circle" />
-                                        </svg>
-                                      </button>
-                                      <button
-                                        class="table-interaction-icon-red"
-                                        x-show="editing"
-                                        @click="editing = false">
-                                        <svg width="20" height="20">
-                                          <use href="/icons/icons.svg#xmark-circle" />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <hr class="dark:opacity-35" />
+                              class="p-2 border rounded-lg shadow-sm border-vls/50 dark:border-vds3light/50 text-vls3 dark:text-vds">
+                              <div class="overflow-y-auto max-h-[calc(80vh-200px)] table-scrollbar">
+                                <div class="flex sticky justify-between mr-2">
+                                  <span class="w-2/4">Name</span>
+                                  <span class="w-1/4 text-right">Price</span>
+                                  <span class="w-1/4 text-right">Actions</span>
                                 </div>
-                              </template>
+                                <hr class="dark:opacity-35 mr-2" />
+                                <!-- Use Alpine.store('items').styles -->
+                                <template x-for="style in searchFilterStyle" :key="style.id">
+                                  <div class="mr-2">
+                                    <div class="flex py-2" x-data="{ editing: false }">
+                                      <!-- Preview -->
+                                      <div
+                                        x-show="!editing"
+                                        :id="'styNPv-' + style.id"
+                                        x-text="style.name"
+                                        class="w-2/4 text-left"></div>
+                                      <div
+                                        x-show="!editing"
+                                        x-text="Alpine.store('price').displayPrice(style.price)"
+                                        :id="'styPPv-' + style.id"
+                                        class="w-1/4 text-right"></div>
+                                      <div x-show="!editing" class="flex justify-end w-1/4 text-right">
+                                        <button
+                                          class="mr-1.5 table-interaction-icon-blue flex"
+                                          x-show="!editing"
+                                          @click="editing = true">
+                                          <svg width="18" height="18">
+                                            <use href="/icons/icons.svg#pencil" />
+                                          </svg>
+                                        </button>
+                                        <button
+                                          class="table-interaction-icon-red"
+                                          x-show="!editing"
+                                          @click="deleteStyle(style.id)">
+                                          <svg width="18" height="18">
+                                            <use href="/icons/icons.svg#trash" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                      <!-- Editing -->
+                                      <input
+                                        x-show="editing"
+                                        x-model="style.name"
+                                        :id="'styNE' + style.id"
+                                        class="w-2/4 mr-2 text-left table-input-standard" />
+                                      <input
+                                        x-ref="editStylePrice"
+                                        x-show="editing"
+                                        x-model.number="style.price"
+                                        :id="'styPE' + style.id"
+                                        type="number"
+                                        class="w-[25%] text-right table-input-standard"
+                                        @input="Alpine.store('price').validate(style.price)"
+                                        @blur="style.price = Alpine.store('price').roundToTwo(style.price)" />
+                                      <div x-show="editing" class="flex justify-end w-1/4 text-right">
+                                        <button
+                                          class="mr-1.5 table-interaction-icon-blue"
+                                          @click="updateStyle(style.id, style.name, style.price); editing = false;">
+                                          <svg width="20" height="20">
+                                            <use href="/icons/icons.svg#check-circle" />
+                                          </svg>
+                                        </button>
+                                        <button class="table-interaction-icon-red" @click="editing = false">
+                                          <svg width="20" height="20">
+                                            <use href="/icons/icons.svg#xmark-circle" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <hr class="dark:opacity-35" />
+                                  </div>
+                                </template>
+                              </div>
                             </div>
                             <!-- End Tab Content 1 -->
                           </div>
 
-                          <div :id="$id(tabId + '-content')" x-show="tabContentActive($el)" class="relative" x-cloak>
-                            <!-- Tab Content 2 - Replace with your content -->
+                          <div :id="2" x-show="tabContentActive(2)" class="relative" x-cloak>
+                            <!-- Tab Content 2: Samples -->
                             <div
-                              class="p-2 border rounded-lg shadow-sm border-vls dark:border-vds/50 bg-card text-vls3 dark:text-vds">
-                              <div class="flex justify-between">
-                                <span class="w-1/2">Name</span>
-                                <span class="w-1/4 text-right">
-                                  Time
-                                  <span class="text-xs">(min)</span>
-                                </span>
-                                <span class="w-1/4 text-right">Price</span>
-                                <span class="w-1/4 text-right">Actions</span>
-                              </div>
-                              <hr class="opacity-35" />
-                              <template x-for="sample in searchFilterSample" :key="sample.id">
-                                <div>
-                                  <div class="flex w-full py-2" x-data="{editing: false}">
-                                    <!-- Preview -->
-                                    <div x-show="!editing" x-text="sample.name" class="w-1/2 text-left"></div>
-                                    <div x-show="!editing" x-text="sample.time" class="w-1/4 text-right"></div>
-                                    <div
-                                      x-show="!editing"
-                                      x-text="Alpine.store('price').displayPrice(sample.price)"
-                                      class="w-1/4 text-right"></div>
-                                    <div x-show="!editing" class="flex justify-end w-1/4 text-right">
-                                      <button
-                                        class="mr-1.5 table-interaction-icon-blue flex"
-                                        x-show="!editing"
-                                        @click="editing = true">
-                                        <svg width="18" height="18">
-                                          <use href="/icons/icons.svg#pencil" />
-                                        </svg>
-                                      </button>
-                                      <button
-                                        class="table-interaction-icon-red"
-                                        x-show="!editing"
-                                        @click="deleteSample(sample.id)">
-                                        <svg width="18" height="18">
-                                          <use href="/icons/icons.svg#trash" />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                    <!-- Editing -->
-                                    <input
-                                      x-show="editing"
-                                      x-model="sample.name"
-                                      :id="'sample-id-' + sample.id"
-                                      :name="'sample-name-' + sample.id"
-                                      class="w-1/2 mr-2 table-input-standard" />
-                                    <input
-                                      x-ref="editSampleTime"
-                                      x-show="editing"
-                                      x-model.number="sample.time"
-                                      :id="'sample-time-id-' + sample.id"
-                                      :name="'sample-time-' + sample.id"
-                                      type="number"
-                                      class="w-[15%] mr-2 flex justify-self-end table-input-standard"
-                                      @input="Alpine.store('price').validate(sample.time)"
-                                      @blur="sample.time = Alpine.store('price').roundToTwo(sample.time)" />
-                                    <input
-                                      x-show="editing"
-                                      x-model.number="sample.price"
-                                      :id="'sample-price-id-' + sample.id"
-                                      :name="'sample-price-' + sample.id"
-                                      class="w-1/4 text-right table-input-standard"
-                                      type="number"
-                                      @input="Alpine.store('price').validate(sample.price)"
-                                      @blur="sample.price = Alpine.store('price').roundToTwo(sample.price)" />
-                                    <div x-show="editing" class="flex">
-                                      <button
-                                        x-show="editing"
-                                        @click="updateSample(sample.name, sample.time, sample.price, sample.id); if(editingSampOrStyle === 'passed') {editing=false; editingSampOrStyle = 'static'} "
-                                        class="mr-1.5 table-interaction-icon-blue dark:!text-vds">
-                                        <svg width="20" height="20">
-                                          <use href="/icons/icons.svg#check-circle" />
-                                        </svg>
-                                      </button>
-                                      <button
-                                        class="table-interaction-icon-red dark:!text-vds"
-                                        x-show="editing"
-                                        @click="editing = false">
-                                        <svg width="20" height="20">
-                                          <use href="/icons/icons.svg#xmark-circle" />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <hr class="opacity-35" />
+                              class="p-2 border rounded-lg shadow-sm border-vls/50 dark:border-vds3light/50 text-vls3 dark:text-vds">
+                              <div class="overflow-y-auto max-h-[calc(80vh-200px)] table-scrollbar">
+                                <div class="flex justify-between mr-2">
+                                  <span class="w-1/2">Name</span>
+                                  <span class="w-1/4 text-right">
+                                    Time
+                                    <span class="text-xs">(min)</span>
+                                  </span>
+                                  <span class="w-1/4 text-right">Price</span>
+                                  <span class="w-1/4 text-right">Actions</span>
                                 </div>
-                              </template>
+                                <hr class="opacity-35 mr-2" />
+                                <!-- Use Alpine.store('items').samples -->
+                                <template x-for="sample in searchFilterSample" :key="sample.id">
+                                  <div class="mr-2">
+                                    <div class="flex w-full py-2" x-data="{ editing: false }">
+                                      <!-- Preview -->
+                                      <div
+                                        x-show="!editing"
+                                        :id="'smpNPv' + sample.id"
+                                        x-text="sample.name"
+                                        class="w-1/2 text-left"></div>
+                                      <div
+                                        :id="'smpTP' + sample.id"
+                                        x-show="!editing"
+                                        x-text="sample.time"
+                                        class="w-1/4 text-right"></div>
+                                      <div
+                                        x-show="!editing"
+                                        :id="'smpPPv' + sample.id"
+                                        x-text="Alpine.store('price').displayPrice(sample.price)"
+                                        class="w-1/4 text-right"></div>
+                                      <div x-show="!editing" class="flex justify-end w-1/4 text-right">
+                                        <button
+                                          class="mr-1.5 table-interaction-icon-blue flex"
+                                          x-show="!editing"
+                                          @click="editing = true">
+                                          <svg width="18" height="18">
+                                            <use href="/icons/icons.svg#pencil" />
+                                          </svg>
+                                        </button>
+                                        <button
+                                          class="table-interaction-icon-red"
+                                          @click="deleteSample(sample.id)"
+                                          x-show="!editing">
+                                          <svg width="18" height="18">
+                                            <use href="/icons/icons.svg#trash" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                      <!-- Editing -->
+                                      <input
+                                        x-show="editing"
+                                        x-model="sample.name"
+                                        :id="'smpNE' + sample.id"
+                                        class="w-1/2 mr-2 table-input-standard" />
+                                      <input
+                                        x-ref="editSampleTime"
+                                        x-show="editing"
+                                        x-model.number="sample.time"
+                                        :id="'smpTE' + sample.id"
+                                        type="number"
+                                        class="w-[15%] mr-2 table-input-standard"
+                                        @input="Alpine.store('price').validate(sample.time)"
+                                        @blur="sample.time = Alpine.store('price').roundToTwo(sample.time)" />
+                                      <input
+                                        x-show="editing"
+                                        x-model.number="sample.price"
+                                        :id="'smpPE' + sample.id"
+                                        class="w-1/4 text-right table-input-standard"
+                                        type="number"
+                                        @input="Alpine.store('price').validate(sample.price)"
+                                        @blur="sample.price = Alpine.store('price').roundToTwo(sample.price)" />
+                                      <div x-show="editing" class="flex">
+                                        <button
+                                          class="mr-1.5 table-interaction-icon-blue"
+                                          @click="updateSample(sample.id, sample.name, sample.time, sample.price); editing = false;">
+                                          <svg width="20" height="20">
+                                            <use href="/icons/icons.svg#check-circle" />
+                                          </svg>
+                                        </button>
+                                        <button class="table-interaction-icon-red" @click="editing = false">
+                                          <svg width="20" height="20">
+                                            <use href="/icons/icons.svg#xmark-circle" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <hr class="opacity-35" />
+                                  </div>
+                                </template>
+                              </div>
                             </div>
+
                             <!-- End Tab Content 2 -->
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
+                <!-- Add Style Button -->
+                <div class="flex justify-between mr-4">
+                  <button @click="modalStyle = !modalStyle" class="butt-style p-2">New Style</button>
+                  <!-- Add Sample Button -->
+                  <button @click="modalSample = !modalSample" class="butt-style p-2">New Sample</button>
+                </div>
+                <div>
+                  <template x-teleport="body">
+                    <div class="outter-modal-overlay-blur-fixed z-[100]" x-show="modalSample">
+                      <div class="inner-modal-size-positioning-relative modal-bg-and-borders p-6 space-y-4">
+                        <h2 class="modal-title">Add Sample</h2>
+                        <form @submit.prevent="addSample()" class="space-y-4">
+                          <input
+                            x-model="item.name"
+                            name="name"
+                            type="text"
+                            placeholder="Sample Name"
+                            class="w-full modal-input-style !p-1.5"
+                            required />
+                          <input
+                            x-model="item.time"
+                            name="time"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Time (in minutes)"
+                            class="w-full modal-input-style !p-1.5"
+                            required />
+                          <input
+                            x-model="item.price"
+                            name="price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Price"
+                            class="w-full modal-input-style !p-1.5"
+                            required />
+                        </form>
+                        <div class="w-full flex items-center justify-end space-x-6">
+                          <button @click.prevent="addSample()" class="modal-btn-prim">Add</button>
+                          <button @click="modalSample = false" class="modal-btn-sec">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div>
+                  <template x-teleport="body">
+                    <div class="outter-modal-overlay-blur-fixed z-[100]" x-show="modalStyle">
+                      <div class="inner-modal-size-positioning-relative modal-bg-and-borders p-6 space-y-4">
+                        <h2 class="modal-title">Add Style</h2>
+                        <form @submit.prevent="addStyle()" class="space-y-4">
+                          <input
+                            x-model="item.name"
+                            name="name"
+                            type="text"
+                            placeholder="Style Name"
+                            class="w-full modal-input-style !p-1.5"
+                            required />
+                          <input
+                            x-model="item.price"
+                            name="price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Style Price"
+                            class="w-full modal-input-style !p-1.5"
+                            required />
+                        </form>
+                        <div class="w-full flex items-center justify-end space-x-6">
+                          <button @click.prevent="addStyle()" class="modal-btn-prim">Add</button>
+                          <button @click="modalStyle = false" class="modal-btn-sec">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
                 </div>
               </div>
             </div>

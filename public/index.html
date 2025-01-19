@@ -95,20 +95,16 @@
           <button @click="slideOverOpen=true" class="p-2 tab-button">
             <div x-show="sideBar" class="flex items-center justify-center">
               <svg width="22" height="22" class="mr-1.5">
-                <use href="/icons/icons.svg#scissors" />
+                <use href="/icons/icons.svg#items" />
               </svg>
               <span>Items</span>
             </div>
             <svg x-show="!sideBar" width="28" height="28">
-              <use href="/icons/icons.svg#scissors" />
+              <use href="/icons/icons.svg#items" />
             </svg>
           </button>
 
           <div x-html="htmlSlideOver"></div>
-
-          <svg x-show="Alpine.store('colorTheme').darkTheme" width="28" height="28">
-            <use href="/icons/icons.svg#error" />
-          </svg>
         </div>
         <!-- MARK:ROW-3-->
         <div class="flex flex-col items-center self-end justify-end w-full mt-auto mb-4">

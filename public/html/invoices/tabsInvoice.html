@@ -27,46 +27,31 @@
           </div>
         </div>
         <div class="relative text-xs border rounded-md border-vls/40 text-vlp dark:text-vds">
-          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative">
+          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative p-2">
             <!-- MARK:STYLES -->
-            <div class="flex justify-between p-2 mb-4 align-middle">
+            <div class="flex justify-between align-middle mb-2">
               <!-- Style Search Input -->
-              <div class="transition-all duration-500">
-                <input
-                  id="styleSearchInput"
-                  type="text"
-                  placeholder="Search Styles..."
-                  class="transition-all duration-500 srch-style"
-                  x-model="styleSearch"
-                  @input="searchStyles"
-                  x-transition />
-              </div>
-
-              <!-- Add Style Button -->
-              <div class="flex">
-                <button
-                  @click="$store.items.modalStyle = !$store.items.modalStyle; $nextTick(() => { ($refs.styleName.focus()) })"
-                  class="butt-style flex items-center">
-                  Add Style
-                </button>
-              </div>
+              <input
+                id="styleSearchInput"
+                type="text"
+                placeholder="Search Styles..."
+                class="transition-all duration-500 srch-style"
+                x-model="search" />
             </div>
-            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 30vh">
-              <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="sticky top-0 table-head-style">
-                  <tr>
-                    <th class="p-2 border border-transparent round-left-border border-clipper">Style</th>
-                    <th class="text-lg">Price</th>
-                    <th class="px-1 text-lg round-right-border border-clipper">Actions</th>
-                  </tr>
+            <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 35vh">
+              <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
+                <thead class="sticky top-0 table-head-style border-clipper">
+                  <th class="border w-[75%] text-left border-transparent round-left-border p-2">Style</th>
+                  <th class="text-right w-[10%]">Price</th>
+                  <th class="round-right-border w-[10] text-center">Actions</th>
                 </thead>
                 <!-- MARK: TBODY STYLES -->
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="style in filteredStyles" :key="style.id">
                     <tr :id="`styleRowId-${style.id}`" class="border-hover-ring-efect">
-                      <td class="round-left-border w-[75%] p-2 py-1 text-sm" x-text="style.name"></td>
-                      <td class="w-[15%] px-2 py-1 text-sm" x-text="'£' + style.price"></td>
-                      <td class="round-right-border w-[5%] pr-1 text-left text-sm">
+                      <td class="round-left-border w-[75%] py-1 px-1 text-sm" x-text="style.name"></td>
+                      <td class="w-[15%] px-2 py-1 text-sm text-right" x-text="'£' + style.price"></td>
+                      <td class="round-right-border w-[10%] text-left text-sm">
                         <div class="flex align-middle">
                           <button
                             @click="addItemToInvoice(style, 'style'); $nextTick(() => applyEffect(`styleRowId-${style.id}`))"
@@ -91,43 +76,43 @@
             </div>
           </div>
 
-          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative" x-cloak>
+          <div
+            :id="$id(invoicingTabId + '-content')"
+            x-show="invoicingTabContentActive($el)"
+            class="relative p-2"
+            x-cloak>
             <!-- MARK: SAMPLES SECTION -->
-            <div class="flex justify-between p-2 mb-4 align-middle">
+            <div class="flex justify-between align-middle mb-2">
               <!-- Style Search Input -->
-              <div class="transition-all duration-500">
-                <input
-                  id="sampleSearchInput"
-                  type="text"
-                  placeholder="Search Styles..."
-                  class="transition-all duration-500 srch-style"
-                  x-model="sampleSearch"
-                  @input="searchSamples" />
-              </div>
-              <!-- Add Sample Button -->
-              <div class="flex">
-                <button
-                  @click="showAddSampleModal = true; if(showAddSampleModal) $nextTick(() => { $refs.newSampleName.focus() });"
-                  class="butt-style flex items-center">
-                  Add Sample
-                </button>
-              </div>
+              <input
+                id="sampleSearchInput"
+                type="text"
+                placeholder="Search Samples..."
+                class="transition-all duration-500 srch-style"
+                x-model="search" />
             </div>
-            <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 30vh">
-              <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-                <thead class="sticky top-0 table-head-style">
+            <div class="relative py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 35vh">
+              <table
+                class="w-[calc(100%-10px)] table-auto border-separate text-left px-0.5"
+                style="border-spacing: 0 10px">
+                <thead class="sticky top-0 table-head-style border-clipper">
                   <tr>
-                    <th class="p-2 border border-transparent round-left-border border-clipper">Sample Name</th>
-                    <th class="text-lg text-right">Time</th>
-                    <th class="pr-4 text-lg text-right">Price</th>
-                    <th class="px-1 text-lg round-right-border border-clipper">Actions</th>
+                    <th class="w-[60%] border border-transparent round-left-border p-2">Sample</th>
+                    <th class="py-2 text-right w-[10%] pr-4">
+                      <span class="flex">
+                        Time
+                        <span class="text-xs mt-1.5">(min)</span>
+                      </span>
+                    </th>
+                    <th class="pr-4 text-right w-[10%]">Price</th>
+                    <th class="round-right-border text-center w-[10%]">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr :id="`sampleRowId-${sample.id}`" class="border-hover-ring-efect">
-                      <td class="round-left-border w-[65%] p-1 text-sm" x-text="sample.name"></td>
-                      <td class="w-[10%] text-right text-sm" x-text="sample.time"></td>
+                      <td class="round-left-border w-[60%] p-1 text-sm" x-text="sample.name"></td>
+                      <td class="w-[10%] text-right text-sm pr-4" x-text="sample.time"></td>
                       <td class="w-[10%] pr-4 text-right text-sm" x-text="'£' + sample.price"></td>
                       <td class="round-right-border w-[10%] pr-1 text-left text-sm">
                         <div class="flex justify-between align-middle">
@@ -144,7 +129,7 @@
                             placeholder="1"
                             x-model.number="quantities[sample.id]"
                             @input="handleInvoQtySubmit(sample)"
-                            class="modal-input-style flex h-6 w-12 place-self-center dark:!border dark:!border-vds2 dark:hover:!border-vds" />
+                            class="flex w-12 h-6 table-input-standard place-self-center" />
                         </div>
                       </td>
                     </tr>
@@ -155,9 +140,6 @@
           </div>
         </div>
       </div>
-      <!--TABS ALPINE  END-->
-
-      <!-- MARK:INVOICING SECTION -->
     </div>
   </template>
 </div>

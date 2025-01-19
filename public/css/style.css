@@ -1,8 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* MARK: Fonts */
 
+/* MARK: Fonts */
 @font-face {
   font-family: 'Manrope';
   font-weight: 400;
@@ -53,7 +53,7 @@ html {
 }
 /* Table */
 .table-scrollbar::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #d1d5db;
   border-radius: 5px;
   clip-path: inset(0);
 }
@@ -63,7 +63,7 @@ html {
   clip-path: inset(0);
 }
 .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #242c36; /* Hover effect */
+  background: #364352; /* Hover effect */
   clip-path: inset(0);
 }
 /* Table Alternative Scrollbar Light */
@@ -99,13 +99,13 @@ html {
   width: 18px; /* Adjust the width of the scrollbar */
 }
 .dark .table-scrollbar::-webkit-scrollbar-track {
-  background: #525252;
+  background: #404040;
 }
 .dark .table-scrollbar::-webkit-scrollbar-thumb {
   background: #18181b; /* Darker handle for dark mode */
 }
 .dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46; /* Hover effect for dark mode */
+  background: #1b1b1f; /* Hover effect for dark mode */
 }
 /* Alternative Table Dark */
 .dark .alt-table-scrollbar::-webkit-scrollbar-track {
@@ -357,7 +357,7 @@ input::-webkit-inner-spin-button {
 /* MARK: BORDER CLIPPER for adjusting table body overflowing the header*/
 .border-clipper {
   --border-clipper: #fafafa;
-  box-shadow: 0 -4px 0 0 var(--border-clipper);
+  box-shadow: 1px -1px 0 2px var(--border-clipper);
 }
 .dark .border-clipper {
   --border-clipper: #27272a;
