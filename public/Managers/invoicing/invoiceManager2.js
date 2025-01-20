@@ -7,12 +7,10 @@ export default function invoiceManager2() {
   return {
     init() {
       // Register the `clientSelect` component
-      // Alpine.data('clientSelect', clientSelect)
       Alpine.data('tabsInvoice', tabsInvoice)
       Alpine.data('invoicing', invoicing)
       Alpine.data('totalsInvoice', totalsInvoice)
 
-      this.fileFetcher('/html/invoices/clientSelect.html', '#client-select')
       this.fileFetcher('/html/invoices/tabsInvoice.html', '#tabs-invoice')
       this.fileFetcher('/html/invoices/invoiceSection.html', '#invo-section')
       this.fileFetcher('/html/invoices/totals.html', '#invo-totals')

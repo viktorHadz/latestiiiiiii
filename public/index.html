@@ -232,15 +232,22 @@
               :id="'toast-' + card.id"
               @mouseenter="$store.toss.hoveredIndex = index"
               @mouseleave="$store.toss.hoveredIndex = null"
-              class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform -translate-x-1/2 origin-top bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg toast-animate-enter /* start with this 'enter' animation class */ transition-transform duration-300 ease-in-out"
+              class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform origin-top bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg toast-animate-enter transition-transform duration-300 ease-in-out"
               :style="`
-              top: ${1 + index * 1.5}rem; 
-              z-index: ${999 - index};
-            `"
+                top: ${1.5 + index * 3}rem;
+                z-index: ${999 - index};
+                --flash-color: ${card.type === 'error' ? '#e03d3d' : card.type === 'success' ? '#51a551' : card.type === 'warning' ? 'orange' : '#118ab2'};
+              `"
               @animationend="(evt) => {
         
               if (evt.animationName === 'toast-slide-in') {
+                
                 evt.target.classList.remove('toast-animate-enter');
+                evt.target.classList.add('toast-border-flash');
+                setTimeout(() => {
+                  evt.target.classList.remove('toast-border-flash');
+                }, 500);
+
               }
         
               /* Once the leave animation is finished, remove the toast from store. */

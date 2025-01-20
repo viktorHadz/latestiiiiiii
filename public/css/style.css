@@ -535,12 +535,13 @@ input[type='radio']:checked {
     transform: translateX(150%) rotate(25deg);
   }
   50% {
-    /* Already fully opaque by the halfway point */
-    opacity: 1;
+    opacity: 0.5;
     /* Overshoot left a bit as if it’s swinging into place */
-    transform: translateX(-3%) rotate(5deg);
+    transform: translateX(-5%) rotate(5deg);
   }
   70% {
+    /* Already fully opaque by the 70% point */
+    opacity: 1;
     /* Come back to center but tilt the other direction briefly */
     transform: translateX(0) rotate(-5deg);
   }
@@ -568,5 +569,23 @@ input[type='radio']:checked {
     /* End off screen, with a bigger tilt for dramatic effect */
     opacity: 0;
     transform: translateX(150%) rotate(-15deg);
+  }
+}
+/* Border flash for the toasts */
+.toast-border-flash {
+  animation: border-flash 0.5s linear 1;
+}
+@keyframes border-flash {
+  0% {
+    border-color: var(--flash-color, rgba(219, 25, 25, 0.5));
+    border-width: 3px;
+  }
+  50% {
+    border-color: var(--flash-color, rgba(219, 25, 25, 1));
+    border-width: 5px;
+  }
+  100% {
+    border-color: transparent;
+    border-width: 1px;
   }
 }

@@ -16,7 +16,7 @@ document.addEventListener('alpine:init', () => {
         depositPercentValue: 0,
         note: '',
         totalPreDiscount: 0,
-        date: new Date().toLocaleDateString(),
+        date: new Date().toLocaleDateString(), // tochangeToo!!!!!!!!!!
       },
       quantities: {},
 
@@ -26,6 +26,7 @@ document.addEventListener('alpine:init', () => {
         this.loadFromLocalStorage()
         this.syncClientId()
       },
+
       // Sync totals to localStorage on any change
       saveToLocalStorage() {
         localStorage.setItem('invoiceTotals', JSON.stringify(this.totals))
@@ -37,11 +38,20 @@ document.addEventListener('alpine:init', () => {
           Object.assign(this.totals, JSON.parse(storedTotals))
         }
       },
-      // Automatically update clientId when the selected client changes
+      // Receives event from clientStore and updates totals.clientId and checks
       syncClientId() {
-        Alpine.effect(() => {
-          const selectedClient = Alpine.store('clients').selectedClient
-          this.totals.clientId = selectedClient ? selectedClient.id : null
+        document.addEventListener('client-selected', event => {
+          const newClient = event.detail
+          if (newClient?.id !== this.totals.clientId) {
+            console.log('{ InvoiceStore } Client changed - syncing clientId')
+            this.totals.clientId = newClient.id
+
+            // Clear totals only if items exist for a different client
+            if (this.totals.items.length > 0 && this.totals.items[0].clientId !== newClient.id) {
+              console.log('{ InvoiceStore } Resetting totals due to client change')
+              this.totals.items = []
+            }
+          }
         })
       },
 
@@ -63,6 +73,7 @@ document.addEventListener('alpine:init', () => {
         if (!existingItem) {
           this.totals.items.push({
             ...item,
+            clientId: Alpine.store('clients').selectedClient.id,
             type,
             quantity: qty,
             price: parseFloat(item.price) * (type === 'sample' ? parseFloat(item.time) : 1),
@@ -74,6 +85,7 @@ document.addEventListener('alpine:init', () => {
           }
         }
       },
+
       addItemAnimation(itemId) {
         const targetItem = document.getElementById(itemId)
         if (!targetItem) {
@@ -100,7 +112,7 @@ document.addEventListener('alpine:init', () => {
       },
       totalsReset() {
         this.totals = {
-          clientId: null,
+          clientId: currentClientId,
           items: [],
           discountType: 0,
           discountValue: 0,
@@ -116,22 +128,35 @@ document.addEventListener('alpine:init', () => {
           date: new Date().toLocaleDateString(),
         }
       },
+      watchStateEffects() {
+        if (this.totals.items.length === 0) {
+          console.log('{ InvoiceStore } No items to check for')
+          return
+        }
+
+        const firstItemClientId = this.totals.items[0]?.clientId
+        // Empty totals on client change
+        if (this.totals.clientId !== firstItemClientId) {
+          console.log('{ InvoiceStore } Client changed - totals.items reset to []')
+          console.log('{ InvoiceStore } Totals before splice: ', this.totals)
+          this.totals.items.splice(0)
+          console.log('{ InvoiceStore } Totals after splice: ', this.totals)
+        }
+      },
       //rest
     }),
   )
-
-  // Automatically save totals to localStorage when any property changes
+  // Trigger reactive tracking for all totals properties
   Alpine.effect(() => {
     const store = Alpine.store('invo')
-    JSON.stringify(store.totals) // Trigger reactive tracking
-    store.saveToLocalStorage()
+    JSON.stringify(store.totals) // Track reactivity
+    store.watchStateEffects()
   })
-  // Empty totals on client change
+
+  // Save to localStorage only when totals change
   Alpine.effect(() => {
     const store = Alpine.store('invo')
-    JSON.stringify(store.totals.clientId)
-    store.totalsReset()
-    console.log(`Client changed totals reset`)
+    store.saveToLocalStorage()
   })
 })
 

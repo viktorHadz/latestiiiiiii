@@ -10,7 +10,7 @@ router.get('/styles/client/:id', (req, res) => {
     if (error) {
       return res.status(500).send(error)
     }
-    res.json(results) // Corrected from "result" to "results"
+    res.json(results)
   })
 })
 

@@ -40,35 +40,26 @@ document.addEventListener('alpine:init', () => {
     deleteSample(id) {
       this.samples = this.samples.filter(s => s.id !== id)
     },
-
-    async fetchStyles(clientId) {
-      try {
-        const response = await fetch(`/item/styles/client/${clientId}`)
-        if (!response.ok) {
-          callError('Failed to fetch styles.', 'Please try again or contact support.')
-          throw new Error('Failed to fetch styles.')
-        }
-
-        this.styles = (await response.json()).map(style => ({ ...style }))
-      } catch (error) {
-        console.error('Error fetching styles:', error)
-        callError('Error fetching styles.', 'Please try again or contact support.')
-      }
+    resetData() {
+      this.styles = []
+      this.samples = []
     },
-
-    async fetchSamples(clientId) {
+    async fetchStylesAndSamples(clientId) {
       try {
-        const response = await fetch(`/item/samples/client/${clientId}`)
-        if (!response.ok) {
-          callError('Failed to fetch samples.', 'Please try again or contact support.')
-          throw new Error('Failed to fetch styles.')
+        const [stylesRes, samplesRes] = await Promise.all([
+          fetch(`/item/styles/client/${clientId}`),
+          fetch(`/item/samples/client/${clientId}`),
+        ])
+
+        if (!stylesRes.ok || !samplesRes.ok) {
+          throw new Error('Failed to fetch styles or samples.')
         }
-        this.samples = (await response.json()).map(sample => ({
-          ...sample,
-        }))
+
+        this.styles = await stylesRes.json()
+        this.samples = await samplesRes.json()
+        console.log('[ItemsStore] Styles and samples updated for client:', clientId)
       } catch (error) {
-        console.error('Error fetching samples:', error)
-        callError('Please try again or contact support.')
+        console.error('[ItemsStore] Error fetching styles and samples:', error)
       }
     },
   })

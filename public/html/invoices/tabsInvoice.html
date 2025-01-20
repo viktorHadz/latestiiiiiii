@@ -2,6 +2,22 @@
 <div>
   <template x-if="$store.clients.selectedClient !== null">
     <div>
+      <div class="inset-0 p-0.5 mb-12 align-baseline border rounded-md border-vls/60 dark:border-vls/40">
+        <div class="bg-vls3 dark:bg-vdp flex justify-between p-2 rounded-md">
+          <div>
+            <button @click="$store.clients.showClientModal = true" class="flex items-baseline butt-style p-1">
+              <svg class="mr-1.5 size-4">
+                <use href="/icons/icons.svg#select-client" />
+              </svg>
+              Select Client
+            </button>
+          </div>
+          <h3
+            class="self-center text-md text-vlp2 dark:text-vds underline decoration-vla dark:decoration-vda"
+            x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
+        </div>
+      </div>
+
       <!-- MARK: TABS ALPINE -->
       <div class="relative w-full max-w-full mb-12">
         <div x-ref="invoicingTabButtons" class="mb-2 toggler">
@@ -62,6 +78,7 @@
                           </button>
 
                           <input
+                            :id="'styInpt'+style.id"
                             type="number"
                             placeholder="1"
                             x-model.number="$store.invo.quantities[style.id]"
@@ -124,7 +141,7 @@
                             </svg>
                           </button>
                           <input
-                            $id="smplQtyInput + sample.id"
+                            :id="'smplInpt'+sample.id"
                             type="number"
                             placeholder="1"
                             x-model.number="$store.invo.quantities[sample.id]"
@@ -143,50 +160,3 @@
     </div>
   </template>
 </div>
-<script>
-  document.addEventListener('alpine:init', () => {
-    Alpine.data(tabsInvoice, () => ({
-      invoicingTabSelected: '1',
-      invoicingTabId: 'taab',
-
-      styleSearch: '',
-
-      search: '',
-
-      init() {
-        console.log('TabsInvoice initialized')
-        this.invoicingTabId = this.$id('invoicingTabId')
-      },
-      get filteredStyles() {
-        return Alpine.store('items').styles.filter(style =>
-          style.name.toLowerCase().includes(this.search.toLowerCase()),
-        )
-      },
-      get filteredSamples() {
-        return Alpine.store('items').samples.filter(sample =>
-          sample.name.toLowerCase().includes(this.search.toLowerCase()),
-        )
-      },
-
-      invoicingTabButtonClicked(tabButton) {
-        this.invoicingTabSelected = tabButton.id.replace(this.invoicingTabId + '-', '')
-        this.tabRepositionMarker(tabButton)
-      },
-
-      tabRepositionMarker(tabButton) {
-        this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px'
-        this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px'
-        this.$refs.tabMarker.style.left = tabButton.offsetLeft + 'px'
-      },
-
-      invoicingTabContentActive(tabContent) {
-        return this.invoicingTabSelected == tabContent.id.replace(this.invoicingTabId + '-content-', '')
-      },
-
-      invoicingTabButtonActive(tabContent) {
-        const invoicingTabId = tabContent.id.split('-').slice(-1)
-        return this.invoicingTabSelected == invoicingTabId
-      },
-    }))
-  })
-</script>

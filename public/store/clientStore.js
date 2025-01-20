@@ -15,18 +15,19 @@ document.addEventListener('alpine:init', () => {
     async init() {
       console.log('{ ClientStore } init() is called')
       await this.fetchClients()
-
-      // If no clients => open "create" modal
-      if (this.clients.length === 0) {
-        this.showAddClientModal = true
-      }
-      // If clients exist but none selected => open "select" modal
-      else if (!this.selectedClient) {
-        this.showClientModal = true
-      }
+      // Same thing achieved down in watch state/effect
+      // // If no clients => open "create" modal
+      // if (this.clients.length === 0) {
+      //   this.showAddClientModal = true
+      // }
+      // // If clients exist but none selected => open "select" modal
+      // else if (!this.selectedClient) {
+      //   this.showClientModal = true
+      // }
 
       Alpine.effect(() => {
         this.watchState()
+        this.clientItemsSync()
       })
     },
 
@@ -37,6 +38,8 @@ document.addEventListener('alpine:init', () => {
     setSelected(client) {
       this.selectedClient = client
       localStorage.setItem('selectedClient', JSON.stringify(client))
+      document.dispatchEvent(new CustomEvent('client-selected', { detail: client }))
+
       console.log('{ ClientStore } Selected client updated:', client)
       callSuccess(`Client selected ${client.name}`)
       if (this.showClientModal === true) {
@@ -59,11 +62,20 @@ document.addEventListener('alpine:init', () => {
         callWarning('No Client Selected', 'Please select a client to continue.')
       }
     },
+    // Reactively fetches and updates the client with their items
+    clientItemsSync() {
+      const client = this.selectedClient
+      if (client) {
+        Alpine.store('items').fetchStylesAndSamples(client.id)
+      } else {
+        Alpine.store('items').resetData()
+      }
+    },
 
     // CRUD Operations
     async fetchClients() {
       try {
-        console.log('[ClientStore] fetching clients...')
+        console.log('{ ClientStore } fetching clients...')
         const response = await fetch('/clients/get')
         if (!response.ok) {
           throw new Error(`Failed to fetch clients: ${response.statusText}`)
@@ -157,7 +169,7 @@ document.addEventListener('alpine:init', () => {
         }
         await this.fetchClients()
 
-        callSuccess('Client Updated', 'Client details were successfully updated.')
+        callSuccess('Client Updated', `${client.name} successfully updated.`)
         console.log('[ClientStore] Updated client:', updatedClient)
       } catch (error) {
         console.error('[ClientStore] Error updating client:', error)

@@ -5,7 +5,7 @@ export default function clientManager() {
     showClientModal: false,
 
     async init() {
-      console.log('>>---- ClientManager --> initialized')
+      console.log('[ClientManager] initialized')
     },
     // Search clients
     searchClients() {

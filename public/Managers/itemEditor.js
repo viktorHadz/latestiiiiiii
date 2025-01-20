@@ -12,12 +12,8 @@ export default function itemEditor() {
     },
 
     tabSelected: 1,
-    currentClient: Alpine.store('clients').selectedClient?.id || null,
 
     init() {
-      if (this.currentClient) {
-        this.fetchStylesAndSamples()
-      }
       this.$nextTick(() => {
         const firstTab = this.$refs.tabButtons?.firstElementChild
         if (firstTab) {
@@ -25,13 +21,6 @@ export default function itemEditor() {
           this.tabRepositionMarker(firstTab)
         }
       })
-    },
-
-    fetchStylesAndSamples() {
-      Alpine.store('items').setStyles([])
-      Alpine.store('items').setSamples([])
-      Alpine.store('items').fetchStyles(this.currentClient)
-      Alpine.store('items').fetchSamples(this.currentClient)
     },
 
     tabButtonClicked(tabButton) {
@@ -185,6 +174,7 @@ export default function itemEditor() {
           if (!res.ok) throw new Error('Failed to delete style in DB')
 
           Alpine.store('items').deleteStyle(id)
+          callWarning('Style deleted')
         } catch (err) {
           console.error('Error deleting style:', err)
         }
@@ -198,6 +188,7 @@ export default function itemEditor() {
           if (!res.ok) throw new Error('Failed to delete sample in DB')
 
           Alpine.store('items').deleteSample(id)
+          callWarning('Sample deleted')
         } catch (err) {
           console.error('Error deleting sample:', err)
         }
