@@ -80,9 +80,9 @@ document.addEventListener('alpine:init', () => {
           })
         } else {
           existingItem.quantity += qty
-          if (type === 'sample') {
-            existingItem.price = parseFloat(item.price) * parseFloat(item.time)
-          }
+          // if (type === 'sample') {
+          //   existingItem.price = parseFloat(item.price) * parseFloat(item.time)
+          // }
         }
       },
 
