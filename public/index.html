@@ -12,7 +12,6 @@
   </head>
 
   <body id="bodyElement">
-    <template class="w-full h-screen relative top-0"></template>
     <div x-cloak x-data="tabManager" class="flex h-screen">
       <!-- MARK: SIDEBAR -->
       <div
@@ -38,23 +37,6 @@
               </svg>
             </div>
           </button>
-          <!-- INVOICES -->
-          <!-- <button
-            @click="tabButtonClicked('invoices')"
-            :class="{ 'tab-button-active': tabContentActive('invoices') }"
-            class="flex items-center tab-button hidden">
-            <div x-show="sideBar" class="flex items-center p-2">
-              <svg width="24" height="24" class="mr-1.5">
-                <use href="/icons/icons.svg#pound-text" />
-              </svg>
-              <span x-show="sideBar">Invoices</span>
-            </div>
-            <div x-show="!sideBar" class="p-2">
-              <svg width="28" height="28">
-                <use href="/icons/icons.svg#pound-text" />
-              </svg>
-            </div>
-          </button> -->
           <!-- INVOICES 2 -->
           <button
             @click="tabButtonClicked('invoices2')"
@@ -90,9 +72,10 @@
             </div>
           </button>
         </div>
-        <!-- MARK:ROW-2--ITEMS-->
+        <!-- MARK:ROW-2--ITEMS-STYLES-AND-SAMPLES-SLIDEOVER-->
         <div x-data="itemEditor" class="flex flex-col items-center justify-center h-full">
-          <button @click="slideOverOpen=true" class="p-2 tab-button">
+          <button @click="loadHtmlSlideOver(); $nextTick(() => { slideOverOpen = true });" class="p-2 tab-button">
+            <!-- Icons Logic -->
             <div x-show="sideBar" class="flex items-center justify-center">
               <svg width="22" height="22" class="mr-1.5">
                 <use href="/icons/icons.svg#items" />
@@ -104,7 +87,7 @@
             </svg>
           </button>
 
-          <div x-html="htmlSlideOver"></div>
+          <div x-ref="slideOverContainer"></div>
         </div>
         <!-- MARK:ROW-3-->
         <div class="flex flex-col items-center self-end justify-end w-full mt-auto mb-4">
@@ -299,13 +282,14 @@
       </div>
     </div>
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
-    <!-- 1) The store definitions (including clientStore.js) -->
-    <script type="module" src="/store/colorTheme.js"></script>
+    <!-- 1) The store definitions  -->
     <script type="module" src="/store/clientStore.js"></script>
     <script type="module" src="/store/itemStore.js"></script>
     <script type="module" src="/store/prices.js"></script>
+    <script type="module" src="/store/invoiceStore.js"></script>
+    <script type="module" src="/store/colorTheme.js"></script>
     <script type="module" src="/store/tossStore.js"></script>
-    <!-- 2) Then your app.js, which references the store and sets up tabManager, etc -->
+    <!-- 2) Then app.js, which references the store and sets up tabManager, etc -->
     <script type="module" src="/app.js" defer></script>
     <!--  Alpine Plugins  -->
     <script src="/alpinejs/plugins/mask.js" defer></script>

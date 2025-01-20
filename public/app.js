@@ -1,5 +1,5 @@
 // app.js
-import itemEditor from '/components/items/itemEditor.js'
+import itemEditor from '/Managers/itemEditor.js'
 import clientManager from '/Managers/clientManager.js'
 // import invoiceManager from '/Managers/invoiceManager.js'
 import invoiceManager2 from '/Managers/invoicing/invoiceManager2.js'

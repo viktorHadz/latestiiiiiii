@@ -1,7 +1,7 @@
 document.addEventListener('alpine:init', () => {
   Alpine.store('price', {
     init() {
-      console.log('3. ##STORE## Prices.js-"initializing":\n ')
+      console.log('{ PricesStore } Initializing ')
     },
     roundToTwo(value) {
       return Math.round((value + Number.EPSILON) * 100) / 100

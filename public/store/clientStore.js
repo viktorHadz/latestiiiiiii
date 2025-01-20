@@ -13,7 +13,7 @@ document.addEventListener('alpine:init', () => {
     isFetched: false,
 
     async init() {
-      console.log('[ClientStore] init() is called')
+      console.log('{ ClientStore } init() is called')
       await this.fetchClients()
 
       // If no clients => open "create" modal
@@ -37,7 +37,7 @@ document.addEventListener('alpine:init', () => {
     setSelected(client) {
       this.selectedClient = client
       localStorage.setItem('selectedClient', JSON.stringify(client))
-      console.log('[ClientStore] Selected client updated:', client)
+      console.log('{ ClientStore } Selected client updated:', client)
       callSuccess(`Client selected ${client.name}`)
       if (this.showClientModal === true) {
         this.showClientModal = false

@@ -1,4 +1,4 @@
-import clientSelect from './clientSelect.js'
+// import clientSelect from './clientSelect.js'
 import tabsInvoice from './tabsInvoice.js'
 import invoicing from './invoiceSection.js'
 import totalsInvoice from './totalsInvoice.js'
@@ -7,7 +7,7 @@ export default function invoiceManager2() {
   return {
     init() {
       // Register the `clientSelect` component
-      Alpine.data('clientSelect', clientSelect)
+      // Alpine.data('clientSelect', clientSelect)
       Alpine.data('tabsInvoice', tabsInvoice)
       Alpine.data('invoicing', invoicing)
       Alpine.data('totalsInvoice', totalsInvoice)

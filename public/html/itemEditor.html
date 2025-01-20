@@ -1,11 +1,6 @@
 <div class="relative z-50 w-auto h-auto">
   <template x-if="$store.clients.selectedClient.length > 1" x-teleport="body">
     <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[60]">
-      <div
-        id="slide-over-unknown"
-        x-show="slideOverOpen"
-        x-transition.opacity.duration.600ms
-        class="fixed inset-0 bg-black bg-opacity-40"></div>
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
           <div class="fixed inset-y-0 right-0 flex max-w-full pl-10">
@@ -34,56 +29,18 @@
                         x-model="search"
                         @x-on:click="console.log(search)" />
                     </div>
-                    <div class="flex items-center h-auto ml-3">
-                      <button @click="slideOverOpen=false" class="butt-style p-2">
-                        <svg width="16" height="16" class="flex self-center mr-1.5">
-                          <use href="/icons/icons.svg#xmark" />
-                        </svg>
-                        <span>Close</span>
-                      </button>
-                    </div>
+                    <button @click="slideOverOpen=false" class="butt-style p-2">
+                      <svg width="16" height="16" class="mr-1.5">
+                        <use href="/icons/icons.svg#xmark" />
+                      </svg>
+                      <span>Close</span>
+                    </button>
                   </div>
                 </div>
                 <div class="relative flex-1 mt-5">
                   <div class="absolute inset-0">
                     <div class="relative h-full w-full overflow-hidden rounded-md">
                       <div
-                        x-data="{
-                          tabSelected: 1,
-                          currentClient: Alpine.store('clients').selectedClient?.id || null,
-                          init() {
-                            if (this.currentClient) {
-                              this.fetchStylesAndSamples();
-                            }
-                            $nextTick(() => {
-                              const firstTab = $refs.tabButtons?.firstElementChild;
-                              if (firstTab) {
-                                this.tabSelected = parseInt(firstTab.id);
-                                this.tabRepositionMarker(firstTab);
-                              }
-                            });
-                          },
-                          fetchStylesAndSamples() {
-                            Alpine.store('items').setStyles([]);
-                            Alpine.store('items').setSamples([]);
-                            Alpine.store('items').fetchStyles(this.currentClient);
-                            Alpine.store('items').fetchSamples(this.currentClient);
-                          },
-                          tabButtonClicked(tabButton) {
-                            this.tabSelected = parseInt(tabButton.id);
-                            this.tabRepositionMarker(tabButton);
-                          },
-                          tabRepositionMarker(tabButton) {
-                            if (tabButton) {
-                              this.$refs.tabMarker.style.width = `${tabButton.offsetWidth}px`;
-                              this.$refs.tabMarker.style.height = `${tabButton.offsetHeight}px`;
-                              this.$refs.tabMarker.style.left = `${tabButton.offsetLeft}px`;
-                            }
-                          },
-                          tabContentActive(tabId) {
-                            return this.tabSelected === tabId;
-                          },
-                        }"
                         x-effect="
                          if (slideOverOpen) {
                            $nextTick(() => {
@@ -143,60 +100,51 @@
                                 <!-- Use Alpine.store('items').styles -->
                                 <template x-for="style in searchFilterStyle" :key="style.id">
                                   <div class="mr-2">
-                                    <div class="flex py-2" x-data="{ editing: false }">
-                                      <!-- Preview -->
+                                    <!-- Preview -->
+                                    <div x-show="editingId !== style.id" class="flex py-2">
+                                      <div :id="'styNPv-' + style.id" x-text="style.name" class="w-2/4 text-left"></div>
                                       <div
-                                        x-show="!editing"
-                                        :id="'styNPv-' + style.id"
-                                        x-text="style.name"
-                                        class="w-2/4 text-left"></div>
-                                      <div
-                                        x-show="!editing"
                                         x-text="Alpine.store('price').displayPrice(style.price)"
                                         :id="'styPPv-' + style.id"
                                         class="w-1/4 text-right"></div>
-                                      <div x-show="!editing" class="flex justify-end w-1/4 text-right">
+                                      <div class="flex justify-end w-1/4 text-right">
                                         <button
                                           class="mr-1.5 table-interaction-icon-blue flex"
-                                          x-show="!editing"
-                                          @click="editing = true">
+                                          @click="startEditing(style.id)">
                                           <svg width="18" height="18">
                                             <use href="/icons/icons.svg#pencil" />
                                           </svg>
                                         </button>
-                                        <button
-                                          class="table-interaction-icon-red"
-                                          x-show="!editing"
-                                          @click="deleteStyle(style.id)">
+                                        <button class="table-interaction-icon-red" @click="deleteStyle(style.id)">
                                           <svg width="18" height="18">
                                             <use href="/icons/icons.svg#trash" />
                                           </svg>
                                         </button>
                                       </div>
-                                      <!-- Editing -->
+                                    </div>
+                                    <!-- Editing -->
+                                    <div x-show="editingId === style.id" class="flex py-2">
                                       <input
-                                        x-show="editing"
                                         x-model="style.name"
                                         :id="'styNE' + style.id"
                                         class="w-2/4 mr-2 text-left table-input-standard" />
                                       <input
                                         x-ref="editStylePrice"
-                                        x-show="editing"
                                         x-model.number="style.price"
                                         :id="'styPE' + style.id"
                                         type="number"
                                         class="w-[25%] text-right table-input-standard"
                                         @input="Alpine.store('price').validate(style.price)"
                                         @blur="style.price = Alpine.store('price').roundToTwo(style.price)" />
-                                      <div x-show="editing" class="flex justify-end w-1/4 text-right">
+                                      <div class="flex justify-end w-1/4 text-right">
                                         <button
                                           class="mr-1.5 table-interaction-icon-blue"
-                                          @click="updateStyle(style.id, style.name, style.price); editing = false;">
+                                          @click="updateStyle(style.id, style.name, style.price)">
                                           <svg width="20" height="20">
                                             <use href="/icons/icons.svg#check-circle" />
                                           </svg>
                                         </button>
-                                        <button class="table-interaction-icon-red" @click="editing = false">
+                                        <button class="table-interaction-icon-red" @click="stopEditing()">
                                           <svg width="20" height="20">
                                             <use href="/icons/icons.svg#xmark-circle" />
                                           </svg>
@@ -229,50 +177,43 @@
                                 <!-- Use Alpine.store('items').samples -->
                                 <template x-for="sample in searchFilterSample" :key="sample.id">
                                   <div class="mr-2">
-                                    <div class="flex w-full py-2" x-data="{ editing: false }">
-                                      <!-- Preview -->
+                                    <!-- Preview -->
+                                    <div x-show="editingId !== sample.id" class="flex w-full py-2">
                                       <div
-                                        x-show="!editing"
                                         :id="'smpNPv' + sample.id"
                                         x-text="sample.name"
                                         class="w-1/2 text-left"></div>
                                       <div
                                         :id="'smpTP' + sample.id"
-                                        x-show="!editing"
                                         x-text="sample.time"
                                         class="w-1/4 text-right"></div>
                                       <div
-                                        x-show="!editing"
                                         :id="'smpPPv' + sample.id"
                                         x-text="Alpine.store('price').displayPrice(sample.price)"
                                         class="w-1/4 text-right"></div>
-                                      <div x-show="!editing" class="flex justify-end w-1/4 text-right">
+                                      <div class="flex justify-end w-1/4 text-right">
                                         <button
                                           class="mr-1.5 table-interaction-icon-blue flex"
-                                          x-show="!editing"
-                                          @click="editing = true">
+                                          @click="startEditing(sample.id)">
                                           <svg width="18" height="18">
                                             <use href="/icons/icons.svg#pencil" />
                                           </svg>
                                         </button>
-                                        <button
-                                          class="table-interaction-icon-red"
-                                          @click="deleteSample(sample.id)"
-                                          x-show="!editing">
+                                        <button class="table-interaction-icon-red" @click="deleteSample(sample.id)">
                                           <svg width="18" height="18">
                                             <use href="/icons/icons.svg#trash" />
                                           </svg>
                                         </button>
                                       </div>
-                                      <!-- Editing -->
+                                    </div>
+                                    <!-- Editing -->
+                                    <div x-show="editingId === sample.id" class="flex w-full py-2">
                                       <input
-                                        x-show="editing"
                                         x-model="sample.name"
                                         :id="'smpNE' + sample.id"
                                         class="w-1/2 mr-2 table-input-standard" />
                                       <input
                                         x-ref="editSampleTime"
-                                        x-show="editing"
                                         x-model.number="sample.time"
                                         :id="'smpTE' + sample.id"
                                         type="number"
@@ -280,22 +221,21 @@
                                         @input="Alpine.store('price').validate(sample.time)"
                                         @blur="sample.time = Alpine.store('price').roundToTwo(sample.time)" />
                                       <input
-                                        x-show="editing"
                                         x-model.number="sample.price"
                                         :id="'smpPE' + sample.id"
                                         class="w-1/4 text-right table-input-standard"
                                         type="number"
                                         @input="Alpine.store('price').validate(sample.price)"
                                         @blur="sample.price = Alpine.store('price').roundToTwo(sample.price)" />
-                                      <div x-show="editing" class="flex">
+                                      <div class="flex">
                                         <button
                                           class="mr-1.5 table-interaction-icon-blue"
-                                          @click="updateSample(sample.id, sample.name, sample.time, sample.price); editing = false;">
+                                          @click="updateSample(sample.id, sample.name, sample.time, sample.price)">
                                           <svg width="20" height="20">
                                             <use href="/icons/icons.svg#check-circle" />
                                           </svg>
                                         </button>
-                                        <button class="table-interaction-icon-red" @click="editing = false">
+                                        <button class="table-interaction-icon-red" @click="stopEditing()">
                                           <svg width="20" height="20">
                                             <use href="/icons/icons.svg#xmark-circle" />
                                           </svg>
@@ -307,7 +247,6 @@
                                 </template>
                               </div>
                             </div>
-
                             <!-- End Tab Content 2 -->
                           </div>
                         </div>
@@ -366,7 +305,7 @@
                     <div class="outter-modal-overlay-blur-fixed z-[100]" x-show="modalStyle">
                       <div class="inner-modal-size-positioning-relative modal-bg-and-borders p-6 space-y-4">
                         <h2 class="modal-title">Add Style</h2>
-                        <form @submit.prevent="addStyle()" class="space-y-4">
+                        <form @submit.prevent="addStyke()" class="space-y-4">
                           <input
                             x-model="item.name"
                             name="name"

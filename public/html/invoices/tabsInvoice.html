@@ -1,5 +1,5 @@
 <!-- Conditional display for when a client is selected -->
-<div x-data="tabsInvoice">
+<div>
   <template x-if="$store.clients.selectedClient !== null">
     <div>
       <!-- MARK: TABS ALPINE -->
@@ -54,7 +54,7 @@
                       <td class="round-right-border w-[10%] text-left text-sm">
                         <div class="flex align-middle">
                           <button
-                            @click="addItemToInvoice(style, 'style'); $nextTick(() => applyEffect(`styleRowId-${style.id}`))"
+                            @click="$store.invo.addItemToInvoice(style, 'style'); $nextTick(() => $store.invo.addItemAnimation(`styleRowId-${style.id}`))"
                             class="flex mx-1 table-interaction-icon-blue place-self-center">
                             <svg width="20" height="20">
                               <use href="/icons/icons.svg#plus-circle" />
@@ -64,8 +64,8 @@
                           <input
                             type="number"
                             placeholder="1"
-                            x-model.number="quantities[style.id]"
-                            @input="handleInvoQtySubmit(style)"
+                            x-model.number="$store.invo.quantities[style.id]"
+                            @input="$store.invo.handleInvoQtySubmit(style)"
                             class="flex w-12 h-6 table-input-standard place-self-center" />
                         </div>
                       </td>
@@ -117,7 +117,7 @@
                       <td class="round-right-border w-[10%] pr-1 text-left text-sm">
                         <div class="flex justify-between align-middle">
                           <button
-                            @click="addItemToInvoice(sample, 'sample'); $nextTick(() => applyEffect(`sampleRowId-${sample.id}`))"
+                            @click="$store.invo.addItemToInvoice(sample, 'sample'); $nextTick(() => $store.invo.addItemAnimation(`sampleRowId-${sample.id}`))"
                             class="flex table-interaction-icon-blue place-self-center">
                             <svg width="20" height="20">
                               <use href="/icons/icons.svg#plus-circle" />
@@ -127,8 +127,8 @@
                             $id="smplQtyInput + sample.id"
                             type="number"
                             placeholder="1"
-                            x-model.number="quantities[sample.id]"
-                            @input="handleInvoQtySubmit(sample)"
+                            x-model.number="$store.invo.quantities[sample.id]"
+                            @input="$store.invo.handleInvoQtySubmit(sample)"
                             class="flex w-12 h-6 table-input-standard place-self-center" />
                         </div>
                       </td>
@@ -143,3 +143,50 @@
     </div>
   </template>
 </div>
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.data(tabsInvoice, () => ({
+      invoicingTabSelected: '1',
+      invoicingTabId: 'taab',
+
+      styleSearch: '',
+
+      search: '',
+
+      init() {
+        console.log('TabsInvoice initialized')
+        this.invoicingTabId = this.$id('invoicingTabId')
+      },
+      get filteredStyles() {
+        return Alpine.store('items').styles.filter(style =>
+          style.name.toLowerCase().includes(this.search.toLowerCase()),
+        )
+      },
+      get filteredSamples() {
+        return Alpine.store('items').samples.filter(sample =>
+          sample.name.toLowerCase().includes(this.search.toLowerCase()),
+        )
+      },
+
+      invoicingTabButtonClicked(tabButton) {
+        this.invoicingTabSelected = tabButton.id.replace(this.invoicingTabId + '-', '')
+        this.tabRepositionMarker(tabButton)
+      },
+
+      tabRepositionMarker(tabButton) {
+        this.$refs.tabMarker.style.width = tabButton.offsetWidth + 'px'
+        this.$refs.tabMarker.style.height = tabButton.offsetHeight + 'px'
+        this.$refs.tabMarker.style.left = tabButton.offsetLeft + 'px'
+      },
+
+      invoicingTabContentActive(tabContent) {
+        return this.invoicingTabSelected == tabContent.id.replace(this.invoicingTabId + '-content-', '')
+      },
+
+      invoicingTabButtonActive(tabContent) {
+        const invoicingTabId = tabContent.id.split('-').slice(-1)
+        return this.invoicingTabSelected == invoicingTabId
+      },
+    }))
+  })
+</script>

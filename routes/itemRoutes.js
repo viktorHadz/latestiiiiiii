@@ -14,30 +14,22 @@ router.get('/styles/client/:id', (req, res) => {
   })
 })
 
+// Create new style
 router.post('/styles/new', (req, res) => {
-  try {
-    const { name, price, clientId } = req.body
-    if (!name) return res.status(400).json({ error: 'Missing name' })
-    if (!price) return res.status(400).json({ error: 'Missing price' })
-    if (!clientId) return res.status(400).json({ error: 'Missing clientId' })
+  const { name, price, clientId } = req.body
+  if (!name) return res.status(400).json({ error: 'Missing name' })
+  if (!price) return res.status(400).json({ error: 'Missing price' })
+  if (!clientId) return res.status(400).json({ error: 'Missing clientId' })
 
-    db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, client) => {
-      if (error) {
-        return res.status(500).json({ error: 'Database error' })
-      }
-      if (!client) {
-        return res.status(400).json({ error: 'No client in db.' })
-      }
-      db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, clientId], error => {
-        if (error) {
-          return res.status(500).json({ error: 'Failed to insert style' })
-        }
-        res.json({ message: 'Style inserted into db successfully' })
-      })
+  db.get('SELECT id FROM clients WHERE id = ?', [clientId], (err, client) => {
+    if (err) return res.status(500).json({ error: 'Database error.' })
+    if (!client) return res.status(400).json({ error: 'No client found.' })
+
+    db.run('INSERT INTO styles (name, price, client_id) VALUES (?, ?, ?)', [name, price, clientId], function (err2) {
+      if (err2) return res.status(500).json({ error: 'Insert error.' })
+      res.json({ id: this.lastID, name, price, clientId })
     })
-  } catch (error) {
-    res.status(400).json({ error: error.message })
-  }
+  })
 })
 
 // Update an existing style
@@ -72,37 +64,28 @@ router.get('/samples/client/:clientId', (req, res) => {
     res.json(results)
   })
 })
-
+// create new sample
 router.post('/samples/new', (req, res) => {
-  try {
-    const { name, time, price, clientId } = req.body
-    if (!name) return res.status(400).json({ error: 'Missing name' })
-    if (!time) return res.status(400).json({ error: 'Missing time' })
-    if (!price) return res.status(400).json({ error: 'Missing price' })
-    if (!clientId) return res.status(400).json({ error: 'Missing clientId' })
-    db.get('SELECT * FROM clients WHERE id = ?', [clientId], (error, client) => {
-      if (error) {
-        return res.status(500).json({ error: 'Database error' })
-      }
-      if (!client) {
-        return res.status(400).json({ error: 'No client in db.' })
-      }
-      db.run(
-        'INSERT INTO samples (name, time, price, client_id) VALUES (?, ?, ?, ?)',
-        [name, time, price, clientId],
-        error => {
-          if (error) {
-            return res.status(500).json({ error: 'Failed to insert sample' })
-          }
-          res.json({ message: 'Sample inserted into db successfully' })
-        },
-      )
-    })
-  } catch (error) {
-    res.status(400).json({ error: error.message })
-  }
-})
+  const { name, time, price, clientId } = req.body
+  if (!name) return res.status(400).json({ error: 'Missing name' })
+  if (!time) return res.status(400).json({ error: 'Missing time' })
+  if (!price) return res.status(400).json({ error: 'Missing price' })
+  if (!clientId) return res.status(400).json({ error: 'Missing clientId' })
 
+  db.get('SELECT id FROM clients WHERE id = ?', [clientId], (err, client) => {
+    if (err) return res.status(500).json({ error: 'Database error.' })
+    if (!client) return res.status(400).json({ error: 'No client found.' })
+
+    db.run(
+      'INSERT INTO samples (name, time, price, client_id) VALUES (?, ?, ?, ?)',
+      [name, time, price, clientId],
+      function (err2) {
+        if (err2) return res.status(500).json({ error: 'Insert error.' })
+        res.json({ id: this.lastID, name, time, price, clientId })
+      },
+    )
+  })
+})
 // Update a sample (e.g. after editing)
 router.put('/samples/update/:id', (req, res) => {
   const { name, time, price } = req.body

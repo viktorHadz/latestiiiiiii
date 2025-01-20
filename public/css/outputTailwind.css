@@ -763,10 +763,6 @@ video {
   margin-left: 0.5rem;
 }
 
-.ml-3 {
-  margin-left: 0.75rem;
-}
-
 .ml-4 {
   margin-left: 1rem;
 }
@@ -1579,10 +1575,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
-}
-
-.bg-opacity-40 {
-  --tw-bg-opacity: 0.4;
 }
 
 .bg-opacity-50 {
@@ -3656,10 +3648,10 @@ input[type='radio']:checked {
 
 .toast-animate-enter {
   /* Slightly slower so the 'falling in' feels more deliberate */
-  animation: toast-fall-in 0.4s cubic-bezier(0.75, 0.25, 0.25, 0.75) forwards;
+  animation: toast-slide-in 0.4s cubic-bezier(0.75, 0.25, 0.25, 0.75) forwards;
 }
 
-@keyframes toast-fall-in {
+@keyframes toast-slide-in {
   0% {
     opacity: 0;
     /* Start way off-screen to the right + a big tilt */
@@ -3686,10 +3678,10 @@ input[type='radio']:checked {
 
 .toast-animate-leave {
   /* A little quicker so it zips away */
-  animation: toast-fall-out 0.3s cubic-bezier(0.75, 0.25, 0.25, 0.75) forwards;
+  animation: toast-slide-out 0.3s cubic-bezier(0.75, 0.25, 0.25, 0.75) forwards;
 }
 
-@keyframes toast-fall-out {
+@keyframes toast-slide-out {
   0% {
     opacity: 1;
     transform: translateX(0) rotate(0deg);
