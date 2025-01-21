@@ -58,7 +58,7 @@
               x-text="'£' + (item.price * item.quantity).toFixed(2)"></td>
             <td class="round-right-border w-[10%] px-2 py-1 text-sm">
               <div class="flex">
-                <button @click="removeSingleInvoiceItem(item)" class="ml-4 table-interaction-icon-red">
+                <button @click="$store.invo.removeOneItem(item)" class="ml-4 table-interaction-icon-red">
                   <svg width="20" height="20">
                     <use href="/icons/icons.svg#minus-circle" />
                   </svg>

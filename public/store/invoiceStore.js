@@ -90,6 +90,23 @@ document.addEventListener('alpine:init', () => {
         delete this.quantities[item.id]
         console.log('Quantities: ', JSON.stringify(this.quantities, null, 2))
       },
+      removeOneItem(targetItem) {
+        if (this.discount !== 0 || this.deposit !== 0) {
+          callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
+          return
+        }
+
+        this.totals.items = this.totals.items
+          .map(item => {
+            if (item.uniqueId === targetItem.uniqueId) {
+              return { ...item, quantity: item.quantity - 1 }
+            }
+            return item
+          })
+          .filter(item => item.quantity > 0)
+        // NEED TO ADD
+        // this.calculateTotals()
+      },
 
       addItemAnimation(itemId) {
         const targetItem = document.getElementById(itemId)
