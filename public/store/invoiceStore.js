@@ -104,7 +104,8 @@ document.addEventListener('alpine:init', () => {
             return item
           })
           .filter(item => item.quantity > 0)
-        // NEED TO ADD
+        // NEED TO ADD - db sync and watch
+        // NEED TO ADD - below
         // this.calculateTotals()
       },
 
