@@ -244,21 +244,21 @@ input::-webkit-inner-spin-button {
 }
 /* MARK: TAB BUTTONS */
 .tab-button {
-  @apply flex my-4 transition-all duration-300 ease-in-out transform rounded-md text-vls2;
+  @apply flex rounded-md text-vls2 transition duration-300;
   @apply hover:bg-vlp2 hover:text-vls3;
   @apply active:scale-90;
 }
 .tab-button-active {
-  @apply flex rounded-md bg-vls2 text-vla;
+  @apply flex rounded-md bg-vls2 text-vla transition duration-300;
   @apply hover:bg-vls2 hover:text-vla;
 }
 /* Dark tab buttons */
 .dark .tab-button {
-  @apply flex items-baseline my-4 transition duration-300 ease-in-out transform text-vds3light;
+  @apply flex items-baseline text-vds3light transition duration-300;
   @apply hover:bg-vdp3 hover:text-vda;
 }
 .dark .tab-button-active {
-  @apply flex rounded-md bg-vdp3 text-vda2;
+  @apply flex rounded-md bg-vdp3 text-vda2 transition duration-300;
   @apply hover:text-vda;
 }
 /* MARK: Tab Toggler Tabs */

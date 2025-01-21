@@ -7,7 +7,7 @@
         type="text"
         placeholder="Search Invoice Items..."
         class="transition-all duration-500 srch-style"
-        x-model="invoiceSearchQuery" />
+        x-model="Alpine.store('invo').invoItemSearch" />
     </div>
     <!--  Invoice Items -->
     <div class="flex items-center justify-center text-center">
@@ -20,18 +20,24 @@
   <!-- Invoice Items Table Section -->
   <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 25vh">
     <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
-      <thead class="sticky top-0 table-head-style">
+      <thead class="sticky top-0 table-head-style border-clipper">
         <tr>
           <th
-            class="round-left-border border-clipper max-w-[50%] border border-transparent p-2 text-lg"
+            class="round-left-border border-clipper max-w-[50%] border border-transparent p-2"
             style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
             Name
           </th>
-          <th class="w-[5%] px-2 py-2 text-lg">Type</th>
-          <th class="w-[5%] px-2 py-2 text-right text-lg">Price</th>
-          <th class="mx-2 w-[5%] py-2 text-right text-lg">Qty</th>
+          <th class="w-[10%] px-2 py-2">Type</th>
+          <th class="w-[10%] px-2 py-2 text-right">Price</th>
+          <th class="w-[10%] px-2 py-2 text-right">Qty</th>
+          <th class="w-[15%] px-2 py-2 text-right">
+            <div class="flex justify-end items-center">
+              <span class="align-middle">Item</span>
+              <span class="text-[10px] ml-1 align-middle">(total)</span>
+            </div>
+          </th>
           <th
-            class="round-right-border border-clipper w-[5%] px-2 py-2 text-center text-lg"
+            class="round-right-border border-clipper w-[10%] px-2 py-2 text-center"
             style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
             Actions
           </th>
@@ -39,14 +45,18 @@
       </thead>
       <tbody class="table-body-style table-scrollbar">
         <template
-          x-for="item in invoiceItems.filter(item => invoiceSearchQuery === '' || item.name.toLowerCase().includes(invoiceSearchQuery))"
+          x-for="item in Alpine.store('invo').totals.items.filter(item => Alpine.store('invo').invoItemSearch === '' || item.name.toLowerCase().includes(Alpine.store('invo').invoItemSearch))"
           :key="item.uniqueId">
+          >
           <tr class="border-hover-ring-efect">
             <td class="round-left-border w-[50%] px-2 py-1 text-sm" x-text="item.name"></td>
-            <td class="max-w-[5%] px-2 py-1 text-left text-sm" x-text="item.type"></td>
-            <td class="max-w-[5%] px-2 py-1 text-right text-sm" x-text="'£' + item.price"></td>
-            <td class="mx-2 max-w-[5%] py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
-            <td class="round-right-border max-w-[5%] px-2 text-sm">
+            <td class="w-[10%] px-2 py-1 text-left text-sm" x-text="item.type"></td>
+            <td class="w-[10%] px-2 py-1 text-right text-sm" x-text="'£' + item.price"></td>
+            <td class="w-[10%] px-2 py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
+            <td
+              class="w-[15%] px-2 py-1 text-right text-sm"
+              x-text="'£' + (item.price * item.quantity).toFixed(2)"></td>
+            <td class="round-right-border w-[10%] px-2 py-1 text-sm">
               <div class="flex">
                 <button @click="removeSingleInvoiceItem(item)" class="ml-4 table-interaction-icon-red">
                   <svg width="20" height="20">

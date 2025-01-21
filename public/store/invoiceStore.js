@@ -19,6 +19,7 @@ document.addEventListener('alpine:init', () => {
         date: new Date().toLocaleDateString(), // tochangeToo!!!!!!!!!!
       },
       quantities: {},
+      invoItemSearch: '',
 
       // Initialize the store
       init() {
@@ -55,10 +56,6 @@ document.addEventListener('alpine:init', () => {
         })
       },
 
-      handleInvoQtySubmit(item) {
-        return this.quantityInput[item.id] || 1
-      },
-
       addItemToInvoice(item, type) {
         if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
           callWarning(
@@ -67,23 +64,31 @@ document.addEventListener('alpine:init', () => {
           )
           return
         }
-        const qty = Math.max(this.quantities[item.id] || 1, 1)
-        const existingItem = this.totals.items.find(i => i.id === item.id)
+        if (this.totals.clientId === null) {
+          this.totals.clientId = Alpine.store('clients').selectedClient.id
+        }
 
+        const uniqueId = `${type}-${item.id}`
+        const qty = Math.max(this.quantities[item.id] || 1, 1)
+
+        const existingItem = this.totals.items.find(i => i.uniqueId === uniqueId)
         if (!existingItem) {
           this.totals.items.push({
             ...item,
             clientId: Alpine.store('clients').selectedClient.id,
+            uniqueId: uniqueId,
             type,
             quantity: qty,
             price: parseFloat(item.price) * (type === 'sample' ? parseFloat(item.time) : 1),
           })
         } else {
           existingItem.quantity += qty
-          // if (type === 'sample') {
-          //   existingItem.price = parseFloat(item.price) * parseFloat(item.time)
-          // }
+          if (type === 'sample') {
+            existingItem.price = parseFloat(item.price) * parseFloat(item.time)
+          }
         }
+        delete this.quantities[item.id]
+        console.log('Quantities: ', JSON.stringify(this.quantities, null, 2))
       },
 
       addItemAnimation(itemId) {
@@ -142,6 +147,12 @@ document.addEventListener('alpine:init', () => {
           this.totals.items.splice(0)
           console.log('{ InvoiceStore } Totals after splice: ', this.totals)
         }
+      },
+
+      invoiceSearchQuery() {
+        return this.totals.items.filter(invoItem =>
+          invoItem.name.toLowerCase().includes(this.invoItemSearch.toLowerCase()),
+        )
       },
       //rest
     }),

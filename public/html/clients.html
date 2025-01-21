@@ -2,29 +2,23 @@
   <!-- If no client is selected, show the selection modal -->
 
   <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 80vh">
-    <div class="mb-12 flex max-h-[20vh] justify-between align-middle">
-      <div class="transition-all duration-500">
-        <input
-          id="clientSrch"
-          type="text"
-          placeholder="Search Clients..."
-          class="transition-all duration-500 srch-style"
-          x-model="clientSearch"
-          @input="searchClients"
-          x-transition />
-      </div>
-      <button
-        @click="$store.clients.showAddClientModal = true; 
+    <div class="inset-0 p-0.5 mb-8 align-baseline border rounded-md border-vls/60 dark:border-vls/40">
+      <div class="bg-vls3 dark:bg-vdp flex justify-between p-2 rounded-md">
+        <button
+          @click="$store.clients.showAddClientModal = true; 
           if($store.clients.showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
-        @keydown.escape.window="showAddClientModal = false"
-        class="flex items-baseline justify-center butt-style">
-        <svg width="16" height="16" class="mr-1.5">
-          <use href="/icons/icons.svg#user-plus" />
-        </svg>
-        <span class="flex self-center">Add Client</span>
-      </button>
+          @keydown.escape.window="showAddClientModal = false"
+          class="flex items-baseline butt-style p-1">
+          <svg class="mr-1.5 size-4">
+            <use href="/icons/icons.svg#user-plus" />
+          </svg>
+          <span class="flex self-center">Add Client</span>
+        </button>
+        <h3
+          class="self-center text-md text-vlp2 dark:text-vds underline decoration-vla dark:decoration-vda"
+          x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
+      </div>
     </div>
-
     <!-- Clients Table -->
     <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
       <thead class="table-head-style">

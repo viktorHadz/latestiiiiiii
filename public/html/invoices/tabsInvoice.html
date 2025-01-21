@@ -57,33 +57,32 @@
             <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 35vh">
               <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
                 <thead class="sticky top-0 table-head-style border-clipper">
-                  <th class="border w-[75%] text-left border-transparent round-left-border p-2">Style</th>
-                  <th class="text-right w-[10%]">Price</th>
-                  <th class="round-right-border w-[10] text-center">Actions</th>
+                  <tr>
+                    <th class="border w-[75%] text-left border-transparent round-left-border p-2 text-base">Style</th>
+                    <th class="text-right w-[10%] p-2 text-base">Price</th>
+                    <th class="round-right-border w-[10%] text-center p-2 text-base">Actions</th>
+                  </tr>
                 </thead>
-                <!-- MARK: TBODY STYLES -->
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="style in filteredStyles" :key="style.id">
                     <tr :id="`styleRowId-${style.id}`" class="border-hover-ring-efect">
-                      <td class="round-left-border w-[75%] py-1 px-1 text-sm" x-text="style.name"></td>
+                      <td class="round-left-border w-[75%] px-2 py-1 text-sm" x-text="style.name"></td>
                       <td class="w-[15%] px-2 py-1 text-sm text-right" x-text="'£' + style.price"></td>
-                      <td class="round-right-border w-[10%] text-left text-sm">
-                        <div class="flex align-middle">
+                      <td class="round-right-border w-[10%] px-2 py-1 text-left text-sm">
+                        <div class="flex items-center">
                           <button
                             @click="$store.invo.addItemToInvoice(style, 'style'); $nextTick(() => $store.invo.addItemAnimation(`styleRowId-${style.id}`))"
-                            class="flex mx-1 table-interaction-icon-blue place-self-center">
+                            class="mx-1 table-interaction-icon-blue">
                             <svg width="20" height="20">
                               <use href="/icons/icons.svg#plus-circle" />
                             </svg>
                           </button>
-
                           <input
                             :id="'styInpt'+style.id"
                             type="number"
                             placeholder="1"
                             x-model.number="$store.invo.quantities[style.id]"
-                            @input="$store.invo.handleInvoQtySubmit(style)"
-                            class="flex w-12 h-6 table-input-standard place-self-center" />
+                            class="w-12 h-full table-input-standard" />
                         </div>
                       </td>
                     </tr>
@@ -114,28 +113,28 @@
                 style="border-spacing: 0 10px">
                 <thead class="sticky top-0 table-head-style border-clipper">
                   <tr>
-                    <th class="w-[60%] border border-transparent round-left-border p-2">Sample</th>
-                    <th class="py-2 text-right w-[10%] pr-4">
-                      <span class="flex">
+                    <th class="w-[60%] border border-transparent round-left-border p-2 text-base">Sample</th>
+                    <th class="py-2 text-right w-[10%] pr-4 text-base">
+                      <span class="flex items-center">
                         Time
-                        <span class="text-xs mt-1.5">(min)</span>
+                        <span class="text-xs mt-1.5 ml-1">(min)</span>
                       </span>
                     </th>
-                    <th class="pr-4 text-right w-[10%]">Price</th>
-                    <th class="round-right-border text-center w-[10%]">Actions</th>
+                    <th class="pr-4 text-right w-[10%] text-base">Price</th>
+                    <th class="round-right-border text-center w-[10%] p-2 text-base">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="table-body-style table-scrollbar">
                   <template x-for="sample in filteredSamples" :key="sample.id">
                     <tr :id="`sampleRowId-${sample.id}`" class="border-hover-ring-efect">
-                      <td class="round-left-border w-[60%] p-1 text-sm" x-text="sample.name"></td>
-                      <td class="w-[10%] text-right text-sm pr-4" x-text="sample.time"></td>
-                      <td class="w-[10%] pr-4 text-right text-sm" x-text="'£' + sample.price"></td>
-                      <td class="round-right-border w-[10%] pr-1 text-left text-sm">
-                        <div class="flex justify-between align-middle">
+                      <td class="round-left-border w-[60%] px-2 py-1 text-sm" x-text="sample.name"></td>
+                      <td class="w-[10%] text-right px-2 py-1 text-sm pr-4" x-text="sample.time"></td>
+                      <td class="w-[10%] px-2 py-1 text-right text-sm pr-4" x-text="'£' + sample.price"></td>
+                      <td class="round-right-border w-[10%] px-2 py-1 text-left text-sm">
+                        <div class="flex items-center justify-between">
                           <button
                             @click="$store.invo.addItemToInvoice(sample, 'sample'); $nextTick(() => $store.invo.addItemAnimation(`sampleRowId-${sample.id}`))"
-                            class="flex table-interaction-icon-blue place-self-center">
+                            class="table-interaction-icon-blue">
                             <svg width="20" height="20">
                               <use href="/icons/icons.svg#plus-circle" />
                             </svg>
@@ -145,8 +144,7 @@
                             type="number"
                             placeholder="1"
                             x-model.number="$store.invo.quantities[sample.id]"
-                            @input="$store.invo.handleInvoQtySubmit(sample)"
-                            class="flex w-12 h-6 table-input-standard place-self-center" />
+                            class="w-12 h-full table-input-standard" />
                         </div>
                       </td>
                     </tr>

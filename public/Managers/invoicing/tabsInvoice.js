@@ -3,8 +3,6 @@ export default function tabsInvoice() {
     invoicingTabSelected: '1',
     invoicingTabId: 'taab',
 
-    styleSearch: '',
-
     search: '',
 
     init() {

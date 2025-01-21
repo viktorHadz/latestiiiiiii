@@ -394,3 +394,135 @@
     </div>
   </div>
 </div>
+<div
+  x-data="totalsInvoice"
+  class="p-2 text-xs rounded-md bg-vlp text-vls3 outline outline-1 outline-offset-4 outline-vls/80 dark:bg-vdp dark:text-vds dark:outline-vdp3">
+  <div class="grid grid-cols-4 items-center gap-4">
+    <!-- MARK: MAIN PRICE MENU -->
+    <div class="text-lg font-medium">
+      <h3>
+        Subtotal:
+        <span x-text="'£' + staticSubtotal"></span>
+      </h3>
+
+      <div class="flex items-center">
+        <h3>
+          Discount:
+          <span x-show="discount" class="text-red-500">-</span>
+          <span x-text="symbol === '%' ? discount + '%' : '£' + discount"></span>
+          <span x-show="discount && isDiscountPercent" x-text="'(£' + discountValue + ')'" class="ml-1"></span>
+        </h3>
+        <button x-show="discount" @click="resetDiscounts" class="ml-2 text-red-600 hover:text-red-800">
+          <svg width="16" height="16">
+            <use href="/icons/icons.svg#trash"></use>
+          </svg>
+        </button>
+      </div>
+
+      <h3>
+        VAT:
+        <span x-text="'£' + vat"></span>
+      </h3>
+
+      <div class="flex items-center">
+        <h3>
+          Total:
+          <span x-text="'£' + total"></span>
+        </h3>
+        <h3 x-show="discount" class="ml-2 line-through text-gray-500" x-text="'£' + preDiscountTotal"></h3>
+      </div>
+
+      <div x-show="deposit" class="flex items-center">
+        <h3>
+          Deposit:
+          <span x-text="depositSymbol === '%' ? depositDisplay : '£' + deposit"></span>
+        </h3>
+        <button @click="resetDeposit" class="ml-2 text-red-600 hover:text-red-800">
+          <svg width="16" height="16">
+            <use href="/icons/icons.svg#trash"></use>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- MARK: DISCOUNT MODAL -->
+    <div class="flex justify-center">
+      <button
+        @click="popoverOpen = !popoverOpen; if (popoverOpen) $nextTick(() => $refs.discountInput.focus())"
+        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <svg width="20" height="20">
+          <use href="/icons/icons.svg#trending-down"></use>
+        </svg>
+        Discount
+      </button>
+      <template x-if="popoverOpen">
+        <div @click.outside="popoverOpen = false" class="absolute z-10 mt-2 p-4 bg-white border rounded shadow-md">
+          <h3 class="text-lg font-semibold mb-2">Discount</h3>
+          <input
+            x-ref="discountInput"
+            type="number"
+            x-model.number="tempDiscount"
+            placeholder="0"
+            class="w-full p-2 border rounded mb-2" />
+          <div class="flex justify-between">
+            <button @click="confirmDiscount" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+              Apply
+            </button>
+            <button @click="resetDiscounts" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+              Reset
+            </button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- MARK: DEPOSIT MODAL -->
+    <div class="flex justify-center">
+      <button
+        @click="depositOpen = !depositOpen; if (depositOpen) $nextTick(() => $refs.tempDeposit.focus())"
+        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <svg width="20" height="20">
+          <use href="/icons/icons.svg#cash-bill"></use>
+        </svg>
+        Deposit
+      </button>
+      <template x-if="depositOpen">
+        <div @click.outside="depositOpen = false" class="absolute z-10 mt-2 p-4 bg-white border rounded shadow-md">
+          <h3 class="text-lg font-semibold mb-2">Deposit</h3>
+          <input
+            x-ref="tempDeposit"
+            type="number"
+            x-model.number="tempDeposit"
+            placeholder="Enter deposit..."
+            class="w-full p-2 border rounded mb-2" />
+          <div class="flex justify-between">
+            <button @click="calculateDeposit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+              Apply
+            </button>
+            <button @click="resetDeposit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+              Reset
+            </button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- MARK: NOTE AND PDF -->
+    <div class="flex flex-col items-end gap-2">
+      <button
+        @click="invoiceNoteOpen = !invoiceNoteOpen; if (invoiceNoteOpen) $nextTick(() => $refs.invoiceNote.focus())"
+        class="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+        <svg width="20" height="20">
+          <use href="/icons/icons.svg#clipboard"></use>
+        </svg>
+        Note
+      </button>
+      <button @click="generateInvoice" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+        <svg width="20" height="20" class="mr-1">
+          <use href="/icons/icons.svg#download-document"></use>
+        </svg>
+        Generate PDF
+      </button>
+    </div>
+  </div>
+</div>
