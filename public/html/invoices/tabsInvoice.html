@@ -5,7 +5,9 @@
       <div class="inset-0 p-0.5 mb-12 align-baseline border rounded-md border-vls/60 dark:border-vls/40">
         <div class="bg-vls3 dark:bg-vdp flex justify-between p-2 rounded-md">
           <div>
-            <button @click="$store.clients.showClientModal = true" class="flex items-baseline butt-style p-1">
+            <button
+              @click="$store.clients.showClientModal = true"
+              class="flex items-center modal-btn-prim !border border-vlp2">
               <svg class="mr-1.5 size-4">
                 <use href="/icons/icons.svg#select-client" />
               </svg>

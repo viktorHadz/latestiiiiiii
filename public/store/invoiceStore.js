@@ -9,18 +9,21 @@ document.addEventListener('alpine:init', () => {
         discountValue: 0,
         vatPercent: 20,
         vat: 0,
+        // staticSubtotal: 0,
         subtotal: 0,
         total: 0,
         depositType: 0, // 0: flat, 1: percent
         depositValue: 0,
-        depositPercentValue: 0,
+        // depositPercentValue: 0,
         note: '',
         totalPreDiscount: 0,
         date: new Date().toLocaleDateString(), // tochangeToo!!!!!!!!!!
       },
       quantities: {},
       invoItemSearch: '',
-
+      modDisc: false,
+      modDepo: false,
+      modNote: false,
       // Initialize the store
       init() {
         console.log('{ InvoiceStore } Initializing')
@@ -55,7 +58,7 @@ document.addEventListener('alpine:init', () => {
           }
         })
       },
-
+      // Business logic
       addItemToInvoice(item, type) {
         if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
           callWarning(
@@ -87,11 +90,13 @@ document.addEventListener('alpine:init', () => {
             existingItem.price = parseFloat(item.price) * parseFloat(item.time)
           }
         }
+        this.calculateTotals()
         delete this.quantities[item.id]
         console.log('Quantities: ', JSON.stringify(this.quantities, null, 2))
       },
+
       removeOneItem(targetItem) {
-        if (this.discount !== 0 || this.deposit !== 0) {
+        if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
           callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
           return
         }
@@ -104,9 +109,27 @@ document.addEventListener('alpine:init', () => {
             return item
           })
           .filter(item => item.quantity > 0)
-        // NEED TO ADD - db sync and watch
-        // NEED TO ADD - below
-        // this.calculateTotals()
+
+        this.calculateTotals()
+      },
+      removeEntireItem(targetItem) {
+        if (confirm('Remove item from invoice?')) {
+          this.totals.items = this.totals.items.filter(item => item.uniqueId !== targetItem.uniqueId)
+          this.calculateTotals()
+          callInfo('Item removed from invoice.')
+        }
+      },
+      removeAllItems() {
+        if (confirm('You are about to remove all items from the invoice. Proceed?')) {
+          this.totals.items = []
+          if (this.totals.items.length > 0) {
+            calculateTotals()
+            callInfo('Items removed', 'Invoice reset')
+          } else if (this.totals.items === 0) {
+            this.calculateTotals()
+            callWarning('No items to remove')
+          }
+        }
       },
 
       addItemAnimation(itemId) {
@@ -133,24 +156,7 @@ document.addEventListener('alpine:init', () => {
           { once: true }, // Ensure the listener is removed after one execution
         )
       },
-      totalsReset() {
-        this.totals = {
-          clientId: currentClientId,
-          items: [],
-          discountType: 0,
-          discountValue: 0,
-          vatPercent: 20,
-          vat: 0,
-          subtotal: 0,
-          total: 0,
-          depositType: 0,
-          depositValue: 0,
-          depositPercentValue: 0,
-          note: '',
-          totalPreDiscount: 0,
-          date: new Date().toLocaleDateString(),
-        }
-      },
+
       watchStateEffects() {
         if (this.totals.items.length === 0) {
           console.log('{ InvoiceStore } No items to check for')
@@ -167,11 +173,89 @@ document.addEventListener('alpine:init', () => {
         }
       },
 
-      invoiceSearchQuery() {
-        return this.totals.items.filter(invoItem =>
-          invoItem.name.toLowerCase().includes(this.invoItemSearch.toLowerCase()),
-        )
+      // invoiceSearchQuery() {
+      //   return this.totals.items.filter(invoItem =>
+      //     invoItem.name.toLowerCase().includes(this.invoItemSearch.toLowerCase()),
+      //   )
+      // },
+      roundToTwo(value) {
+        return Math.round((value + Number.EPSILON) * 100) / 100
       },
+      calculateSubTotal() {
+        try {
+          const sampleTotal = this.totals.items
+            .filter(item => item.type === 'sample')
+            .reduce((total, item) => total + item.price * item.quantity, 0)
+
+          const styleTotal = this.totals.items
+            .filter(item => item.type === 'style')
+            .reduce((total, item) => total + item.price * item.quantity, 0)
+
+          const subTotal = this.roundToTwo(sampleTotal + styleTotal)
+
+          // Replace the totals object with updated values
+          this.totals = {
+            ...this.totals,
+            subtotal: subTotal,
+          }
+
+          return subTotal
+        } catch (error) {
+          console.error('Error calculating subtotal:', error)
+          throw new Error('Failed to calculate subtotal. Check the input data.')
+        }
+      },
+      calculateTotals() {
+        try {
+          // Recalculate subtotal
+          const subTotal = this.calculateSubTotal()
+
+          // Calculate VAT and total
+          const vat = this.roundToTwo((subTotal / 100) * this.totals.vatPercent)
+          const total = this.roundToTwo(subTotal + vat)
+
+          // Replace the totals object with updated values
+          this.totals = {
+            ...this.totals,
+            subtotal: subTotal,
+            vat: vat,
+            total: total,
+          }
+
+          // Debug logger
+          console.log(`CalculateTotals => Values`)
+          console.log('Subtotal:', this.totals.subtotal)
+          console.log('VAT:', this.totals.vat)
+          console.log('Total:', this.totals.total)
+        } catch (error) {
+          console.error('Error calculating totals:', error)
+          throw new Error('Failed to calculate totals. Check the input data.')
+        }
+      },
+      // recalculate prices if there already is a discount present
+      // if (this.totals.items.discount !== 0) {
+      //   // 0: flat 1: percent
+      //   let subtotal = this.calculateSubTotal()
+      //   let discount = this.totals.items.discount
+      //   let recalcSubtotal = 0
+
+      //   if (this.totals.discountType === 1) {
+      //     // 0: flat 1: percent
+      //     recalcSubtotal = subtotal - (discount / 100) * subtotal
+      //   } else {
+      //     recalcSubtotal = subtotal - discount
+      //   }
+      //   let recalcVat = (this.totals.items.vatPercent / 100) * recalcSubtotal
+      //   let recalcTotal = recalcSubtotal + recalcVat
+
+      //   this.totals.subtotal = this.roundToTwo(recalcSubtotal)
+      //   this.totals.vat = this.roundToTwo(recalcVat)
+      //   this.totals.total = this.roundToTwo(recalcTotal)
+      //   // Static subtotal is the total displayed in the UI
+      //   this.roundToTwo((this.totals.staticSubtotal = this.totals.subtotal))
+      //   return
+      // }
+
       //rest
     }),
   )

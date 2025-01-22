@@ -11,14 +11,19 @@
     </div>
     <!--  Invoice Items -->
     <div class="flex items-center justify-center text-center">
-      <h2 class="self-center text-lg font-semibold text-vls2 dark:text-vds">Invoice</h2>
+      <h2 class="self-center text-lg text-vls3 dark:text-vds underline decoration-vla dark:decoration-vda">Invoice</h2>
     </div>
     <div class="flex justify-end">
-      <button @click="removeAllInvoiceItems()" class="butt-style">Remove All</button>
+      <button @click="$store.invo.removeAllItems()" class="flex items-baseline butt-style p-1">
+        <svg class="size-4 mr-1.5">
+          <use href="/icons/icons.svg#trash" />
+        </svg>
+        Remove All
+      </button>
     </div>
   </div>
   <!-- Invoice Items Table Section -->
-  <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 25vh">
+  <div class="relative px-2 py-0 mb-2 overflow-y-auto table-scrollbar" style="max-height: 35vh">
     <table class="w-[calc(100%-10px)] table-auto border-separate text-left" style="border-spacing: 0 10px">
       <thead class="sticky top-0 table-head-style border-clipper">
         <tr>
@@ -63,7 +68,7 @@
                     <use href="/icons/icons.svg#minus-circle" />
                   </svg>
                 </button>
-                <button @click="removeItemFromInvoice(item)" class="ml-4 table-interaction-icon-red">
+                <button @click="$store.invo.removeEntireItem(item)" class="ml-4 table-interaction-icon-red">
                   <svg width="20" height="20">
                     <use href="/icons/icons.svg#trash" />
                   </svg>
