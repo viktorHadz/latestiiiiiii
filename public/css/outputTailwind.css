@@ -107,7 +107,7 @@
 }
 
 /*
-! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -667,6 +667,10 @@ video {
   z-index: 100;
 }
 
+.z-\[150\] {
+  z-index: 150;
+}
+
 .z-\[60\] {
   z-index: 60;
 }
@@ -679,12 +683,24 @@ video {
   z-index: 99;
 }
 
+.z-\[980\] {
+  z-index: 980;
+}
+
+.\!z-\[980\] {
+  z-index: 980 !important;
+}
+
 .m-1 {
   margin: 0.25rem;
 }
 
 .m-2 {
   margin: 0.5rem;
+}
+
+.-m-1 {
+  margin: -0.25rem;
 }
 
 .mx-1 {
@@ -923,6 +939,10 @@ video {
 
 .max-h-\[calc\(80vh-200px\)\] {
   max-height: calc(80vh - 200px);
+}
+
+.min-h-\[80px\] {
+  min-height: 80px;
 }
 
 .\!w-11\/12 {
@@ -1191,6 +1211,11 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.translate-x-2 {
+  --tw-translate-x: 0.5rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
@@ -1397,6 +1422,10 @@ video {
   border-width: 0px;
 }
 
+.border-2 {
+  border-width: 2px;
+}
+
 .border-b-0 {
   border-bottom-width: 0px;
 }
@@ -1486,6 +1515,11 @@ video {
 
 .border-vls\/80 {
   border-color: rgb(139 145 151 / 0.8);
+}
+
+.border-neutral-900 {
+  --tw-border-opacity: 1;
+  border-color: rgb(23 23 23 / var(--tw-border-opacity, 1));
 }
 
 .border-e-transparent {
@@ -3789,6 +3823,16 @@ input[type='radio']:checked {
   color: rgb(139 145 151 / var(--tw-text-opacity, 1));
 }
 
+.placeholder\:text-neutral-500::-moz-placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(115 115 115 / var(--tw-text-opacity, 1));
+}
+
+.placeholder\:text-neutral-500::placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(115 115 115 / var(--tw-text-opacity, 1));
+}
+
 .hover\:border-vla:hover {
   --tw-border-opacity: 1;
   border-color: rgb(83 207 110 / var(--tw-border-opacity, 1));
@@ -3928,6 +3972,11 @@ input[type='radio']:checked {
   border-color: rgb(254 160 154 / var(--tw-border-opacity, 1));
 }
 
+.focus\:border-neutral-900:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(23 23 23 / var(--tw-border-opacity, 1));
+}
+
 .focus\:bg-slate-400:focus {
   --tw-bg-opacity: 1;
   background-color: rgb(148 163 184 / var(--tw-bg-opacity, 1));
@@ -3953,6 +4002,11 @@ input[type='radio']:checked {
   color: rgb(83 207 110 / var(--tw-text-opacity, 1));
 }
 
+.focus\:text-neutral-800:focus {
+  --tw-text-opacity: 1;
+  color: rgb(38 38 38 / var(--tw-text-opacity, 1));
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -3965,6 +4019,12 @@ input[type='radio']:checked {
 .focus\:ring-2:focus {
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:ring-0:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
@@ -3991,6 +4051,28 @@ input[type='radio']:checked {
 .active\:bg-slate-500:active {
   --tw-bg-opacity: 1;
   background-color: rgb(100 116 139 / var(--tw-bg-opacity, 1));
+}
+
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+
+.peer:focus ~ .peer-focus\:m-0 {
+  margin: 0px;
+}
+
+.peer:focus ~ .peer-focus\:translate-x-0 {
+  --tw-translate-x: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.peer:focus ~ .peer-focus\:translate-y-0 {
+  --tw-translate-y: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .dark\:\!border:is(.dark *) {
