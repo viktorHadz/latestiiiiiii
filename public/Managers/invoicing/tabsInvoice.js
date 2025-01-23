@@ -6,7 +6,7 @@ export default function tabsInvoice() {
     search: '',
 
     init() {
-      console.log('TabsInvoice initialized')
+      console.log('[ TabsInvoice ] initialized')
       this.invoicingTabId = this.$id('invoicingTabId')
     },
     get filteredStyles() {

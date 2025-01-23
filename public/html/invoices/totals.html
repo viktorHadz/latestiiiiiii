@@ -1,9 +1,10 @@
 <div
   x-data="totalsInvoice"
-  class="p-2 text-xs rounded-md bg-vls3 text-vlp outline outline-1 outline-offset-4 outline-vls/80 dark:bg-vdp dark:text-vds dark:outline-vdp3">
-  <div class="grid grid-cols-4 items-end gap-4">
+  class="p-4 text-xs rounded-md w-full bg-vlp border-vls/40 border text-vls3 mb-4 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow dark:shadow">
+  <div class="grid grid-cols-4 items-end">
     <!-- MARK: MAIN PRICE MENU -->
-    <div class="text-lg font-medium">
+    <div class="text-sm flex flex-col gap-4">
+      <h2 class="font-semibold text-base leading-tight">Invoice Summary</h2>
       <h3>
         Subtotal:
         <span x-text="'£' + $store.invo.totals.subtotal"></span>
@@ -63,28 +64,51 @@
     <!-- MARK: DISCOUNT MODAL -->
     <div class="flex justify-center">
       <button
-        @click="$store.invo.modDisc = !$store.invo.modDisc; if ($store.invo.modDisc) $nextTick(() => $refs.discountInput.focus())"
+        @click="modDisc = !modDisc; if (modDisc) $nextTick(() => $refs.discountInput.focus())"
         x-ref="discountAnchor"
-        class="flex items-center gap-2 modal-btn-prim !p-1.5">
+        class="modal-btn-prim">
         <svg class="size-4">
           <use href="/icons/icons.svg#trending-down"></use>
         </svg>
         Discount
       </button>
-      <div x-show="$store.invo.modDisc" x-transition.duration.300 x-anchor.top.offset.10="$refs.discountAnchor">
-        <div @keyup.escape="$store.invo.modDisc = false" class="z-10 p-4 bg-white border rounded shadow-md">
-          <h3 class="text-lg font-semibold mb-2">Discount</h3>
+      <div
+        x-show="modDisc"
+        @keyup.escape="modDisc = false"
+        @mouseenter="showXDisc = true"
+        @mouseleave="showXDisc = false"
+        x-transition.duration.300
+        x-anchor.top.offset.10="$refs.discountAnchor">
+        <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
+          <div class="relative">
+            <button
+              x-show="showXDisc"
+              @click="modDisc = false"
+              x-transition.duration.300
+              class="absolute !-top-3 !-right-3 table-interaction-icon-red">
+              <svg class="size-5">
+                <use href="/icons/icons.svg#xmark-circle"></use>
+              </svg>
+            </button>
+          </div>
+          <h3 class="mb-2 modal-title !text-lg !text-center">Discount</h3>
           <input
             x-ref="discountInput"
             type="number"
             x-model.number="tempDiscount"
             placeholder="0"
-            class="w-full p-2 border rounded mb-2" />
+            class="modal-input-style mb-3" />
           <div class="flex justify-between">
-            <button @click="confirmDiscount" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            <button @click="$store.invo.addDiscount()" class="modal-btn-prim !place-self-center !text-xs">
+              <svg class="size-4">
+                <use href="/icons/icons.svg#check-circle"></use>
+              </svg>
               Apply
             </button>
-            <button @click="resetDiscounts" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            <button @click="$store.invo.removeDiscount()" class="modal-btn-prim !place-self-center !text-xs">
+              <svg class="size-4">
+                <use href="/icons/icons.svg#rotate"></use>
+              </svg>
               Reset
             </button>
           </div>
@@ -94,29 +118,52 @@
     <!-- MARK: DEPOSIT MODAL -->
     <div class="flex justify-center">
       <button
-        @click="$store.invo.modDepo = !$store.invo.modDepo; if ($store.invo.modDepo) $nextTick(() => $refs.depoInput.focus())"
+        @click="modDepo = !modDepo; if (modDepo) $nextTick(() => $refs.depoInput.focus())"
         x-ref="depoAnchor"
-        class="flex items-center gap-2 modal-btn-prim !p-1.5">
+        class="modal-btn-prim">
         <svg class="size-4">
           <use href="/icons/icons.svg#cash-bill"></use>
         </svg>
         Deposit
       </button>
-      <div x-show="$store.invo.modDepo" x-transition.duration.300 x-anchor.top.offset.10="$refs.depoAnchor">
-        <div @keyup.escape="$store.invo.modDepo = false" class="z-10 p-4 bg-white border rounded shadow-md">
-          <h3 class="text-lg font-semibold mb-2">Deposit</h3>
+      <div
+        x-show="modDepo"
+        @keyup.escape="modDepo = false"
+        @mouseenter="showXDepo = true"
+        @mouseleave="showXDepo = false"
+        x-transition.duration.300
+        x-anchor.top.offset.10="$refs.depoAnchor">
+        <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
+          <div class="relative">
+            <button
+              x-show="showXDepo"
+              @click="modDepo = false"
+              x-transition.duration.300
+              class="absolute !-top-3 !-right-3 table-interaction-icon-red">
+              <svg class="size-5">
+                <use href="/icons/icons.svg#xmark-circle"></use>
+              </svg>
+            </button>
+          </div>
+          <h3 class="mb-2 modal-title !text-lg !text-center">Deposit</h3>
           <input
             x-ref="depoInput"
             type="number"
             x-model.number="tempDeposit"
             placeholder="0"
-            class="w-full p-2 border rounded mb-2" />
+            class="modal-input-style mb-3" />
           <div class="flex justify-between">
-            <button @click="confirmDeposit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-              Apply
+            <button class="modal-btn-prim !place-self-center !text-xs">
+              <svg class="size-4">
+                <use href="/icons/icons.svg#check-circle"></use>
+              </svg>
+              Accept
             </button>
-            <button @click="resetDeposit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-              Reset
+            <button title="Change invoice type - % or $" class="modal-btn-prim !place-self-center !text-xs">
+              <svg class="size-4">
+                <use href="/icons/icons.svg#rotate"></use>
+              </svg>
+              Change
             </button>
           </div>
         </div>
@@ -125,43 +172,56 @@
 
     <!-- MARK: NOTE AND PDF -->
     <div class="flex flex-col items-end justify-between gap-2 h-full">
+      <button @click="generateInvoice" class="flex items-center gap-2 modal-btn-sec !p-1.5">
+        <svg class="size-4">
+          <use href="/icons/icons.svg#download-document"></use>
+        </svg>
+        PDF
+      </button>
       <button
-        @click="$store.invo.modNote = !$store.invo.modNote; if ($store.invo.modNote) $nextTick(() => $refs.noteInput.focus())"
+        @click="modNote = !modNote; if (modNote) $nextTick(() => $refs.noteInput.focus())"
         x-ref="noteAnchor"
-        class="flex items-center gap-2 modal-btn-prim !p-1.5">
+        class="modal-btn-prim">
         <svg class="size-4">
           <use href="/icons/icons.svg#clipboard"></use>
         </svg>
         Note
       </button>
       <div
-        x-show="$store.invo.modNote"
-        @keyup.escape="$store.invo.modNote = false"
+        x-show="modNote"
+        @keyup.escape="modNote = false"
+        @mouseenter="showX = true"
+        @mouseleave="showX = false"
         x-transition.duration.300
         x-anchor.top.offset.10="$refs.noteAnchor">
-        <div class="relative w-full max-w-xs mx-auto z-50">
-          <textarea
-            x-data="{ 
-                    resize () { 
-                        $el.style.height = '0px'; 
-                        $el.style.height = $el.scrollHeight + 'px' 
-                    } 
-                }"
-            x-init="resize()"
-            @input="resize()"
+        <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
+          <div class="relative">
+            <button
+              x-show="showX"
+              @click="modNote=false"
+              x-transition.duration.300
+              class="absolute !-top-3 !-right-3 table-interaction-icon-red">
+              <svg class="size-5">
+                <use href="/icons/icons.svg#xmark-circle"></use>
+              </svg>
+            </button>
+          </div>
+          <h3 class="mb-2 modal-title !text-lg !text-center">Note</h3>
+          <input
+            x-ref="noteInput"
             type="text"
-            placeholder="Type your message here and press enter when you are ready to insert note into invoice."
-            class="flex relative z-50 peer w-full h-auto min-h-[80px] px-3 py-2 text-sm bg-white border-2 border-neutral-900 placeholder:text-neutral-500 focus:text-neutral-800 focus:border-neutral-900 focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
-          <div
-            class="absolute inset-0 z-10 w-full h-full -m-1 duration-300 ease-out translate-x-2 translate-y-2 bg-black peer-focus:m-0 peer-focus:translate-x-0 peer-focus:translate-y-0"></div>
+            role="text"
+            x-model="$store.invo.totals.note"
+            placeholder="Note text..."
+            class="modal-input-style mb-3" />
+          <button class="modal-btn-prim !place-self-center">
+            <svg class="size-4">
+              <use href="/icons/icons.svg#check-circle"></use>
+            </svg>
+            accept
+          </button>
         </div>
       </div>
-      <button @click="generateInvoice" class="flex items-center gap-2 modal-btn-sec">
-        <svg class="size-4">
-          <use href="/icons/icons.svg#download-document"></use>
-        </svg>
-        PDF
-      </button>
     </div>
   </div>
 </div>

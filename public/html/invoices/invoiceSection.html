@@ -1,4 +1,6 @@
-<div x-data="invoicing" class="mb-12 text-xs border rounded-md border-vls/40 text-vlp dark:border-vls/40 dark:text-vds">
+<div
+  x-data="invoicing"
+  class="mb-12 text-xs border rounded-md border-vls/40 text-vlp dark:border-vls/40 dark:text-vds bg-white dark:bg-vdp2 shadow">
   <div class="grid grid-cols-3 p-2 mb-4">
     <!-- INVOICE ITEMS -->
     <div>
@@ -11,14 +13,16 @@
     </div>
     <!--  Invoice Items -->
     <div class="flex items-center justify-center text-center">
-      <h2 class="self-center text-lg text-vls3 dark:text-vds underline decoration-vla dark:decoration-vda">Invoice</h2>
+      <h2 class="self-center text-base font-semibold text-vls3 dark:text-vds dark:underline dark:decoration-vda">
+        Invoice
+      </h2>
     </div>
     <div class="flex justify-end">
-      <button @click="$store.invo.removeAllItems()" class="flex items-baseline butt-style p-1">
+      <button @click="$store.invo.removeAllItems()" class="flex items-baseline modal-btn-prim p-1">
         <svg class="size-4 mr-1.5">
           <use href="/icons/icons.svg#trash" />
         </svg>
-        Remove All
+        Reset
       </button>
     </div>
   </div>

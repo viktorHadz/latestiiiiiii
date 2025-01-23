@@ -119,7 +119,8 @@
           <!-- Main View -->
           <div
             x-show="$store.clients.clients.length > 0 && $store.clients.selectedClient !== null"
-            x-html="tabHtml"></div>
+            x-html="tabHtml"
+            class="xl:max-w-[60%] mx-auto"></div>
           <!-- MARK: CREATE CLIENT MODAL -->
           <div
             x-show="$store.clients.showAddClientModal"

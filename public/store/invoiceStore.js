@@ -21,9 +21,7 @@ document.addEventListener('alpine:init', () => {
       },
       quantities: {},
       invoItemSearch: '',
-      modDisc: false,
-      modDepo: false,
-      modNote: false,
+
       // Initialize the store
       init() {
         console.log('{ InvoiceStore } Initializing')
@@ -207,6 +205,38 @@ document.addEventListener('alpine:init', () => {
       },
       calculateTotals() {
         try {
+          if (this.totals.items.discountValue !== 0) {
+            // 0: flat 1: percent
+            const subtotal = this.calculateSubTotal()
+            const discount = this.totals.items.discountValue
+            let subTotalLocal
+            //  subTotalLocal - discountValue
+            if (this.totals.discountType === 1) {
+              // 0: flat 1: percent
+              // discount is percent
+              subTotalLocal = subtotal - (discount / 100) * subtotal
+            } else {
+              subTotalLocal = subtotal - discount
+            }
+            let vatLocal = (this.totals.items.vatPercent / 100) * subTotalLocal
+            let totalLocal = subTotalLocal + vatLocal
+
+            // Round values
+            subTotalLocal = this.roundToTwo(subTotalLocal)
+            vatLocal = this.roundToTwo(vatLocal)
+            totalLocal = this.roundToTwo(totalLocal)
+
+            this.totals = {
+              ...totals,
+              subTotal: subTotalLocal,
+              vat: vatLocal,
+              total: totalLocal,
+            }
+
+            // Static subtotal is the total displayed in the UI
+            this.roundToTwo((this.totals.staticSubtotal = this.totals.subtotal))
+            return
+          }
           // Recalculate subtotal
           const subTotal = this.calculateSubTotal()
 
@@ -232,31 +262,78 @@ document.addEventListener('alpine:init', () => {
           throw new Error('Failed to calculate totals. Check the input data.')
         }
       },
-      // recalculate prices if there already is a discount present
-      // if (this.totals.items.discount !== 0) {
-      //   // 0: flat 1: percent
-      //   let subtotal = this.calculateSubTotal()
-      //   let discount = this.totals.items.discount
-      //   let recalcSubtotal = 0
+      addDiscount() {
+        const discountInput = this.$refs.discountInput
+        const { discountType, discountValue, subtotal } = this.totals
 
-      //   if (this.totals.discountType === 1) {
-      //     // 0: flat 1: percent
-      //     recalcSubtotal = subtotal - (discount / 100) * subtotal
-      //   } else {
-      //     recalcSubtotal = subtotal - discount
-      //   }
-      //   let recalcVat = (this.totals.items.vatPercent / 100) * recalcSubtotal
-      //   let recalcTotal = recalcSubtotal + recalcVat
+        if (!Alpine.store('validator').validator(this, 'confirmDiscount')) {
+          this.$refs.discountInput.focus()
+          return
+        }
 
-      //   this.totals.subtotal = this.roundToTwo(recalcSubtotal)
-      //   this.totals.vat = this.roundToTwo(recalcVat)
-      //   this.totals.total = this.roundToTwo(recalcTotal)
-      //   // Static subtotal is the total displayed in the UI
-      //   this.roundToTwo((this.totals.staticSubtotal = this.totals.subtotal))
-      //   return
-      // }
+        let updatedSubtotal = subtotal
 
-      //rest
+        if (discountType === 1) {
+          // Percentage discount
+          const discountAmount = (discountValue / 100) * subtotal
+          updatedSubtotal = subtotal - discountAmount
+        } else {
+          // Flat discount
+          updatedSubtotal = subtotal - discountValue
+        }
+
+        if (updatedSubtotal < 0) {
+          callWarning('Invalid discount', 'Discount cannot exceed the subtotal.')
+          discountInput.focus()
+          return
+        }
+
+        const vat = (this.totals.vatPercent / 100) * updatedSubtotal
+        const total = updatedSubtotal + vat
+
+        // Update the totals with the calculated values
+        this.totals = {
+          ...this.totals,
+          subtotal: this.roundToTwo(updatedSubtotal),
+          vat: this.roundToTwo(vat),
+          total: this.roundToTwo(total),
+          totalPreDiscount: subtotal, // Store the pre-discount subtotal
+        }
+
+        callSuccess('Discount applied successfully.')
+        this.saveToLocalStorage()
+        discountInput.focus()
+        this.calculateTotals()
+      },
+
+      removeDiscount() {
+        if (this.totals.discountValue === 0) {
+          callInfo('No discount to remove.')
+          return
+        }
+
+        // Reset discount values
+        this.totals.discountValue = 0
+        this.totals.discountType = 0
+
+        // Recalculate totals
+        const subtotal = this.calculateSubTotal()
+        const vat = this.roundToTwo((subtotal / 100) * this.totals.vatPercent)
+        const total = this.roundToTwo(subtotal + vat)
+
+        // Update the totals
+        this.totals = {
+          ...this.totals,
+          subtotal: subtotal,
+          vat: vat,
+          total: total,
+          totalPreDiscount: subtotal, // Restore to the original subtotal
+        }
+
+        callSuccess('Discount removed successfully.')
+        this.saveToLocalStorage()
+        this.calculateTotals()
+      },
     }),
   )
   // Trigger reactive tracking for all totals properties

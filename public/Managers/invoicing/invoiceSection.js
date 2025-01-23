@@ -1,7 +1,7 @@
 export default function invoicing() {
   return {
     init() {
-      console.log('Invoicing initialized')
+      console.log('[Invoicing] initialized')
     },
   }
 }
