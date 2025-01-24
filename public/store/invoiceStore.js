@@ -21,7 +21,8 @@ document.addEventListener('alpine:init', () => {
       },
       quantities: {},
       invoItemSearch: '',
-
+      uiDiscount: 0,
+      uiDeposit: 0,
       // Initialize the store
       init() {
         console.log('{ InvoiceStore } Initializing')
@@ -61,7 +62,7 @@ document.addEventListener('alpine:init', () => {
         if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
           callWarning(
             'Cannot add items.',
-            this.deposit !== 0 ? 'Remove deposit and try again.' : 'Remove discount and try again.',
+            this.totals.depositValue !== 0 ? 'Remove deposit and try again.' : 'Remove discount and try again.',
           )
           return
         }
@@ -111,6 +112,10 @@ document.addEventListener('alpine:init', () => {
         this.calculateTotals()
       },
       removeEntireItem(targetItem) {
+        if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
+          callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
+          return
+        }
         if (confirm('Remove item from invoice?')) {
           this.totals.items = this.totals.items.filter(item => item.uniqueId !== targetItem.uniqueId)
           this.calculateTotals()
@@ -118,6 +123,10 @@ document.addEventListener('alpine:init', () => {
         }
       },
       removeAllItems() {
+        if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
+          callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
+          return
+        }
         if (confirm('You are about to remove all items from the invoice. Proceed?')) {
           this.totals.items = []
           if (this.totals.items.length > 0) {
@@ -171,138 +180,103 @@ document.addEventListener('alpine:init', () => {
         }
       },
 
-      // invoiceSearchQuery() {
-      //   return this.totals.items.filter(invoItem =>
-      //     invoItem.name.toLowerCase().includes(this.invoItemSearch.toLowerCase()),
-      //   )
-      // },
       roundToTwo(value) {
         return Math.round((value + Number.EPSILON) * 100) / 100
       },
       calculateSubTotal() {
         try {
-          const sampleTotal = this.totals.items
-            .filter(item => item.type === 'sample')
-            .reduce((total, item) => total + item.price * item.quantity, 0)
+          const subTotal = this.totals.items.reduce((total, item) => {
+            if (item.type === 'sample' || item.type === 'style') {
+              return total + item.price * item.quantity
+            }
+            return total
+          }, 0)
 
-          const styleTotal = this.totals.items
-            .filter(item => item.type === 'style')
-            .reduce((total, item) => total + item.price * item.quantity, 0)
-
-          const subTotal = this.roundToTwo(sampleTotal + styleTotal)
-
-          // Replace the totals object with updated values
-          this.totals = {
-            ...this.totals,
-            subtotal: subTotal,
-          }
-
-          return subTotal
+          return this.roundToTwo(subTotal)
         } catch (error) {
-          console.error('Error calculating subtotal:', error)
+          console.error('Error calculating subtotal:', { items: this.totals.items, error })
           throw new Error('Failed to calculate subtotal. Check the input data.')
         }
       },
       calculateTotals() {
         try {
-          if (this.totals.items.discountValue !== 0) {
-            // 0: flat 1: percent
-            const subtotal = this.calculateSubTotal()
-            const discount = this.totals.items.discountValue
-            let subTotalLocal
-            //  subTotalLocal - discountValue
+          const subtotal = this.calculateSubTotal()
+
+          // Calculate discount
+          let discountedSubtotal = subtotal
+          if (this.totals.discountValue !== 0) {
             if (this.totals.discountType === 1) {
-              // 0: flat 1: percent
-              // discount is percent
-              subTotalLocal = subtotal - (discount / 100) * subtotal
+              // Percent discount
+              discountedSubtotal -= (this.totals.discountValue / 100) * subtotal
             } else {
-              subTotalLocal = subtotal - discount
+              // Flat discount
+              discountedSubtotal -= this.totals.discountValue
             }
-            let vatLocal = (this.totals.items.vatPercent / 100) * subTotalLocal
-            let totalLocal = subTotalLocal + vatLocal
-
-            // Round values
-            subTotalLocal = this.roundToTwo(subTotalLocal)
-            vatLocal = this.roundToTwo(vatLocal)
-            totalLocal = this.roundToTwo(totalLocal)
-
-            this.totals = {
-              ...totals,
-              subTotal: subTotalLocal,
-              vat: vatLocal,
-              total: totalLocal,
-            }
-
-            // Static subtotal is the total displayed in the UI
-            this.roundToTwo((this.totals.staticSubtotal = this.totals.subtotal))
-            return
           }
-          // Recalculate subtotal
-          const subTotal = this.calculateSubTotal()
 
           // Calculate VAT and total
-          const vat = this.roundToTwo((subTotal / 100) * this.totals.vatPercent)
-          const total = this.roundToTwo(subTotal + vat)
+          const vat = this.roundToTwo((this.totals.vatPercent / 100) * discountedSubtotal)
+          const total = this.roundToTwo(discountedSubtotal + vat)
 
-          // Replace the totals object with updated values
+          // Update state
           this.totals = {
             ...this.totals,
-            subtotal: subTotal,
-            vat: vat,
-            total: total,
+            subtotal: this.roundToTwo(subtotal),
+            discountedSubtotal: this.roundToTwo(discountedSubtotal), // Optional for clarity
+            vat,
+            total,
           }
 
           // Debug logger
-          console.log(`CalculateTotals => Values`)
-          console.log('Subtotal:', this.totals.subtotal)
-          console.log('VAT:', this.totals.vat)
-          console.log('Total:', this.totals.total)
+          console.log(`CalculateTotals => Subtotal: ${subtotal}, VAT: ${vat}, Total: ${total}`)
         } catch (error) {
-          console.error('Error calculating totals:', error)
+          console.error('Error calculating totals:', { totals: this.totals, error })
           throw new Error('Failed to calculate totals. Check the input data.')
         }
       },
-      addDiscount() {
-        const discountInput = this.$refs.discountInput
-        const { discountType, discountValue, subtotal } = this.totals
 
-        if (!Alpine.store('validator').validator(this, 'confirmDiscount')) {
-          this.$refs.discountInput.focus()
+      addDiscount() {
+        // Validate input using uiDiscount instead of totals.discountValue
+        if (!this.validator(this, 'addDiscount')) {
           return
         }
 
+        const { discountType, subtotal, vatPercent } = this.totals
+        const discountValue = this.uiDiscount
         let updatedSubtotal = subtotal
 
+        // Apply discount based on type
         if (discountType === 1) {
           // Percentage discount
-          const discountAmount = (discountValue / 100) * subtotal
-          updatedSubtotal = subtotal - discountAmount
+          updatedSubtotal -= (discountValue / 100) * subtotal
         } else {
           // Flat discount
-          updatedSubtotal = subtotal - discountValue
+          updatedSubtotal -= discountValue
         }
 
+        // Final validation: ensure subtotal is not negative
         if (updatedSubtotal < 0) {
-          callWarning('Invalid discount', 'Discount cannot exceed the subtotal.')
-          discountInput.focus()
+          callWarning('Invalid discount.', 'Discount cannot reduce subtotal below zero.')
           return
         }
 
-        const vat = (this.totals.vatPercent / 100) * updatedSubtotal
-        const total = updatedSubtotal + vat
+        updatedSubtotal = this.roundToTwo(updatedSubtotal)
+        const vat = this.roundToTwo((vatPercent / 100) * updatedSubtotal)
+        const total = this.roundToTwo(updatedSubtotal + vat)
 
-        // Update the totals with the calculated values
+        // Update the store with calculated values
         this.totals = {
           ...this.totals,
-          subtotal: this.roundToTwo(updatedSubtotal),
-          vat: this.roundToTwo(vat),
-          total: this.roundToTwo(total),
-          totalPreDiscount: subtotal, // Store the pre-discount subtotal
+          subtotal: updatedSubtotal,
+          vat,
+          total,
+          discountValue, // Update applied discount
+          totalPreDiscount: subtotal, // Keep original subtotal
         }
 
+        this.uiDiscount = 0 // Reset UI discount input
         callSuccess('Discount applied successfully.')
         this.saveToLocalStorage()
-        discountInput.focus()
         this.calculateTotals()
       },
 
@@ -321,6 +295,7 @@ document.addEventListener('alpine:init', () => {
         const vat = this.roundToTwo((subtotal / 100) * this.totals.vatPercent)
         const total = this.roundToTwo(subtotal + vat)
 
+        console.log('Vat: ', vat, '\n', 'Total: ', total)
         // Update the totals
         this.totals = {
           ...this.totals,
@@ -333,6 +308,154 @@ document.addEventListener('alpine:init', () => {
         callSuccess('Discount removed successfully.')
         this.saveToLocalStorage()
         this.calculateTotals()
+      },
+      changeDiscountType() {
+        if (this.totals.discountValue !== 0) {
+          callWarning('Cannot change discount', 'Remove any existing discounts and try again.')
+          return
+        }
+        let toggleDisc = this.totals.discountType === 1 ? 0 : 1
+        this.totals = {
+          ...this.totals,
+          discountType: toggleDisc,
+        }
+      },
+
+      addDeposit() {
+        if (this.totals.depositValue !== 0) {
+          callWarning('Cannot add', 'Remove existing deposit and try again')
+          return
+        }
+        if (!this.validator(this, 'addDeposit')) {
+          return
+        }
+
+        const depositValue = this.uiDeposit
+        const { total, depositType } = this.totals
+
+        let depositAmount
+        if (depositType === 1) {
+          // Percentage deposit
+          depositAmount = (depositValue / 100) * total
+        } else {
+          // Flat deposit
+          depositAmount = depositValue
+        }
+
+        depositAmount = this.roundToTwo(depositAmount)
+
+        this.totals = {
+          ...this.totals,
+          depositValue: depositValue,
+          remainingTotalBalance: this.roundToTwo(total - depositAmount), // Show remaining balance
+          depositType, // Retain deposit type
+        }
+
+        this.uiDeposit = 0 // Reset UI value
+        callSuccess('Deposit applied successfully.')
+        this.saveToLocalStorage()
+      },
+
+      removeDeposit() {
+        if (this.totals.depositValue === 0) {
+          callInfo('No deposit to remove.')
+          return
+        }
+
+        this.totals = {
+          ...this.totals,
+          depositValue: 0,
+          remainingTotalBalance: this.totals.total, // Restore full balance
+          depositType: 0,
+        }
+
+        callSuccess('Deposit removed successfully.')
+        this.saveToLocalStorage()
+      },
+
+      changeDepositType() {
+        if (this.totals.depositValue !== 0) {
+          callWarning('Cannot add', 'Remove existing deposit and try again')
+          this.$refs.depoInput.focus()
+          return
+        }
+        this.totals.depositType = this.totals.depositType === 1 ? 0 : 1 // Toggle type
+        const newType = this.totals.depositType === 1 ? 'Percentage' : 'Flat'
+      },
+
+      validator(context, functionName) {
+        const validations = {
+          addDiscount: [
+            {
+              // Must have items
+              condition: context.totals.subtotal <= 0,
+              toast: () => callWarning('Cannot apply discount.', 'Insert items into invoice first.'),
+            },
+            {
+              // Must not have a deposit
+              condition: context.totals.depositValue !== 0,
+              toast: () => callWarning('Cannot apply discount.', 'Remove the deposit first.'),
+            },
+            {
+              // Must not already have a discount
+              condition: context.totals.discountValue !== 0,
+              toast: () => callWarning('Discount already applied.', 'Only one discount allowed.'),
+            },
+            {
+              // Positive, non-zero numeric discount
+              condition: context.uiDiscount <= 0 || isNaN(context.uiDiscount),
+              toast: () => callWarning('Invalid discount.', 'Discount must be greater than 0.'),
+            },
+            {
+              // If percent, discount <= 100
+              condition: context.totals.discountType === 1 && context.uiDiscount > 100,
+              toast: () => callWarning('Invalid discount.', 'Discount cannot exceed 100%.'),
+            },
+            {
+              // If flat, discount <= subtotal
+              condition: context.totals.discountType === 0 && context.uiDiscount > context.totals.subtotal,
+              toast: () => callWarning('Invalid discount.', 'Discount cannot exceed the subtotal.'),
+            },
+          ],
+          addDeposit: [
+            {
+              // Total must be greater than 0
+              condition: context.totals.total <= 0,
+              toast: () => callWarning('Cannot apply deposit.', 'The total must be greater than 0.'),
+            },
+            {
+              // Deposit must be a positive number
+              condition: context.uiDeposit <= 0 || isNaN(context.uiDeposit),
+              toast: () => callWarning('Invalid deposit.', 'Deposit must be a positive number.'),
+            },
+            {
+              // Percentage deposit cannot exceed 100%
+              condition: context.totals.depositType === 1 && context.uiDeposit > 100,
+              toast: () => callWarning('Invalid deposit.', 'Percentage deposit cannot exceed 100%.'),
+            },
+            {
+              // Flat deposit cannot exceed the total
+              condition: context.totals.depositType === 0 && context.uiDeposit > context.totals.total,
+              toast: () => callWarning('Invalid deposit.', 'Flat deposit cannot exceed the total amount.'),
+            },
+          ],
+          removeDeposit: [
+            {
+              // Ensure there's a deposit to remove
+              condition: context.totals.depositValue === 0,
+              toast: () => callInfo('No deposit to remove.'),
+            },
+          ],
+        }
+
+        const functionValidations = validations[functionName] || []
+        for (const { condition, toast } of functionValidations) {
+          if (condition) {
+            toast()
+            return false
+          }
+        }
+        return true
       },
     }),
   )
@@ -349,94 +472,3 @@ document.addEventListener('alpine:init', () => {
     store.saveToLocalStorage()
   })
 })
-
-// document.addEventListener('alpine:init', () => {
-//   Alpine.store(
-//     'invo',
-//     Alpine.reactive({
-//       totals: {
-//         clientId: null,
-//         // items: 'this.invoiceItems',
-//         // discountType: percent ?? flat //has to be 0 or 1 ,
-//         // discountValue: XXXX // this will come from teh calculations,
-//         // vatPercent: 20, // always it is meaningless but ill keep for now to avoid reworking db
-//         // vat: this.vat,
-//         // subtotal: this.staticSubtotal,
-//         // total: this.total,
-//         // depositValue: this.deposit,
-//         // depositType: this.deposit,
-//         // depositPercentValue: this.tempDeposit !== 0 ? this.tempDeposit : 0,
-//         // note: this.invoiceNote,
-//         // totalPreDiscount: this.preDiscountTotal,
-//         // date: new Date().toLocaleDateString(),
-//       },
-//       subtotal: null,
-//       vat: null,
-//       total: null,
-//       discount: null,
-//       deposit: null,
-//       note: 'hey',
-
-//       async init() {
-//         console.log('[invo] invoiceStore.js initializing')
-//         // initializing the client by using clientStore computed getter
-//         this.totals.clientId = Alpine.store('clients').getSelected().id
-//         console.log('Selected client from store computed: ', this.totals.clientId)
-//         this.reactiveChange()
-//       },
-//       reactiveChange() {
-//         this.note = 'Na kakati huq'
-//       },
-//       setTotalsLs() {},
-//       getTotalsLs() {},
-//       removeTotalsLs() {},
-
-//       // In here I want to expose methods for my business logic that I can track with effect to change the values of the totals object
-//     }),
-//   )
-// 1) Effect to save invoiceTotals on changes
-// Alpine.effect(() => {
-//   JSON.stringify(Alpine.store('invo').totals)
-//   localStorage.setItem('invoiceTotals', JSON.stringify(Alpine.store('invo').totals))
-// }),
-//   // 2) Effect to keep invo.totals.clientId in sync with clients.selectedClient
-//   Alpine.effect(() => {
-//     const selected = Alpine.store('clients').selectedClient
-//     Alpine.store('invo').totals.clientId = selected ? selected.id : null
-//   })
-// Alpine.effect(() => {
-//   const selectedClient = Alpine.store('clients').selectedClient;
-//   if (selectedClient) {
-//     Alpine.store('invo').totals.clientId = selectedClient.id;
-//     localStorage.setItem('invoiceTotals', JSON.stringify(Alpine.store('invo').totals));
-//   }
-// }),
-// Alpine.effect(() => {
-//   const selected = Alpine.store('clients').selectedClient
-
-//   const {
-//     clientId,
-//     items,
-//     discountType,
-//     discountValue,
-//     vatPercent,
-//     vat,
-//     subtotal,
-//     total,
-//     depositValue,
-//     depositType,
-//     depositPercentValue,
-//     note,
-//     totalPreDiscount,
-//     date,
-//   } = Alpine.store('invo').totals
-//   Alpine.store('invo').totals.clientId = selected ? selected.id : null
-//   localStorage.setItem('invoiceTotals', JSON.stringify(Alpine.store('invo').totals))
-// }),
-// Keeps clientId in invo in sync with store clients.selectedClient
-// Alpine.effect(() => {
-//   const selected = Alpine.store('clients').selectedClient
-//   Alpine.store('invo').totals.clientId = selected ? selected.id : null
-//   localStorage.setItem('invoiceTotals', JSON.stringify(Alpine.store('invo').totals))
-// }),
-// })

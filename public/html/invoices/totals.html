@@ -13,17 +13,14 @@
       <div class="flex items-center">
         <h3>
           Discount:
-          <span x-show="$store.invo.totals.discountValue" class="text-red-500">-</span>
           <span
-            x-text="$store.invo.totals.discountType === 1 ? $store.invo.totals.discountValue + '%' : '£' + $store.invo.totals.discountValue"></span>
-          <span
-            x-show="$store.invo.totals.discountType === 0"
-            x-text="'(£' + $store.invo.totals.discountValue + ')'"
-            class="ml-1"></span>
+            x-text="$store.invo.totals.discountType === 1 
+              ? $store.invo.totals.discountValue + '%' 
+              : '£' + $store.invo.totals.discountValue"></span>
         </h3>
         <button
-          x-show="$store.invo.totals.discount"
-          @click="$store.invo.resetDiscounts"
+          x-show="$store.invo.totals.discountValue"
+          @click="$store.invo.removeDiscount()"
           class="ml-2 text-red-600 hover:text-red-800">
           <svg width="16" height="16">
             <use href="/icons/icons.svg#trash"></use>
@@ -41,19 +38,20 @@
           Total:
           <span x-text="'£' + $store.invo.totals.total"></span>
         </h3>
-        <!-- <h3
-          x-show="$store.invo.totals.discount"
-          class="ml-2 line-through text-gray-500"
-          x-text="'£' + preDiscountTotal"></h3> -->
       </div>
 
-      <div x-show="$store.invo.totals.depositValue" class="flex items-center">
+      <div class="flex items-center">
         <h3>
           Deposit:
           <span
-            x-text="$store.invo.totals.depositType === 1 ? $store.invo.totals.depositValue + '%' : '£' + $store.invo.totals.depositValue"></span>
+            x-text="$store.invo.totals.depositType === 1 
+              ? $store.invo.totals.depositValue + '%' 
+              : '£' + $store.invo.totals.depositValue"></span>
         </h3>
-        <button @click="resetDeposit" class="ml-2 text-red-600 hover:text-red-800">
+        <button
+          x-show="$store.invo.totals.depositValue"
+          @click="$store.invo.removeDeposit()"
+          class="ml-2 text-red-600 hover:text-red-800">
           <svg width="16" height="16">
             <use href="/icons/icons.svg#trash"></use>
           </svg>
@@ -62,18 +60,15 @@
     </div>
 
     <!-- MARK: DISCOUNT MODAL -->
-    <div class="flex justify-center">
-      <button
-        @click="modDisc = !modDisc; if (modDisc) $nextTick(() => $refs.discountInput.focus())"
-        x-ref="discountAnchor"
-        class="modal-btn-prim">
+    <div x-data="{ modDisc: false, showXDisc: false, uiDiscount: 0 }">
+      <button @click="modDisc = !modDisc" x-ref="discountAnchor" class="modal-btn-prim">
         <svg class="size-4">
           <use href="/icons/icons.svg#trending-down"></use>
         </svg>
         Discount
       </button>
       <div
-        x-show="modDisc"
+        x-show="modDisc; $nextTick(() => { $refs.discountInput.focus() });"
         @keyup.escape="modDisc = false"
         @mouseenter="showXDisc = true"
         @mouseleave="showXDisc = false"
@@ -92,24 +87,35 @@
             </button>
           </div>
           <h3 class="mb-2 modal-title !text-lg !text-center">Discount</h3>
-          <input
-            x-ref="discountInput"
-            type="number"
-            x-model.number="tempDiscount"
-            placeholder="0"
-            class="modal-input-style mb-3" />
+          <div class="relative mb-3">
+            <input
+              x-ref="discountInput"
+              type="number"
+              x-model.number="uiDiscount"
+              placeholder="0"
+              @input="uiDiscount = uiDiscount.toString().slice(0, 6)"
+              class="modal-input-style pr-8" />
+            <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500">
+              <!-- Dynamically show the symbol -->
+              <span x-text="$store.invo.totals.discountType === 1 ? '%' : '£'"></span>
+            </span>
+          </div>
           <div class="flex justify-between">
-            <button @click="$store.invo.addDiscount()" class="modal-btn-prim !place-self-center !text-xs">
+            <button
+              @click="$store.invo.uiDiscount = uiDiscount; $store.invo.addDiscount(); $nextTick(() => { $refs.discountInput.focus() });"
+              class="modal-btn-prim !place-self-center !text-xs">
               <svg class="size-4">
                 <use href="/icons/icons.svg#check-circle"></use>
               </svg>
               Apply
             </button>
-            <button @click="$store.invo.removeDiscount()" class="modal-btn-prim !place-self-center !text-xs">
+            <button
+              @click="$store.invo.changeDiscountType(); $nextTick(() => { $refs.discountInput.focus() });"
+              class="modal-btn-prim !place-self-center !text-xs">
               <svg class="size-4">
                 <use href="/icons/icons.svg#rotate"></use>
               </svg>
-              Reset
+              Change
             </button>
           </div>
         </div>
@@ -146,20 +152,30 @@
             </button>
           </div>
           <h3 class="mb-2 modal-title !text-lg !text-center">Deposit</h3>
-          <input
-            x-ref="depoInput"
-            type="number"
-            x-model.number="tempDeposit"
-            placeholder="0"
-            class="modal-input-style mb-3" />
+          <div class="relative mb-3">
+            <input
+              x-ref="depoInput"
+              type="number"
+              x-model.number="$store.invo.uiDeposit"
+              placeholder="0"
+              @input="$store.invo.uiDeposit = $store.invo.uiDeposit.toString().slice(0, 6)"
+              class="modal-input-style pr-8" />
+            <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500">
+              <span x-text="$store.invo.totals.depositType === 1 ? '%' : '£'"></span>
+            </span>
+          </div>
           <div class="flex justify-between">
-            <button class="modal-btn-prim !place-self-center !text-xs">
+            <button
+              @click="$store.invo.addDeposit(); $nextTick(() => $refs.depoInput.focus());"
+              class="modal-btn-prim !place-self-center !text-xs">
               <svg class="size-4">
                 <use href="/icons/icons.svg#check-circle"></use>
               </svg>
-              Accept
+              Apply
             </button>
-            <button title="Change invoice type - % or $" class="modal-btn-prim !place-self-center !text-xs">
+            <button
+              @click="$store.invo.changeDepositType(); $nextTick(() => $refs.depoInput.focus());"
+              class="modal-btn-prim !place-self-center !text-xs">
               <svg class="size-4">
                 <use href="/icons/icons.svg#rotate"></use>
               </svg>

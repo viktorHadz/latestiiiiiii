@@ -15,16 +15,11 @@ document.addEventListener('alpine:init', () => {
     async init() {
       console.log('{ ClientStore } init() is called')
       await this.fetchClients()
-      // Same thing achieved down in watch state/effect
-      // // If no clients => open "create" modal
-      // if (this.clients.length === 0) {
-      //   this.showAddClientModal = true
-      // }
-      // // If clients exist but none selected => open "select" modal
-      // else if (!this.selectedClient) {
-      //   this.showClientModal = true
-      // }
-
+      const selected = this.getSelected()
+      // Sets client to inform itemStore and LS that there is a client and avoid null client error on startup
+      if (selected) {
+        this.setSelected(selected) // Restores selected client and dispatches event
+      }
       Alpine.effect(() => {
         this.watchState()
         this.clientItemsSync()

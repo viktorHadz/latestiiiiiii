@@ -2,38 +2,6 @@ document.addEventListener('alpine:init', () => {
   Alpine.store('validator', {
     validator(context, functionName) {
       const validations = {
-        removeItemFromInvoice: [
-          {
-            condition: context.discount !== 0,
-            toast: () => callError('Cannot remove item.', 'Please clear any existing discount/deposit first.'),
-          },
-          {
-            condition: context.deposit !== 0,
-            toast: () => callError('Cannot remove item.', 'Please clear any existing discount/deposit first.'),
-          },
-          {
-            condition: context.subtotal < 0,
-            toast: () => callError('Cannot remove item.', 'Total cannot be a negative value. Check your discounts.'),
-          },
-        ],
-        removeAllInvoiceItems: [
-          {
-            condition: context.discount !== 0,
-            toast: () => callError('Cannot remove items.', 'Please clear any existing discount/deposit first.'),
-          },
-          {
-            condition: context.deposit !== 0,
-            toast: () => callError('Cannot remove items.', 'Please clear any existing discount/deposit first.'),
-          },
-          {
-            condition: context.subtotal < 0,
-            toast: () => callError('Cannot remove items.', 'Total cannot be a negative value. Check your discounts.'),
-          },
-          {
-            condition: context.invoiceItems.length === 0,
-            toast: () => callInfo('No items to remove.'),
-          },
-        ],
         // Discount and deposit validations can be found here
         calculateDeposit: [
           {
@@ -58,36 +26,38 @@ document.addEventListener('alpine:init', () => {
           },
         ],
 
-        confirmDiscount: [
+        addDiscount: [
           {
             // Must have items
-            condition: context.subtotal <= 0,
+            condition: context.totals.subtotal <= 0,
             toast: () => callWarning('Cannot apply discount.', 'Insert items into invoice first.'),
           },
           {
             // Must not have deposit
-            condition: context.deposit !== 0,
+            condition: context.totals.deposit !== 0,
             toast: () => callWarning('Cannot apply discount.', 'Remove the deposit first.'),
           },
           {
             // Must not already have a discount
-            condition: context.discount !== 0,
+            condition: context.totals.discount !== 0,
             toast: () => callWarning('Discount already applied.', 'Only one discount allowed.'),
           },
           {
             // Positive, non-zero numeric discount
             condition:
-              typeof context.tempDiscount !== 'number' || isNaN(context.tempDiscount) || context.tempDiscount <= 0,
+              typeof context.totals.discountValue !== 'number' ||
+              isNaN(context.totals.discountValue) ||
+              context.totals.discountValue <= 0,
             toast: () => callWarning('Invalid discount.', 'Discount must be greater than 0.'),
           },
           {
             // If percent, discount <= 100
-            condition: context.isDiscountPercent && context.tempDiscount > 100,
-            toast: () => callWarning('Discount cannot exceed 100%.', 'Check discount value.'),
+            condition: context.totals.discountType === 1 && context.totals.discountValue > 100,
+            toast: () => callWarning('Discount cannot exceed subtotal.', 'Check discount value.'),
           },
           {
             // If flat, discount <= subtotal
-            condition: context.isDiscountFlat && context.tempDiscount > context.subtotal,
+            condition: context.totals.discountType === 0 && context.totals.discountValue > context.totals.subtotal,
             toast: () => callWarning('Discount cannot exceed subtotal.', 'Adjust discount value.'),
           },
         ],
