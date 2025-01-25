@@ -23,6 +23,7 @@ document.addEventListener('alpine:init', () => {
       invoItemSearch: '',
       uiDiscount: 0,
       uiDeposit: 0,
+      uiNote: '',
       // Initialize the store
       init() {
         console.log('{ InvoiceStore } Initializing')
@@ -381,6 +382,23 @@ document.addEventListener('alpine:init', () => {
         }
         this.totals.depositType = this.totals.depositType === 1 ? 0 : 1 // Toggle type
         const newType = this.totals.depositType === 1 ? 'Percentage' : 'Flat'
+      },
+
+      addNote() {
+        if (this.totals.note.length !== 0 || this.totals.note === null) {
+          callWarning('Cannot add note', 'Remove existing note to add new.')
+          return
+        }
+        if (this.uiNote.length === 0) {
+          callWarning('Note cannot be empty')
+          return
+        }
+        this.totals = {
+          ...this.totals,
+          note: this.uiNote,
+        }
+        callSuccess('Note added to invoice.')
+        this.uiNote = ''
       },
 
       validator(context, functionName) {

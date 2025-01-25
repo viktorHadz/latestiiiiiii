@@ -78,7 +78,7 @@ document.addEventListener('alpine:init', () => {
         const data = await response.json()
         this.clients = data
         this.isFetched = true
-        console.log('[ClientStore] clients fetched:', data)
+        console.log('{ ClientStore } clients fetched:', data)
       } catch (error) {
         console.error('[ClientStore] Error fetching clients:', error)
       }
