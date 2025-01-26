@@ -7,17 +7,17 @@ document.addEventListener('alpine:init', () => {
         items: [],
         discountType: 0, // 0: flat, 1: percent
         discountValue: 0,
+        discValIfPercent: 0,
         vatPercent: 20,
         vat: 0,
-        // staticSubtotal: 0,
         subtotal: 0,
         total: 0,
         depositType: 0, // 0: flat, 1: percent
         depositValue: 0,
-        // depositPercentValue: 0,
+        depoValIfPercent: 0,
         note: '',
         totalPreDiscount: 0,
-        date: new Date().toLocaleDateString(), // tochangeToo!!!!!!!!!!
+        date: new Date().toLocaleDateString(),
       },
       quantities: {},
       invoItemSearch: '',
@@ -164,20 +164,33 @@ document.addEventListener('alpine:init', () => {
           { once: true }, // Ensure the listener is removed after one execution
         )
       },
-
-      watchStateEffects() {
+      totalsItemsEffects() {
         if (this.totals.items.length === 0) {
           console.log('{ InvoiceStore } No items to check for')
           return
         }
-
         const firstItemClientId = this.totals.items[0]?.clientId
-        // Empty totals on client change
+
+        // Empty totals.items on client change
         if (this.totals.clientId !== firstItemClientId) {
-          console.log('{ InvoiceStore } Client changed - totals.items reset to []')
-          console.log('{ InvoiceStore } Totals before splice: ', this.totals)
+          console.log('{ InvoiceStore } Client changed reseting - totals.items')
           this.totals.items.splice(0)
-          console.log('{ InvoiceStore } Totals after splice: ', this.totals)
+        }
+      },
+
+      effectTotalsClients() {
+        const cliStore = Alpine.store('clients')
+
+        // Prevent resetting totals during initialization
+        if (!cliStore.isFetched) {
+          console.log('{ InvoiceStore } ClientStore not yet fetched - skipping totals reset')
+          return
+        }
+
+        // Reset totals if no clients exist in ClientStore
+        if (cliStore.clients.length === 0) {
+          console.log('{ InvoiceStore } No clients in ClientStore - resetting all totals')
+          this.resetTotals()
         }
       },
 
@@ -261,10 +274,11 @@ document.addEventListener('alpine:init', () => {
           return
         }
 
+        const discPercentVal = (discountValue / 100) * subtotal
+
         updatedSubtotal = this.roundToTwo(updatedSubtotal)
         const vat = this.roundToTwo((vatPercent / 100) * updatedSubtotal)
         const total = this.roundToTwo(updatedSubtotal + vat)
-
         // Update the store with calculated values
         this.totals = {
           ...this.totals,
@@ -272,6 +286,7 @@ document.addEventListener('alpine:init', () => {
           vat,
           total,
           discountValue, // Update applied discount
+          discValIfPercent: discPercentVal,
           totalPreDiscount: subtotal, // Keep original subtotal
         }
 
@@ -290,6 +305,7 @@ document.addEventListener('alpine:init', () => {
         // Reset discount values
         this.totals.discountValue = 0
         this.totals.discountType = 0
+        this.totals.discValIfPercent = 0
 
         // Recalculate totals
         const subtotal = this.calculateSubTotal()
@@ -334,25 +350,28 @@ document.addEventListener('alpine:init', () => {
         const depositValue = this.uiDeposit
         const { total, depositType } = this.totals
 
-        let depositAmount
+        let depositAmount = 0
+        let depoPercentVal = 0
+
         if (depositType === 1) {
-          // Percentage deposit
-          depositAmount = (depositValue / 100) * total
+          depoPercentVal = this.roundToTwo((depositValue / 100) * total)
+          depositAmount = depoPercentVal
         } else {
-          // Flat deposit
           depositAmount = depositValue
         }
 
         depositAmount = this.roundToTwo(depositAmount)
 
+        // Update the totals
         this.totals = {
           ...this.totals,
           depositValue: depositValue,
-          remainingTotalBalance: this.roundToTwo(total - depositAmount), // Show remaining balance
-          depositType, // Retain deposit type
+          remainingTotalBalance: this.roundToTwo(total - depositAmount),
+          depositType,
+          depoValIfPercent: depoPercentVal,
         }
 
-        this.uiDeposit = 0 // Reset UI value
+        this.uiDeposit = 0
         callSuccess('Deposit applied successfully.')
         this.saveToLocalStorage()
       },
@@ -366,7 +385,8 @@ document.addEventListener('alpine:init', () => {
         this.totals = {
           ...this.totals,
           depositValue: 0,
-          remainingTotalBalance: this.totals.total, // Restore full balance
+          depoValIfPercent: 0,
+          remainingTotalBalance: this.totals.total,
           depositType: 0,
         }
 
@@ -380,7 +400,7 @@ document.addEventListener('alpine:init', () => {
           this.$refs.depoInput.focus()
           return
         }
-        this.totals.depositType = this.totals.depositType === 1 ? 0 : 1 // Toggle type
+        this.totals.depositType = this.totals.depositType === 1 ? 0 : 1
         const newType = this.totals.depositType === 1 ? 'Percentage' : 'Flat'
       },
 
@@ -399,6 +419,37 @@ document.addEventListener('alpine:init', () => {
         }
         callSuccess('Note added to invoice.')
         this.uiNote = ''
+      },
+      resetTotals() {
+        console.log('{ InvoiceStore } Resetting all totals')
+
+        // Resetting the entire totals object
+        this.totals = {
+          clientId: null,
+          items: [],
+          discountType: 0,
+          discountValue: 0,
+          discValIfPercent: 0,
+          vatPercent: 20,
+          vat: 0,
+          subtotal: 0,
+          total: 0,
+          depositType: 0,
+          depositValue: 0,
+          depoValIfPercent: 0,
+          note: '',
+          totalPreDiscount: 0,
+          date: new Date().toLocaleDateString(),
+        }
+
+        // Resetting other properties related to totals
+        this.quantities = {}
+        this.invoItemSearch = ''
+        this.uiDiscount = 0
+        this.uiDeposit = 0
+        this.uiNote = ''
+
+        console.log('{ InvoiceStore } Totals after reset:', this.totals)
       },
 
       validator(context, functionName) {
@@ -481,7 +532,9 @@ document.addEventListener('alpine:init', () => {
   Alpine.effect(() => {
     const store = Alpine.store('invo')
     JSON.stringify(store.totals) // Track reactivity
-    store.watchStateEffects()
+    // store.watchStateEffects()
+    store.effectTotalsClients()
+    store.totalsItemsEffects()
   })
 
   // Save to localStorage only when totals change

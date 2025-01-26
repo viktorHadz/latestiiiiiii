@@ -51,9 +51,11 @@ document.addEventListener('alpine:init', () => {
     watchState() {
       if (this.clients.length === 0) {
         this.showAddClientModal = true
+        this.killSelected()
         callWarning('No clients', 'Please add a client to continue.')
       } else if (!this.selectedClient || !this.getSelected()) {
         this.showClientModal = true
+        this.killSelected()
         callWarning('No Client Selected', 'Please select a client to continue.')
       }
     },

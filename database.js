@@ -19,6 +19,7 @@ function getDb() {
           address TEXT,
           email TEXT
         )`)
+        db.run(`CREATE INDEX IF NOT EXISTS idx_clients_id ON clients(id)`)
 
         db.run(`CREATE TABLE IF NOT EXISTS styles (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,41 +28,42 @@ function getDb() {
           client_id INTEGER,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
         )`)
+        db.run(`CREATE INDEX IF NOT EXISTS idx_styles_client_id ON styles(client_id)`)
 
         db.run(`CREATE TABLE IF NOT EXISTS invoices (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           invoice_number TEXT,
           file_location TEXT,
-          client_id INTEGER,
-          discount_percent REAL,
-          discount_flat REAL,
-          vat_percent REAL,
-          subtotal REAL,
-          discount REAL,
-          discount_percent_value REAL,
-          vat REAL,
-          total REAL,
-          deposit REAL,
-          deposit_percent_value REAL,
+          client_id INTEGER NOT NULL,
+          discount_type INTEGER NOT NULL DEFAULT 0,
+          discount_value REAL NOT NULL DEFAULT 0,
+          discVal_ifPercent REAL NOT NULL DEFAULT 0,
+          vat_percent REAL NOT NULL DEFAULT 20,
+          subtotal REAL NOT NULL,
+          vat REAL NOT NULL DEFAULT 0,
+          total REAL NOT NULL,
+          deposit_type INTEGER NOT NULL DEFAULT 0,
+          deposit_value REAL NOT NULL DEFAULT 0,
+          depoVal_ifPercent REAL NOT NULL DEFAULT 0,
           note TEXT,
-          total_pre_discount REAL,
-          date TEXT,
-          deposit_flat,
-          deposit_percent,
+          total_pre_discount REAL NOT NULL DEFAULT 0,
+          date TEXT NOT NULL,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
         )`)
+        db.run(`CREATE INDEX IF NOT EXISTS idx_invoices_client_id ON invoices(client_id)`)
 
         db.run(`CREATE TABLE IF NOT EXISTS invoice_items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT,
-          price REAL,
+          name TEXT NOT NULL,
+          price REAL NOT NULL DEFAULT 0,
           type TEXT,
-          time REAL,
-          quantity REAL,
-          total_item_price REAL,
-          invoice_id INTEGER,
+          time REAL NOT NULL,
+          quantity REAL NOT NULL DEFAULT 1,
+          total_item_price REAL NOT NULL,
+          invoice_id INTEGER NOT NULL,
           FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
         )`)
+        db.run(`CREATE INDEX IF NOT EXISTS idx_invoice_items_invoice_id ON invoice_items(invoice_id)`)
 
         db.run(
           `CREATE TABLE IF NOT EXISTS samples (
@@ -80,6 +82,7 @@ function getDb() {
             }
           },
         )
+        db.run(`CREATE INDEX IF NOT EXISTS idx_samples_client_id ON samples(client_id)`)
       })
     })
   }

@@ -1,78 +1,86 @@
-<div
-  x-data="totalsInvoice"
-  class="p-4 text-xs rounded-md w-full bg-vlp border-vls/40 border text-vls3 mb-4 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow dark:shadow">
-  <div class="grid grid-cols-4 items-end">
-    <!-- MARK: MAIN PRICE MENU -->
-    <div class="col-span-1 text-sm flex flex-col gap-4">
-      <h2 class="font-semibold text-base leading-tight">Invoice Summary</h2>
-      <h3>
-        Subtotal:
-        <span x-text="'£' + $store.invo.totals.subtotal"></span>
-      </h3>
+<div x-data="totalsInvoice" class="text-xs flex w-full">
+  <!-- MARK: MAIN PRICE MENU - INVOICE SUMMARY -->
+  <div
+    class="text-sm flex flex-col w-[30%] p-4 gap-4 mr-2 bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow dark:shadow">
+    <h2 class="font-semibold text-base leading-tight text-vls2/90 dark:text-vds3light">Invoice Summary</h2>
 
+    <h3 class="flex justify-between">
+      <span class="text-vls2/80 dark:text-vds2">Subtotal:</span>
+      <span class="text-opacity-90 dark:text-vds opacity-90" x-text="'£' + $store.invo.totals.subtotal"></span>
+    </h3>
+
+    <div class="flex justify-between">
+      <h3 class="text-vls2/80 dark:text-vds2">Discount:</h3>
       <div class="flex items-center">
-        <h3>
-          Discount:
-          <span
-            x-text="$store.invo.totals.discountType === 1 
-              ? $store.invo.totals.discountValue + '%' 
-              : '£' + $store.invo.totals.discountValue"></span>
-        </h3>
+        <span
+          class="text-opacity-90 dark:text-vds"
+          x-text="$store.invo.totals.discountType === 1 
+            ? $store.invo.totals.discountValue + '%' 
+            : '£' + $store.invo.totals.discountValue"></span>
+
+        <div x-show="$store.invo.totals.discountType === 1" class="text-xs text-vls2/60 dark:text-vds3light">
+          <p x-text="'(' + '£' + $store.invo.totals.discValIfPercent + ')'"></p>
+        </div>
         <button
           x-show="$store.invo.totals.discountValue"
           @click="$store.invo.removeDiscount()"
-          class="ml-2 text-red-600 hover:text-red-800">
-          <svg width="16" height="16">
+          class="ml-2 text-red-500 hover:text-red-600">
+          <svg class="size-4">
             <use href="/icons/icons.svg#trash"></use>
           </svg>
         </button>
       </div>
+    </div>
 
-      <h3>
-        VAT:
-        <span x-text="'£' + $store.invo.totals.vat"></span>
-      </h3>
+    <h3 class="flex justify-between">
+      <span class="text-vls2/80 dark:text-vds2">VAT:</span>
+      <span class="text-opacity-90 text-vls3 dark:text-vds opacity-90" x-text="'£' + $store.invo.totals.vat"></span>
+    </h3>
 
+    <h3 class="flex justify-between">
+      <span class="text-vls2/80 dark:text-vds2">Total:</span>
+      <span class="font-semibold opacity-95" x-text="'£' + $store.invo.totals.total"></span>
+    </h3>
+
+    <div class="flex justify-between">
+      <h3 class="text-vls2/80 dark:text-vds2">Deposit:</h3>
       <div class="flex items-center">
-        <h3>
-          Total:
-          <span x-text="'£' + $store.invo.totals.total"></span>
-        </h3>
-      </div>
-
-      <div class="flex items-center">
-        <h3>
-          Deposit:
-          <span
-            x-text="$store.invo.totals.depositType === 1 
-              ? $store.invo.totals.depositValue + '%' 
-              : '£' + $store.invo.totals.depositValue"></span>
-        </h3>
+        <span
+          class="text-opacity-90 text-vls2 dark:text-vds"
+          x-text="$store.invo.totals.depositType === 1 
+            ? $store.invo.totals.depositValue + '%' 
+            : '£' + $store.invo.totals.depositValue"></span>
+        <div x-show="$store.invo.totals.depositType === 1" class="text-xs text-vls2/60 dark:text-vds3light">
+          <p x-text="'(' + '£' + $store.invo.totals.depoValIfPercent + ')'"></p>
+        </div>
         <button
           x-show="$store.invo.totals.depositValue"
           @click="$store.invo.removeDeposit()"
-          class="ml-2 text-red-600 hover:text-red-800">
+          class="ml-2 text-red-500 hover:text-red-600">
           <svg width="16" height="16">
             <use href="/icons/icons.svg#trash"></use>
           </svg>
         </button>
       </div>
     </div>
+  </div>
+  <div
+    class="flex w-[70%] p-4 items-end bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow dark:shadow">
     <!-- NotePopup Discount Deposit -->
-    <div class="h-full col-span-2 flex flex-col justify-between">
+    <div class="flex flex-col justify-between h-full w-full">
       <!-- Note Section -->
       <div
         x-show="$store.invo.totals.note.length !== 0"
         class="w-full border border-vls/40 text-vls3 dark:text-vds rounded p-4 mb-4 flex-grow overflow-y-auto bg-white dark:bg-vdp shadow-md"
         x-transition.duration.300>
-        <p>
+        <p class="h-[80%]">
           <strong class="font-semibold">Note:</strong>
           <span x-text="$store.invo.totals.note"></span>
         </p>
         <div class="w-full">
           <button
             @click="$store.invo.totals.note = ''; $nextTick(() => $refs.noteInput.focus());"
-            class="self-end justify-self-end flex mt-2 text-sm text-red-600 hover:underline">
+            class="self-end justify-self-end flex mt-2 text-xs text-red-600 hover:underline">
             Remove Note
           </button>
         </div>
@@ -94,8 +102,8 @@
             @mouseenter="showXDisc = true"
             @mouseleave="showXDisc = false"
             x-transition.duration.300
-            x-anchor.top.offset.10="$refs.discountAnchor">
-            <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
+            x-anchor.top-start.offset.10="$refs.discountAnchor">
+            <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg">
               <div class="relative">
                 <button
                   x-show="showXDisc"
@@ -115,8 +123,9 @@
                   x-model.number="uiDiscount"
                   placeholder="0"
                   @input="$store.invo.uiDiscount = parseFloat(String($store.invo.uiDiscount).slice(0, 6)) || 0"
-                  class="modal-input-style pr-8" />
-                <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500">
+                  class="modal-input-style pr-12" />
+                <span
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base text-vls2/70 dark:text-vds/70">
                   <!-- Dynamically show the symbol -->
                   <span x-text="$store.invo.totals.discountType === 1 ? '%' : '£'"></span>
                 </span>
@@ -142,6 +151,7 @@
             </div>
           </div>
         </div>
+
         <!-- MARK: DEPOSIT MODAL -->
         <div class="flex justify-center">
           <button
@@ -159,7 +169,7 @@
             @mouseenter="showXDepo = true"
             @mouseleave="showXDepo = false"
             x-transition.duration.300
-            x-anchor.top.offset.10="$refs.depoAnchor">
+            x-anchor.top-start.offset.10="$refs.depoAnchor">
             <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
               <div class="relative">
                 <button
@@ -178,9 +188,15 @@
                   x-ref="depoInput"
                   type="number"
                   x-model.number="$store.invo.uiDeposit"
-                  @input="$store.invo.uiDeposit = parseFloat(String($store.invo.uiDeposit).slice(0, 6)) || 0"
-                  class="modal-input-style pr-8" />
-                <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500">
+                  @input="
+                    $store.invo.uiDeposit = parseFloat(String($store.invo.uiDeposit).slice(0, 9)) || 0;
+                    if ($event.target.value.startsWith('0') && $store.invo.uiDeposit > 0) {
+                      $event.target.value = $store.invo.uiDeposit;
+                    }
+                  "
+                  class="modal-input-style pr-12" />
+                <span
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base text-vls2/70 dark:text-vds/70">
                   <span x-text="$store.invo.totals.depositType === 1 ? '%' : '£'"></span>
                 </span>
               </div>
@@ -205,62 +221,65 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- MARK: NOTE AND PDF -->
-    <div class="flex flex-col col-span-1 items-end justify-between gap-2 h-full w-20 place-self-end">
-      <button @click="generateInvoice" class="flex items-center gap-2 modal-btn-sec !p-1.5">
-        <svg class="size-4">
-          <use href="/icons/icons.svg#download-document"></use>
-        </svg>
-        PDF
-      </button>
-      <button
-        @click="modNote = !modNote; if (modNote) $nextTick(() => $refs.noteInput.focus())"
-        x-ref="noteAnchor"
-        class="modal-btn-prim">
-        <svg class="size-4">
-          <use href="/icons/icons.svg#clipboard"></use>
-        </svg>
-        Note
-      </button>
-      <div
-        x-show="modNote"
-        @keyup.escape="modNote = false"
-        @mouseenter="showX = true"
-        @mouseleave="showX = false"
-        x-transition.duration.300
-        x-anchor.top.offset.10="$refs.noteAnchor">
-        <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
-          <div class="relative">
-            <button
-              x-show="showX"
-              @click="modNote=false"
-              x-transition.duration.300
-              class="absolute !-top-3 !-right-3 table-interaction-icon-red">
-              <svg class="size-5">
-                <use href="/icons/icons.svg#xmark-circle"></use>
-              </svg>
-            </button>
-          </div>
-          <h3 class="mb-2 modal-title !text-lg !text-center">Note</h3>
-          <input
-            x-ref="noteInput"
-            type="text"
-            role="text"
-            x-model="$store.invo.uiNote"
-            placeholder="Note text..."
-            maxlength="220"
-            class="modal-input-style mb-3" />
+
+        <!-- MARK: NOTE SECTION -->
+        <div class="flex justify-center">
           <button
-            @click="$store.invo.addNote(); $nextTick(() => $refs.noteInput.focus())"
-            class="modal-btn-prim !place-self-center">
+            @click="modNote = !modNote; if (modNote) $nextTick(() => $refs.noteInput.focus())"
+            x-ref="noteAnchor"
+            class="modal-btn-prim">
             <svg class="size-4">
-              <use href="/icons/icons.svg#check-circle"></use>
+              <use href="/icons/icons.svg#clipboard"></use>
             </svg>
-            accept
+            Note
           </button>
+          <div
+            x-show="modNote"
+            @keyup.escape="modNote = false"
+            @mouseenter="showX = true"
+            @mouseleave="showX = false"
+            x-transition.duration.300
+            x-anchor.top-start.offset.10="$refs.noteAnchor">
+            <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-md">
+              <div class="relative">
+                <button
+                  x-show="showX"
+                  @click="modNote=false"
+                  x-transition.duration.300
+                  class="absolute !-top-3 !-right-3 table-interaction-icon-red">
+                  <svg class="size-5">
+                    <use href="/icons/icons.svg#xmark-circle"></use>
+                  </svg>
+                </button>
+              </div>
+              <h3 class="mb-2 modal-title !text-lg !text-center">Note</h3>
+              <input
+                x-ref="noteInput"
+                type="text"
+                role="text"
+                x-model="$store.invo.uiNote"
+                placeholder="Note text..."
+                maxlength="420"
+                class="modal-input-style mb-3" />
+              <button
+                @click="$store.invo.addNote(); $nextTick(() => $refs.noteInput.focus())"
+                class="modal-btn-prim !place-self-center">
+                <svg class="size-4">
+                  <use href="/icons/icons.svg#check-circle"></use>
+                </svg>
+                accept
+              </button>
+            </div>
+          </div>
         </div>
+
+        <!-- MARK: PDF -->
+        <button @click="$store.pdfStore.generateInvoice()" class="flex items-center gap-2 modal-btn-sec !p-1.5">
+          <svg class="size-4">
+            <use href="/icons/icons.svg#download-document"></use>
+          </svg>
+          PDF
+        </button>
       </div>
     </div>
   </div>

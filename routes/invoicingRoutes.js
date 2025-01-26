@@ -18,84 +18,38 @@ router.get('/api/getNextInvoiceNumber', (req, res) => {
   })
 })
 // deposit_flat, deposit_percent, discountPercentValue, depositPercentValue
-// Object to insert items into invoices DB table
-const insertInvoice = (
-  clientId,
-  discountPercent,
-  discountFlat,
-  vatPercent,
-  subtotal,
-  discount,
-  discountPercentValue,
-  vat,
-  total,
-  deposit,
-  depositPercentValue,
-  note,
-  total_pre_discount,
-  date,
-  depositFlat,
-  depositPercent,
-) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO invoices (client_id, discount_percent, discount_flat, vat_percent, subtotal, discount, discount_percent_value, vat, total, deposit, deposit_percent_value, note, total_pre_discount, date, deposit_percent, deposit_flat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [
-        clientId,
-        discountPercent,
-        discountFlat,
-        vatPercent,
-        subtotal,
-        discount,
-        discountPercentValue,
-        vat,
-        total,
-        deposit,
-        depositPercentValue,
-        note,
-        total_pre_discount,
-        date,
-        depositFlat,
-        depositPercent,
-      ],
-      function (error) {
-        if (error) {
-          return reject(new Error('Error inserting invoice(Trigered from: insertInvoice): ' + error.message))
-        }
 
-        const invoiceId = this.lastID
-        const invoiceNumber = `SAM${invoiceId}`
-
-        // Update the invoice with the generated invoice number
-        db.run(
-          'UPDATE invoices SET invoice_number = ? WHERE id = ?',
-          [invoiceNumber, invoiceId],
-          function (updateError) {
-            if (updateError) {
-              return reject(new Error('Error updating invoice number: ' + updateError.message))
-            }
-
-            resolve(invoiceId)
-          },
-        )
-      },
-    )
-  })
-}
 // Inserts into invoice_items
 const insertItems = (invoiceId, items) => {
   return new Promise((resolve, reject) => {
+    // Validate items before processing
+    const invalidItems = items.filter(item => {
+      if (item.type === 'sample' && !item.time) return true
+      if (item.type === 'style' && typeof item.time !== 'undefined' && item.time !== 0) return true
+      return false
+    })
+
+    if (invalidItems.length > 0) {
+      return reject(
+        new Error(
+          `Invalid items detected: ${JSON.stringify(invalidItems)}. Ensure "sample" items include valid "time" and "style" items have "time" set to 0.`,
+        ),
+      )
+    }
+
+    // Prepare placeholders and values
     const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(',')
     const values = items.flatMap(item => [
       item.name,
       item.price,
       item.type,
-      item.time,
+      item.type === 'sample' ? item.time : 0, // Default time for styles
       invoiceId,
       item.quantity,
-      // calculates item_total_price price x qty
-      (item.total_item_price = item.price * item.quantity),
+      item.price * item.quantity, // Total item price
     ])
+
+    // Insert items into the database
     db.run(
       `INSERT INTO invoice_items (name, price, type, time, invoice_id, quantity, total_item_price) VALUES ${placeholders}`,
       values,
@@ -108,74 +62,76 @@ const insertItems = (invoiceId, items) => {
     )
   })
 }
+
 // Posts information to the invoice db by getting it from the frontend from generateInvoice.
 router.post('/api/saveInvoice', async (req, res) => {
   const {
     clientId,
     items,
-    discountPercent,
-    discountFlat,
+    discountType,
+    discountValue,
+    discValIfPercent,
     vatPercent,
-    subtotal,
-    discount,
-    discountPercentValue,
     vat,
+    subtotal,
     total,
-    deposit,
-    depositPercentValue,
+    depositType,
+    depositValue,
+    depoValIfPercent,
     note,
     totalPreDiscount,
     date,
-    depositPercent,
-    depositFlat,
   } = req.body
 
   try {
-    const invoiceId = await insertInvoice(
-      clientId,
-      discountPercent,
-      discountFlat,
-      vatPercent,
-      subtotal,
-      discount,
-      discountPercentValue,
-      vat,
-      total,
-      deposit,
-      depositPercentValue,
-      note,
-      totalPreDiscount,
-      date,
-      depositPercent,
-      depositFlat,
-    )
+    // Insert invoice into the database
+    const invoiceId = await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO invoices (
+          client_id, discount_type, discount_value, discVal_ifPercent, vat_percent, vat, subtotal, total, deposit_type, deposit_value, depoVal_ifPercent, note, total_pre_discount, date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          clientId,
+          discountType,
+          discountValue,
+          discValIfPercent,
+          vatPercent,
+          vat,
+          subtotal,
+          total,
+          depositType,
+          depositValue,
+          depoValIfPercent,
+          note,
+          totalPreDiscount,
+          date,
+        ],
+        function (error) {
+          if (error) {
+            return reject(new Error(`Error inserting invoice: ${error.message}`))
+          }
+          resolve(this.lastID)
+        },
+      )
+    })
+
+    // Insert items using the helper function
     await insertItems(invoiceId, items)
 
+    // Generate invoice number and update it
     const invoiceNumber = `SAM${invoiceId}`
-    const newInvoice = {
-      id: invoiceId,
-      invoiceNumber,
-      clientId,
-      items,
-      discountPercent,
-      discountFlat,
-      vatPercent,
-      subtotal,
-      discount,
-      vat,
-      total,
-      deposit,
-      note,
-      totalPreDiscount,
-      date,
-      depositPercent,
-      depositFlat,
-    }
-    res.status(201).json(newInvoice)
-  } catch (error) {
-    res.status(500).json({
-      error: 'Error saving invoice /api/saveInvoice: ' + error.message,
+    await new Promise((resolve, reject) => {
+      db.run('UPDATE invoices SET invoice_number = ? WHERE id = ?', [invoiceNumber, invoiceId], function (error) {
+        if (error) {
+          return reject(new Error(`Error updating invoice number: ${error.message}`))
+        }
+        resolve()
+      })
     })
+
+    res.status(201).json({ id: invoiceId, invoiceNumber })
+  } catch (error) {
+    res.status(500).json({ error: `Error saving invoice: ${error.message}` })
   }
 })
 
@@ -261,7 +217,7 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       doc.text(`Total Invoice Balance:    £${invoice.total}`, 25, 275, {
         align: 'left',
       })
-      doc.text(`Deposit Payment Due:    £${invoice.deposit}`, 25, 295, {
+      doc.text(`Deposit Payment Due:   ${invoice.deposit_value}%(£${invoice.depoVal_ifPercent})`, 25, 295, {
         align: 'left',
       })
     } else {
@@ -336,20 +292,20 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       align: 'left',
     })
 
-    // show % if discount is percentage !TODO! - :D FIXIT
-    if (invoice.discount_percent === 1 && invoice.discount_flat === 0 && invoice.discount > 0) {
+    // Show % if discount type is percentage
+    if (invoice.discount_type === 1 && invoice.discount_value > 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(`Discount: £${invoice.discount} (${invoice.discount_percent_value}%)`, startX, startY, {
+      doc.text(`Discount: £${invoice.discVal_ifPercent} (${invoice.discount_value}%)`, startX, startY, {
         align: 'left',
       })
     }
 
-    // show £ if discount is flat
-    if (invoice.discount_flat === 1 && invoice.discount_percent === 0 && invoice.discount > 0) {
+    // Show £ if discount type is flat
+    if (invoice.discount_type === 0 && invoice.discount_value > 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(`Discount: £${invoice.discount}`, startX, startY, {
+      doc.text(`Discount: £${invoice.discount_value}`, startX, startY, {
         align: 'left',
       })
     }
@@ -357,7 +313,7 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     startY = checkPageSpace(doc, startY + 20)
     doc.text(`VAT: £${invoice.vat}`, startX, startY, { align: 'left' })
 
-    if (invoice.discount !== 0) {
+    if (invoice.discount_value !== 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
       doc.text(`Total: £${invoice.total} `, startX, startY, {
@@ -374,10 +330,10 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       doc.text(`Total: £${invoice.total}`, startX, startY, { align: 'left' })
     }
 
-    if (invoice.deposit !== 0) {
+    if (invoice.deposit_value !== 0) {
       startY += 20
       startY = checkPageSpace(doc, startY)
-      doc.text(`Deposit: £${invoice.deposit} (${invoice.deposit_percent_value}%)`, startX, startY, {
+      doc.text(`Deposit: ${invoice.deposit_value}% (£${invoice.depoVal_ifPercent})`, startX, startY, {
         align: 'left',
       })
     }
@@ -447,7 +403,7 @@ router.post('/api/invoices/:invoiceNumber/updateStatus', (req, res) => {
   if (!status) {
     // Added check to ensure status is provided
     return res.status(400).send({
-      error: 'Status is required, look at /api/invoices/:invoiceNumber/updateStatus in the routes for invoicing.',
+      error: 'Status is required: /api/invoices/:invoiceNumber/updateStatus',
     })
   }
   db.run('UPDATE invoices SET status = ? WHERE invoice_number = ?', [status, invoiceNumber], function (error) {

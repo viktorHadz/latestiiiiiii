@@ -5,25 +5,7 @@ document.addEventListener('alpine:init', () => {
       init() {
         console.log('{ pdfStore } Initialising')
       },
-      // get the totals from invoice
-      // Do I check em for anything? Numbers for numbers note for length
-      // totals: {
-      //   clientId: null,
-      //   items: [],
-      //   discountType: 0, // 0: flat, 1: percent
-      //   discountValue: 0,
-      //   vatPercent: 20,
-      //   vat: 0,
-      //   // staticSubtotal: 0,
-      //   subtotal: 0,
-      //   total: 0,
-      //   depositType: 0, // 0: flat, 1: percent
-      //   depositValue: 0,
-      //   // depositPercentValue: 0,
-      //   note: '',
-      //   totalPreDiscount: 0,
-      //   date: new Date().toLocaleDateString(), // tochangeToo!!!!!!!!!!
-      // },
+
       // Sends to DB then receives the data sent and generates PDF after - could be optimised
       async generateInvoice() {
         const store = Alpine.store('invo').totals
@@ -32,21 +14,22 @@ document.addEventListener('alpine:init', () => {
           items: store.items,
           discountType: store.discountType, // 0: flat, 1: percent
           discountValue: store.discountValue,
-          // discountPercentValue
+          discValIfPercent: store.discValIfPercent,
           vatPercent: store.vatPercent,
           vat: store.vat,
           subtotal: store.subtotal,
           total: store.total,
           depositType: store.depositType, // 0: flat, 1: percent
           depositValue: store.depositValue,
+          depoValIfPercent: store.depoValIfPercent,
           // depositPercentValue: 0,
           note: store.note,
           totalPreDiscount: store.totalPreDiscount,
-          date: new Date().toLocaleDateString(),
+          date: new Date().toISOString().split('T')[0],
         }
         console.log('generateInvoice => invoiceData: ', invoiceData)
         try {
-          const response = await fetch('/api/saveInvoice', {
+          const response = await fetch('/invo/api/saveInvoice', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -63,13 +46,13 @@ document.addEventListener('alpine:init', () => {
           }
         } catch (error) {
           console.error('Error generating invoice:', error)
-          callError('Unable to generate invoice. Try again, restart or contact support.')
+          callError('Unable to generate invoice', 'Try again, restart or contact support.')
         }
       },
 
       async generatePDF(invoiceId) {
         try {
-          const response = await fetch(`/api/invoices/${invoiceId}/pdf`, {
+          const response = await fetch(`/invo/api/invoices/${invoiceId}/pdf`, {
             method: 'GET',
           })
           const blob = await response.blob()
@@ -80,19 +63,10 @@ document.addEventListener('alpine:init', () => {
           a.download = `S.A.M.Creations-${invoiceId}.pdf`
           a.click()
           window.URL.revokeObjectURL(url)
-          callToast({
-            type: 'success',
-            message: 'PDF generated successfully.',
-            position: 'top-center',
-          })
+          callSuccess('PDF successfully generated')
         } catch (error) {
           console.error('Error generating PDF:', error)
-          callToast({
-            type: 'danger',
-            message: 'PDF Generation Error!',
-            description: 'Failed to generate PDF. Try again or contact support.',
-            position: 'top-center',
-          })
+          callToast('Error generating PDF', 'Refresh the page and try again or call support.')
         }
       },
     }),

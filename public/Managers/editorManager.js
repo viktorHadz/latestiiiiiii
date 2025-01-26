@@ -76,8 +76,6 @@ export default function editorManager() {
     // MARK: INIT FUNC
     init() {
       console.log('>>---- Editor Manager --> initialized')
-      this.fetchClients()
-      this.loadSelectedClient()
       this.fetchListById()
     },
 
@@ -190,9 +188,11 @@ export default function editorManager() {
     },
 
     // MARK: FETCH INVOICE LIST
-    async fetchListById(clientId = this.selectedClient.id) {
+    async fetchListById() {
       try {
-        const response = await fetch(`/editor/invoices/${clientId}`)
+        const client = Alpine.store('clients').selectedClient
+        console.log('Client HERE!!!!!!!!!!!', client)
+        const response = await fetch(`/editor/editor/invoices/${client.id}`)
         if (!response.ok) {
           throw new Error(`Error fetching invoices: ${response.statusText}`)
         }
