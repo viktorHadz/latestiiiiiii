@@ -400,6 +400,7 @@ input::-webkit-inner-spin-button {
 .dark .border-clipper {
   --border-clipper: #27272a;
 }
+
 /* MARK: Inputs */
 input[type='radio'] {
   appearance: none;

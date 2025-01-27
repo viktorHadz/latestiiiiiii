@@ -1,0 +1,112 @@
+<div x-data="editView" class="border border-vls/40 h-full ml-2 rounded">
+  <template x-if="editing === false">
+    <div
+      x-ref="tempText"
+      class="flex h-full w-full items-center justify-center text-center align-middle text-vls3 dark:text-vds">
+      <p class="text-xl">Pick an invoice from the list to edit.</p>
+    </div>
+    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto p-1.5">
+      <template x-if="showInvoiceItems === true">
+        <div x-show="showInvoiceItems" x-transition class="text-vls dark:text-vds">
+          <!-- MARK: Header -->
+          <div
+            class="flex w-full justify-between rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
+            <div class="flex self-center">
+              <span class="mr-1">Invoice:</span>
+              <p class="mr-2" x-text="invoiceItems.invoice.invoice_number"></p>
+              <span class="mr-1">Date:</span>
+              <span x-text="invoiceItems.invoice.date"></span>
+            </div>
+          </div>
+          <!-- MARK: Client details -->
+          <div
+            class="mb-2 flex h-full w-full justify-between rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
+            <div class="flex flex-col">
+              <p class="mr-1">
+                Client name:
+                <span x-text="invoiceItems.client.name"></span>
+              </p>
+              <p class="mr-1">
+                Company:
+                <span x-text="invoiceItems.client.company_name"></span>
+              </p>
+              <p class="mr-1">
+                Address:
+                <span x-text="invoiceItems.client.address"></span>
+              </p>
+              <p class="mr-1">
+                Email:
+                <span x-text="invoiceItems.client.email"></span>
+              </p>
+            </div>
+            <div class="flex flex-col justify-between">
+              <button @click="generateInvoice()" class="flex items-center gap-2 modal-btn-sec !p-1.5">
+                <svg class="size-4">
+                  <use href="/icons/icons.svg#download-document"></use>
+                </svg>
+                PDF
+              </button>
+
+              <button @click="openEditModal = true" class="butt-style flex !w-full !bg-vlp !p-1.5 dark:!bg-zinc-900">
+                <button @click="$store.pdfStore.generateInvoice()" class="flex items-center gap-2 modal-btn-sec !p-1.5">
+                  <svg class="size-4">
+                    <use href="/icons/icons.svg#editor"></use>
+                  </svg>
+                  PDF
+                </button>
+                <span class="flex w-full justify-center text-center">Edit Invoice</span>
+              </button>
+            </div>
+          </div>
+          <!-- MARK: Invoice Items Table -->
+          <div
+            class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vlp bg-slate-600 dark:bg-neutral-700">
+            <table class="w-full table-auto text-vls dark:text-vds">
+              <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
+                <tr>
+                  <th class="p-1">Name</th>
+                  <th class="p-1">Type</th>
+                  <th class="p-1">Qty</th>
+                  <th class="p-1">Price</th>
+                </tr>
+              </thead>
+              <tbody class="font-normal">
+                <template x-for="item in invoiceItems.invoiceItems" :key="item.id">
+                  <tr>
+                    <td x-text="item.name" class="p-1"></td>
+                    <td x-text="item.type" class="p-1"></td>
+                    <td x-text="item.quantity" class="p-1"></td>
+                    <td x-text="'£' + item.price" class="p-1"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <!-- MARK: Prices -->
+          <div
+            class="flex w-full justify-center rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
+            Prices
+          </div>
+          <div class="flex flex-col rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
+            <p class="mb-1" x-text="'Subtotal: ' + '£' + invoiceItems.invoice.subtotal"></p>
+            <p class="mb-1" x-text="'VAT: ' + '£' + invoiceItems.invoice.vat"></p>
+            <template x-if="invoiceItems.invoice.discount_flat === 1">
+              <p class="mb-1" x-text="'Discount: ' + '£' + invoiceItems.invoice.discount"></p>
+            </template>
+            <template x-if="invoiceItems.invoice.discount_percent === 1">
+              <p class="mb-1" x-text="'Discount: ' + invoiceItems.invoice.discount + '%'"></p>
+            </template>
+            <p class="mb-1" x-text="'Total: ' + '£' + invoiceItems.invoice.total"></p>
+            <template x-if="invoiceItems.invoice.deposit_flat === 1">
+              <p x-text="'Deposit: ' + '£' + invoiceItems.invoice.deposit"></p>
+            </template>
+            <template x-if="invoiceItems.invoice.deposit_percent === 1">
+              <p class="mb-1" x-text="'Deposit: ' + invoiceItems.invoice.deposit + '%'"></p>
+            </template>
+            <p class="mb-1" x-text="'Note: ' + invoiceItems.invoice.note"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
+</div>

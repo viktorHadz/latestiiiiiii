@@ -23,8 +23,8 @@ For this I need routes:
 
 */
 
-// 2. Get invoices by client id
-router.get('/editor/invoices/:clientId', (req, res) => {
+// 2. Invoice list by client id
+router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
   const dbQueryInvoices = 'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
   const dbQueryClient = 'SELECT name, address FROM clients WHERE id = ?'
@@ -55,7 +55,7 @@ router.get('/editor/invoices/:clientId', (req, res) => {
 
 // Route for invoice items and prices for client with id
 // example - /editor/invoice/1/46
-router.get('/editor/invoices/:clientId/:invoiceId', (req, res) => {
+router.get('/invoices/:clientId/:invoiceId', (req, res) => {
   const clientId = req.params.clientId
   const invoiceId = req.params.invoiceId
 

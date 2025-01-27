@@ -1,0 +1,24 @@
+<div
+  x-data="invoiceList"
+  class="invoice-list-container relative flex flex-col h-screen max-h-[90%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp">
+  <!-- Sticky Header -->
+  <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp shadow-md">
+    <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
+    <input type="text" placeholder="Search invoices..." class="srch-style" />
+  </div>
+  <!-- Scrollable List -->
+  <div class="flex-1 overflow-y-auto table-scrollbar p-2">
+    <template x-for="item in listItems" :key="item.id">
+      <div
+        @click="fetchItems(item.id); $refs.tempText.classList.add('hidden'); applyEffect(item)"
+        :id="'rowid-' + item.id"
+        class="mb-2 flex cursor-pointer justify-between rounded border border-vls/40 bg-vlp p-2 text-vls2 dark:text-vds transition duration-200 hover:border-vls/80 hover:bg-vlp2 focus:border-vls/80 focus:bg-vlp2 active:border-vls/80 active:bg-vlp2 dark:bg-vds3neu700 dark:hover:border-vls/80 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vls/80 dark:active:border-vls/80">
+        <div class="mr-2 flex flex-col text-left text-xs">
+          <div x-text="item.client_name"></div>
+          <div x-text="item.date"></div>
+        </div>
+        <div class="flex self-end text-xs" x-text="item.invoice_number"></div>
+      </div>
+    </template>
+  </div>
+</div>

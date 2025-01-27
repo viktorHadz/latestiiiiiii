@@ -3,7 +3,8 @@ import itemEditor from '/Managers/itemEditor.js'
 import clientManager from '/Managers/clientManager.js'
 // import invoiceManager from '/Managers/invoiceManager.js'
 import invoiceManager2 from '/Managers/invoicing/invoiceManager2.js'
-import editorManager from '/Managers/editorManager.js'
+// import editorManager from '/Managers/invoEditor/editorManager.js'
+import editorMain from '/Managers/invoEditor/editorMain.js'
 
 document.addEventListener('alpine:init', () => {
   console.log('[App.js] Alpine initialized')
@@ -68,12 +69,11 @@ document.addEventListener('alpine:init', () => {
       // Once the HTML is inserted, register the relevant Alpine data
       if (tabName === 'clients') {
         Alpine.data('clientManager', clientManager)
-        // } else if (tabName === 'invoices') {
-        // Alpine.data('invoiceManager', invoiceManager)
       } else if (tabName === 'invoices2') {
         Alpine.data('invoiceManager2', invoiceManager2)
       } else if (tabName === 'editor') {
-        Alpine.data('editorManager', editorManager)
+        // Alpine.data('editorManager', editorManager)
+        Alpine.data('editorMain', editorMain)
       }
     },
 
@@ -86,5 +86,6 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('itemEditor', itemEditor)
   // Alpine.data('invoiceManager', invoiceManager)
   Alpine.data('invoiceManager2', invoiceManager2)
-  Alpine.data('editorManager', editorManager)
+  // Alpine.data('editorManager', editorManager)
+  Alpine.data('editorMain', editorMain)
 })

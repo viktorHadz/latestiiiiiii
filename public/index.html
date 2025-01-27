@@ -54,8 +54,8 @@
           </button>
           <!-- EDITOR -->
           <button
-            @click="tabButtonClicked('editor')"
-            :class="tabContentActive('editor') ? 'tab-button-active' : 'tab-button'">
+            @click="tabButtonClicked('editorMain')"
+            :class="tabContentActive('editorMain') ? 'tab-button-active' : 'tab-button'">
             <div x-show="sideBar" class="flex p-2">
               <svg width="24" height="24" class="mr-1.5">
                 <use href="/icons/icons.svg#editor" />
@@ -293,6 +293,7 @@
     <script type="module" src="/store/prices.js"></script>
     <script type="module" src="/store/invoiceStore.js"></script>
     <script type="module" src="/store/pdfStore.js"></script>
+    <script type="module" src="/store/edit.js"></script>
     <script type="module" src="/store/colorTheme.js"></script>
     <script type="module" src="/store/tossStore.js"></script>
     <!-- 2) Then app.js, which references the store and sets up tabManager, etc -->

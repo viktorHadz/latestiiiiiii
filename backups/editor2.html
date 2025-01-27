@@ -11,47 +11,7 @@
       class="self-center text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
       x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
   </div>
-  <div class="flex h-screen rounded border border-vlp p-1 dark:border-neutral-600">
-    <!-- MARK:INVOICE LIST -->
-    <div class="w-1/3 p-2">
-      <div class="alt-table-scrollbar max-h-[100%] overflow-y-auto rounded border border-transparent">
-        <table class="w-[calc(100%-10px)]">
-          <thead class="sticky top-0 z-10">
-            <tr>
-              <th
-                class="round-left-border round-right-border border-clipper m-2 rounded bg-vlp text-vls dark:bg-zinc-900 dark:text-vds"
-                style="box-shadow: 0 -4px 0 0 var(--border-clipper)">
-                <p class="mb-2 font-medium">Invoice Book</p>
-                <input
-                  type="text"
-                  placeholder="Search invoices..."
-                  class="mr-2 flex w-full rounded border border-b-0 border-l-0 border-r-0 border-t-vlp bg-vlp p-1.5 text-xs font-normal text-vls transition duration-500 placeholder:text-vls hover:border-vred-300 hover:bg-vlp hover:text-vla hover:placeholder:text-vla focus:border-vred-300 focus:bg-vlp focus:text-vla focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-vds dark:placeholder:text-neutral-300 dark:hover:border-vred-300 dark:hover:text-vred-300 dark:hover:placeholder:text-vla dark:focus:border-vred-300 dark:focus:bg-vlp dark:focus:text-vla dark:focus:outline-none" />
-              </th>
-            </tr>
-          </thead>
-          <tbody class="max-h-[90%] overflow-y-auto pr-2">
-            <template x-for="item in listItems" :key="item.id">
-              <tr>
-                <td>
-                  <button
-                    @click="fetchItems(selectedClient.id, item.id); $refs.tempText.classList.add('hidden'); applyEffect(item)"
-                    :id="'rowid-' + item.id"
-                    class="mb-2 flex w-full cursor-default justify-between rounded border border-vlp bg-slate-600 p-1.5 text-vls transition duration-200 hover:border-vla hover:bg-slate-500 focus:border-vla focus:bg-slate-500 active:border-vla active:bg-slate-500 dark:bg-neutral-700 dark:hover:border-vred-300 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vred-300 dark:active:border-vred-300">
-                    <div class="mr-2 flex flex-col justify-start text-left text-xs">
-                      <div x-text="item.client_name"></div>
-                      <div x-text="item.date"></div>
-                    </div>
-                    <div>
-                      <div class="flex self-end text-xs" x-text="item.invoice_number"></div>
-                    </div>
-                  </button>
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-      </div>
-    </div>
+ 
     <!-- MARK: EDITOR -->
     <div id="invoice-editor" class="w-full">
       <div
@@ -925,48 +885,4 @@
     </div>
   </div>
 
-  <!-- MARK: SELECT CLIENT MODAL -->
-  <div
-    x-show="showClientModal"
-    x-transition.opacity.duration.300ms
-    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
-    <div
-      class="relative top-1/3 z-30 mx-auto w-1/3 rounded border border-slate-300 bg-vlp text-vls shadow-lg transition duration-300 dark:border-neutral-300 dark:bg-zinc-900 dark:text-vds"
-      @keydown.escape.window="showClientModal = false"
-      @click.outside="showClientModal = false">
-      <div class="p-6">
-        <h2 class="mb-4 text-center text-xl font-medium">Select Client</h2>
-        <div class="relative" @click.outside="showDropdown = false">
-          <button
-            x-ref="clientModalButton"
-            @click="showDropdown = !showDropdown"
-            :class="{'border-vla dark:border-vred-300 text-vla dark:text-vred-300': showDropdown, 'border-slate-300 dark:border-neutral-300 text-slate-300 dark:text-vds': !showDropdown}"
-            class="mb-4 w-full rounded border p-2 text-vls transition duration-300 hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
-            Clients
-          </button>
-          <div
-            x-anchor.offset.5="$refs.clientModalButton"
-            x-show="showDropdown"
-            x-collapse.duration.500ms
-            class="table-scrollbar max-h-[300px] w-full overflow-auto rounded border border-slate-400 bg-vlp shadow-lg dark:bg-neutral-500">
-            <ul>
-              <template x-for="client in clients" :key="client.id">
-                <li
-                  @click="selectClient(client)"
-                  class="cursor-pointer p-2 text-vls hover:bg-slate-600 dark:text-vds dark:hover:bg-neutral-600"
-                  x-text="client.name"></li>
-              </template>
-            </ul>
-          </div>
-        </div>
-        <div class="flex items-center justify-center">
-          <button
-            @click="showClientModal = !showClientModal"
-            class="submit-button w-1/2 rounded bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm transition-colors duration-200 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>

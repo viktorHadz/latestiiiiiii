@@ -6,7 +6,7 @@ import totalsInvoice from './totalsInvoice.js'
 export default function invoiceManager2() {
   return {
     init() {
-      // Register the `clientSelect` component
+      // Register the component
       Alpine.data('tabsInvoice', tabsInvoice)
       Alpine.data('invoicing', invoicing)
       Alpine.data('totalsInvoice', totalsInvoice)
