@@ -213,7 +213,7 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       .text(`Invoice Date:    ${invoice.date}`, 25, 255, { align: 'left' })
 
     // If deposit is present
-    if (invoice.deposit !== 0) {
+    if (invoice.deposit_value !== 0) {
       doc.text(`Total Invoice Balance:    £${invoice.total}`, 25, 275, {
         align: 'left',
       })
