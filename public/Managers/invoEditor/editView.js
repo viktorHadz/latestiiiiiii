@@ -1,6 +1,9 @@
+// editView.js
 export default function editView() {
   return {
-    editing: false,
-    showInvoiceItems: false,
+    init() {
+      console.log('[EditView] Initialised.')
+      // You could call $store.edit.fetchStylesAndSamples(...) here if needed
+    },
   }
 }

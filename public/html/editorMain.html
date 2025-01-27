@@ -1,4 +1,6 @@
+<!-- editorMain.html -->
 <div x-data="editorMain" class="px-12 py-4">
+  <!-- Top bar -->
   <div
     class="p-2 mb-12 align-baseline border justify-between flex rounded border-vls/40 dark:border-vls/40 dark:bg-vdp bg-white shadow">
     <button @click="$store.clients.showClientModal = true" class="modal-btn-prim">
@@ -9,10 +11,43 @@
     </button>
     <h3
       class="self-center text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
-      x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
+      x-text="$store.clients.selectedClient.name || 'No selected client'"></h3>
   </div>
+
+  <!-- Main Content -->
   <div class="flex w-full">
-    <div id="invo-list" class="w-[30%] h-full"></div>
+    <!-- Invoice List on the left -->
+    <div
+      class="invoice-list-container relative flex flex-col h-screen max-h-[90%] w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp">
+      <!-- Sticky Header -->
+      <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp shadow-md">
+        <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
+        <input type="text" placeholder="Search invoices..." class="srch-style" />
+        <button @click="$store.edit.fetchListById()" class="butt-style mt-2 w-full !bg-vlp dark:!bg-zinc-900">
+          Refresh
+        </button>
+      </div>
+      <!-- Scrollable List -->
+      <div class="flex-1 overflow-y-auto table-scrollbar p-2">
+        <template x-for="item in $store.edit.listItems" :key="item.id">
+          <div
+            @click="
+              $store.edit.fetchItems(item.id);
+              // if you want to highlight, you could do: $store.edit.applyEffect(item);
+            "
+            :id="'rowid-' + item.id"
+            class="mb-2 flex cursor-pointer justify-between rounded border border-vls/40 bg-vlp p-2 text-vls2 dark:text-vds transition duration-200 hover:border-vls/80 hover:bg-vlp2 focus:border-vls/80 focus:bg-vlp2 active:border-vls/80 active:bg-vlp2 dark:bg-vds3neu700 dark:hover:border-vls/80 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vls/80 dark:active:border-vls/80">
+            <div class="mr-2 flex flex-col text-left text-xs">
+              <div x-text="item.client_name"></div>
+              <div x-text="item.date"></div>
+            </div>
+            <div class="flex self-end text-xs" x-text="item.invoice_number"></div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Edit View container (fetched in editorMain.js) -->
     <div id="edit-view" class="w-[70%]"></div>
   </div>
 </div>

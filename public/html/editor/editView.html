@@ -1,112 +1,424 @@
-<div x-data="editView" class="border border-vls/40 h-full ml-2 rounded">
-  <template x-if="editing === false">
+<!-- editView.html -->
+<div x-data="editView" class="border border-vls/40 h-full ml-2 rounded p-2">
+  <!-- When no invoice is selected or none is being edited -->
+  <template x-if="!$store.edit.showInvoiceItems">
     <div
       x-ref="tempText"
       class="flex h-full w-full items-center justify-center text-center align-middle text-vls3 dark:text-vds">
       <p class="text-xl">Pick an invoice from the list to edit.</p>
     </div>
-    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto p-1.5">
-      <template x-if="showInvoiceItems === true">
-        <div x-show="showInvoiceItems" x-transition class="text-vls dark:text-vds">
-          <!-- MARK: Header -->
-          <div
-            class="flex w-full justify-between rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
-            <div class="flex self-center">
-              <span class="mr-1">Invoice:</span>
-              <p class="mr-2" x-text="invoiceItems.invoice.invoice_number"></p>
-              <span class="mr-1">Date:</span>
-              <span x-text="invoiceItems.invoice.date"></span>
-            </div>
-          </div>
-          <!-- MARK: Client details -->
-          <div
-            class="mb-2 flex h-full w-full justify-between rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
-            <div class="flex flex-col">
-              <p class="mr-1">
-                Client name:
-                <span x-text="invoiceItems.client.name"></span>
-              </p>
-              <p class="mr-1">
-                Company:
-                <span x-text="invoiceItems.client.company_name"></span>
-              </p>
-              <p class="mr-1">
-                Address:
-                <span x-text="invoiceItems.client.address"></span>
-              </p>
-              <p class="mr-1">
-                Email:
-                <span x-text="invoiceItems.client.email"></span>
-              </p>
-            </div>
-            <div class="flex flex-col justify-between">
-              <button @click="generateInvoice()" class="flex items-center gap-2 modal-btn-sec !p-1.5">
-                <svg class="size-4">
-                  <use href="/icons/icons.svg#download-document"></use>
-                </svg>
-                PDF
-              </button>
+  </template>
 
-              <button @click="openEditModal = true" class="butt-style flex !w-full !bg-vlp !p-1.5 dark:!bg-zinc-900">
-                <button @click="$store.pdfStore.generateInvoice()" class="flex items-center gap-2 modal-btn-sec !p-1.5">
-                  <svg class="size-4">
-                    <use href="/icons/icons.svg#editor"></use>
-                  </svg>
-                  PDF
-                </button>
-                <span class="flex w-full justify-center text-center">Edit Invoice</span>
-              </button>
-            </div>
+  <!-- When an invoice is selected but not in edit mode -->
+  <template x-if="$store.edit.showInvoiceItems && !$store.edit.editing">
+    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls dark:text-vds">
+      <!-- Header / Basic Info -->
+      <div class="mb-2 flex w-full justify-between rounded bg-vlp p-2 text-center font-medium dark:bg-zinc-900">
+        <div>
+          <span class="mr-1">Invoice:</span>
+          <span x-text="$store.edit.invoiceItems.invoice?.invoice_number"></span>
+          <span class="ml-4 mr-1">Date:</span>
+          <span x-text="$store.edit.invoiceItems.invoice?.date"></span>
+        </div>
+      </div>
+      <!-- Client Details -->
+      <div class="mb-2 flex w-full justify-between rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+        <div>
+          <p>
+            Client name:
+            <span x-text="$store.edit.invoiceItems.client?.name"></span>
+          </p>
+          <p>
+            Company:
+            <span x-text="$store.edit.invoiceItems.client?.company_name"></span>
+          </p>
+          <p>
+            Address:
+            <span x-text="$store.edit.invoiceItems.client?.address"></span>
+          </p>
+          <p>
+            Email:
+            <span x-text="$store.edit.invoiceItems.client?.email"></span>
+          </p>
+        </div>
+        <div class="flex flex-col justify-between">
+          <button @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec !p-1.5 mb-2">
+            <svg class="size-4">
+              <use href="/icons/icons.svg#download-document" />
+            </svg>
+            PDF
+          </button>
+          <button @click="$store.edit.openEditModal = true" class="butt-style flex !bg-vlp !p-1.5 dark:!bg-zinc-900">
+            <svg class="size-4 mr-2">
+              <use href="/icons/icons.svg#editor" />
+            </svg>
+            Edit Invoice
+          </button>
+        </div>
+      </div>
+      <!-- Invoice Items Table -->
+      <div
+        class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vlp bg-slate-600 dark:bg-neutral-700">
+        <table class="w-full table-auto text-vls dark:text-vds">
+          <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
+            <tr>
+              <th class="p-1">Name</th>
+              <th class="p-1">Type</th>
+              <th class="p-1">Qty</th>
+              <th class="p-1">Price</th>
+            </tr>
+          </thead>
+          <tbody class="font-normal">
+            <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.id">
+              <tr>
+                <td class="p-1" x-text="item.name"></td>
+                <td class="p-1" x-text="item.type"></td>
+                <td class="p-1" x-text="item.quantity"></td>
+                <td class="p-1" x-text="'£' + item.price"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <!-- Prices -->
+      <div class="mb-2 flex flex-col rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+        <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
+        <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
+        <template x-if="$store.edit.invoiceItems.invoice?.discount_flat === 1">
+          <p x-text="'Discount: £' + $store.edit.invoiceItems.invoice?.discount"></p>
+        </template>
+        <template x-if="$store.edit.invoiceItems.invoice?.discount_percent === 1">
+          <p x-text="'Discount: ' + $store.edit.invoiceItems.invoice?.discount + '%'"></p>
+        </template>
+        <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
+        <template x-if="$store.edit.invoiceItems.invoice?.deposit_flat === 1">
+          <p x-text="'Deposit: £' + $store.edit.invoiceItems.invoice?.deposit"></p>
+        </template>
+        <template x-if="$store.edit.invoiceItems.invoice?.deposit_percent === 1">
+          <p x-text="'Deposit: ' + $store.edit.invoiceItems.invoice?.deposit + '%'"></p>
+        </template>
+        <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note"></p>
+      </div>
+    </div>
+  </template>
+
+  <!-- Edit Mode (overwrite or copy) -->
+  <template x-if="$store.edit.editing">
+    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls dark:text-vds">
+      <!-- Your “edit state” structure from the old code, referencing $store.edit.* -->
+      <div class="flex w-full justify-between rounded bg-vlp p-2 text-center font-medium dark:bg-zinc-900">
+        <div>
+          <span class="mr-1">Invoice:</span>
+          <span x-text="$store.edit.invoiceItems.invoice?.invoice_number"></span>
+          <span class="ml-4 mr-1">Date:</span>
+          <span x-text="$store.edit.invoiceItems.invoice?.date"></span>
+          <span class="ml-4">
+            Edit Mode:
+            <span x-show="$store.edit.editMode === 'editOverwrite'">Overwrite</span>
+            <span x-show="$store.edit.editMode === 'editCopy'">Copy</span>
+          </span>
+        </div>
+        <div class="flex items-center">
+          <!-- Cancel edit -->
+          <button
+            @click="$store.edit.cancelEdit()"
+            class="mr-2 text-vls transition hover:text-vla dark:hover:text-vred-300">
+            Cancel
+          </button>
+          <!-- Save edit -->
+          <button
+            @click="$store.edit.saveEdit()"
+            class="text-vls transition hover:text-sky-500 dark:hover:text-sky-400">
+            Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Editable Invoice Items -->
+      <div class="mb-2 flex w-full justify-between rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+        <!-- Client info -->
+        <div>
+          <p>
+            Client name:
+            <span x-text="$store.edit.invoiceItems.client?.name"></span>
+          </p>
+          <p>
+            Company:
+            <span x-text="$store.edit.invoiceItems.client?.company_name"></span>
+          </p>
+          <p>
+            Address:
+            <span x-text="$store.edit.invoiceItems.client?.address"></span>
+          </p>
+          <p>
+            Email:
+            <span x-text="$store.edit.invoiceItems.client?.email"></span>
+          </p>
+        </div>
+        <!-- Example: adding a new item -->
+        <div class="flex flex-col justify-between">
+          <button
+            @click="
+              $store.edit.existingItems.showItemModal = true;
+              $store.edit.fetchStylesAndSamples($store.clients.selectedClient?.id);
+            "
+            class="butt-style !bg-vlp dark:!bg-zinc-900">
+            Add Item
+          </button>
+        </div>
+      </div>
+      <!-- Items Table -->
+      <div
+        class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vlp bg-slate-600 dark:bg-neutral-700">
+        <table class="w-full text-vls dark:text-vds">
+          <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
+            <tr>
+              <th class="p-2">Name</th>
+              <th class="p-2">Type</th>
+              <th class="p-2">Qty</th>
+              <th class="p-2">Price</th>
+              <th class="p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="(item, idx) in $store.edit.invoiceItems.invoiceItems" :key="item.id">
+              <tr>
+                <td class="p-1" x-text="item.name"></td>
+                <td class="p-1" x-text="item.type"></td>
+                <td class="p-1" x-text="item.quantity"></td>
+                <td class="p-1" x-text="'£' + item.price"></td>
+                <td class="p-1 text-center">
+                  <button
+                    @click="$store.edit.removeInvoiceItem(item.id)"
+                    class="text-vls transition duration-300 hover:text-vla dark:hover:text-vred-300">
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <!-- Editable Prices -->
+      <div class="flex flex-col rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+        <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
+        <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
+        <!-- Etc. Link them to $store.edit.savePrice('discount', newValue) if you want direct editing. -->
+      </div>
+    </div>
+  </template>
+
+  <!-- “Choose Edit Type” Modal -->
+  <div
+    x-show="$store.edit.openEditModal"
+    x-transition.opacity.duration.300
+    class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
+    <div
+      class="relative top-1/3 z-30 mx-auto w-1/4 rounded border border-slate-300 bg-vlp text-vls shadow-lg transition duration-300 dark:bg-zinc-900 dark:text-vds"
+      @keydown.escape.window="$store.edit.openEditModal = false"
+      @click.outside="$store.edit.openEditModal = false">
+      <div class="p-4 text-center">
+        <h2 class="text-xl font-medium text-vls dark:text-vds">Choose Edit Type</h2>
+        <p class="mb-4 text-sm font-normal text-vls dark:text-vds">How would you like to edit this invoice?</p>
+        <!-- Overwrite -->
+        <label class="modal-input-style mb-2 flex items-center justify-between p-2 font-medium">
+          <div class="flex items-center">
+            <input
+              type="radio"
+              value="editOverwrite"
+              x-model="$store.edit.editMode"
+              class="mr-2 text-lg text-vlp focus:ring-vla dark:text-vds" />
+            <span>Overwrite</span>
           </div>
-          <!-- MARK: Invoice Items Table -->
+        </label>
+        <!-- Copy -->
+        <label class="modal-input-style mb-4 flex items-center justify-between p-2 font-medium">
+          <div class="flex items-center">
+            <input
+              type="radio"
+              value="editCopy"
+              x-model="$store.edit.editMode"
+              class="mr-2 text-lg text-vlp focus:ring-vla dark:text-vds" />
+            <span>Copy Invoice</span>
+          </div>
+        </label>
+        <!-- Confirm/Close -->
+        <button
+          @click="$store.edit.editInvoice()"
+          class="submit-button mb-2 w-full rounded bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
+          Edit
+        </button>
+        <button
+          @click="$store.edit.openEditModal = false; $store.edit.editMode = ''"
+          class="submit-button w-full rounded bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- “Add Existing Item” Modal -->
+  <div
+    x-show="$store.edit.existingItems.showItemModal"
+    x-transition.opacity.duration.300ms
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
+    <div
+      class="relative top-1/4 mx-auto w-1/3 rounded border border-slate-300 bg-vlp text-vls shadow-lg dark:border-neutral-300 dark:bg-zinc-900 dark:text-vds">
+      <div
+        class="p-4"
+        @click.outside="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
+        @keydown.escape.window="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false">
+        <h3 class="text-xl font-medium" x-text="`${$store.clients.selectedClient?.name || ''}’s Items`"></h3>
+        <p class="mb-2 text-center text-sm font-normal">Add from existing styles and samples</p>
+
+        <!-- Dropdown of existing items -->
+        <div class="relative mb-4">
+          <button
+            x-ref="existingItemsDropdown"
+            @click="$store.edit.existingItems.openDropdown = !$store.edit.existingItems.openDropdown"
+            class="w-full rounded border border-slate-300 p-2 text-vls transition hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
+            Existing Items
+          </button>
           <div
-            class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vlp bg-slate-600 dark:bg-neutral-700">
-            <table class="w-full table-auto text-vls dark:text-vds">
-              <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
+            x-show="$store.edit.existingItems.openDropdown"
+            x-collapse.duration.500ms
+            class="table-scrollbar absolute z-40 mt-2 max-h-80 w-full overflow-auto rounded border border-slate-300 bg-vlp shadow-lg dark:border-neutral-300 dark:bg-neutral-600">
+            <table class="w-full text-vls dark:text-vds">
+              <thead class="sticky top-0 bg-vlp dark:bg-zinc-900">
                 <tr>
-                  <th class="p-1">Name</th>
-                  <th class="p-1">Type</th>
-                  <th class="p-1">Qty</th>
-                  <th class="p-1">Price</th>
+                  <th colspan="4" class="p-2">
+                    <input
+                      type="text"
+                      placeholder="Search items..."
+                      class="w-full bg-vlp p-1 text-center text-vla placeholder-vls transition duration-300 hover:placeholder-vla focus:outline-none dark:bg-zinc-900 dark:text-vred-300"
+                      x-model="$store.edit.existingItems.searchQuery"
+                      @input="$store.edit.searchItems()" />
+                  </th>
+                </tr>
+                <tr>
+                  <th class="p-1 text-left">Name</th>
+                  <th class="p-1 text-right">Price</th>
+                  <th class="p-1 text-right">Time</th>
+                  <th class="p-1 text-center">Qty</th>
                 </tr>
               </thead>
-              <tbody class="font-normal">
-                <template x-for="item in invoiceItems.invoiceItems" :key="item.id">
-                  <tr>
-                    <td x-text="item.name" class="p-1"></td>
-                    <td x-text="item.type" class="p-1"></td>
-                    <td x-text="item.quantity" class="p-1"></td>
-                    <td x-text="'£' + item.price" class="p-1"></td>
+              <tbody>
+                <template x-for="item in $store.edit.existingItems.filteredItems" :key="item.frontEndId">
+                  <tr
+                    class="cursor-pointer bg-slate-600 hover:bg-slate-500 dark:bg-neutral-700 dark:hover:bg-neutral-500">
+                    <td class="p-1 text-left text-sm" x-text="item.name"></td>
+                    <td class="p-1 text-right text-sm" x-text="item.price"></td>
+                    <td class="p-1 text-right text-sm" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
+                    <td class="p-1 text-sm">
+                      <div class="flex items-center justify-center">
+                        <input
+                          type="number"
+                          min="1"
+                          x-model.number="item.quantity"
+                          class="w-14 rounded border border-slate-300 bg-slate-600 p-1 text-vls focus:bg-slate-400 dark:border-neutral-400 dark:bg-neutral-600 dark:text-vds" />
+                        <button
+                          @click="$store.edit.addNewItem(item)"
+                          class="ml-2 text-vls transition hover:text-blue-400 dark:text-vds dark:hover:text-blue-400">
+                          <svg class="size-4">
+                            <use href="/icons/icons.svg#plus-circle" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 </template>
               </tbody>
             </table>
           </div>
-          <!-- MARK: Prices -->
-          <div
-            class="flex w-full justify-center rounded-b-none rounded-t-md bg-vlp p-2 text-center font-medium text-vls dark:bg-zinc-900">
-            Prices
-          </div>
-          <div class="flex flex-col rounded-b-md rounded-t-none border border-vlp bg-slate-600 p-1 dark:bg-neutral-700">
-            <p class="mb-1" x-text="'Subtotal: ' + '£' + invoiceItems.invoice.subtotal"></p>
-            <p class="mb-1" x-text="'VAT: ' + '£' + invoiceItems.invoice.vat"></p>
-            <template x-if="invoiceItems.invoice.discount_flat === 1">
-              <p class="mb-1" x-text="'Discount: ' + '£' + invoiceItems.invoice.discount"></p>
-            </template>
-            <template x-if="invoiceItems.invoice.discount_percent === 1">
-              <p class="mb-1" x-text="'Discount: ' + invoiceItems.invoice.discount + '%'"></p>
-            </template>
-            <p class="mb-1" x-text="'Total: ' + '£' + invoiceItems.invoice.total"></p>
-            <template x-if="invoiceItems.invoice.deposit_flat === 1">
-              <p x-text="'Deposit: ' + '£' + invoiceItems.invoice.deposit"></p>
-            </template>
-            <template x-if="invoiceItems.invoice.deposit_percent === 1">
-              <p class="mb-1" x-text="'Deposit: ' + invoiceItems.invoice.deposit + '%'"></p>
-            </template>
-            <p class="mb-1" x-text="'Note: ' + invoiceItems.invoice.note"></p>
-          </div>
         </div>
-      </template>
+
+        <!-- Add a new item (Style or Sample) -->
+        <p class="mb-2 text-center text-sm font-normal">Add a brand new item</p>
+        <div class="flex justify-evenly mb-4">
+          <!-- Style -->
+          <label class="modal-input-style flex !w-28 items-center p-4 cursor-pointer">
+            <input type="radio" x-model="$store.edit.newItem.type" value="style" class="mr-2" />
+            <span>Style</span>
+          </label>
+          <!-- Sample -->
+          <label class="modal-input-style flex !w-28 items-center p-4 cursor-pointer">
+            <input type="radio" x-model="$store.edit.newItem.type" value="sample" class="mr-2" />
+            <span>Sample</span>
+          </label>
+        </div>
+
+        <!-- If 'style' -->
+        <div x-show="$store.edit.newItem.type === 'style'" x-collapse.duration.300ms class="mb-4">
+          <input
+            x-model="$store.edit.newItem.name"
+            type="text"
+            placeholder="Style Name"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <input
+            x-model.number="$store.edit.newItem.price"
+            type="number"
+            placeholder="Price"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <input
+            x-model.number="$store.edit.newItem.quantity"
+            type="number"
+            min="1"
+            placeholder="Quantity"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <button
+            @click="$store.edit.addNewItem($store.edit.newItem)"
+            class="mr-4 rounded bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-sky-800">
+            Add
+          </button>
+          <button
+            @click="$store.edit.newItem.type=''"
+            class="rounded bg-red-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-red-800">
+            Back
+          </button>
+        </div>
+
+        <!-- If 'sample' -->
+        <div x-show="$store.edit.newItem.type === 'sample'" x-collapse.duration.300ms class="mb-4">
+          <input
+            x-model="$store.edit.newItem.name"
+            type="text"
+            placeholder="Sample Name"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <input
+            x-model.number="$store.edit.newItem.price"
+            type="number"
+            placeholder="Price"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <input
+            x-model.number="$store.edit.newItem.time"
+            type="number"
+            placeholder="Time (minutes)"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <input
+            x-model.number="$store.edit.newItem.quantity"
+            type="number"
+            min="1"
+            placeholder="Quantity"
+            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+          <button
+            @click="$store.edit.addNewItem($store.edit.newItem)"
+            class="mr-4 rounded bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-sky-800">
+            Add
+          </button>
+          <button
+            @click="$store.edit.newItem.type=''"
+            class="rounded bg-red-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-red-800">
+            Back
+          </button>
+        </div>
+
+        <!-- Close the modal -->
+        <button
+          @click="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
+          class="w-full rounded bg-vls2 p-1 text-base font-medium text-white shadow-sm transition hover:bg-vls3">
+          Close
+        </button>
+      </div>
     </div>
-  </template>
+  </div>
 </div>
