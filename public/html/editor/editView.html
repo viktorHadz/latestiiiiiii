@@ -13,16 +13,19 @@
   <template x-if="$store.edit.showInvoiceItems && !$store.edit.editing">
     <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls dark:text-vds">
       <!-- Header / Basic Info -->
-      <div class="mb-2 flex w-full justify-between rounded bg-vlp p-2 text-center font-medium dark:bg-zinc-900">
+      <div
+        class="mb-2 flex w-full justify-between rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls dark:text-vds font-medium dark:bg-vdp">
         <div>
           <span class="mr-1">Invoice:</span>
           <span x-text="$store.edit.invoiceItems.invoice?.invoice_number"></span>
+        </div>
+        <div>
           <span class="ml-4 mr-1">Date:</span>
           <span x-text="$store.edit.invoiceItems.invoice?.date"></span>
         </div>
       </div>
       <!-- Client Details -->
-      <div class="mb-2 flex w-full justify-between rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+      <div class="mb-2 flex w-full justify-between rounded border border-vls/40 bg-slate-600 p-2 dark:bg-neutral-700">
         <div>
           <p>
             Client name:
@@ -41,26 +44,12 @@
             <span x-text="$store.edit.invoiceItems.client?.email"></span>
           </p>
         </div>
-        <div class="flex flex-col justify-between">
-          <button @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec !p-1.5 mb-2">
-            <svg class="size-4">
-              <use href="/icons/icons.svg#download-document" />
-            </svg>
-            PDF
-          </button>
-          <button @click="$store.edit.openEditModal = true" class="butt-style flex !bg-vlp !p-1.5 dark:!bg-zinc-900">
-            <svg class="size-4 mr-2">
-              <use href="/icons/icons.svg#editor" />
-            </svg>
-            Edit Invoice
-          </button>
-        </div>
       </div>
       <!-- Invoice Items Table -->
       <div
-        class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vlp bg-slate-600 dark:bg-neutral-700">
-        <table class="w-full table-auto text-vls dark:text-vds">
-          <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
+        class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vls/40 bg-slate-600 dark:bg-vdp3">
+        <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
+          <thead class="sticky top-0 table-head-style border-clipper">
             <tr>
               <th class="p-1">Name</th>
               <th class="p-1">Type</th>
@@ -68,13 +57,13 @@
               <th class="p-1">Price</th>
             </tr>
           </thead>
-          <tbody class="font-normal">
+          <tbody class="table-body-style table-scrollbar">
             <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.id">
-              <tr>
-                <td class="p-1" x-text="item.name"></td>
-                <td class="p-1" x-text="item.type"></td>
-                <td class="p-1" x-text="item.quantity"></td>
-                <td class="p-1" x-text="'£' + item.price"></td>
+              <tr class="border-hover-ring-efect">
+                <td class="round-left-border w-[75%] px-2 py-1 text-sm" x-text="item.name"></td>
+                <td class="px-2 py-1" x-text="item.type"></td>
+                <td class="w-[15%] px-2 py-1 text-sm text-right" x-text="item.quantity"></td>
+                <td class="round-right-border w-[10%] px-2 py-1 text-left text-sm" x-text="'£' + item.price"></td>
               </tr>
             </template>
           </tbody>
@@ -98,6 +87,20 @@
           <p x-text="'Deposit: ' + $store.edit.invoiceItems.invoice?.deposit + '%'"></p>
         </template>
         <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note"></p>
+      </div>
+      <div class="flex gap-4 justify-end">
+        <button @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec flex items-center">
+          <svg class="size-4 mr-1">
+            <use href="/icons/icons.svg#download-document" />
+          </svg>
+          PDF
+        </button>
+        <button @click="$store.edit.openEditModal = true" class="modal-btn-prim flex">
+          <svg class="size-4">
+            <use href="/icons/icons.svg#editor" />
+          </svg>
+          Edit Invoice
+        </button>
       </div>
     </div>
   </template>
@@ -135,7 +138,7 @@
       </div>
 
       <!-- Editable Invoice Items -->
-      <div class="mb-2 flex w-full justify-between rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+      <div class="mb-2 flex w-full justify-between rounded border border-vls/40 bg-slate-600 p-2 dark:bg-neutral-700">
         <!-- Client info -->
         <div>
           <p>

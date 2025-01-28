@@ -20,12 +20,10 @@
     <div
       class="invoice-list-container relative flex flex-col h-screen max-h-[90%] w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp">
       <!-- Sticky Header -->
-      <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp shadow-md">
+      <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp2 shadow-md">
         <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
         <input type="text" placeholder="Search invoices..." class="srch-style" />
-        <button @click="$store.edit.fetchListById()" class="butt-style mt-2 w-full !bg-vlp dark:!bg-zinc-900">
-          Refresh
-        </button>
+        <button @click="$store.edit.fetchListById()" class="modal-btn-prim">Refresh</button>
       </div>
       <!-- Scrollable List -->
       <div class="flex-1 overflow-y-auto table-scrollbar p-2">
