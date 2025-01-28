@@ -1,4 +1,3 @@
-// store-edit.js (or wherever your Alpine stores are declared)
 document.addEventListener('alpine:init', () => {
   Alpine.store(
     'edit',
@@ -43,6 +42,8 @@ document.addEventListener('alpine:init', () => {
       async fetchListById() {
         try {
           const client = Alpine.store('clients').selectedClient
+          if (!client?.id) return
+
           const response = await fetch(`/editor/list/${client.id}`) // << match your route
           if (!response.ok) {
             throw new Error(`Error fetching invoices: ${response.statusText}`)
@@ -57,6 +58,8 @@ document.addEventListener('alpine:init', () => {
       async fetchItems(invoiceId) {
         try {
           const client = Alpine.store('clients').selectedClient
+          if (!client?.id || !invoiceId) return
+
           const response = await fetch(`/editor/invoices/${client.id}/${invoiceId}`) // << match your route
           if (!response.ok) {
             throw new Error(`Error fetching invoice items: ${response.statusText}`)
@@ -128,11 +131,10 @@ document.addEventListener('alpine:init', () => {
             // ... any other fields you need
           }
 
-          // Example of how you might do different logic for overwrite/copy
+          // Example: handle differently based on mode
           if (this.editMode === 'editOverwrite') {
             // callSuccess(`Invoice ${data.invoiceNumber} overwritten successfully.`);
-          }
-          if (this.editMode === 'editCopy') {
+          } else if (this.editMode === 'editCopy') {
             // callSuccess(`Invoice ${data.invoiceNumber} copied successfully.`);
           }
 
@@ -148,56 +150,17 @@ document.addEventListener('alpine:init', () => {
         }
       },
 
-      // ---- Price Editing
+      // ---- Price Editing (if needed, but not recalculating totals in frontend)
       savePrice(forWhich, whatValue) {
         if (!this.invoiceItems?.invoice) return
         if (forWhich in this.invoiceItems.invoice) {
           this.invoiceItems.invoice[forWhich] = whatValue
         }
-        if (forWhich === 'vat' || forWhich === 'discount') {
-          this.calculateTotals()
-        }
         this.editingPrice = ''
         // callSuccess('Price saved!');
       },
 
-      calculateTotals() {
-        const invoice = this.invoiceItems
-        if (!invoice?.invoiceItems || !invoice?.invoice) return
-
-        // Subtotal
-        let subtotal = invoice.invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        // Example: if you store a `vat_percent` on the invoice
-        let vat = subtotal * (invoice.invoice.vat_percent / 100 || 0)
-
-        // Discount
-        let discount = 0
-        if (invoice.invoice.discount_percent === 1) {
-          discount = (invoice.invoice.discount / 100) * subtotal
-        } else if (invoice.invoice.discount_flat === 1) {
-          discount = invoice.invoice.discount
-        }
-
-        let totalPreDiscount = subtotal + vat - discount
-
-        // Deposit
-        let deposit = 0
-        if (invoice.invoice.deposit_percent === 1) {
-          deposit = (invoice.invoice.deposit / 100) * totalPreDiscount
-        } else if (invoice.invoice.deposit_flat === 1) {
-          deposit = invoice.invoice.deposit
-        }
-
-        let total = totalPreDiscount - deposit
-
-        // Store results
-        invoice.invoice.subtotal = subtotal
-        invoice.invoice.vat = vat
-        invoice.invoice.total_pre_discount = totalPreDiscount
-        invoice.invoice.total = total
-      },
-
-      // ---- Add/Remove Items
+      // ---- Add/Remove Items (no client-side total calculations)
       addNewItem(item) {
         const newItem = {
           ...item,
@@ -213,12 +176,11 @@ document.addEventListener('alpine:init', () => {
         if (index !== -1) {
           this.existingItems.combinedItems[index].quantity = 1
         }
-        this.calculateTotals()
       },
+
       removeInvoiceItem(id) {
         if (!this.invoiceItems?.invoiceItems) return
         this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(item => item.id !== id)
-        this.calculateTotals()
       },
 
       // ---- Searching and Filtering
