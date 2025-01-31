@@ -106,7 +106,7 @@
       </div>
 
       <div class="flex gap-4 justify-end">
-        <button @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec flex items-center">
+        <button x-show="$store.edit.edited" @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec flex items-center">
           <svg class="size-4 mr-1">
             <use href="/icons/icons.svg#download-document" />
           </svg>

@@ -23,10 +23,38 @@ For this I need routes:
 
 */
 
-// 2. Invoice list by client id
+// // 2. Invoice list by client id
+// router.get('/list/:clientId', (req, res) => {
+//   const clientId = req.params.clientId
+//   const dbQueryInvoices = 'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
+//   const dbQueryClient = 'SELECT name, address FROM clients WHERE id = ?'
+
+//   db.get(dbQueryClient, [clientId], (err, clientDetails) => {
+//     if (err) {
+//       res.status(500).json({
+//         error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}`,
+//       })
+//       return
+//     }
+
+//     db.all(dbQueryInvoices, [clientId], (err, invoiceDetails) => {
+//       if (err) {
+//         res.status(500).json({
+//           error: `Couldn't fetch invoices for client ${clientId}. Status: ${err.message}`,
+//         })
+//         return
+//       }
+//       const listData = invoiceDetails.map(invoice => ({
+//         ...invoice,
+//         client_name: clientDetails.name,
+//       }))
+//       res.json(listData)
+//     })
+//   })
+// })
 router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
-  const dbQueryInvoices = 'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
+  const dbQueryInvoices = 'SELECT * FROM invoices WHERE client_id = ?'
   const dbQueryClient = 'SELECT name, address FROM clients WHERE id = ?'
 
   db.get(dbQueryClient, [clientId], (err, clientDetails) => {

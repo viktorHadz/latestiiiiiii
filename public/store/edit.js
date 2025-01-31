@@ -10,6 +10,7 @@ document.addEventListener('alpine:init', () => {
       invoiceItems: {}, // Holds the currently selected invoice’s data
       initialValuesInvItems: {}, // For restoring the invoice data on cancel
       listItems: [], // All invoices for the selected client
+      edited: false,
 
       // For new items / existing items
       existingItems: {
@@ -44,11 +45,12 @@ document.addEventListener('alpine:init', () => {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id) return
 
-          const response = await fetch(`/editor/list/${client.id}`) // << match your route
+          const response = await fetch(`/editor/list/${client.id}`)
           if (!response.ok) {
             throw new Error(`Error fetching invoices: ${response.statusText}`)
           }
           this.listItems = await response.json()
+          console.log(this.listItems)
         } catch (error) {
           console.error('Error fetching invoice list items:', error)
         }
