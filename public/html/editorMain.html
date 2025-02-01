@@ -14,7 +14,6 @@
       x-text="$store.clients.selectedClient.name || 'No selected client'"></h3>
   </div>
 
-  <!-- Main Content -->
   <div class="flex w-full">
     <!-- Invoice List on the left -->
     <div
@@ -23,16 +22,13 @@
       <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp2 shadow-md">
         <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
         <input type="text" placeholder="Search invoices..." class="srch-style" />
-        <div class="w-full flex justify-end">
-          <button @click="$store.edit.fetchListById()" class="modal-btn-prim mt-4">Refresh</button>
-        </div>
       </div>
       <!-- Scrollable List -->
       <div class="flex-1 overflow-y-auto table-scrollbar p-2">
         <template x-for="item in $store.edit.listItems" :key="item.id">
           <div
             @click="
-              $store.edit.fetchItems(item.id);
+              $store.edit.fetchInvoice(item.id);
               // if you want to highlight, you could do: $store.edit.applyEffect(item);
             "
             :id="'rowid-' + item.id"

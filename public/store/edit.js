@@ -3,16 +3,17 @@ document.addEventListener('alpine:init', () => {
     'edit',
     Alpine.reactive({
       // ===== State =====
-      editing: false, // Whether we’re in edit mode
-      editMode: '', // 'editOverwrite' or 'editCopy'
-      openEditModal: false, // Toggle for “choose edit type” modal
-      showInvoiceItems: false, // Toggle to show/hide invoice detail area
-      invoiceItems: {}, // Holds the currently selected invoice’s data
-      initialValuesInvItems: {}, // For restoring the invoice data on cancel
-      listItems: [], // All invoices for the selected client
+      editing: false,
+      editMode: '',
+      openEditModal: false,
+      showInvoiceItems: false,
+      // Holds the complete invoice data including invoice details and its items.
+      invoiceItems: { invoiceItems: [] },
+      initialValuesInvItems: {},
+      listItems: [],
       edited: false,
 
-      // For new items / existing items
+      // Allowed (existing) items available for adding (styles and samples)
       existingItems: {
         showItemModal: false,
         openDropdown: false,
@@ -20,12 +21,9 @@ document.addEventListener('alpine:init', () => {
         filteredItems: [],
         searchQuery: '',
       },
-
-      // Price editing states
       editingPrice: '',
       editingPriceValue: 0,
 
-      // For adding new item
       newItem: {
         type: '',
         name: '',
@@ -34,198 +32,208 @@ document.addEventListener('alpine:init', () => {
         time: null,
       },
 
+      //====================NOT IN USE CURRENTLY PROPOSED=============================
+      invoiceBook: [],
       // ===== Methods =====
+
       init() {
         console.log('[Edit Store] Initialised')
       },
 
-      // ---- Invoice List: Load all invoices for current client
+      async fetchInvoice(invoiceId) {
+        try {
+          const client = Alpine.store('clients').selectedClient
+          if (!client?.id || !invoiceId) return
+          const res = await fetch(`/editor/invoice/${client.id}/${invoiceId}`)
+          if (!res.ok) throw new Error(`Error fetching invoice: ${res.statusText}`)
+          const data = await res.json()
+          console.log('Fetched invoice data:', data)
+
+          // Normalize invoice items:
+          const invoiceItems = (data.invoiceItems || []).map(item => {
+            // Use the original id as refId.
+            item.refId = item.refId || item.id
+            // Compute the temporary unique key:
+            item.frontEndId = `${item.type}-${item.refId}`
+            return item
+          })
+          // Replace invoice data completely (so old invoice items are gone)
+          this.invoiceItems = {
+            ...data,
+            invoiceItems,
+          }
+
+          // Process allowed items (styles and samples) from the backend.
+          const styles = data.existingStyles || []
+          const samples = data.existingSamples || []
+          const combined = [
+            ...styles.map(style => ({
+              ...style,
+              type: 'style',
+              frontEndId: `style-${style.id}`, // Use original id from dropdown
+              quantity: 1,
+              time: 'N/A',
+            })),
+            ...samples.map(sample => ({
+              ...sample,
+              type: 'sample',
+              frontEndId: `sample-${sample.id}`, // Use original id
+              quantity: 1,
+            })),
+          ]
+          this.existingItems.combinedItems = combined
+          this.existingItems.filteredItems = [...combined]
+
+          this.showInvoiceItems = true
+          this.editing = false
+        } catch (error) {
+          console.error('Error fetching invoice:', error)
+        }
+      },
+
       async fetchListById() {
         try {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id) return
-
-          const response = await fetch(`/editor/list/${client.id}`)
-          if (!response.ok) {
-            throw new Error(`Error fetching invoices: ${response.statusText}`)
-          }
-          this.listItems = await response.json()
+          const res = await fetch(`/editor/list/${client.id}`)
+          if (!res.ok) throw new Error(`Error fetching invoices: ${res.statusText}`)
+          this.listItems = await res.json()
           console.log(this.listItems)
         } catch (error) {
           console.error('Error fetching invoice list items:', error)
         }
       },
 
-      // ---- Invoice Items: Load details for a specific invoice
-      async fetchItems(invoiceId) {
-        try {
-          const client = Alpine.store('clients').selectedClient
-          if (!client?.id || !invoiceId) return
-
-          const response = await fetch(`/editor/invoices/${client.id}/${invoiceId}`) // << match your route
-          if (!response.ok) {
-            throw new Error(`Error fetching invoice items: ${response.statusText}`)
-          }
-          this.invoiceItems = await response.json()
-          this.showInvoiceItems = true
-          this.editing = false
-        } catch (error) {
-          console.error(`Error fetching invoice items: ${error}`)
-        }
-      },
-
-      // ---- Opening the “Choose Edit Type” modal
       editInvoice() {
-        if (this.editMode === 'editOverwrite') {
-          // Save current invoice data for restoration if user cancels
+        if (this.editMode === 'editOverwrite' || this.editMode === 'editCopy') {
           this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
           this.editing = true
           this.openEditModal = false
-          // callSuccess('Editing invoice in Overwrite mode.', ...);
-        } else if (this.editMode === 'editCopy') {
-          this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
-          this.editing = true
-          this.openEditModal = false
-          // callSuccess('Editing invoice in Copy mode.', ...);
-        } else {
-          // callError('Please select an edit type first.');
         }
       },
 
-      // ---- Cancel the current edit & restore data
       cancelEdit() {
         return new Promise(resolve => {
-          if (this.editing === true) {
-            const confirmCancel = confirm('You will lose current edits. Continue?')
-            if (confirmCancel) {
-              // Restore old data
-              this.invoiceItems = JSON.parse(JSON.stringify(this.initialValuesInvItems))
-              this.editing = false
-              this.editMode = ''
-              // callWarning('Edit cancelled.');
-              resolve(true)
-            } else {
-              resolve(false)
-            }
+          if (this.editing && confirm('You will lose current edits. Continue?')) {
+            this.invoiceItems = JSON.parse(JSON.stringify(this.initialValuesInvItems))
+            this.editing = false
+            this.editMode = ''
+            resolve(true)
           } else {
             resolve(false)
           }
         })
       },
 
-      // ---- Save an Edit
       saveEdit() {
-        if (!this.editMode) {
-          // callError('No edit mode selected.');
-          return
-        }
-        const proceed = confirm('Saving edits cannot be undone. Proceed?')
-        if (!proceed) return
-
+        if (!this.editMode) return
+        if (!confirm('Saving edits cannot be undone. Proceed?')) return
         try {
-          // Gather data to send to backend
           const data = {
             clientId: this.invoiceItems.client?.id,
             clientName: this.invoiceItems.client?.name,
             invoiceNumber: this.invoiceItems.invoice.invoice_number,
-            // ...
             editType: this.editMode,
-            // ... any other fields you need
           }
-
-          // Example: handle differently based on mode
-          if (this.editMode === 'editOverwrite') {
-            // callSuccess(`Invoice ${data.invoiceNumber} overwritten successfully.`);
-          } else if (this.editMode === 'editCopy') {
-            // callSuccess(`Invoice ${data.invoiceNumber} copied successfully.`);
-          }
-
-          // Actually send `data` to your backend endpoint
-          // e.g. await fetch(...)
-
-          // Reset states
+          // (Send data to backend here.)
           this.editing = false
           this.editMode = ''
         } catch (error) {
           console.error('Error saving edit:', error)
-          // callError('Error saving edits.');
         }
       },
 
-      // ---- Price Editing (if needed, but not recalculating totals in frontend)
       savePrice(forWhich, whatValue) {
-        if (!this.invoiceItems?.invoice) return
-        if (forWhich in this.invoiceItems.invoice) {
+        if (this.invoiceItems?.invoice && forWhich in this.invoiceItems.invoice) {
           this.invoiceItems.invoice[forWhich] = whatValue
         }
         this.editingPrice = ''
-        // callSuccess('Price saved!');
       },
 
-      // ---- Add/Remove Items (no client-side total calculations)
       addNewItem(item) {
-        const newItem = {
-          ...item,
-          quantity: item.quantity,
+        // If it's an existing style/sample, item.id is a real ID (e.g. 1,2,3,...).
+        // If user typed a brand-new item, item.id is undefined => generate unique ID from timestamp.
+        if (typeof item.id === 'undefined') {
+          // e.g., "1685632351234" + random 3-digit => "1685632351234512"
+          const timestamp = Date.now() // Milliseconds since 1970
+          const random3 = Math.floor(Math.random() * 1000) // 0..999
+          item.id = Number(`${timestamp}${random3}`) // convert string -> number
         }
-        // push into the invoice’s item array
-        if (this.invoiceItems?.invoiceItems) {
+
+        const originId = item.id
+        const itemType = item.type || 'style'
+        const qty = Number(item.quantity) >= 1 ? Number(item.quantity) : 1
+
+        if (!this.invoiceItems.invoiceItems) {
+          this.invoiceItems.invoiceItems = []
+        }
+
+        // Check if an item with (type, origin_id) is already present
+        const existingIndex = this.invoiceItems.invoiceItems.findIndex(
+          i => i.type === itemType && i.origin_id === originId,
+        )
+
+        // frontEndId for internal UI tracking
+        const uniqueKey = `${itemType}-${originId}`
+        console.log('Dropdown uniqueKey:', uniqueKey)
+        console.log(
+          'Current invoice item keys:',
+          this.invoiceItems.invoiceItems.map(i => i.frontEndId),
+        )
+
+        if (existingIndex > -1) {
+          // Already in the invoice -> increment quantity
+          this.invoiceItems.invoiceItems[existingIndex].quantity += qty
+          console.log('Incremented quantity for item:', uniqueKey)
+        } else {
+          // Brand-new item
+          const newItem = {
+            name: item.name || 'Custom Item',
+            type: itemType,
+            origin_id: originId, // guaranteed non-null
+            price: itemType === 'sample' ? parseFloat(item.price) * parseFloat(item.time || 0) : parseFloat(item.price),
+            time: itemType === 'sample' ? parseFloat(item.time || 0) : 0,
+            quantity: qty,
+            frontEndId: uniqueKey,
+          }
+          console.log('Added new item:', newItem)
           this.invoiceItems.invoiceItems.push(newItem)
         }
 
-        // Reset the quantity on the “existing items” side
-        const index = this.existingItems.combinedItems.findIndex(i => i.frontEndId === item.frontEndId)
-        if (index !== -1) {
-          this.existingItems.combinedItems[index].quantity = 1
+        // If item was from existingItems, reset its quantity
+        const dropdownIndex = this.existingItems.combinedItems.findIndex(x => x.id === originId && x.type === itemType)
+        if (dropdownIndex > -1) {
+          this.existingItems.combinedItems[dropdownIndex].quantity = 1
         }
       },
 
-      removeInvoiceItem(id) {
-        if (!this.invoiceItems?.invoiceItems) return
-        this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(item => item.id !== id)
+      // Inc/Dec/Remove
+      incrementInvoiceItem(uniqueKey) {
+        const item = this.invoiceItems.invoiceItems.find(i => i.frontEndId === uniqueKey)
+        if (item) item.quantity = (item.quantity || 1) + 1
+      },
+      decrementInvoiceItem(uniqueKey) {
+        const item = this.invoiceItems.invoiceItems.find(i => i.frontEndId === uniqueKey)
+        if (item) {
+          if (item.quantity > 1) {
+            item.quantity -= 1
+          } else {
+            this.removeInvoiceItem(uniqueKey)
+          }
+        }
+      },
+      removeInvoiceItem(uniqueKey) {
+        if (confirm('Remove item from invoice?')) {
+          this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(i => i.frontEndId !== uniqueKey)
+        }
       },
 
-      // ---- Searching and Filtering
+      // Filter Items
       searchItems() {
         const query = this.existingItems.searchQuery.toLowerCase()
         this.existingItems.filteredItems = this.existingItems.combinedItems.filter(item =>
           item.name.toLowerCase().includes(query),
         )
-      },
-
-      // ---- Fetch styles/samples for items
-      async fetchStylesAndSamples(clientId) {
-        if (!clientId) return
-        try {
-          const [stylesResponse, samplesResponse] = await Promise.all([
-            fetch(`/item/styles/client/${clientId}`),
-            fetch(`/item/samples/client/${clientId}`),
-          ])
-
-          const styles = await stylesResponse.json()
-          const samples = await samplesResponse.json()
-
-          const preInsertStyles = styles.map(style => ({
-            ...style,
-            type: 'style',
-            frontEndId: `style-${style.id}`,
-            quantity: 1,
-            time: 'N/A',
-          }))
-
-          const preInsertSamples = samples.map(sample => ({
-            ...sample,
-            type: 'sample',
-            frontEndId: `sample-${sample.id}`,
-            quantity: 1,
-          }))
-
-          this.existingItems.combinedItems = [...preInsertStyles, ...preInsertSamples]
-          this.existingItems.filteredItems = [...this.existingItems.combinedItems]
-        } catch (error) {
-          console.error('Error fetching styles/samples:', error)
-          callError('Error retrieving items', 'Please restart the program, try again or call support.')
-        }
       },
     }),
   )

@@ -5,53 +5,61 @@ const db = getDb()
 
 router.use(express.json())
 
-/*
-1. When user goes inside editor load invoice numbers in a list with the option to filter by client. SHould probably lazy load the invoice items to avoid performance issues? 
-2. When the user clicks a specific invoice from the list. Only then visualise the data for that invocie. 
-3. Allow the user to press edit to edit the invoice items 
-4. Provide the user to save the edit or cancel it
+// Big boy route to get all
+router.get('/invoice/:clientId/:invoiceId', (req, res) => {
+  const { clientId, invoiceId } = req.params
+  const invoiceEditObj = {}
 
-IMPORTANT NOTE: When you delete a client does it delete the styles, items, invoices and invoice items for that client? 
-For this I need routes:
-    1. Get all ivnoices. 
-    2. Get invoices by client id 
-    3. Get invoice_items by invoice_id 
-    4. Delete routes for:
-        invoice with id
-        invoice item with invoice_id
-    5. Update routes for the above 
+  // Get client details
+  const clientsQuery = 'SELECT * FROM clients WHERE id = ?'
+  db.get(clientsQuery, [clientId], (err, client) => {
+    if (err) {
+      return res.status(500).json({ error: `Error fetching client: ${err.message}` })
+    }
+    if (!client) {
+      return res.status(404).json({ error: 'Client not found' })
+    }
+    invoiceEditObj.client = client
 
-*/
+    // Get invoice details for the client
+    const invoiceQuery = 'SELECT * FROM invoices WHERE id = ? AND client_id = ?'
+    db.get(invoiceQuery, [invoiceId, clientId], (err, invoice) => {
+      if (err) {
+        return res.status(500).json({ error: `Error fetching invoice: ${err.message}` })
+      }
+      if (!invoice) {
+        return res.status(404).json({ error: 'Invoice not found' })
+      }
+      invoiceEditObj.invoice = invoice
 
-// // 2. Invoice list by client id
-// router.get('/list/:clientId', (req, res) => {
-//   const clientId = req.params.clientId
-//   const dbQueryInvoices = 'SELECT id, invoice_number, client_id, date FROM invoices WHERE client_id = ?'
-//   const dbQueryClient = 'SELECT name, address FROM clients WHERE id = ?'
+      // Get invoice items
+      const itemsQuery = 'SELECT * FROM invoice_items WHERE invoice_id = ?'
+      db.all(itemsQuery, [invoiceId], (err, items) => {
+        if (err) {
+          return res.status(500).json({ error: `Error fetching invoice items: ${err.message}` })
+        }
+        invoiceEditObj.invoiceItems = items
 
-//   db.get(dbQueryClient, [clientId], (err, clientDetails) => {
-//     if (err) {
-//       res.status(500).json({
-//         error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}`,
-//       })
-//       return
-//     }
+        // Fetch styles and samples for this client in parallel.
+        db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (err, styles) => {
+          if (err) {
+            return res.status(500).json({ error: `Error fetching styles: ${err.message}` })
+          }
+          invoiceEditObj.existingStyles = styles
+          db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (err, samples) => {
+            if (err) {
+              return res.status(500).json({ error: `Error fetching samples: ${err.message}` })
+            }
+            invoiceEditObj.existingSamples = samples
+            // Send the unified object
+            res.json(invoiceEditObj)
+          })
+        })
+      })
+    })
+  })
+})
 
-//     db.all(dbQueryInvoices, [clientId], (err, invoiceDetails) => {
-//       if (err) {
-//         res.status(500).json({
-//           error: `Couldn't fetch invoices for client ${clientId}. Status: ${err.message}`,
-//         })
-//         return
-//       }
-//       const listData = invoiceDetails.map(invoice => ({
-//         ...invoice,
-//         client_name: clientDetails.name,
-//       }))
-//       res.json(listData)
-//     })
-//   })
-// })
 router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
   const dbQueryInvoices = 'SELECT * FROM invoices WHERE client_id = ?'
@@ -134,34 +142,5 @@ router.get('/invoices/:clientId/:invoiceId', (req, res) => {
     })
   })
 })
-
-// Fetch styles for a specific client
-router.get('/api/styles/client/:clientId', (req, res) => {
-  const clientId = req.params.clientId
-  db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (error, results) => {
-    if (error) {
-      return res.status(500).send({ error: 'Error fetching styles' })
-    }
-    res.json(results)
-  })
-})
-
-// Fetch samples for a specific client
-router.get('/api/items/client/:clientId', (req, res) => {
-  const clientId = req.params.clientId
-  db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (error, results) => {
-    if (error) {
-      return res.status(500).send({ error: 'Error fetching samples' })
-    }
-    res.json(results)
-  })
-})
-
-// 2. Get invoices by client id
-// 3. Get invoice_items by invoice_id
-// Delete invocie with ID
-// Delete invoice items with invoice_id
-// Update invocie with ID
-// Update invoice items with invoice_id
 
 module.exports = router

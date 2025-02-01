@@ -179,8 +179,8 @@ input::-webkit-inner-spin-button {
 }
 .dark .table-edit-input-style {
   @apply dark:bg-vdp2 dark:text-vds3light;
-  @apply dark:hover:border-vds dark:hover:bg-vdp3 dark:hover:text-vds;
-  @apply dark:focus:border-vds dark:focus:bg-vdp3 dark:focus:text-vds;
+  @apply dark:hover:border-vds/40 dark:hover:bg-vdp3 dark:hover:text-vds;
+  @apply dark:focus:border-vds/80 dark:focus:bg-vdp3 dark:focus:text-vds;
 }
 
 .table-interaction-icon-blue {
