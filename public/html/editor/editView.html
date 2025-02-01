@@ -1,4 +1,3 @@
-<!-- editView.html -->
 <div x-data="editView" class="border border-vls/40 h-full ml-2 rounded p-2">
   <!-- When no invoice is selected or none is being edited -->
   <template x-if="!$store.edit.showInvoiceItems">
@@ -11,10 +10,10 @@
 
   <!-- When an invoice is selected but not in edit mode -->
   <template x-if="$store.edit.showInvoiceItems && !$store.edit.editing">
-    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls dark:text-vds">
+    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls2 dark:text-vds">
       <!-- Header / Basic Info -->
       <div
-        class="mb-2 flex w-full justify-between rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls dark:text-vds font-medium dark:bg-vdp">
+        class="mb-2 flex w-full justify-between rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls2 dark:text-vds font-medium dark:bg-vdp">
         <div>
           <span class="mr-1">Invoice:</span>
           <span x-text="$store.edit.invoiceItems.invoice?.invoice_number"></span>
@@ -53,7 +52,7 @@
               <th class="p-2 text-start px-2 round-left-border">Name</th>
               <th class="p-2">Type</th>
               <th class="p-2 text-right">Qty</th>
-              <th class="p-2 round-right-border">Price</th>
+              <th class="p-2 round-right-border text-right">Price</th>
             </tr>
           </thead>
           <tbody class="table-body-style table-scrollbar">
@@ -69,7 +68,8 @@
         </table>
       </div>
       <!-- Prices -->
-      <div class="mb-2 flex flex-col w-full justify-between rounded border bg-vlp shadow dark:bg-vdp2 border-vls/40 p-2">
+      <div
+        class="mb-2 flex flex-col w-full justify-between rounded border bg-vlp shadow dark:bg-vdp2 border-vls/40 p-2">
         <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
         <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
 
@@ -106,7 +106,10 @@
       </div>
 
       <div class="flex gap-4 justify-end">
-        <button x-show="$store.edit.edited" @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec flex items-center">
+        <button
+          x-show="$store.edit.edited"
+          @click="$store.pdfStore.generateInvoice()"
+          class="modal-btn-sec flex items-center">
           <svg class="size-4 mr-1">
             <use href="/icons/icons.svg#download-document" />
           </svg>
@@ -124,9 +127,10 @@
 
   <!-- Edit Mode (overwrite or copy) -->
   <template x-if="$store.edit.editing">
-    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls dark:text-vds">
-      <!-- Your “edit state” structure from the old code, referencing $store.edit.* -->
-      <div class="flex w-full justify-between rounded bg-vlp p-2 text-center font-medium dark:bg-zinc-900">
+    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls2 dark:text-vds">
+      <!-- Header / Basic Info in Edit Mode -->
+      <div
+        class="mb-2 flex w-full justify-between rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls2 dark:text-vds font-medium dark:bg-vdp">
         <div>
           <span class="mr-1">Invoice:</span>
           <span x-text="$store.edit.invoiceItems.invoice?.invoice_number"></span>
@@ -138,24 +142,16 @@
             <span x-show="$store.edit.editMode === 'editCopy'">Copy</span>
           </span>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center gap-2">
           <!-- Cancel edit -->
-          <button
-            @click="$store.edit.cancelEdit()"
-            class="mr-2 text-vls transition hover:text-vla dark:hover:text-vred-300">
-            Cancel
-          </button>
+          <button @click="$store.edit.cancelEdit()" class="modal-btn-sec flex items-center">Cancel</button>
           <!-- Save edit -->
-          <button
-            @click="$store.edit.saveEdit()"
-            class="text-vls transition hover:text-sky-500 dark:hover:text-sky-400">
-            Save
-          </button>
+          <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center">Save</button>
         </div>
       </div>
 
       <!-- Editable Invoice Items -->
-      <div class="mb-2 flex w-full justify-between rounded border border-vls/40 bg-slate-600 p-2 dark:bg-neutral-700">
+      <div class="mb-2 flex w-full justify-between rounded border border-vls/40 bg-vlp shadow dark:bg-vdp2 p-2">
         <!-- Client info -->
         <div>
           <p>
@@ -175,8 +171,8 @@
             <span x-text="$store.edit.invoiceItems.client?.email"></span>
           </p>
         </div>
-        <!-- Example: adding a new item -->
-        <div class="flex flex-col justify-between">
+        <!-- Add Item Button -->
+        <div class="flex flex-col justify-center">
           <button
             @click="
               $store.edit.existingItems.showItemModal = true;
@@ -189,29 +185,29 @@
       </div>
       <!-- Items Table -->
       <div
-        class="alt-table-scrollbar mb-2 w-full overflow-y-auto rounded border border-vlp bg-slate-600 dark:bg-neutral-700">
-        <table class="w-full text-vls dark:text-vds">
-          <thead class="sticky top-0 bg-vlp text-left font-medium dark:bg-zinc-900">
+        class="alt-table-scrollbar mb-2 w-full overflow-y-auto border rounded border-vls/40 bg-vlp shadow p-1 dark:bg-vdp2">
+        <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px">
+          <thead class="sticky top-0 table-head-style border-clipper">
             <tr>
-              <th class="p-2">Name</th>
+              <th class="p-2 round-left-border">Name</th>
               <th class="p-2">Type</th>
               <th class="p-2">Qty</th>
               <th class="p-2">Price</th>
-              <th class="p-2">Actions</th>
+              <th class="p-2 round-right-border">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="table-body-style table-scrollbar">
             <template x-for="(item, idx) in $store.edit.invoiceItems.invoiceItems" :key="item.id">
-              <tr>
+              <tr class="border-hover-ring-efect">
                 <td class="p-1" x-text="item.name"></td>
                 <td class="p-1" x-text="item.type"></td>
-                <td class="p-1" x-text="item.quantity"></td>
-                <td class="p-1" x-text="'£' + item.price"></td>
+                <td class="p-1 text-right" x-text="item.quantity"></td>
+                <td class="p-1 text-right" x-text="'£' + item.price"></td>
                 <td class="p-1 text-center">
-                  <button
-                    @click="$store.edit.removeInvoiceItem(item.id)"
-                    class="text-vls transition duration-300 hover:text-vla dark:hover:text-vred-300">
-                    Remove
+                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-red">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#trash" />
+                    </svg>
                   </button>
                 </td>
               </tr>
@@ -220,7 +216,8 @@
         </table>
       </div>
       <!-- Editable Prices -->
-      <div class="flex flex-col rounded border border-vlp bg-slate-600 p-2 dark:bg-neutral-700">
+      <div
+        class="mb-2 flex flex-col w-full justify-between rounded border border-vls/40 bg-vlp shadow dark:bg-vdp2 p-2">
         <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
         <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
 
@@ -228,14 +225,12 @@
         <template
           x-if="$store.edit.invoiceItems.invoice?.discount_type && $store.edit.invoiceItems.invoice?.discount_type !== 0">
           <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 1">
-            <!-- Flat discount input? Or just display? -->
             <p>
               Discount (Flat):
               <span x-text="'£' + $store.edit.invoiceItems.invoice?.discount_value"></span>
             </p>
           </template>
           <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 2">
-            <!-- Percent discount input? -->
             <p>
               Discount (Percent):
               <span x-text="$store.edit.invoiceItems.invoice?.discVal_ifPercent + '%'"></span>
@@ -271,12 +266,11 @@
     x-transition.opacity.duration.300
     class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <div
-      class="relative top-1/3 z-30 mx-auto w-1/4 rounded border border-slate-300 bg-vlp text-vls shadow-lg transition duration-300 dark:bg-zinc-900 dark:text-vds"
-      @keydown.escape.window="$store.edit.openEditModal = false"
-      @click.outside="$store.edit.openEditModal = false">
-      <div class="p-4 text-center">
-        <h2 class="text-xl font-medium text-vls dark:text-vds">Choose Edit Type</h2>
-        <p class="mb-4 text-sm font-normal text-vls dark:text-vds">How would you like to edit this invoice?</p>
+      class="relative top-1/3 z-30 mx-auto w-1/4 rounded border border-vls/40 bg-vlp text-vls2 shadow-lg transition duration-300 dark:bg-zinc-900 dark:text-vds"
+      @keydown.escape.window="$store.edit.openEditModal = false">
+      <div class="p-6 text-center">
+        <h2 class="text-xl font-medium mb-2 text-vls2 dark:text-vds">Choose Edit Type</h2>
+        <p class="mb-4 text-sm font-normal text-vls2 dark:text-vds">How would you like to edit this invoice?</p>
         <!-- Overwrite -->
         <label class="modal-input-style mb-2 flex items-center justify-between p-2 font-medium">
           <div class="flex items-center">
@@ -284,7 +278,7 @@
               type="radio"
               value="editOverwrite"
               x-model="$store.edit.editMode"
-              class="mr-2 text-lg text-vlp focus:ring-vla dark:text-vds" />
+              class="mr-4 ml-2 text-lg text-vlp dark:text-vds" />
             <span>Overwrite</span>
           </div>
         </label>
@@ -295,21 +289,23 @@
               type="radio"
               value="editCopy"
               x-model="$store.edit.editMode"
-              class="mr-2 text-lg text-vlp focus:ring-vla dark:text-vds" />
+              class="mr-4 ml-2 text-lg text-vlp dark:text-vds" />
             <span>Copy Invoice</span>
           </div>
         </label>
-        <!-- Confirm/Close -->
-        <button
-          @click="$store.edit.editInvoice()"
-          class="submit-button mb-2 w-full rounded bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
-          Edit
-        </button>
-        <button
-          @click="$store.edit.openEditModal = false; $store.edit.editMode = ''"
-          class="submit-button w-full rounded bg-red-800 p-1 text-base font-medium text-slate-100 shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
-          Close
-        </button>
+        <div class="flex justify-between">
+          <!-- Confirm/Close -->
+          <button
+            @click="$store.edit.editInvoice()"
+            class="submit-button rounded bg-sky-700 p-1 text-sm text-slate-100 shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600">
+            Edit
+          </button>
+          <button
+            @click="$store.edit.openEditModal = false; $store.edit.editMode = ''"
+            class="submit-button rounded bg-red-800 p-1 text-sm text-slate-100 shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -320,12 +316,14 @@
     x-transition.opacity.duration.300ms
     class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-800 bg-opacity-50">
     <div
-      class="relative top-1/4 mx-auto w-1/3 rounded border border-slate-300 bg-vlp text-vls shadow-lg dark:border-neutral-300 dark:bg-zinc-900 dark:text-vds">
+      class="relative top-1/4 mx-auto w-1/3 rounded border border-vls/40 bg-vlp text-vls2 shadow-lg dark:border-vls/40 dark:bg-zinc-900 dark:text-vds">
       <div
-        class="p-4"
+        class="p-6"
         @click.outside="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
         @keydown.escape.window="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false">
-        <h3 class="text-xl font-medium" x-text="`${$store.clients.selectedClient?.name || ''}’s Items`"></h3>
+        <h3
+          class="text-xl font-medium text-center mb-4"
+          x-text="`${$store.clients.selectedClient?.name || ''}’s Items`"></h3>
         <p class="mb-2 text-center text-sm font-normal">Add from existing styles and samples</p>
 
         <!-- Dropdown of existing items -->
@@ -333,14 +331,14 @@
           <button
             x-ref="existingItemsDropdown"
             @click="$store.edit.existingItems.openDropdown = !$store.edit.existingItems.openDropdown"
-            class="w-full rounded border border-slate-300 p-2 text-vls transition hover:border-vla hover:text-vla focus:outline-none dark:border-neutral-300 dark:text-vds dark:hover:border-vred-300 dark:hover:text-vred-300">
+            class="w-full rounded border border-vls/40 hover:border-vls2 p-2 text-vls2/40 hover:text-vls2 transition focus:outline-none dark:border-vlp/40 dark:hover:border-vds dark:text-vlp/40 dark:hover:text-vds">
             Existing Items
           </button>
           <div
             x-show="$store.edit.existingItems.openDropdown"
             x-collapse.duration.500ms
             class="table-scrollbar absolute z-40 mt-2 max-h-80 w-full overflow-auto rounded border border-slate-300 bg-vlp shadow-lg dark:border-neutral-300 dark:bg-neutral-600">
-            <table class="w-full text-vls dark:text-vds">
+            <table class="w-full text-vls2 dark:text-vds">
               <thead class="sticky top-0 bg-vlp dark:bg-zinc-900">
                 <tr>
                   <th colspan="4" class="p-2">
@@ -361,8 +359,7 @@
               </thead>
               <tbody>
                 <template x-for="item in $store.edit.existingItems.filteredItems" :key="item.frontEndId">
-                  <tr
-                    class="cursor-pointer bg-slate-600 hover:bg-slate-500 dark:bg-neutral-700 dark:hover:bg-neutral-500">
+                  <tr class="cursor-pointer bg-vlp hover:bg-vlp2 dark:bg-vdp2 dark:hover:bg-vdp3">
                     <td class="p-1 text-left text-sm" x-text="item.name"></td>
                     <td class="p-1 text-right text-sm" x-text="item.price"></td>
                     <td class="p-1 text-right text-sm" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
@@ -372,10 +369,10 @@
                           type="number"
                           min="1"
                           x-model.number="item.quantity"
-                          class="w-14 rounded border border-slate-300 bg-slate-600 p-1 text-vls focus:bg-slate-400 dark:border-neutral-400 dark:bg-neutral-600 dark:text-vds" />
+                          class="w-14 rounded border border-slate-300 bg-vlp p-1 text-vls2 focus:bg-vlp2 dark:border-neutral-400 dark:bg-vdp2 dark:text-vds" />
                         <button
                           @click="$store.edit.addNewItem(item)"
-                          class="ml-2 text-vls transition hover:text-blue-400 dark:text-vds dark:hover:text-blue-400">
+                          class="ml-2 text-vls2 transition hover:text-blue-400 dark:text-vds dark:hover:text-blue-400">
                           <svg class="size-4">
                             <use href="/icons/icons.svg#plus-circle" />
                           </svg>
@@ -390,15 +387,15 @@
         </div>
 
         <!-- Add a new item (Style or Sample) -->
-        <p class="mb-2 text-center text-sm font-normal">Add a brand new item</p>
-        <div class="flex justify-evenly mb-4">
+        <p class="mb-2 text-center text-sm font-normal">Add a new style or sample</p>
+        <div class="flex justify-between mb-4">
           <!-- Style -->
-          <label class="modal-input-style flex !w-28 items-center p-4 cursor-pointer">
+          <label class="modal-input-style mb-2 flex items-center justify-center p-4 cursor-pointer">
             <input type="radio" x-model="$store.edit.newItem.type" value="style" class="mr-2" />
             <span>Style</span>
           </label>
           <!-- Sample -->
-          <label class="modal-input-style flex !w-28 items-center p-4 cursor-pointer">
+          <label class="modal-input-style mb-2 flex items-center justify-center p-4 cursor-pointer">
             <input type="radio" x-model="$store.edit.newItem.type" value="sample" class="mr-2" />
             <span>Sample</span>
           </label>
@@ -410,28 +407,31 @@
             x-model="$store.edit.newItem.name"
             type="text"
             placeholder="Style Name"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
           <input
             x-model.number="$store.edit.newItem.price"
             type="number"
             placeholder="Price"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
           <input
             x-model.number="$store.edit.newItem.quantity"
             type="number"
             min="1"
             placeholder="Quantity"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
-          <button
-            @click="$store.edit.addNewItem($store.edit.newItem)"
-            class="mr-4 rounded bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-sky-800">
-            Add
-          </button>
-          <button
-            @click="$store.edit.newItem.type=''"
-            class="rounded bg-red-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-red-800">
-            Back
-          </button>
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
+          <div class="flex justify-end">
+            <button
+              @click="$store.edit.addNewItem($store.edit.newItem)"
+              class="rounded bg-sky-700 mr-4 p-1 text-sm text-vlp transition hover:bg-sky-800">
+              Add
+            </button>
+            <!-- Close the modal -->
+            <button
+              @click="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
+              class="rounded bg-red-700 p-1 text-sm text-vlp transition hover:bg-red-800">
+              Close
+            </button>
+          </div>
         </div>
 
         <!-- If 'sample' -->
@@ -440,41 +440,37 @@
             x-model="$store.edit.newItem.name"
             type="text"
             placeholder="Sample Name"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
           <input
             x-model.number="$store.edit.newItem.price"
             type="number"
             placeholder="Price"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
           <input
             x-model.number="$store.edit.newItem.time"
             type="number"
             placeholder="Time (minutes)"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
           <input
             x-model.number="$store.edit.newItem.quantity"
             type="number"
             min="1"
             placeholder="Quantity"
-            class="modal-input-style mb-2 w-full !p-1 text-sm" />
-          <button
-            @click="$store.edit.addNewItem($store.edit.newItem)"
-            class="mr-4 rounded bg-sky-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-sky-800">
-            Add
-          </button>
-          <button
-            @click="$store.edit.newItem.type=''"
-            class="rounded bg-red-700 p-1 text-base font-medium text-slate-100 shadow-sm transition hover:bg-red-800">
-            Back
-          </button>
+            class="modal-input-style mb-2 w-full p-2 text-sm" />
+          <div class="flex justify-end">
+            <button
+              @click="$store.edit.addNewItem($store.edit.newItem)"
+              class="rounded bg-sky-700 mr-4 p-1 text-sm text-vlp transition hover:bg-sky-800">
+              Add
+            </button>
+            <!-- Close the modal -->
+            <button
+              @click="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
+              class="rounded bg-red-700 p-1 text-sm text-vlp transition hover:bg-red-800">
+              Close
+            </button>
+          </div>
         </div>
-
-        <!-- Close the modal -->
-        <button
-          @click="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
-          class="w-full rounded bg-vls2 p-1 text-base font-medium text-white shadow-sm transition hover:bg-vls3">
-          Close
-        </button>
       </div>
     </div>
   </div>

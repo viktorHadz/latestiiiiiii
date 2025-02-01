@@ -69,6 +69,8 @@ document.addEventListener('alpine:init', () => {
           callToast('Error generating PDF', 'Refresh the page and try again or call support.')
         }
       },
+
+      async generateEdited() {},
     }),
   )
 })

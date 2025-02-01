@@ -146,7 +146,7 @@ input::-webkit-inner-spin-button {
   @apply mb-12 overflow-y-auto;
 }
 .table-head-style {
-  @apply sticky top-0 z-10 text-base rounded bg-vls shadow-md text-vlp border;
+  @apply sticky top-0 z-10 text-base rounded bg-vls2 shadow-md text-vlp border;
   @apply dark:bg-vdp dark:text-vds;
 }
 .table-head-works {
@@ -270,7 +270,7 @@ input::-webkit-inner-spin-button {
   @apply absolute inset-0 z-10 w-1/2 h-full duration-500 ease-out; /* Align within parent */
 }
 .toggler-handle-inner {
-  @apply z-10 !h-full !w-full rounded-md bg-vls shadow-sm dark:bg-zinc-900;
+  @apply z-10 !h-full !w-full rounded-md bg-vls2 shadow-sm dark:bg-zinc-900;
 }
 .toggler-active,
 .toggler-inactive {

@@ -29,8 +29,8 @@
                         x-model="search"
                         @x-on:click="console.log(search)" />
                     </div>
-                    <button @click="slideOverOpen=false" class="butt-style p-2">
-                      <svg width="16" height="16" class="mr-1.5">
+                    <button @click="slideOverOpen=false" class="modal-btn-prim">
+                      <svg width="16" height="16" class="">
                         <use href="/icons/icons.svg#xmark" />
                       </svg>
                       <span>Close</span>
@@ -256,14 +256,14 @@
                 </div>
                 <!-- Add Style Button -->
                 <div class="flex justify-between mr-4">
-                  <button @click="modalStyle = !modalStyle" class="butt-style p-2">New Style</button>
+                  <button @click="modalStyle = !modalStyle" class="modal-btn-prim">New Style</button>
                   <!-- Add Sample Button -->
-                  <button @click="modalSample = !modalSample" class="butt-style p-2">New Sample</button>
+                  <button @click="modalSample = !modalSample" class="modal-btn-prim">New Sample</button>
                 </div>
                 <div>
                   <template x-teleport="body">
                     <div class="outter-modal-overlay-blur-fixed z-[100]" x-show="modalSample">
-                      <div class="inner-modal-size-positioning-relative modal-bg-and-borders p-6 space-y-4">
+                      <div class="inner-modal-size-positioning-relative modal-bg-and-borders p-8 space-y-4">
                         <h2 class="modal-title">Add Sample</h2>
                         <form @submit.prevent="addSample()" class="space-y-4">
                           <input
@@ -293,8 +293,8 @@
                             required />
                         </form>
                         <div class="w-full flex items-center justify-end space-x-6">
-                          <button @click.prevent="addSample()" class="modal-btn-prim">Add</button>
-                          <button @click="modalSample = false" class="modal-btn-sec">Close</button>
+                          <button @click.prevent="addSample()" class="modal-btn-prim !py-2">Add Sample</button>
+                          <button @click="modalSample = false" class="modal-btn-sec !p-2">Close</button>
                         </div>
                       </div>
                     </div>
@@ -324,8 +324,8 @@
                             required />
                         </form>
                         <div class="w-full flex items-center justify-end space-x-6">
-                          <button @click.prevent="addStyle()" class="modal-btn-prim">Add</button>
-                          <button @click="modalStyle = false" class="modal-btn-sec">Close</button>
+                          <button @click.prevent="addStyle()" class="modal-btn-prim !p-2">Add Style</button>
+                          <button @click="modalStyle = false" class="modal-btn-sec !p-2">Close</button>
                         </div>
                       </div>
                     </div>
