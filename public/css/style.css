@@ -406,8 +406,8 @@ input[type='radio'] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 0.6rem; /* Size of the radio button */
-  height: 0.6rem;
+  width: 0.4rem; /* Size of the radio button */
+  height: 0.4rem;
 
   background-color: #d4d4d400;
   border-radius: 50%;
@@ -426,9 +426,13 @@ input[type='radio']:focus {
   outline-color: #777777;
 }
 input[type='radio']:checked {
-  outline: solid 2px #fea09a;
+  outline: solid 2px #ff8980;
   outline-offset: 2px;
-  background-color: #fea09a; /* Background color when checked */
+  background-color: #ff8980; /* Background color when checked */
+}
+input[type='radio']:hover {
+  background-color: #fea09a;
+  outline-color: #fea09a;
 }
 
 /* MARK: ANIMATIONS */

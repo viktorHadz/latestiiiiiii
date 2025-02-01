@@ -198,8 +198,8 @@ document.addEventListener('alpine:init', () => {
         if (!clientId) return
         try {
           const [stylesResponse, samplesResponse] = await Promise.all([
-            fetch(`/styles/client/${clientId}`),
-            fetch(`/api/samples/client/${clientId}`),
+            fetch(`/item/styles/client/${clientId}`),
+            fetch(`/item/samples/client/${clientId}`),
           ])
 
           const styles = await stylesResponse.json()
@@ -210,7 +210,9 @@ document.addEventListener('alpine:init', () => {
             type: 'style',
             frontEndId: `style-${style.id}`,
             quantity: 1,
+            time: 'N/A',
           }))
+
           const preInsertSamples = samples.map(sample => ({
             ...sample,
             type: 'sample',
@@ -222,7 +224,7 @@ document.addEventListener('alpine:init', () => {
           this.existingItems.filteredItems = [...this.existingItems.combinedItems]
         } catch (error) {
           console.error('Error fetching styles/samples:', error)
-          // callError('Error getting styles/samples.');
+          callError('Error retrieving items', 'Please restart the program, try again or call support.')
         }
       },
     }),

@@ -747,6 +747,11 @@ video {
   margin-right: 0.5rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -807,6 +812,10 @@ video {
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
 }
 
 .mb-8 {
@@ -931,6 +940,11 @@ video {
   height: 1.25rem;
 }
 
+.size-6 {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .size-7 {
   width: 1.75rem;
   height: 1.75rem;
@@ -1036,10 +1050,6 @@ video {
   width: 3rem;
 }
 
-.w-14 {
-  width: 3.5rem;
-}
-
 .w-16 {
   width: 4rem;
 }
@@ -1090,6 +1100,10 @@ video {
 
 .w-\[30\%\] {
   width: 30%;
+}
+
+.w-\[40\%\] {
+  width: 40%;
 }
 
 .w-\[5\%\] {
@@ -1145,8 +1159,16 @@ video {
   min-width: 0px;
 }
 
+.max-w-2xl {
+  max-width: 42rem;
+}
+
 .max-w-72 {
   max-width: 18rem;
+}
+
+.max-w-\[40\%\] {
+  max-width: 40%;
 }
 
 .max-w-\[5\%\] {
@@ -1370,10 +1392,22 @@ video {
   margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
+.space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1rem * var(--tw-space-x-reverse));
+  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .space-x-6 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(1.5rem * var(--tw-space-x-reverse));
   margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-x-8 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(2rem * var(--tw-space-x-reverse));
+  margin-left: calc(2rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .space-y-4 > :not([hidden]) ~ :not([hidden]) {
@@ -1480,6 +1514,10 @@ video {
   border-width: 0px;
 }
 
+.border-b {
+  border-bottom-width: 1px;
+}
+
 .border-b-0 {
   border-bottom-width: 0px;
 }
@@ -1506,6 +1544,10 @@ video {
 
 .border-s-8 {
   border-inline-start-width: 8px;
+}
+
+.border-t {
+  border-top-width: 1px;
 }
 
 .border-t-8 {
@@ -1800,6 +1842,11 @@ video {
   padding-right: 1rem;
 }
 
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
 .py-0 {
   padding-top: 0px;
   padding-bottom: 0px;
@@ -2019,6 +2066,10 @@ video {
   color: rgb(212 212 212 / var(--tw-text-opacity, 1));
 }
 
+.text-vds\/60 {
+  color: rgb(212 212 212 / 0.6);
+}
+
 .text-vds2 {
   --tw-text-opacity: 1;
   color: rgb(82 82 82 / var(--tw-text-opacity, 1));
@@ -2042,10 +2093,6 @@ video {
 .text-vls2 {
   --tw-text-opacity: 1;
   color: rgb(43 52 64 / var(--tw-text-opacity, 1));
-}
-
-.text-vls2\/40 {
-  color: rgb(43 52 64 / 0.4);
 }
 
 .text-vls2\/60 {
@@ -3660,9 +3707,9 @@ input[type='radio'] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 0.6rem;
+  width: 0.4rem;
   /* Size of the radio button */
-  height: 0.6rem;
+  height: 0.4rem;
   background-color: #d4d4d400;
   border-radius: 50%;
   outline: solid 2px #d4d4d4;
@@ -3680,10 +3727,15 @@ input[type='radio']:focus {
 }
 
 input[type='radio']:checked {
-  outline: solid 2px #fea09a;
+  outline: solid 2px #ff8980;
   outline-offset: 2px;
-  background-color: #fea09a;
+  background-color: #ff8980;
   /* Background color when checked */
+}
+
+input[type='radio']:hover {
+  background-color: #fea09a;
+  outline-color: #fea09a;
 }
 
 /* MARK: ANIMATIONS */
@@ -3960,18 +4012,26 @@ input[type='radio']:checked {
   color: rgb(139 145 151 / var(--tw-text-opacity, 1));
 }
 
+.placeholder\:text-vls\/60::-moz-placeholder {
+  color: rgb(139 145 151 / 0.6);
+}
+
+.placeholder\:text-vls\/60::placeholder {
+  color: rgb(139 145 151 / 0.6);
+}
+
 .hover\:border-vla:hover {
   --tw-border-opacity: 1;
   border-color: rgb(83 207 110 / var(--tw-border-opacity, 1));
 }
 
-.hover\:border-vls\/80:hover {
-  border-color: rgb(139 145 151 / 0.8);
+.hover\:border-vls:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(139 145 151 / var(--tw-border-opacity, 1));
 }
 
-.hover\:border-vls2:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(43 52 64 / var(--tw-border-opacity, 1));
+.hover\:border-vls\/80:hover {
+  border-color: rgb(139 145 151 / 0.8);
 }
 
 .hover\:border-vred-300:hover {
@@ -4002,6 +4062,11 @@ input[type='radio']:checked {
 .hover\:bg-red-900:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(127 29 29 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:bg-sky-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(2 132 199 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:bg-sky-800:hover {
@@ -4102,9 +4167,24 @@ input[type='radio']:checked {
   color: rgb(83 207 110 / var(--tw-text-opacity, 1));
 }
 
+.hover\:placeholder\:text-vls:hover::-moz-placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(139 145 151 / var(--tw-text-opacity, 1));
+}
+
+.hover\:placeholder\:text-vls:hover::placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(139 145 151 / var(--tw-text-opacity, 1));
+}
+
 .focus\:border-vla:focus {
   --tw-border-opacity: 1;
   border-color: rgb(83 207 110 / var(--tw-border-opacity, 1));
+}
+
+.focus\:border-vls:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(139 145 151 / var(--tw-border-opacity, 1));
 }
 
 .focus\:border-vls\/80:focus {
@@ -4234,6 +4314,15 @@ input[type='radio']:checked {
   border-color: rgb(63 63 70 / var(--tw-border-opacity, 1));
 }
 
+.dark\:border-vds:is(.dark *) {
+  --tw-border-opacity: 1;
+  border-color: rgb(212 212 212 / var(--tw-border-opacity, 1));
+}
+
+.dark\:border-vds\/40:is(.dark *) {
+  border-color: rgb(212 212 212 / 0.4);
+}
+
 .dark\:border-vds2:is(.dark *) {
   --tw-border-opacity: 1;
   border-color: rgb(82 82 82 / var(--tw-border-opacity, 1));
@@ -4350,6 +4439,10 @@ input[type='radio']:checked {
   color: rgb(212 212 212 / var(--tw-text-opacity, 1));
 }
 
+.dark\:text-vds\/60:is(.dark *) {
+  color: rgb(212 212 212 / 0.6);
+}
+
 .dark\:text-vds\/70:is(.dark *) {
   color: rgb(212 212 212 / 0.7);
 }
@@ -4418,6 +4511,14 @@ input[type='radio']:checked {
 .dark\:placeholder\:text-neutral-300:is(.dark *)::placeholder {
   --tw-text-opacity: 1;
   color: rgb(212 212 212 / var(--tw-text-opacity, 1));
+}
+
+.dark\:placeholder\:text-vds\/60:is(.dark *)::-moz-placeholder {
+  color: rgb(212 212 212 / 0.6);
+}
+
+.dark\:placeholder\:text-vds\/60:is(.dark *)::placeholder {
+  color: rgb(212 212 212 / 0.6);
 }
 
 .dark\:hover\:\!border-vds:hover:is(.dark *) {
@@ -4520,6 +4621,11 @@ input[type='radio']:checked {
 .dark\:focus\:border-vred-300:focus:is(.dark *) {
   --tw-border-opacity: 1;
   border-color: rgb(254 160 154 / var(--tw-border-opacity, 1));
+}
+
+.dark\:focus\:bg-vdp3:focus:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(63 63 70 / var(--tw-bg-opacity, 1));
 }
 
 .dark\:focus\:bg-vlp:focus:is(.dark *) {
