@@ -27,17 +27,49 @@
       <div class="flex-1 overflow-y-auto table-scrollbar p-2">
         <template x-for="item in $store.edit.listItems" :key="item.id">
           <div
-            @click="
-              $store.edit.fetchInvoice(item.id);
-              // if you want to highlight, you could do: $store.edit.applyEffect(item);
-            "
+            @click="$store.edit.fetchInvoice(item.id)"
             :id="'rowid-' + item.id"
-            class="mb-2 flex cursor-pointer justify-between rounded border border-vls/40 bg-vlp p-2 text-vls2 dark:text-vds transition duration-200 hover:border-vls/80 hover:bg-vlp2 focus:border-vls/80 focus:bg-vlp2 active:border-vls/80 active:bg-vlp2 dark:bg-vds3neu700 dark:hover:border-vls/80 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vls/80 dark:active:border-vls/80">
+            :class="{
+                    'border-vls/80 bg-vlp2 dark:border-vls/80 dark:bg-vdp3 dark:text-white': item.id === $store.edit.activeItemId,
+                    'border-vls/40 bg-vlp dark:bg-vds3neu700 dark:text-vds': item.id !== $store.edit.activeItemId
+                }"
+            class="mb-2 flex cursor-pointer justify-between rounded border p-2 text-vls2 transition duration-200 hover:border-vls/80 hover:bg-vlp2 focus:border-vls/80 focus:bg-vlp2 active:border-vls/80 active:bg-vlp2 dark:hover:border-vls/80 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vls/80 dark:active:border-vls/80">
             <div class="mr-2 flex flex-col text-left text-xs">
               <div x-text="item.client_name"></div>
+              <!-- Invoice date -->
               <div x-text="item.date"></div>
+              <!-- Invoice Nubmer -->
+              <div class="flex text-xs" x-text="item.invoice_number"></div>
             </div>
-            <div class="flex self-end text-xs" x-text="item.invoice_number"></div>
+            <div class="flex">
+              <!-- Toggle -->
+              <div x-data="{ switchOn: false }" class="mt-6">
+                <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn" />
+                <button
+                  x-ref="switchButton"
+                  type="button"
+                  @click="switchOn = ! switchOn"
+                  :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'"
+                  class="relative inline-flex h-6 py-0.5 ml-4 focus:outline-none rounded-full w-10"
+                  x-cloak>
+                  <span
+                    :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'"
+                    class="w-5 h-5 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
+                </button>
+                <label
+                  @click="$refs.switchButton.click(); $refs.switchButton.focus()"
+                  :id="$id('switch')"
+                  :class="{ 'text-blue-600': switchOn, 'text-gray-400': ! switchOn }"
+                  class="text-sm select-none"
+                  x-cloak></label>
+              </div>
+              <!-- Tooltip -->
+              <div x-data="tooltip('Mark invoice as paid/unpaid. New invoices default to unpaid')" class="relative">
+                <div class="absolute top-0 right-0">
+                  <span class="w-4 h-4 flex items-center justify-center border border-vls rounded-full text-xs">?</span>
+                </div>
+              </div>
+            </div>
           </div>
         </template>
       </div>

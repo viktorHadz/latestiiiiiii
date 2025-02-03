@@ -1,9 +1,7 @@
 // app.js
 import itemEditor from '/Managers/itemEditor.js'
 import clientManager from '/Managers/clientManager.js'
-// import invoiceManager from '/Managers/invoiceManager.js'
 import invoiceManager2 from '/Managers/invoicing/invoiceManager2.js'
-// import editorManager from '/Managers/invoEditor/editorManager.js'
 import editorMain from '/Managers/invoEditor/editorMain.js'
 
 document.addEventListener('alpine:init', () => {
@@ -84,8 +82,6 @@ document.addEventListener('alpine:init', () => {
 
   Alpine.data('clientManager', clientManager)
   Alpine.data('itemEditor', itemEditor)
-  // Alpine.data('invoiceManager', invoiceManager)
   Alpine.data('invoiceManager2', invoiceManager2)
-  // Alpine.data('editorManager', editorManager)
   Alpine.data('editorMain', editorMain)
 })

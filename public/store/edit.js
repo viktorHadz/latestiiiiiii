@@ -3,6 +3,7 @@ document.addEventListener('alpine:init', () => {
     'edit',
     Alpine.reactive({
       // ===== State =====
+      activeInvoiceFromList: null,
       editing: false,
       editMode: '',
       openEditModal: false,
@@ -62,7 +63,6 @@ document.addEventListener('alpine:init', () => {
             ...data,
             invoiceItems,
           }
-
           // Process allowed items (styles and samples) from the backend.
           const styles = data.existingStyles || []
           const samples = data.existingSamples || []
@@ -85,6 +85,7 @@ document.addEventListener('alpine:init', () => {
           this.existingItems.filteredItems = [...combined]
 
           this.showInvoiceItems = true
+          this.activeItemId = invoiceId
           this.editing = false
         } catch (error) {
           console.error('Error fetching invoice:', error)
@@ -235,6 +236,32 @@ document.addEventListener('alpine:init', () => {
           item.name.toLowerCase().includes(query),
         )
       },
+      // applyEffect(idOfItem) {
+      //   requestAnimationFrame(() => {
+      //     const targetItem = document.getElementById(idOfItem)
+      //     if (!targetItem) {
+      //       console.error(`Element with ID "${idOfItem}" not found.`)
+      //       return
+      //     }
+
+      //     console.log('Target Item:', targetItem)
+      //     const glowClass = this.mode === 'dark' ? 'add-item-glow-dark' : 'add-item-glow'
+
+      //     // Apply the glow effect
+      //     targetItem.classList.remove(glowClass)
+      //     void targetItem.offsetWidth // Forces reflow
+      //     targetItem.classList.add(glowClass)
+
+      //     // Remove the class once the animation finishes
+      //     targetItem.addEventListener(
+      //       'animationend',
+      //       () => {
+      //         targetItem.classList.remove(glowClass)
+      //       },
+      //       { once: true },
+      //     )
+      //   })
+      // },
     }),
   )
 })

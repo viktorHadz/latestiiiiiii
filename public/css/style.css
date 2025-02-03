@@ -128,7 +128,10 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
 /* MARK: Table styles - borders */
 .round-left-border {
   border-top-left-radius: 0.28rem;
@@ -484,9 +487,6 @@ input[type='radio']:hover {
 .add-item-glow {
   animation: glowEffect 300ms ease-in-out;
 }
-/* .add-item-glow-dark {
-  animation: glowEffectDark 300ms ease-in-out;
-} */
 .dark .add-item-glow {
   animation: glowEffectDark 300ms ease-in-out;
 }

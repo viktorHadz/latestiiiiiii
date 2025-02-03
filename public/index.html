@@ -25,13 +25,13 @@
             @click="tabButtonClicked('clients')"
             :class="tabContentActive('clients') ? 'tab-button-active' : 'tab-button'">
             <div x-show="sideBar" class="flex p-2">
-              <svg width="24" height="24" class="mr-1.5">
+              <svg class="mr-1.5 size-5">
                 <use href="/icons/icons.svg#user-group" />
               </svg>
               <span>Clients</span>
             </div>
             <div x-show="!sideBar" class="p-2">
-              <svg width="28" height="28" class="mr-1.5">
+              <svg class="size-6">
                 <use href="/icons/icons.svg#user-group" />
               </svg>
             </div>
@@ -41,13 +41,13 @@
             @click="tabButtonClicked('invoices2')"
             :class="tabContentActive('invoices2') ? 'tab-button-active' : 'tab-button'">
             <div x-show="sideBar" class="flex p-2">
-              <svg width="24" height="24" class="mr-1.5">
+              <svg class="mr-1.5 size-5">
                 <use href="/icons/icons.svg#pound-text" />
               </svg>
               <span x-show="sideBar">Invoices</span>
             </div>
             <div x-show="!sideBar" class="p-2">
-              <svg width="28" height="28">
+              <svg class="size-6">
                 <use href="/icons/icons.svg#pound-text" />
               </svg>
             </div>
@@ -57,13 +57,13 @@
             @click="tabButtonClicked('editorMain')"
             :class="tabContentActive('editorMain') ? 'tab-button-active' : 'tab-button'">
             <div x-show="sideBar" class="flex p-2">
-              <svg width="24" height="24" class="mr-1.5">
+              <svg class="mr-1.5 size-5">
                 <use href="/icons/icons.svg#editor" />
               </svg>
               <span x-show="sideBar">Editor</span>
             </div>
             <div x-show="!sideBar" class="p-2">
-              <svg width="28" height="28">
+              <svg class="size-6">
                 <use href="/icons/icons.svg#editor" />
               </svg>
             </div>
@@ -79,7 +79,7 @@
               </svg>
               <span>Items</span>
             </div>
-            <svg x-show="!sideBar" width="28" height="28">
+            <svg x-show="!sideBar" class="size-6">
               <use href="/icons/icons.svg#items" />
             </svg>
           </button>
@@ -288,6 +288,7 @@
     </div>
     <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <!-- 1) The store definitions  -->
+    <script type="module" src="/Managers/tooltip.js"></script>
     <script type="module" src="/store/clientStore.js"></script>
     <script type="module" src="/store/itemStore.js"></script>
     <script type="module" src="/store/prices.js"></script>
