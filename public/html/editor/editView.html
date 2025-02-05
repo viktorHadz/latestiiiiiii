@@ -8,9 +8,10 @@
     </div>
   </template>
 
-  <!-- NON-EDIT Mode Display -->
+  <!-- When an invoice is selected but not in edit mode -->
   <template x-if="$store.edit.showInvoiceItems && !$store.edit.editing">
     <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls2 dark:text-vds">
+      <!-- Header / Basic Info -->
       <div
         class="mb-2 flex w-full justify-between rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls2 dark:text-vds font-medium dark:bg-vdp">
         <div>
@@ -168,6 +169,18 @@
             <span x-text="$store.edit.invoiceItems.client?.email"></span>
           </p>
         </div>
+
+        <!-- Add Item Button -->
+        <div class="flex items-center pl-4 w-1/4">
+          <button
+            @click="
+              $store.edit.existingItems.showItemModal = true;
+              $store.edit.fetchStylesAndSamples($store.clients.selectedClient?.id);
+            "
+            class="modal-btn-prim w-full flex items-center justify-center">
+            Add Item
+          </button>
+        </div>
       </div>
 
       <!-- Items Table -->
@@ -176,38 +189,33 @@
         <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px">
           <thead class="sticky top-0 table-head-style border-clipper">
             <tr>
-              <th class="p-2 round-left-border text-left w-[45%]">Name</th>
-              <th class="p-2 text-left w-[10%]">Type</th>
-              <th class="p-2 text-right w-[10%]">Qty</th>
-              <th class="p-2 text-right w-[10%]">Price</th>
-              <th class="py-2 round-right-border w-[15%]">Actions</th>
+              <th class="p-2 round-left-border text-left max-w-[40%]">Name</th>
+              <th class="p-2 text-left">Type</th>
+              <th class="p-2 text-right">Qty</th>
+              <th class="p-2 text-right">Price</th>
+              <th class="py-2 round-right-border">Actions</th>
             </tr>
           </thead>
           <tbody class="table-body-style table-scrollbar !text-sm">
-            <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.frontEndId">
+            <template x-for="(item, idx) in $store.edit.invoiceItems.invoiceItems" :key="item.id">
               <tr class="border-hover-ring-efect">
-                <td class="p-1 round-left-border" x-text="item.name"></td>
+                <td class="p-1 w-[40%]" x-text="item.name"></td>
                 <td class="p-1" x-text="item.type"></td>
                 <td class="p-1 text-right" x-text="item.quantity"></td>
                 <td class="p-1 text-right" x-text="'£' + item.price"></td>
-                <td class="p-1 text-right flex justify-end round-right-border mr-1.5">
-                  <!-- Increase quantity -->
-                  <button
-                    @click="$store.edit.incrementInvoiceItem(item.frontEndId)"
-                    class="table-interaction-icon-blue">
-                    <svg class="size-5">
+                <td class="p-1 text-right flex justify-end mr-2">
+                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-blue mr-2">
+                    <svg class="size-4">
                       <use href="/icons/icons.svg#plus-circle" />
                     </svg>
                   </button>
-                  <!-- Decrease quantity -->
-                  <button @click="$store.edit.decrementInvoiceItem(item.frontEndId)" class="table-interaction-icon-red">
-                    <svg class="size-5">
+                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-red mr-2">
+                    <svg class="size-4">
                       <use href="/icons/icons.svg#minus-circle" />
                     </svg>
                   </button>
-                  <!-- Remove item entirely -->
-                  <button @click="$store.edit.removeInvoiceItem(item.frontEndId)" class="table-interaction-icon-red">
-                    <svg class="size-5">
+                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-red">
+                    <svg class="size-4">
                       <use href="/icons/icons.svg#trash" />
                     </svg>
                   </button>
@@ -217,7 +225,6 @@
           </tbody>
         </table>
       </div>
-
       <!-- Editable Prices -->
       <div
         class="mb-2 flex flex-col w-full justify-between rounded border border-vls/40 bg-vlp shadow dark:bg-vdp2 p-2">
@@ -260,21 +267,11 @@
 
         <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
       </div>
-      <div class="flex justify-between">
+      <div class="flex items-center justify-end gap-2">
         <!-- Cancel edit -->
         <button @click="$store.edit.cancelEdit()" class="modal-btn-sec flex items-center">Cancel</button>
-        <div class="flex">
-          <!-- Add Item Button -->
-          <button
-            @click="$store.edit.existingItems.showItemModal = true"
-            class="modal-btn-prim flex items-center justify-center mr-4">
-            Add Item
-          </button>
-          <!-- Save edit -->
-          <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !text-sm">
-            Save Invoice
-          </button>
-        </div>
+        <!-- Save edit -->
+        <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !text-sm">Save</button>
       </div>
     </div>
   </template>
@@ -382,9 +379,9 @@
           <div
             x-show="$store.edit.existingItems.openDropdown"
             x-collapse.duration.500ms
-            class="absolute z-40 mt-2 w-full overflow-auto rounded border border-vls/40 bg-vlp dark:bg-vdp2 shadow-lg">
+            class="absolute z-40 mt-2 w-full overflow-auto rounded border border-slate-300 bg-vlp dark:bg-neutral-600 shadow-lg">
             <table class="w-full text-vls2 dark:text-vds">
-              <thead class="sticky top-0 bg-vlp dark:bg-vdp">
+              <thead class="sticky top-0 bg-vlp dark:bg-zinc-900">
                 <tr>
                   <th colspan="6" class="p-2">
                     <input
@@ -396,12 +393,12 @@
                   </th>
                 </tr>
                 <tr class="text-sm p-2">
-                  <th class="pl-2 py-1 text-left w-[50%]">Name</th>
-                  <th class="p-1 text-right w-[10%]">Price</th>
-                  <th class="p-1 text-right w-[10%]">Time</th>
-                  <th class="p-1 text-right w-[10%]">Type</th>
+                  <th class="pl-2 py-1 text-left">Name</th>
+                  <th class="p-1 text-right">Price</th>
+                  <th class="p-1 text-right">Time</th>
+                  <th class="p-1 text-right">Type</th>
                   <th class="p-1 text-center">Qty</th>
-                  <th class="p-1 text-left w-[10%]">Actions</th>
+                  <th class="p-1 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -414,15 +411,15 @@
                     <td class="p-1 text-sm text-center">
                       <div class="flex items-center justify-center">
                         <input
-                          :id="'input-id' + item.frontEndId"
+                          :id="'input-id'+item.frontEndId"
                           type="number"
                           min="1"
                           x-model.number="item.quantity"
-                          class="table-edit-input-style max-w-12" />
+                          class="w-16 px-2 py-1 border rounded bg-vlp text-vls2 focus:bg-vlp2 dark:border-neutral-400 dark:bg-vdp2 dark:text-vds" />
                       </div>
                     </td>
-                    <td class="flex justify-start items-center max-w-12">
-                      <button @click="$store.edit.addNewItem(item)" class="table-interaction-icon-blue ml-3">
+                    <td class="flex justify-start items-center">
+                      <button @click="$store.edit.addNewItem(item)" class="table-interaction-icon-blue">
                         <svg class="size-5" fill="currentColor">
                           <use href="/icons/icons.svg#plus-circle" />
                         </svg>

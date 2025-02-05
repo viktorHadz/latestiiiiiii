@@ -24,15 +24,15 @@
         <input type="text" placeholder="Search invoices..." class="srch-style" />
       </div>
       <!-- Scrollable List -->
-      <div class="flex-1 overflow-y-auto table-scrollbar p-2">
+      <div class="flex-1 overflow-y-auto table-scrollbar p-2 invoice-book-scroll">
         <template x-for="item in $store.edit.listItems" :key="item.id">
           <div
             @click="$store.edit.fetchInvoice(item.id)"
             :id="'rowid-' + item.id"
             :class="{
-                    'border-vls/80 bg-vlp2 dark:border-vls/80 dark:bg-vdp3 dark:text-white': item.id === $store.edit.activeItemId,
-                    'border-vls/40 bg-vlp dark:bg-vds3neu700 dark:text-vds': item.id !== $store.edit.activeItemId
-                }"
+              'border-vls/80 bg-vlp2 dark:border-vls/80 dark:bg-vdp3 dark:text-white': item.id === $store.edit.activeItemId,
+              'border-vls/40 bg-vlp dark:bg-vds3neu700 dark:text-vds': item.id !== $store.edit.activeItemId
+            }"
             class="mb-2 flex cursor-pointer justify-between rounded border p-2 text-vls2 transition duration-200 hover:border-vls/80 hover:bg-vlp2 focus:border-vls/80 focus:bg-vlp2 active:border-vls/80 active:bg-vlp2 dark:hover:border-vls/80 dark:hover:bg-neutral-600 dark:hover:text-white dark:focus:border-vls/80 dark:active:border-vls/80">
             <div class="mr-2 flex flex-col text-left text-xs">
               <div x-text="item.client_name"></div>

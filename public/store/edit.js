@@ -11,7 +11,10 @@ document.addEventListener('alpine:init', () => {
       // Holds the complete invoice data including invoice details and its items.
       invoiceItems: { invoiceItems: [] },
       initialValuesInvItems: {},
+      // InvoiceBook items
       listItems: [],
+      page: 1,
+
       edited: false,
 
       // Allowed (existing) items available for adding (styles and samples)
@@ -33,12 +36,11 @@ document.addEventListener('alpine:init', () => {
         time: null,
       },
 
-      //====================NOT IN USE CURRENTLY PROPOSED=============================
-      invoiceBook: [],
       // ===== Methods =====
-
-      init() {
-        console.log('[Edit Store] Initialised')
+      async init() {
+        console.log('{ Edit Store } Initialising')
+        await this.fetchListById()
+        console.log('{ Edit Store } ==> Initialised')
       },
 
       async fetchInvoice(invoiceId) {
@@ -91,20 +93,50 @@ document.addEventListener('alpine:init', () => {
           console.error('Error fetching invoice:', error)
         }
       },
-
+      // Fetch invoice book list
       async fetchListById() {
         try {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id) return
-          const res = await fetch(`/editor/list/${client.id}`)
+
+          let res = await fetch(`/editor/list/${client.id}?page=${this.page}`)
           if (!res.ok) throw new Error(`Error fetching invoices: ${res.statusText}`)
-          this.listItems = await res.json()
-          console.log(this.listItems)
+
+          let data = await res.json()
+
+          if (data.length === 0) {
+            this.hasMore = false
+          } else {
+            data.forEach(item => {
+              if (!this.listItems.some(existing => existing.id === item.id)) {
+                this.listItems.push(item)
+              }
+            })
+            this.page++
+            console.log(`invoice page ==> ${this.page}`)
+            console.log(`InvoiceBookItems ==> ${this.listItems}`)
+          }
         } catch (error) {
           console.error('Error fetching invoice list items:', error)
         }
       },
+      // Event listener for loading more invoices when the scroll container nears the bottom
+      attachScrollListener() {
+        // Attach event to the scrollable div only
+        const scrollContainer = document.querySelector('.invoice-book-scroll')
+        if (!scrollContainer) return
 
+        scrollContainer.addEventListener('scroll', () => {
+          if (this.loading || !this.hasMore) return // Prevent multiple calls
+
+          const nearBottom =
+            scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 10
+
+          if (nearBottom) {
+            this.fetchListById()
+          }
+        })
+      },
       editInvoice() {
         if (this.editMode === 'editOverwrite' || this.editMode === 'editCopy') {
           this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
@@ -236,32 +268,6 @@ document.addEventListener('alpine:init', () => {
           item.name.toLowerCase().includes(query),
         )
       },
-      // applyEffect(idOfItem) {
-      //   requestAnimationFrame(() => {
-      //     const targetItem = document.getElementById(idOfItem)
-      //     if (!targetItem) {
-      //       console.error(`Element with ID "${idOfItem}" not found.`)
-      //       return
-      //     }
-
-      //     console.log('Target Item:', targetItem)
-      //     const glowClass = this.mode === 'dark' ? 'add-item-glow-dark' : 'add-item-glow'
-
-      //     // Apply the glow effect
-      //     targetItem.classList.remove(glowClass)
-      //     void targetItem.offsetWidth // Forces reflow
-      //     targetItem.classList.add(glowClass)
-
-      //     // Remove the class once the animation finishes
-      //     targetItem.addEventListener(
-      //       'animationend',
-      //       () => {
-      //         targetItem.classList.remove(glowClass)
-      //       },
-      //       { once: true },
-      //     )
-      //   })
-      // },
     }),
   )
 })
