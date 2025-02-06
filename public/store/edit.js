@@ -14,6 +14,8 @@ document.addEventListener('alpine:init', () => {
       // InvoiceBook items
       listItems: [],
       page: 1,
+      hasMore: true,
+      loading: false,
 
       edited: false,
 
@@ -95,6 +97,9 @@ document.addEventListener('alpine:init', () => {
       },
       // Fetch invoice book list
       async fetchListById() {
+        if (this.loading || !this.hasMore) return // Prevent spam clicks
+        this.loading = true
+
         try {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id) return
@@ -105,21 +110,47 @@ document.addEventListener('alpine:init', () => {
           let data = await res.json()
 
           if (data.length === 0) {
-            this.hasMore = false
+            this.hasMore = false // No more invoices
           } else {
             data.forEach(item => {
               if (!this.listItems.some(existing => existing.id === item.id)) {
                 this.listItems.push(item)
               }
             })
+
             this.page++
             console.log(`invoice page ==> ${this.page}`)
             console.log(`InvoiceBookItems ==> ${this.listItems}`)
           }
         } catch (error) {
           console.error('Error fetching invoice list items:', error)
+        } finally {
+          this.loading = false
         }
       },
+      async updatePaid(invoiceId) {
+        try {
+          let res = await fetch(`/editor/invoice/${invoiceId}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          })
+
+          if (!res.ok) throw new Error(`Error updating invoice status: ${res.statusText}`)
+
+          let data = await res.json()
+
+          // Find and update the local invoice in listItems
+          let invoice = this.listItems.find(i => i.id === invoiceId)
+          if (invoice) {
+            invoice.invoice_status = data.newStatus
+          }
+
+          console.log(`Invoice ${invoiceId} marked as ${data.newStatus}`)
+        } catch (error) {
+          console.error('Error updating invoice status:', error)
+        }
+      },
+
       // Event listener for loading more invoices when the scroll container nears the bottom
       attachScrollListener() {
         // Attach event to the scrollable div only

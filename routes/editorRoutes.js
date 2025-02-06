@@ -95,5 +95,32 @@ router.get('/list/:clientId', (req, res) => {
     )
   })
 })
+router.post('/invoice/:invoiceId/status', (req, res) => {
+  const { invoiceId } = req.params
+
+  // Fetch the current invoice status
+  const getStatusQuery = 'SELECT invoice_status FROM invoices WHERE id = ?'
+
+  db.get(getStatusQuery, [invoiceId], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: `Error fetching invoice status: ${err.message}` })
+    }
+    if (!row) {
+      return res.status(404).json({ error: `Invoice ${invoiceId} not found.` })
+    }
+
+    // Determine the new status ('paid' or 'unpaid')
+    const newStatus = row.invoice_status === 'unpaid' ? 'paid' : 'unpaid'
+
+    // Update the invoice status in the database
+    const updateQuery = 'UPDATE invoices SET invoice_status = ? WHERE id = ?'
+    db.run(updateQuery, [newStatus, invoiceId], function (err) {
+      if (err) {
+        return res.status(500).json({ error: `Couldn't update invoice status: ${err.message}` })
+      }
+      res.json({ success: true, newStatus })
+    })
+  })
+})
 
 module.exports = router

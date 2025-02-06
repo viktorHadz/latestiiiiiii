@@ -286,7 +286,6 @@
         </div>
       </div>
     </div>
-    <script src="/componentsLibrary/vik-tooltip.js" defer></script>
     <!-- 1) The store definitions  -->
     <script type="module" src="/Managers/tooltip.js"></script>
     <script type="module" src="/store/clientStore.js"></script>
@@ -297,7 +296,7 @@
     <script type="module" src="/store/edit.js"></script>
     <script type="module" src="/store/colorTheme.js"></script>
     <script type="module" src="/store/tossStore.js"></script>
-    <!-- 2) Then app.js, which references the store and sets up tabManager, etc -->
+    <!-- 2) Then app.js, which sets up tabManager and etc -->
     <script type="module" src="/app.js" defer></script>
     <!--  Alpine Plugins  -->
     <script src="/alpinejs/plugins/mask.js" defer></script>
@@ -307,8 +306,6 @@
     <!--  Alpine Core  -->
     <script>
       console.log('\!!-------Alpine_Start_Index.html----------!!')
-      // $store.toss.toast.title
-      // $store.toss.toast.body
     </script>
     <script src="./alpinejs/dist/alpine.js" defer></script>
   </body>
