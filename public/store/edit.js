@@ -44,47 +44,85 @@ document.addEventListener('alpine:init', () => {
         await this.fetchListById()
         console.log('{ Edit Store } ==> Initialised')
       },
+      async fetchStylesAndSamples(clientId) {
+        if (!clientId) return
+        try {
+          const [stylesResponse, samplesResponse] = await Promise.all([
+            fetch(`/item/styles/client/${clientId}`),
+            fetch(`/item/samples/client/${clientId}`),
+          ])
 
+          const styles = await stylesResponse.json()
+          const samples = await samplesResponse.json()
+
+          const preInsertStyles = styles.map(style => ({
+            ...style,
+            type: 'style',
+            frontEndId: `style-${style.id}`,
+            quantity: 1,
+            time: 'N/A',
+          }))
+
+          const preInsertSamples = samples.map(sample => ({
+            ...sample,
+            type: 'sample',
+            frontEndId: `sample-${sample.id}`,
+            quantity: 1,
+          }))
+
+          this.existingItems.combinedItems = [...preInsertStyles, ...preInsertSamples]
+          this.existingItems.filteredItems = [...this.existingItems.combinedItems]
+        } catch (error) {
+          console.error('Error fetching styles/samples:', error)
+          callError('Error retrieving items', 'Please restart the program, try again or call support.')
+        }
+      },
       async fetchInvoice(invoiceId) {
         try {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id || !invoiceId) return
+
+          // Fetch the invoice
           const res = await fetch(`/editor/invoice/${client.id}/${invoiceId}`)
           if (!res.ok) throw new Error(`Error fetching invoice: ${res.statusText}`)
           const data = await res.json()
+
           console.log('Fetched invoice data:', data)
 
           // Normalize invoice items:
           const invoiceItems = (data.invoiceItems || []).map(item => {
-            // Use the original id as refId.
             item.refId = item.refId || item.id
-            // Compute the temporary unique key:
             item.frontEndId = `${item.type}-${item.refId}`
             return item
           })
-          // Replace invoice data completely (so old invoice items are gone)
-          this.invoiceItems = {
-            ...data,
-            invoiceItems,
+
+          this.invoiceItems = { ...data, invoiceItems }
+
+          // Ensure styles and samples are available
+          if (!data.existingStyles || !data.existingSamples) {
+            await this.fetchStylesAndSamples(client.id)
           }
-          // Process allowed items (styles and samples) from the backend.
-          const styles = data.existingStyles || []
-          const samples = data.existingSamples || []
+
+          // Process allowed items (styles and samples)
+          const styles = data.existingStyles || this.existingItems.combinedItems.filter(i => i.type === 'style')
+          const samples = data.existingSamples || this.existingItems.combinedItems.filter(i => i.type === 'sample')
+
           const combined = [
             ...styles.map(style => ({
               ...style,
               type: 'style',
-              frontEndId: `style-${style.id}`, // Use original id from dropdown
+              frontEndId: `style-${style.id}`,
               quantity: 1,
               time: 'N/A',
             })),
             ...samples.map(sample => ({
               ...sample,
               type: 'sample',
-              frontEndId: `sample-${sample.id}`, // Use original id
+              frontEndId: `sample-${sample.id}`,
               quantity: 1,
             })),
           ]
+
           this.existingItems.combinedItems = combined
           this.existingItems.filteredItems = [...combined]
 
@@ -95,6 +133,7 @@ document.addEventListener('alpine:init', () => {
           console.error('Error fetching invoice:', error)
         }
       },
+      // Called in pdfStore so that invoicesbook always holds latest invoice list
       // Fetch invoice book list
       async fetchListById() {
         if (this.loading || !this.hasMore) return // Prevent spam clicks
@@ -219,7 +258,7 @@ document.addEventListener('alpine:init', () => {
         // If user typed a brand-new item, item.id is undefined => generate unique ID from timestamp.
         if (typeof item.id === 'undefined') {
           // e.g., "1685632351234" + random 3-digit => "1685632351234512"
-          const timestamp = Date.now() // Milliseconds since 1970
+          const timestamp = Date.now() // Milliseconds
           const random3 = Math.floor(Math.random() * 1000) // 0..999
           item.id = Number(`${timestamp}${random3}`) // convert string -> number
         }
@@ -244,6 +283,7 @@ document.addEventListener('alpine:init', () => {
           'Current invoice item keys:',
           this.invoiceItems.invoiceItems.map(i => i.frontEndId),
         )
+        console.log('invoiceItems Obj with Arr: ', this.invoiceItems)
 
         if (existingIndex > -1) {
           // Already in the invoice -> increment quantity

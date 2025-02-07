@@ -98,7 +98,9 @@ router.post('/api/saveInvoice', async (req, res) => {
     totalPreDiscount,
     date,
   } = req.body
-
+  if (!items || items.length === 0) {
+    return res.status(400).json({ error: 'Cannot create an invoice without items.' })
+  }
   try {
     // Insert invoice into the database
     const invoiceId = await new Promise((resolve, reject) => {

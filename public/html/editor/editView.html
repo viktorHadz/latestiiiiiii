@@ -8,10 +8,9 @@
     </div>
   </template>
 
-  <!-- When an invoice is selected but not in edit mode -->
+  <!-- NON-EDIT Mode Display -->
   <template x-if="$store.edit.showInvoiceItems && !$store.edit.editing">
     <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls2 dark:text-vds">
-      <!-- Header / Basic Info -->
       <div
         class="mb-2 flex w-full justify-between rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls2 dark:text-vds font-medium dark:bg-vdp">
         <div>
@@ -45,28 +44,36 @@
         </div>
       </div>
       <!-- Invoice Items Table -->
-      <div class="alt-table-scrollbar mb-2 w-full overflow-y-auto border rounded border-vls/40 p-1 bg-vlp dark:bg-vdp2">
-        <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
-          <thead class="sticky top-0 table-head-style border-clipper">
+      <div class="alt-table-scrollbar mb-2 w-full border rounded border-vls/40 p-1 bg-vlp dark:bg-vdp2">
+        <!-- Fixed Table Header -->
+        <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px; table-layout: fixed">
+          <thead class="sticky top-0 table-head-style border-clipper bg-vlp dark:bg-vdp z-10">
             <tr>
-              <th class="p-2 text-start px-2 round-left-border">Name</th>
-              <th class="p-2">Type</th>
-              <th class="p-2 text-right">Qty</th>
-              <th class="p-2 round-right-border text-right">Price</th>
+              <th class="p-2 text-start px-2 round-left-border w-[50%]">Name</th>
+              <th class="p-2 w-[15%] text-left">Type</th>
+              <th class="p-2 text-right w-[15%]">Qty</th>
+              <th class="p-2 round-right-border text-right w-[20%]">Price</th>
             </tr>
           </thead>
-          <tbody class="table-body-style table-scrollbar">
-            <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.id">
-              <tr class="border-hover-ring-efect">
-                <td class="round-left-border w-[75%] px-2 py-1 text-sm" x-text="item.name"></td>
-                <td class="px-2 py-1" x-text="item.type"></td>
-                <td class="w-[15%] px-2 py-1 text-sm text-right" x-text="item.quantity"></td>
-                <td class="round-right-border w-[10%] px-4 py-1 text-right text-sm" x-text="'£' + item.price"></td>
-              </tr>
-            </template>
-          </tbody>
         </table>
+
+        <!-- Scrollable Table Body -->
+        <div class="max-h-[50vh] overflow-y-auto">
+          <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px; table-layout: fixed">
+            <tbody class="table-body-style table-scrollbar">
+              <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.id">
+                <tr class="border-hover-ring-efect">
+                  <td class="round-left-border px-2 py-2 text-sm w-[50%]" x-text="item.name"></td>
+                  <td class="px-2 py-2 w-[15%]" x-text="item.type"></td>
+                  <td class="px-2 py-2 text-sm text-right w-[15%]" x-text="item.quantity"></td>
+                  <td class="round-right-border px-4 py-2 text-right text-sm w-[20%]" x-text="'£' + item.price"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
       </div>
+
       <!-- Prices -->
       <div
         class="mb-2 flex flex-col w-full justify-between rounded border bg-vlp shadow dark:bg-vdp2 border-vls/40 p-2">
@@ -127,7 +134,7 @@
 
   <!-- Edit Mode (overwrite or copy) -->
   <template x-if="$store.edit.editing">
-    <div class="alt-table-scrollbar max-h-[100%] w-full overflow-y-auto text-vls2 dark:text-vds">
+    <div class="alt-table-scrollbar max-h-[90vh] w-full text-vls2 dark:text-vds">
       <!-- Header / Basic Info in Edit Mode -->
       <div
         class="mb-2 rounded bg-vlp border border-vls/40 shadow p-2 text-center text-vls2 dark:text-vds font-medium dark:bg-vdp">
@@ -169,62 +176,65 @@
             <span x-text="$store.edit.invoiceItems.client?.email"></span>
           </p>
         </div>
-
-        <!-- Add Item Button -->
-        <div class="flex items-center pl-4 w-1/4">
-          <button
-            @click="
-              $store.edit.existingItems.showItemModal = true;
-              $store.edit.fetchStylesAndSamples($store.clients.selectedClient?.id);
-            "
-            class="modal-btn-prim w-full flex items-center justify-center">
-            Add Item
-          </button>
-        </div>
       </div>
 
       <!-- Items Table -->
       <div
-        class="alt-table-scrollbar mb-2 w-full overflow-y-auto border rounded border-vls/40 bg-vlp shadow p-1 dark:bg-vdp2">
-        <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px">
-          <thead class="sticky top-0 table-head-style border-clipper">
+        class="alt-table-scrollbar mb-2 w-full max-h-[60%] border rounded border-vls/40 bg-vlp shadow p-1 dark:bg-vdp2">
+        <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px; table-layout: fixed">
+          <!-- Sticky header -->
+          <thead class="sticky top-0 table-head-style border-clipper bg-vlp dark:bg-vdp z-10">
             <tr>
-              <th class="p-2 round-left-border text-left max-w-[40%]">Name</th>
-              <th class="p-2 text-left">Type</th>
-              <th class="p-2 text-right">Qty</th>
-              <th class="p-2 text-right">Price</th>
-              <th class="py-2 round-right-border">Actions</th>
+              <th class="p-2 round-left-border text-left w-[45%]">Name</th>
+              <th class="p-2 text-left w-[10%]">Type</th>
+              <th class="p-2 text-right w-[10%]">Qty</th>
+              <th class="p-2 text-right w-[10%]">Price</th>
+              <th class="py-2 round-right-border w-[15%]">Actions</th>
             </tr>
           </thead>
-          <tbody class="table-body-style table-scrollbar !text-sm">
-            <template x-for="(item, idx) in $store.edit.invoiceItems.invoiceItems" :key="item.id">
-              <tr class="border-hover-ring-efect">
-                <td class="p-1 w-[40%]" x-text="item.name"></td>
-                <td class="p-1" x-text="item.type"></td>
-                <td class="p-1 text-right" x-text="item.quantity"></td>
-                <td class="p-1 text-right" x-text="'£' + item.price"></td>
-                <td class="p-1 text-right flex justify-end mr-2">
-                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-blue mr-2">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#plus-circle" />
-                    </svg>
-                  </button>
-                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-red mr-2">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#minus-circle" />
-                    </svg>
-                  </button>
-                  <button @click="$store.edit.removeInvoiceItem(item.id)" class="table-interaction-icon-red">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#trash" />
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            </template>
-          </tbody>
         </table>
+
+        <!-- Scrollable Table Body Wrapper -->
+        <div class="max-h-[50vh] overflow-y-auto">
+          <table class="w-full table-auto border-separate px-0.5" style="border-spacing: 0 10px; table-layout: fixed">
+            <tbody class="table-body-style table-scrollbar !text-sm">
+              <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.frontEndId">
+                <tr class="border-hover-ring-efect">
+                  <td class="p-1 round-left-border" x-text="item.name"></td>
+                  <td class="p-1" x-text="item.type"></td>
+                  <td class="p-1 text-right" x-text="item.quantity"></td>
+                  <td class="p-1 text-right" x-text="'£' + item.price"></td>
+                  <td class="p-1 text-right flex justify-end round-right-border mr-1.5">
+                    <!-- Increase quantity -->
+                    <button
+                      @click="$store.edit.incrementInvoiceItem(item.frontEndId)"
+                      class="table-interaction-icon-blue">
+                      <svg class="size-5">
+                        <use href="/icons/icons.svg#plus-circle" />
+                      </svg>
+                    </button>
+                    <!-- Decrease quantity -->
+                    <button
+                      @click="$store.edit.decrementInvoiceItem(item.frontEndId)"
+                      class="table-interaction-icon-red">
+                      <svg class="size-5">
+                        <use href="/icons/icons.svg#minus-circle" />
+                      </svg>
+                    </button>
+                    <!-- Remove item entirely -->
+                    <button @click="$store.edit.removeInvoiceItem(item.frontEndId)" class="table-interaction-icon-red">
+                      <svg class="size-5">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
       </div>
+
       <!-- Editable Prices -->
       <div
         class="mb-2 flex flex-col w-full justify-between rounded border border-vls/40 bg-vlp shadow dark:bg-vdp2 p-2">
@@ -267,11 +277,21 @@
 
         <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
       </div>
-      <div class="flex items-center justify-end gap-2">
+      <div class="flex justify-between">
         <!-- Cancel edit -->
         <button @click="$store.edit.cancelEdit()" class="modal-btn-sec flex items-center">Cancel</button>
-        <!-- Save edit -->
-        <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !text-sm">Save</button>
+        <div class="flex">
+          <!-- Add Item Button -->
+          <button
+            @click="$store.edit.existingItems.showItemModal = true"
+            class="modal-btn-prim flex items-center justify-center mr-4">
+            Add Item
+          </button>
+          <!-- Save edit -->
+          <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !text-sm">
+            Save Invoice
+          </button>
+        </div>
       </div>
     </div>
   </template>
@@ -282,8 +302,7 @@
     x-transition.opacity.duration.300
     class="fixed inset-0 z-20 bg-gray-800 bg-opacity-50">
     <div
-      class="relative top-1/3 z-30 mx-auto w-1/3 rounded bg-vlp shadow-lg transition duration-300 dark:bg-zinc-900 border border-vls/40"
-      @keydown.escape.window="$store.edit.openEditModal = false">
+      class="relative top-1/3 z-30 mx-auto w-1/3 rounded bg-vlp shadow-lg transition duration-300 dark:bg-zinc-900 border border-vls/40">
       <div class="p-8 text-center">
         <h2 class="text-xl font-medium mb-2 text-vls2 dark:text-vds">Choose Edit Type</h2>
         <p class="mb-4 text-sm font-normal text-vls2 dark:text-vds">How would you like to edit this invoice?</p>
@@ -343,10 +362,7 @@
     x-show="$store.edit.existingItems.showItemModal"
     x-transition.opacity.duration.300ms
     class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div
-      class="w-full max-w-2xl mx-4 bg-vlp dark:bg-zinc-900 border border-vls/40 rounded shadow-lg"
-      @click.outside="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
-      @keydown.escape.window="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false">
+    <div class="w-full max-w-2xl mx-4 bg-vlp dark:bg-zinc-900 border border-vls/40 rounded shadow-lg">
       <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-vls/40">
         <h3
@@ -355,12 +371,12 @@
         <p class="mt-2 text-sm text-center text-vls2 dark:text-vds">Add from existing styles and samples</p>
       </div>
       <!-- Modal Body -->
-      <div class="px-6 py-4">
+      <div class="px-6 py-4 max-h-96 flex flex-col">
         <!-- Existing Items Dropdown -->
         <div class="relative mb-6">
           <button
             x-ref="existingItemsDropdown"
-            @click="$store.edit.existingItems.openDropdown = !$store.edit.existingItems.openDropdown"
+            @click="$store.edit.existingItems.openDropdown = !$store.edit.existingItems.openDropdown; $store.edit.fetchStylesAndSamples($store.clients.selectedClient?.id)"
             class="w-full flex items-center justify-between px-4 py-2 border shadow-sm border-vls/40 rounded hover:border-vls hover:text-vls2 transition focus:outline-none dark:border-vlp/40 dark:hover:border-vds dark:text-vlp/40 dark:hover:text-vds">
             <span class="text-vls2 dark:text-vds">Existing Items</span>
             <svg
@@ -376,62 +392,69 @@
                 d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
             </svg>
           </button>
+          <!-- Scrollable Table Container -->
           <div
             x-show="$store.edit.existingItems.openDropdown"
             x-collapse.duration.500ms
-            class="absolute z-40 mt-2 w-full overflow-auto rounded border border-slate-300 bg-vlp dark:bg-neutral-600 shadow-lg">
-            <table class="w-full text-vls2 dark:text-vds">
-              <thead class="sticky top-0 bg-vlp dark:bg-zinc-900">
-                <tr>
-                  <th colspan="6" class="p-2">
-                    <input
-                      type="text"
-                      placeholder="Search items..."
-                      class="!w-full px-2 py-1 srch-style"
-                      x-model="$store.edit.existingItems.searchQuery"
-                      @input="$store.edit.searchItems()" />
-                  </th>
-                </tr>
-                <tr class="text-sm p-2">
-                  <th class="pl-2 py-1 text-left">Name</th>
-                  <th class="p-1 text-right">Price</th>
-                  <th class="p-1 text-right">Time</th>
-                  <th class="p-1 text-right">Type</th>
-                  <th class="p-1 text-center">Qty</th>
-                  <th class="p-1 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <template x-for="item in $store.edit.existingItems.filteredItems" :key="item.frontEndId">
-                  <tr class="cursor-pointer hover:bg-vlp2 dark:hover:bg-vdp3 p-2">
-                    <td class="pl-2 py-1 text-sm" x-text="item.name"></td>
-                    <td class="p-1 text-sm text-right" x-text="item.price"></td>
-                    <td class="p-1 text-sm text-right" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
-                    <td class="p-1 text-sm text-right" x-text="item.type"></td>
-                    <td class="p-1 text-sm text-center">
-                      <div class="flex items-center justify-center">
-                        <input
-                          :id="'input-id'+item.frontEndId"
-                          type="number"
-                          min="1"
-                          x-model.number="item.quantity"
-                          class="w-16 px-2 py-1 border rounded bg-vlp text-vls2 focus:bg-vlp2 dark:border-neutral-400 dark:bg-vdp2 dark:text-vds" />
-                      </div>
-                    </td>
-                    <td class="flex justify-start items-center">
-                      <button @click="$store.edit.addNewItem(item)" class="table-interaction-icon-blue">
-                        <svg class="size-5" fill="currentColor">
-                          <use href="/icons/icons.svg#plus-circle" />
-                        </svg>
-                      </button>
-                    </td>
+            class="absolute z-40 mt-2 w-full max-h-80 overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp2 shadow-lg">
+            <!-- Table Wrapper with Scroll -->
+            <div class="max-h-80 overflow-y-auto">
+              <table class="w-full text-vls2 dark:text-vds">
+                <!-- Sticky Header -->
+                <thead class="sticky top-0 bg-vlp dark:bg-vdp shadow z-10">
+                  <tr>
+                    <th colspan="6" class="p-2">
+                      <input
+                        type="text"
+                        placeholder="Search items..."
+                        class="!w-full px-2 py-1 srch-style"
+                        x-model="$store.edit.existingItems.searchQuery"
+                        @input="$store.edit.searchItems()" />
+                    </th>
                   </tr>
-                </template>
-              </tbody>
-            </table>
+                  <tr class="text-sm p-2">
+                    <th class="pl-2 py-1 text-left w-[50%]">Name</th>
+                    <th class="p-1 text-right w-[10%]">Price</th>
+                    <th class="p-1 text-right w-[10%]">Time</th>
+                    <th class="p-1 text-right w-[10%]">Type</th>
+                    <th class="p-1 text-center">Qty</th>
+                    <th class="p-1 text-left w-[10%]">Actions</th>
+                  </tr>
+                </thead>
+
+                <!-- Scrollable Table Body -->
+                <tbody>
+                  <template x-for="item in $store.edit.existingItems.filteredItems" :key="item.frontEndId">
+                    <tr class="cursor-pointer hover:bg-vlp2 dark:hover:bg-vdp3 p-2">
+                      <td class="pl-2 py-1 text-sm" x-text="item.name"></td>
+                      <td class="p-1 text-sm text-right" x-text="item.price"></td>
+                      <td class="p-1 text-sm text-right" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
+                      <td class="p-1 text-sm text-right" x-text="item.type"></td>
+                      <td class="p-1 text-sm text-center">
+                        <div class="flex items-center justify-center">
+                          <input
+                            :id="'input-id' + item.frontEndId"
+                            type="number"
+                            min="1"
+                            x-model.number="item.quantity"
+                            class="table-edit-input-style max-w-12" />
+                        </div>
+                      </td>
+                      <td class="flex justify-start items-center max-w-12">
+                        <button @click="$store.edit.addNewItem(item)" class="table-interaction-icon-blue ml-3">
+                          <svg class="size-5" fill="currentColor">
+                            <use href="/icons/icons.svg#plus-circle" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <!-- New Item Type Selection -->
+        <!-- CUSTOM NEW Item Type Selection -->
         <div class="flex justify-center space-x-8 mb-6">
           <label class="flex items-center space-x-4 cursor-pointer">
             <input type="radio" x-model="$store.edit.newItem.type" value="style" class="form-radio text-vlp" />
@@ -450,17 +473,20 @@
           <input
             x-model="$store.edit.newItem.name"
             type="text"
+            required
             placeholder="Style Name"
             class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
           <input
             x-model.number="$store.edit.newItem.price"
             type="number"
+            required
             placeholder="Price"
             class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
           <input
             x-model.number="$store.edit.newItem.quantity"
             type="number"
             min="1"
+            required
             placeholder="Quantity"
             class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
         </div>
@@ -495,14 +521,10 @@
       <div class="flex justify-end px-6 py-4 border-t border-vls/40">
         <button
           @click="$store.edit.addNewItem($store.edit.newItem)"
-          class="px-4 py-2 bg-sky-700 text-white rounded hover:bg-sky-800 transition text-sm">
+          class="p-2 bg-vla2 text-white rounded hover:bg-vla2/90 transition text-sm active:scale-95">
           Add
         </button>
-        <button
-          @click="$store.edit.existingItems.showItemModal = false; $store.edit.existingItems.openDropdown = false"
-          class="ml-4 px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800 transition text-sm">
-          Close
-        </button>
+        <button @click="$store.edit.existingItems.showItemModal = false" class="ml-4 modal-btn-sec">Close</button>
       </div>
     </div>
   </div>

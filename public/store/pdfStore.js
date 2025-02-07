@@ -42,6 +42,8 @@ document.addEventListener('alpine:init', () => {
             this.generatePDF(invoice.id)
             // Debuging location: invoiceStore ==>  resetTotals
             Alpine.store('invo').resetTotals()
+            // Debuging location: edit.js ==>  fetchListById()
+            Alpine.store('edit').fetchListById()
           } else {
             console.error('Error generating invoice:', await response.json())
             callError('Server error.', 'Failed to generate invoice. Try again, restart or call support.')

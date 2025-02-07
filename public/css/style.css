@@ -152,9 +152,6 @@ input[type='number'] {
   @apply sticky top-0 z-10 text-base rounded bg-vls2 shadow-md text-vlp border;
   @apply dark:bg-vdp dark:text-vds;
 }
-.table-head-works {
-  @apply sticky top-0 text-base font-medium rounded bg-vls2 text-vlp dark:bg-zinc-900 dark:text-vds;
-}
 .table-body-style {
   @apply bg-vlp text-vls2 hover:text-vls3;
   @apply dark:bg-vds3neu700 dark:text-vds;
