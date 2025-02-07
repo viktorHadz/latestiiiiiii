@@ -200,33 +200,34 @@
             <tbody class="table-body-style table-scrollbar !text-sm">
               <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.frontEndId">
                 <tr class="border-hover-ring-efect">
-                  <td class="p-1 round-left-border" x-text="item.name"></td>
-                  <td class="p-1" x-text="item.type"></td>
-                  <td class="p-1 text-right" x-text="item.quantity"></td>
-                  <td class="p-1 text-right" x-text="'£' + item.price"></td>
-                  <td class="p-1 text-right flex justify-end round-right-border mr-1.5">
-                    <!-- Increase quantity -->
-                    <button
-                      @click="$store.edit.incrementInvoiceItem(item.frontEndId)"
-                      class="table-interaction-icon-blue">
-                      <svg class="size-5">
-                        <use href="/icons/icons.svg#plus-circle" />
-                      </svg>
-                    </button>
-                    <!-- Decrease quantity -->
-                    <button
-                      @click="$store.edit.decrementInvoiceItem(item.frontEndId)"
-                      class="table-interaction-icon-red">
-                      <svg class="size-5">
-                        <use href="/icons/icons.svg#minus-circle" />
-                      </svg>
-                    </button>
-                    <!-- Remove item entirely -->
-                    <button @click="$store.edit.removeInvoiceItem(item.frontEndId)" class="table-interaction-icon-red">
-                      <svg class="size-5">
-                        <use href="/icons/icons.svg#trash" />
-                      </svg>
-                    </button>
+                  <td class="p-2 w-[45%] text-left round-left-border" x-text="item.name"></td>
+                  <td class="p-2 w-[10%] text-left" x-text="item.type"></td>
+                  <td class="p-2 w-[10%] text-right" x-text="item.quantity"></td>
+                  <td class="p-2 w-[10%] text-right" x-text="'£' + item.price"></td>
+                  <td class="p-2 w-[15%] text-right round-right-border">
+                    <div class="flex justify-end gap-1">
+                      <button
+                        @click="$store.edit.incrementInvoiceItem(item.frontEndId)"
+                        class="table-interaction-icon-blue">
+                        <svg class="size-5">
+                          <use href="/icons/icons.svg#plus-circle" />
+                        </svg>
+                      </button>
+                      <button
+                        @click="$store.edit.decrementInvoiceItem(item.frontEndId)"
+                        class="table-interaction-icon-red">
+                        <svg class="size-5">
+                          <use href="/icons/icons.svg#minus-circle" />
+                        </svg>
+                      </button>
+                      <button
+                        @click="$store.edit.removeInvoiceItem(item.frontEndId)"
+                        class="table-interaction-icon-red">
+                        <svg class="size-5">
+                          <use href="/icons/icons.svg#trash" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </template>
@@ -412,36 +413,34 @@
                         @input="$store.edit.searchItems()" />
                     </th>
                   </tr>
-                  <tr class="text-sm p-2">
-                    <th class="pl-2 py-1 text-left w-[50%]">Name</th>
-                    <th class="p-1 text-right w-[10%]">Price</th>
-                    <th class="p-1 text-right w-[10%]">Time</th>
-                    <th class="p-1 text-right w-[10%]">Type</th>
-                    <th class="p-1 text-center">Qty</th>
-                    <th class="p-1 text-left w-[10%]">Actions</th>
+                  <tr class="text-sm bg-vlp dark:bg-vdp">
+                    <th class="pl-2 py-2 text-left w-[40%]">Name</th>
+                    <th class="p-2 text-right w-[15%]">Price</th>
+                    <th class="p-2 text-right w-[15%]">Time</th>
+                    <th class="p-2 text-right w-[10%]">Type</th>
+                    <th class="p-2 text-center w-[10%]">Qty</th>
+                    <th class="p-2 text-center w-[10%]">Actions</th>
                   </tr>
                 </thead>
 
                 <!-- Scrollable Table Body -->
                 <tbody>
                   <template x-for="item in $store.edit.existingItems.filteredItems" :key="item.frontEndId">
-                    <tr class="cursor-pointer hover:bg-vlp2 dark:hover:bg-vdp3 p-2">
-                      <td class="pl-2 py-1 text-sm" x-text="item.name"></td>
-                      <td class="p-1 text-sm text-right" x-text="item.price"></td>
-                      <td class="p-1 text-sm text-right" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
-                      <td class="p-1 text-sm text-right" x-text="item.type"></td>
-                      <td class="p-1 text-sm text-center">
-                        <div class="flex items-center justify-center">
-                          <input
-                            :id="'input-id' + item.frontEndId"
-                            type="number"
-                            min="1"
-                            x-model.number="item.quantity"
-                            class="table-edit-input-style max-w-12" />
-                        </div>
+                    <tr class="cursor-pointer hover:bg-vlp2 dark:hover:bg-vdp3">
+                      <td class="pl-2 py-2 text-sm" x-text="item.name"></td>
+                      <td class="p-2 text-sm text-right" x-text="item.price"></td>
+                      <td class="p-2 text-sm text-right" x-text="item.type === 'sample' ? item.time : 'N/A'"></td>
+                      <td class="p-2 text-sm text-right" x-text="item.type"></td>
+                      <td class="p-2 text-sm text-center">
+                        <input
+                          :id="'input-id' + item.frontEndId"
+                          type="number"
+                          min="1"
+                          x-model.number="item.quantity"
+                          class="table-edit-input-style max-w-12 text-center" />
                       </td>
-                      <td class="flex justify-start items-center max-w-12">
-                        <button @click="$store.edit.addNewItem(item)" class="table-interaction-icon-blue ml-3">
+                      <td class="p-2 text-center">
+                        <button @click="$store.edit.addDropdownItem(item)" class="table-interaction-icon-blue">
                           <svg class="size-5" fill="currentColor">
                             <use href="/icons/icons.svg#plus-circle" />
                           </svg>
@@ -465,7 +464,7 @@
             <span class="text-vls2 dark:text-vds">Sample</span>
           </label>
         </div>
-        <!-- New Item Form -->
+        <!-- New Item Form - Style -->
         <div
           x-show="$store.edit.newItem.type === 'style'"
           x-collapse.duration.300ms
@@ -476,20 +475,28 @@
             required
             placeholder="Style Name"
             class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+
           <input
             x-model.number="$store.edit.newItem.price"
             type="number"
+            step="0.01"
             required
             placeholder="Price"
-            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60"
+            @blur="$store.edit.newItem.price = Alpine.store('price').roundToTwo($store.edit.newItem.price)" />
+
           <input
-            x-model.number="$store.edit.newItem.quantity"
+            x-model.lazy="$store.edit.newItem.quantity"
             type="number"
             min="1"
+            step="1"
             required
             placeholder="Quantity"
-            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60"
+            @input="$store.edit.newItem.quantity = Math.max(1, Math.floor($event.target.value))" />
         </div>
+
+        <!-- New Item Form - Sample -->
         <div
           x-show="$store.edit.newItem.type === 'sample'"
           x-collapse.duration.300ms
@@ -497,30 +504,43 @@
           <input
             x-model="$store.edit.newItem.name"
             type="text"
+            required
             placeholder="Sample Name"
             class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+
           <input
             x-model.number="$store.edit.newItem.price"
             type="number"
+            step="0.01"
+            required
             placeholder="Price"
-            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60"
+            @blur="$store.edit.newItem.price = Alpine.store('price').roundToTwo($store.edit.newItem.price)" />
+
           <input
             x-model.number="$store.edit.newItem.time"
             type="number"
+            step="0.01"
+            required
             placeholder="Time (minutes)"
-            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60"
+            @blur="$store.edit.newItem.time = Alpine.store('price').roundToTwo($store.edit.newItem.time)" />
+
           <input
-            x-model.number="$store.edit.newItem.quantity"
+            x-model.lazy="$store.edit.newItem.quantity"
             type="number"
             min="1"
+            step="1"
+            required
             placeholder="Quantity"
-            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60" />
+            class="p-2 bg-vlp border rounded focus:outline-none border-vls/40 focus:border-vls hover:border-vls shadow-sm dark:bg-vdp2 dark:focus:bg-vdp3 text-vls2 dark:text-vds placeholder:text-vls/60 hover:placeholder:text-vls dark:placeholder:text-vds/60"
+            @input="$store.edit.newItem.quantity = Math.max(1, Math.floor($event.target.value))" />
         </div>
       </div>
       <!-- Modal Footer -->
       <div class="flex justify-end px-6 py-4 border-t border-vls/40">
         <button
-          @click="$store.edit.addNewItem($store.edit.newItem)"
+          @click="$store.edit.addCustomItem()"
           class="p-2 bg-vla2 text-white rounded hover:bg-vla2/90 transition text-sm active:scale-95">
           Add
         </button>

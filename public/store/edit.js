@@ -81,7 +81,10 @@ document.addEventListener('alpine:init', () => {
         try {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id || !invoiceId) return
-
+          if (this.editing) {
+            callWarning('Cannot change while editing', 'Complete edit and try again')
+            return
+          }
           // Fetch the invoice
           const res = await fetch(`/editor/invoice/${client.id}/${invoiceId}`)
           if (!res.ok) throw new Error(`Error fetching invoice: ${res.statusText}`)
@@ -207,6 +210,36 @@ document.addEventListener('alpine:init', () => {
           }
         })
       },
+      async deleteInvoice(invoiceId) {
+        if (!invoiceId) {
+          callError('Unable to delete invoice', 'Refresh page and try again or call support.')
+          return
+        }
+        if (this.editing) {
+          callWarning('Cannot delete while editing', 'Complete edit and try again')
+          return
+        }
+        try {
+          let res = await fetch(`/editor/invoice/delete/${invoiceId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+          })
+          if (!res.ok) {
+            throw new Error(`Error deleting invoice: ${res.statusText}`)
+          }
+
+          // Remove the deleted invoice from the local array $store.edit.showInvoiceItems
+          this.listItems = this.listItems.filter(i => i.id !== invoiceId)
+          this.showInvoiceItems = false
+          this.invoiceItems = { invoiceItems: [] }
+          this.activeItemId = null
+          callInfo('Invoice deleted')
+        } catch (error) {
+          callError('Invoice does not exist', 'Refresh page and try again or call support.')
+          console.error('Error deleting invoice', error)
+        }
+      },
+
       editInvoice() {
         if (this.editMode === 'editOverwrite' || this.editMode === 'editCopy') {
           this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
@@ -253,68 +286,174 @@ document.addEventListener('alpine:init', () => {
         this.editingPrice = ''
       },
 
-      addNewItem(item) {
-        // If it's an existing style/sample, item.id is a real ID (e.g. 1,2,3,...).
-        // If user typed a brand-new item, item.id is undefined => generate unique ID from timestamp.
-        if (typeof item.id === 'undefined') {
-          // e.g., "1685632351234" + random 3-digit => "1685632351234512"
-          const timestamp = Date.now() // Milliseconds
-          const random3 = Math.floor(Math.random() * 1000) // 0..999
-          item.id = Number(`${timestamp}${random3}`) // convert string -> number
+      addCustomItem() {
+        console.log('[addCustomItem] Adding a new custom item.')
+
+        // Validation
+        if (!this.newItem.name || this.newItem.name.trim() === '') {
+          callWarning('Missing Name', 'Please enter a name for the item.')
+          return
+        }
+        if (!this.newItem.price || isNaN(this.newItem.price) || this.newItem.price <= 0) {
+          callWarning('Invalid Price', 'Price must be a positive number.')
+          return
+        }
+        if (!this.newItem.quantity || isNaN(this.newItem.quantity) || this.newItem.quantity < 1) {
+          callWarning('Invalid Quantity', 'Quantity must be at least 1.')
+          return
+        }
+        if (
+          this.newItem.type === 'sample' &&
+          (!this.newItem.time || isNaN(this.newItem.time) || this.newItem.time <= 0)
+        ) {
+          callWarning('Invalid Time', 'Samples require a valid time greater than 0.')
+          return
         }
 
-        const originId = item.id
-        const itemType = item.type || 'style'
-        const qty = Number(item.quantity) >= 1 ? Number(item.quantity) : 1
+        // Helper function to round to two decimals
+        const roundToTwo = value => Alpine.store('price').roundToTwo(value)
 
+        // Generate unique ID for custom items
+        const timestamp = Date.now()
+        const random = Math.floor(Math.random() * 1000)
+        const originId = `${this.newItem.type}-custom-${timestamp}${random}`
+
+        const uniqueKey = `${this.newItem.type}-${originId}`
+        console.log(`[addCustomItem] Generated uniqueKey: ${uniqueKey}`)
+
+        const newItem = {
+          name: this.newItem.name.trim(),
+          type: this.newItem.type || 'style',
+          origin_id: originId,
+          price: roundToTwo(this.newItem.price),
+          time: this.newItem.type === 'sample' ? roundToTwo(this.newItem.time) : 0,
+          quantity: Math.floor(this.newItem.quantity), // Ensure it's an integer
+          frontEndId: uniqueKey,
+        }
+
+        console.log('[addCustomItem] Adding new item:', newItem)
+
+        this.invoiceItems.invoiceItems.push(newItem)
+
+        // Clear the form after adding a custom item
+        this.newItem = { type: '', name: '', price: null, quantity: null, time: null }
+        this.calculateTotals()
+        callSuccess('Custom item added.')
+      },
+
+      addDropdownItem(item) {
+        console.log('[addDropdownItem] Adding item from dropdown:', item)
+
+        if (!item.id) {
+          callError('Invalid item', 'The selected item is missing an ID.')
+          return
+        }
+
+        const originId = item.id // Match using DB ID
+        console.log(`[addDropdownItem] Checking for existing item with origin_id: ${originId}`)
+
+        // Ensure `invoiceItems.invoiceItems` is initialized
         if (!this.invoiceItems.invoiceItems) {
           this.invoiceItems.invoiceItems = []
         }
 
-        // Check if an item with (type, origin_id) is already present
-        const existingIndex = this.invoiceItems.invoiceItems.findIndex(
-          i => i.type === itemType && i.origin_id === originId,
-        )
-
-        // frontEndId for internal UI tracking
-        const uniqueKey = `${itemType}-${originId}`
-        console.log('Dropdown uniqueKey:', uniqueKey)
-        console.log(
-          'Current invoice item keys:',
-          this.invoiceItems.invoiceItems.map(i => i.frontEndId),
-        )
-        console.log('invoiceItems Obj with Arr: ', this.invoiceItems)
+        // Check if the item already exists in the invoice (match by origin_id)
+        const existingIndex = this.invoiceItems.invoiceItems.findIndex(i => i.origin_id === originId)
 
         if (existingIndex > -1) {
-          // Already in the invoice -> increment quantity
-          this.invoiceItems.invoiceItems[existingIndex].quantity += qty
-          console.log('Incremented quantity for item:', uniqueKey)
+          console.log(`[addDropdownItem] Item already exists (origin_id: ${originId}), increasing quantity.`)
+          this.invoiceItems.invoiceItems[existingIndex].quantity += 1
         } else {
-          // Brand-new item
+          console.log(`[addDropdownItem] Item does not exist, adding new.`)
+
+          // Ensure price and time are rounded properly
+          const roundedPrice = Alpine.store('price').roundToTwo(item.price || 0)
+          const roundedTime = item.type === 'sample' ? Alpine.store('price').roundToTwo(item.time || 0) : 0
+
+          // Create a new item entry
           const newItem = {
-            name: item.name || 'Custom Item',
-            type: itemType,
-            origin_id: originId, // guaranteed non-null
-            price: itemType === 'sample' ? parseFloat(item.price) * parseFloat(item.time || 0) : parseFloat(item.price),
-            time: itemType === 'sample' ? parseFloat(item.time || 0) : 0,
-            quantity: qty,
-            frontEndId: uniqueKey,
+            name: item.name,
+            type: item.type || 'style',
+            origin_id: originId, // Ensuring unique matching by DB ID
+            price: item.type === 'sample' ? roundedPrice * roundedTime : roundedPrice,
+            time: roundedTime,
+            quantity: 1,
+            frontEndId: `${item.type}-${originId}`, // Used for UI tracking, but not matching logic
           }
-          console.log('Added new item:', newItem)
+
+          console.log('[addDropdownItem] Adding new dropdown item:', newItem)
           this.invoiceItems.invoiceItems.push(newItem)
         }
 
-        // If item was from existingItems, reset its quantity
-        const dropdownIndex = this.existingItems.combinedItems.findIndex(x => x.id === originId && x.type === itemType)
+        // Reset quantity in dropdown selection
+        const dropdownIndex = this.existingItems.combinedItems.findIndex(x => x.id === item.id && x.type === item.type)
         if (dropdownIndex > -1) {
           this.existingItems.combinedItems[dropdownIndex].quantity = 1
         }
+        this.calculateTotals()
+        callSuccess('Item added from dropdown.')
+      },
+      calculateTotals() {
+        // (A) Sum line items ignoring discount
+        let baseSubtotal = 0
+        if (this.invoiceItems.invoiceItems?.length) {
+          this.invoiceItems.invoiceItems.forEach(item => {
+            // If “sample” items needed special handling (price*time), do it here.
+            // If item.price is already set up, just do price * quantity:
+            baseSubtotal += item.price * (item.quantity || 1)
+          })
+        }
+
+        // (B) Determine discount type & raw discount value
+        //     discount_type might be 0 = no discount, 1 = flat, 2 = percent
+        //     (Adjust to match how your code sets discount_type.)
+        const discountType = parseInt(this.invoiceItems.invoice.discount_type ?? 0, 10)
+        const discountRaw = parseFloat(this.invoiceItems.invoice.discount_value ?? 0) || 0
+
+        let discountAmount = 0
+        if (discountType !== 0 && discountRaw > 0) {
+          if (discountType === 2) {
+            // 2 => percentage discount, e.g. 10 => 10%
+            discountAmount = (baseSubtotal * discountRaw) / 100
+          } else {
+            // 1 => flat discount
+            discountAmount = discountRaw
+          }
+          // Optional: clamp discount if it exceeds subtotal
+          if (discountAmount > baseSubtotal) {
+            discountAmount = baseSubtotal
+          }
+        }
+
+        // (C) discountedSubtotal = baseSubtotal - discountAmount
+        const discountedSubtotal = baseSubtotal - discountAmount
+
+        // (D) Calculate VAT from vat_percent on discountedSubtotal
+        //     e.g. if vat_percent=20 => 20% => we do (20 / 100)
+        const vatPercent = parseFloat(this.invoiceItems.invoice.vat_percent ?? 0) || 0
+        const vatAmount = discountedSubtotal * (vatPercent / 100)
+
+        // (E) Final total = discountedSubtotal + VAT
+        const finalTotal = discountedSubtotal + vatAmount
+
+        // (F) Round if needed (you already have a rounding function in Alpine.store('price'))
+        const round = value => Alpine.store('price').roundToTwo(value)
+
+        // (G) Assign computed values back to the invoice object
+        this.invoiceItems.invoice.total_pre_discount = round(baseSubtotal) // base sum, no discount
+        this.invoiceItems.invoice.discount_amount = round(discountAmount) // how much discount was applied
+        this.invoiceItems.invoice.subtotal = round(discountedSubtotal) // post-discount, pre-VAT
+        this.invoiceItems.invoice.vat = round(vatAmount) // numeric VAT
+        this.invoiceItems.invoice.total = round(finalTotal) // final invoice total
       },
 
-      // Inc/Dec/Remove
+      // =================== EXAMPLES OF CALLING IT ===================
       incrementInvoiceItem(uniqueKey) {
         const item = this.invoiceItems.invoiceItems.find(i => i.frontEndId === uniqueKey)
-        if (item) item.quantity = (item.quantity || 1) + 1
+        if (item) {
+          item.quantity += 1
+          this.calculateTotals()
+        }
       },
       decrementInvoiceItem(uniqueKey) {
         const item = this.invoiceItems.invoiceItems.find(i => i.frontEndId === uniqueKey)
@@ -323,15 +462,17 @@ document.addEventListener('alpine:init', () => {
             item.quantity -= 1
           } else {
             this.removeInvoiceItem(uniqueKey)
+            return // Because removeInvoiceItem() also calls calculateTotals()
           }
+          this.calculateTotals()
         }
       },
       removeInvoiceItem(uniqueKey) {
-        if (confirm('Remove item from invoice?')) {
+        if (confirm('Remove this item?')) {
           this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(i => i.frontEndId !== uniqueKey)
+          this.calculateTotals()
         }
       },
-
       // Filter Items
       searchItems() {
         const query = this.existingItems.searchQuery.toLowerCase()

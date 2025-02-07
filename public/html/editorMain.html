@@ -37,49 +37,73 @@
             <div class="mr-2 flex flex-col text-left text-xs">
               <div x-text="item.client_name"></div>
               <!-- Invoice date -->
-              <div x-text="item.date"></div>
+              <div x-text="item.date" class="mt-1"></div>
               <!-- Invoice Nubmer -->
-              <div class="flex text-xs" x-text="item.invoice_number"></div>
+              <div class="flex text-xs mt-1" x-text="item.invoice_number"></div>
             </div>
-            <div class="flex">
-              <!-- Tooltip -->
-              <div x-data="tooltip('Mark invoice as paid/unpaid. New invoices default to unpaid')" class="relative">
-                <div class="absolute top-0 right-0">
-                  <span class="w-4 h-4 flex items-center justify-center border border-vls rounded-full text-xs">?</span>
+            <div class="flex flex-col justify-between h-full">
+              <div class="flex">
+                <!-- Tooltip -->
+                <div x-data="tooltip('Mark invoice as paid/unpaid. New invoices default to unpaid')" class="relative">
+                  <div class="absolute top-0 right-0">
+                    <span class="w-4 h-4 flex items-center justify-center border border-vls rounded-full text-xs">
+                      ?
+                    </span>
+                  </div>
+                </div>
+                <!-- Toggle -->
+                <div x-data="{ switchOn: item.invoice_status === 'paid' }">
+                  <input :id="'toggleId-' + item.id" type="checkbox" name="switch" class="hidden" :checked="switchOn" />
+                  <button
+                    x-ref="switchButton"
+                    type="button"
+                    @click="switchOn = !switchOn; $store.edit.updatePaid(item.id, switchOn); $event.stopPropagation()"
+                    :class="switchOn ? 'bg-vla2 dark:bg-vda2/80' : 'bg-vlp2 dark:bg-vds3light '"
+                    class="relative inline-flex h-5 py-0.5 ml-4 focus:outline-none rounded-full w-9"
+                    x-cloak>
+                    <span
+                      :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'"
+                      class="w-4 h-4 duration-200 ease-in-out bg-white dark:bg-vds rounded-full shadow-md"></span>
+                  </button>
+                  <label
+                    @click="$refs.switchButton.click(); $refs.switchButton.focus(); $event.stopPropagation()"
+                    :id="$id('switch')"
+                    :class="{ 'text-blue-600': switchOn, 'text-gray-100': !switchOn }"
+                    class="text-sm select-none"
+                    x-cloak></label>
                 </div>
               </div>
-              <!-- Toggle -->
-              <div x-data="{ switchOn: item.invoice_status === 'paid' }">
-                <input :id="'toggleId-' + item.id" type="checkbox" name="switch" class="hidden" :checked="switchOn" />
-
+              <div class="flex justify-end items-center mt-1.5">
+                <div
+                  x-data="tooltip(`Subtotal: £${item.subtotal}
+                    VAT (${item.vat_percent}%): £${item.vat}
+                    Discount: ${item.discount_type === 1 ? item.discVal_ifPercent + '%' : '£' + item.discount_value}
+                    Total: £${item.total}
+                    Deposit: ${item.deposit_type === 1 ? item.depoVal_ifPercent + '%' : '£' + item.deposit_value}`)"
+                  class="mr-1 table-interaction-icon-blue">
+                  <svg class="size-5">
+                    <use href="/icons/icons2.svg#deets-ic" />
+                  </svg>
+                </div>
                 <button
-                  x-ref="switchButton"
-                  type="button"
-                  @click="switchOn = !switchOn; $store.edit.updatePaid(item.id, switchOn); $event.stopPropagation()"
-                  :class="switchOn ? 'bg-vla2 dark:bg-vda2/80' : 'bg-vlp2 dark:bg-vds3light '"
-                  class="relative inline-flex h-5 py-0.5 ml-4 focus:outline-none rounded-full w-9"
-                  x-cloak>
-                  <span
-                    :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'"
-                    class="w-4 h-4 duration-200 ease-in-out bg-white dark:bg-vds rounded-full shadow-md"></span>
+                  class="table-interaction-icon-red"
+                  @click="$store.edit.deleteInvoice(item.id); $event.stopPropagation()">
+                  <svg class="size-5">
+                    <use href="/icons/icons.svg#trash" />
+                  </svg>
                 </button>
-
-                <label
-                  @click="$refs.switchButton.click(); $refs.switchButton.focus(); $event.stopPropagation()"
-                  :id="$id('switch')"
-                  :class="{ 'text-blue-600': switchOn, 'text-gray-100': !switchOn }"
-                  class="text-sm select-none"
-                  x-cloak></label>
               </div>
             </div>
           </div>
         </template>
       </div>
-      <div class="mt-4 text-center" x-show="$store.edit.hasMore">
-        <button
-          @click="$store.edit.fetchListById()"
-          class="modal-btn-prim ml-4 mb-4"
-          x-text="$store.edit.loading ? 'Loading...' : 'Load More'"></button>
+      <div class="flex w-full justify-between p-4">
+        <div class="mt-4 text-center" x-show="$store.edit.hasMore">
+          <button
+            @click="$store.edit.fetchListById()"
+            class="modal-btn-prim"
+            x-text="$store.edit.loading ? 'Loading...' : 'Load More'"></button>
+        </div>
       </div>
     </div>
 

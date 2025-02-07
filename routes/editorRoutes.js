@@ -60,6 +60,7 @@ router.get('/invoice/:clientId/:invoiceId', (req, res) => {
   })
 })
 
+// Gets invoice book list of invoices and orders them
 router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
   const page = parseInt(req.query.page) || 1
@@ -95,6 +96,7 @@ router.get('/list/:clientId', (req, res) => {
     )
   })
 })
+// Paid/Unpaid status
 router.post('/invoice/:invoiceId/status', (req, res) => {
   const { invoiceId } = req.params
 
@@ -120,6 +122,17 @@ router.post('/invoice/:invoiceId/status', (req, res) => {
       }
       res.json({ success: true, newStatus })
     })
+  })
+})
+router.delete('/invoice/delete/:invoiceId', (req, res) => {
+  const { invoiceId } = req.params
+  const deleteQuery = 'DELETE FROM invoices WHERE id = ?'
+  db.run(deleteQuery, [invoiceId], function (err) {
+    if (err) {
+      res.status(500).send({ error: 'Failed to delete invoice' })
+    } else {
+      res.status(200).send({ message: 'Invoice deleted successfully' })
+    }
   })
 })
 

@@ -9,9 +9,6 @@ export default function editorMain() {
 
       // Fetch the edit-view HTML
       this.fileFetcher('/html/editor/editView.html', '#edit-view')
-
-      // Optionally load the invoice list once here - leads to nasty duplication
-      // Alpine.store('edit').fetchListById()
     },
     fileFetcher(file, target) {
       fetch(file)

@@ -934,6 +934,11 @@ video {
   height: 1.75rem;
 }
 
+.size-3 {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 .h-0 {
   height: 0px;
 }
@@ -978,6 +983,10 @@ video {
   max-height: 20rem;
 }
 
+.max-h-96 {
+  max-height: 24rem;
+}
+
 .max-h-\[100\%\] {
   max-height: 100%;
 }
@@ -986,56 +995,24 @@ video {
   max-height: 300px;
 }
 
-.max-h-\[90\%\] {
-  max-height: 90%;
-}
-
-.max-h-\[calc\(80vh-200px\)\] {
-  max-height: calc(80vh - 200px);
-}
-
-.max-h-72 {
-  max-height: 18rem;
-}
-
-.max-h-52 {
-  max-height: 13rem;
-}
-
-.max-h-96 {
-  max-height: 24rem;
-}
-
-.max-h-\[400px\] {
-  max-height: 400px;
-}
-
-.max-h-60 {
-  max-height: 15rem;
-}
-
-.max-h-\[70\%\] {
-  max-height: 70%;
-}
-
-.max-h-full {
-  max-height: 100%;
+.max-h-\[50vh\] {
+  max-height: 50vh;
 }
 
 .max-h-\[60\%\] {
   max-height: 60%;
 }
 
+.max-h-\[90\%\] {
+  max-height: 90%;
+}
+
 .max-h-\[90vh\] {
   max-height: 90vh;
 }
 
-.max-h-\[50vh\] {
-  max-height: 50vh;
-}
-
-.max-h-\[40vh\] {
-  max-height: 40vh;
+.max-h-\[calc\(80vh-200px\)\] {
+  max-height: calc(80vh - 200px);
 }
 
 .\!w-11\/12 {
@@ -1130,6 +1107,10 @@ video {
   width: 15%;
 }
 
+.w-\[20\%\] {
+  width: 20%;
+}
+
 .w-\[25\%\] {
   width: 25%;
 }
@@ -1191,20 +1172,8 @@ video {
   width: 100vw;
 }
 
-.w-\[cal\(100\%-10px\)\] {
-  width: cal(100%-10px);
-}
-
-.w-\[calc\(100\%-50px\)\] {
-  width: calc(100% - 50px);
-}
-
-.w-\[\] {
-  width: ;
-}
-
-.w-\[20\%\] {
-  width: 20%;
+.w-\[40\%\] {
+  width: 40%;
 }
 
 .min-w-0 {
@@ -1426,6 +1395,10 @@ video {
 
 .gap-8 {
   gap: 2rem;
+}
+
+.gap-1 {
+  gap: 0.25rem;
 }
 
 .space-x-3 > :not([hidden]) ~ :not([hidden]) {
