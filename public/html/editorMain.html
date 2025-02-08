@@ -18,9 +18,10 @@
     <!-- Invoice List on the left -->
     <div
       class="invoice-list-container relative flex flex-col h-screen max-h-[90%] w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp2">
-      <!-- Sticky Header -->
       <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp2 shadow-md">
-        <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
+        <div class="w-full flex justify-between">
+          <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
+        </div>
         <input type="text" placeholder="Search invoices..." class="srch-style" />
       </div>
       <!-- Scrollable List -->
@@ -42,22 +43,17 @@
               <div class="flex text-xs mt-1" x-text="item.invoice_number"></div>
             </div>
             <div class="flex flex-col justify-between h-full">
-              <div class="flex">
-                <!-- Tooltip -->
-                <div x-data="tooltip('Mark invoice as paid/unpaid. New invoices default to unpaid')" class="relative">
-                  <div class="absolute top-0 right-0">
-                    <span class="w-4 h-4 flex items-center justify-center border border-vls rounded-full text-xs">
-                      ?
-                    </span>
-                  </div>
-                </div>
+              <div class="flex justify-end items-center gap-4">
                 <!-- Toggle -->
-                <div x-data="{ switchOn: item.invoice_status === 'paid' }">
+                <div x-data="{ switchOn: item.invoice_status === 'paid' }" class="flex self-start">
                   <input :id="'toggleId-' + item.id" type="checkbox" name="switch" class="hidden" :checked="switchOn" />
                   <button
                     x-ref="switchButton"
                     type="button"
-                    @click="switchOn = !switchOn; $store.edit.updatePaid(item.id, switchOn); $event.stopPropagation()"
+                    @click="switchOn = !switchOn; 
+                    $store.edit.updatePaid(item.id, switchOn);  
+                    switchOn ? callSuccess('Invoice changed to paid') : callInfo('Invoice changed to unpaid');
+                    $event.stopPropagation(); "
                     :class="switchOn ? 'bg-vla2 dark:bg-vda2/80' : 'bg-vlp2 dark:bg-vds3light '"
                     class="relative inline-flex h-5 py-0.5 ml-4 focus:outline-none rounded-full w-9"
                     x-cloak>
@@ -74,24 +70,26 @@
                 </div>
               </div>
               <div class="flex justify-end items-center mt-1.5">
-                <div
-                  x-data="tooltip(`Subtotal: £${item.subtotal}
-                    VAT (${item.vat_percent}%): £${item.vat}
-                    Discount: ${item.discount_type === 1 ? item.discVal_ifPercent + '%' : '£' + item.discount_value}
-                    Total: £${item.total}
-                    Deposit: ${item.deposit_type === 1 ? item.depoVal_ifPercent + '%' : '£' + item.deposit_value}`)"
-                  class="mr-1 table-interaction-icon-blue">
-                  <svg class="size-5">
-                    <use href="/icons/icons2.svg#deets-ic" />
-                  </svg>
+                <div class="flex gap-4 items-center">
+                  <div
+                    x-data="tooltip(`Subtotal: £${item.subtotal}
+                      VAT (${item.vat_percent}%): £${item.vat}
+                      Discount: ${item.discount_type === 1 ? item.discVal_ifPercent + '%' : '£' + item.discount_value}
+                      Total: £${item.total}
+                      Deposit: ${item.deposit_type === 1 ? item.depoVal_ifPercent + '%' : '£' + item.deposit_value}`)"
+                    class="table-interaction-icon-blue">
+                    <svg class="size-5">
+                      <use href="/icons/icons2.svg#deets-ic" />
+                    </svg>
+                  </div>
+                  <button
+                    class="table-interaction-icon-red"
+                    @click="$store.edit.deleteInvoice(item.id); $event.stopPropagation()">
+                    <svg class="size-5">
+                      <use href="/icons/icons.svg#trash" />
+                    </svg>
+                  </button>
                 </div>
-                <button
-                  class="table-interaction-icon-red"
-                  @click="$store.edit.deleteInvoice(item.id); $event.stopPropagation()">
-                  <svg class="size-5">
-                    <use href="/icons/icons.svg#trash" />
-                  </svg>
-                </button>
               </div>
             </div>
           </div>

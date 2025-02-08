@@ -219,24 +219,26 @@ document.addEventListener('alpine:init', () => {
           callWarning('Cannot delete while editing', 'Complete edit and try again')
           return
         }
-        try {
-          let res = await fetch(`/editor/invoice/delete/${invoiceId}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-          })
-          if (!res.ok) {
-            throw new Error(`Error deleting invoice: ${res.statusText}`)
-          }
+        if (confirm('This will delete invoice and its items. Proceed?')) {
+          try {
+            let res = await fetch(`/editor/invoice/delete/${invoiceId}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+            })
+            if (!res.ok) {
+              throw new Error(`Error deleting invoice: ${res.statusText}`)
+            }
 
-          // Remove the deleted invoice from the local array $store.edit.showInvoiceItems
-          this.listItems = this.listItems.filter(i => i.id !== invoiceId)
-          this.showInvoiceItems = false
-          this.invoiceItems = { invoiceItems: [] }
-          this.activeItemId = null
-          callInfo('Invoice deleted')
-        } catch (error) {
-          callError('Invoice does not exist', 'Refresh page and try again or call support.')
-          console.error('Error deleting invoice', error)
+            // Remove the deleted invoice from the local array $store.edit.showInvoiceItems
+            this.listItems = this.listItems.filter(i => i.id !== invoiceId)
+            this.showInvoiceItems = false
+            this.invoiceItems = { invoiceItems: [] }
+            this.activeItemId = null
+            callInfo('Invoice deleted')
+          } catch (error) {
+            callError('Invoice does not exist', 'Refresh page and try again or call support.')
+            console.error('Error deleting invoice', error)
+          }
         }
       },
 
@@ -447,7 +449,6 @@ document.addEventListener('alpine:init', () => {
         this.invoiceItems.invoice.total = round(finalTotal) // final invoice total
       },
 
-      // =================== EXAMPLES OF CALLING IT ===================
       incrementInvoiceItem(uniqueKey) {
         const item = this.invoiceItems.invoiceItems.find(i => i.frontEndId === uniqueKey)
         if (item) {

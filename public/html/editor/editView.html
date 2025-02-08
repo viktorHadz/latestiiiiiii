@@ -74,60 +74,64 @@
         </div>
       </div>
 
-      <!-- Prices -->
-      <div
-        class="mb-2 flex flex-col w-full justify-between rounded border bg-vlp shadow dark:bg-vdp2 border-vls/40 p-2">
-        <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
-        <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
-
-        <!-- Show Discount only if discount_type != 0 -->
-        <template
-          x-if="$store.edit.invoiceItems.invoice?.discount_type && $store.edit.invoiceItems.invoice?.discount_type !== 0">
-          <!-- If discount_type === 1 -> Flat -->
-          <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 1">
-            <p x-text="'Discount: £' + $store.edit.invoiceItems.invoice?.discount_value"></p>
+      <div class="flex">
+        <!-- Prices -->
+        <div
+          class="text-sm flex flex-col w-[30%] p-4 gap-4 mr-2 bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow">
+          <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
+          <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
+          <!-- Show Discount only if discount_type != 0 -->
+          <template
+            x-if="$store.edit.invoiceItems.invoice?.discount_type && $store.edit.invoiceItems.invoice?.discount_type !== 0">
+            <!-- If discount_type === 1 -> Flat -->
+            <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 1">
+              <p x-text="'Discount: £' + $store.edit.invoiceItems.invoice?.discount_value"></p>
+            </template>
+            <!-- If discount_type === 2 -> Percent -->
+            <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 2">
+              <p x-text="'Discount: ' + $store.edit.invoiceItems.invoice?.discVal_ifPercent + '%'"></p>
+            </template>
           </template>
-
-          <!-- If discount_type === 2 -> Percent -->
-          <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 2">
-            <p x-text="'Discount: ' + $store.edit.invoiceItems.invoice?.discVal_ifPercent + '%'"></p>
+          <!-- Show Deposit only if deposit_type != 0 -->
+          <template
+            x-if="$store.edit.invoiceItems.invoice?.deposit_type && $store.edit.invoiceItems.invoice?.deposit_type !== 0">
+            <!-- If deposit_type === 1 -> Flat -->
+            <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 1">
+              <p x-text="'Deposit: £' + $store.edit.invoiceItems.invoice?.deposit_value"></p>
+            </template>
+            <!-- If deposit_type === 2 -> Percent -->
+            <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 2">
+              <p x-text="'Deposit: ' + $store.edit.invoiceItems.invoice?.depoVal_ifPercent + '%'"></p>
+            </template>
           </template>
-        </template>
+          <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
+        </div>
+        <!-- EDIT DISCOUNT DEPOSIT NOTE PDF-->
 
-        <!-- Show Deposit only if deposit_type != 0 -->
-        <template
-          x-if="$store.edit.invoiceItems.invoice?.deposit_type && $store.edit.invoiceItems.invoice?.deposit_type !== 0">
-          <!-- If deposit_type === 1 -> Flat -->
-          <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 1">
-            <p x-text="'Deposit: £' + $store.edit.invoiceItems.invoice?.deposit_value"></p>
-          </template>
-
-          <!-- If deposit_type === 2 -> Percent -->
-          <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 2">
-            <p x-text="'Deposit: ' + $store.edit.invoiceItems.invoice?.depoVal_ifPercent + '%'"></p>
-          </template>
-        </template>
-
-        <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
-        <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note"></p>
-      </div>
-
-      <div class="flex gap-4 justify-end">
-        <button
-          x-show="$store.edit.edited"
-          @click="$store.pdfStore.generateInvoice()"
-          class="modal-btn-sec flex items-center">
-          <svg class="size-4 mr-1">
-            <use href="/icons/icons.svg#download-document" />
-          </svg>
-          PDF
-        </button>
-        <button @click="$store.edit.openEditModal = true" class="modal-btn-prim flex">
-          <svg class="size-4">
-            <use href="/icons/icons.svg#editor" />
-          </svg>
-          Edit Invoice
-        </button>
+        <div
+          class="flex flex-col w-[70%] p-4 items-end justify-end bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40">
+          <div
+            class="w-full border border-vls/40 text-vls3 dark:text-vds rounded p-4 mb-4 flex-grow overflow-y-auto bg-white dark:bg-vdp shadow-md">
+            <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note" class="text-xs"></p>
+          </div>
+          <div class="flex gap-4 justify-end">
+            <button
+              x-show="$store.edit.edited"
+              @click="$store.pdfStore.generateInvoice()"
+              class="modal-btn-sec flex items-center">
+              <svg class="size-4 mr-1">
+                <use href="/icons/icons.svg#download-document" />
+              </svg>
+              PDF
+            </button>
+            <button @click="$store.edit.openEditModal = true" class="modal-btn-prim flex">
+              <svg class="size-4">
+                <use href="/icons/icons.svg#editor" />
+              </svg>
+              Edit Invoice
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </template>
@@ -200,11 +204,11 @@
             <tbody class="table-body-style table-scrollbar !text-sm">
               <template x-for="item in $store.edit.invoiceItems.invoiceItems" :key="item.frontEndId">
                 <tr class="border-hover-ring-efect">
-                  <td class="p-2 w-[45%] text-left round-left-border" x-text="item.name"></td>
-                  <td class="p-2 w-[10%] text-left" x-text="item.type"></td>
-                  <td class="p-2 w-[10%] text-right" x-text="item.quantity"></td>
-                  <td class="p-2 w-[10%] text-right" x-text="'£' + item.price"></td>
-                  <td class="p-2 w-[15%] text-right round-right-border">
+                  <td class="p-1 w-[45%] text-left round-left-border" x-text="item.name"></td>
+                  <td class="p-1 w-[10%] text-left" x-text="item.type"></td>
+                  <td class="p-1 w-[10%] text-right" x-text="item.quantity"></td>
+                  <td class="p-1 w-[10%] text-right" x-text="'£' + item.price"></td>
+                  <td class="p-1 w-[15%] text-right round-right-border">
                     <div class="flex justify-end gap-1">
                       <button
                         @click="$store.edit.incrementInvoiceItem(item.frontEndId)"
@@ -235,63 +239,84 @@
           </table>
         </div>
       </div>
-
       <!-- Editable Prices -->
-      <div
-        class="mb-2 flex flex-col w-full justify-between rounded border border-vls/40 bg-vlp shadow dark:bg-vdp2 p-2">
-        <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
-        <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
-
-        <!-- Discount -->
-        <template
-          x-if="$store.edit.invoiceItems.invoice?.discount_type && $store.edit.invoiceItems.invoice?.discount_type !== 0">
-          <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 1">
-            <p>
-              Discount (Flat):
-              <span x-text="'£' + $store.edit.invoiceItems.invoice?.discount_value"></span>
-            </p>
+      <div class="flex">
+        <div
+          class="text-sm flex flex-col w-[30%] p-4 gap-4 mr-2 bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow">
+          <p x-text="'Subtotal: £' + $store.edit.invoiceItems.invoice?.subtotal"></p>
+          <p x-text="'VAT: £' + $store.edit.invoiceItems.invoice?.vat"></p>
+          <!-- Discount -->
+          <template
+            x-if="$store.edit.invoiceItems.invoice?.discount_type && $store.edit.invoiceItems.invoice?.discount_type !== 0">
+            <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 1">
+              <p>
+                Discount (Flat):
+                <span x-text="'£' + $store.edit.invoiceItems.invoice?.discount_value"></span>
+              </p>
+            </template>
+            <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 2">
+              <p>
+                Discount (Percent):
+                <span x-text="$store.edit.invoiceItems.invoice?.discVal_ifPercent + '%'"></span>
+              </p>
+            </template>
           </template>
-          <template x-if="$store.edit.invoiceItems.invoice?.discount_type === 2">
-            <p>
-              Discount (Percent):
-              <span x-text="$store.edit.invoiceItems.invoice?.discVal_ifPercent + '%'"></span>
-            </p>
+          <!-- Deposit -->
+          <template
+            x-if="$store.edit.invoiceItems.invoice?.deposit_type && $store.edit.invoiceItems.invoice?.deposit_type !== 0">
+            <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 1">
+              <p>
+                Deposit (Flat):
+                <span x-text="'£' + $store.edit.invoiceItems.invoice?.deposit_value"></span>
+              </p>
+            </template>
+            <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 2">
+              <p>
+                Deposit (Percent):
+                <span x-text="$store.edit.invoiceItems.invoice?.depoVal_ifPercent + '%'"></span>
+              </p>
+            </template>
           </template>
-        </template>
-
-        <!-- Deposit -->
-        <template
-          x-if="$store.edit.invoiceItems.invoice?.deposit_type && $store.edit.invoiceItems.invoice?.deposit_type !== 0">
-          <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 1">
-            <p>
-              Deposit (Flat):
-              <span x-text="'£' + $store.edit.invoiceItems.invoice?.deposit_value"></span>
-            </p>
-          </template>
-          <template x-if="$store.edit.invoiceItems.invoice?.deposit_type === 2">
-            <p>
-              Deposit (Percent):
-              <span x-text="$store.edit.invoiceItems.invoice?.depoVal_ifPercent + '%'"></span>
-            </p>
-          </template>
-        </template>
-
-        <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
-      </div>
-      <div class="flex justify-between">
-        <!-- Cancel edit -->
-        <button @click="$store.edit.cancelEdit()" class="modal-btn-sec flex items-center">Cancel</button>
-        <div class="flex">
-          <!-- Add Item Button -->
-          <button
-            @click="$store.edit.existingItems.showItemModal = true"
-            class="modal-btn-prim flex items-center justify-center mr-4">
-            Add Item
-          </button>
-          <!-- Save edit -->
-          <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !text-sm">
-            Save Invoice
-          </button>
+          <p x-text="'Total: £' + $store.edit.invoiceItems.invoice?.total"></p>
+        </div>
+        <div
+          class="flex flex-col w-[70%] p-4 items-end justify-end bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40">
+          <div
+            class="w-full border border-vls/40 text-vls3 dark:text-vds rounded p-2 mb-4 flex-grow overflow-y-auto bg-white dark:bg-vdp shadow-md">
+            <div class="flex justify-between">
+              <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note" class="text-xs"></p>
+              <div x-data="tooltip('Double click note to edit')" class="cursor-default">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between w-full">
+            <!-- Cancel edit -->
+            <button @click="$store.edit.cancelEdit()" class="modal-btn-sec flex items-center">Cancel</button>
+            <div class="flex">
+              <!-- Add Item Button -->
+              <button
+                @click="$store.edit.existingItems.showItemModal = true"
+                class="modal-btn-prim flex items-center justify-center mr-4">
+                Add Item
+              </button>
+              <!-- Save edit -->
+              <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !text-sm">
+                Save Invoice
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
