@@ -12,7 +12,7 @@
   </head>
 
   <body id="bodyElement">
-    <div x-cloak x-data="tabManager" class="flex h-screen">
+    <div x-cloak x-data="tabManager" class="flex h-[100vh]">
       <!-- MARK: SIDEBAR -->
       <div
         :class="{'w-72': sideBar, 'w-16': !sideBar}"
@@ -114,13 +114,13 @@
         </div>
       </div>
       <!--MARK: VIEWS -->
-      <div class="flex flex-col w-full p-6 overflow-auto bg-[#fafafa] will-change-auto dark:bg-vdp2">
-        <div class="w-full h-full">
+      <div class="flex flex-col w-full p-6 overflow-auto bg-[#fafafa] dark:bg-vdp2">
+        <div class="flex-1 min-h-0">
           <!-- Main View -->
           <div
             x-show="$store.clients.clients.length > 0 && $store.clients.selectedClient !== null"
             x-html="tabHtml"
-            class="xl:max-w-[60%] mx-auto"></div>
+            class="2xl:max-w-[80%] xl:max-w-[70%] mx-auto flex flex-col h-full min-h-0"></div>
           <!-- MARK: CREATE CLIENT MODAL -->
           <div
             x-show="$store.clients.showAddClientModal"

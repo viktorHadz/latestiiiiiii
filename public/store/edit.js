@@ -395,58 +395,70 @@ document.addEventListener('alpine:init', () => {
         this.calculateTotals()
         callSuccess('Item added from dropdown.')
       },
+
       calculateTotals() {
-        // (A) Sum line items ignoring discount
+        const round = value => Alpine.store('price').roundToTwo(value)
+
+        // (A) Compute base subtotal (sum of item prices * quantity)
         let baseSubtotal = 0
         if (this.invoiceItems.invoiceItems?.length) {
           this.invoiceItems.invoiceItems.forEach(item => {
-            // If “sample” items needed special handling (price*time), do it here.
-            // If item.price is already set up, just do price * quantity:
             baseSubtotal += item.price * (item.quantity || 1)
           })
         }
+        // (B) Store subtotal **before discount** for frontend display
+        const preDiscountSubtotal = round(baseSubtotal)
 
-        // (B) Determine discount type & raw discount value
-        //     discount_type might be 0 = no discount, 1 = flat, 2 = percent
-        //     (Adjust to match how your code sets discount_type.)
-        const discountType = parseInt(this.invoiceItems.invoice.discount_type ?? 0, 10)
-        const discountRaw = parseFloat(this.invoiceItems.invoice.discount_value ?? 0) || 0
-
+        // (C) Determine discount
+        const discountType = this.invoiceItems.invoice.discount_type
+        let discountRaw = this.invoiceItems.invoice.discount_value
         let discountAmount = 0
-        if (discountType !== 0 && discountRaw > 0) {
-          if (discountType === 2) {
-            // 2 => percentage discount, e.g. 10 => 10%
-            discountAmount = (baseSubtotal * discountRaw) / 100
-          } else {
-            // 1 => flat discount
-            discountAmount = discountRaw
-          }
-          // Optional: clamp discount if it exceeds subtotal
-          if (discountAmount > baseSubtotal) {
-            discountAmount = baseSubtotal
-          }
+
+        if (discountType === 1) {
+          // Percentage discount (apply to subtotal)
+          discountAmount = (baseSubtotal * discountRaw) / 100
+          this.invoiceItems.invoice.discVal_ifPercent = round(discountAmount)
+        } else if (discountType === 0) {
+          // Flat discount
+          discountAmount = discountRaw
         }
 
-        // (C) discountedSubtotal = baseSubtotal - discountAmount
+        // (D) Calculate discounted subtotal
         const discountedSubtotal = baseSubtotal - discountAmount
 
-        // (D) Calculate VAT from vat_percent on discountedSubtotal
-        //     e.g. if vat_percent=20 => 20% => we do (20 / 100)
-        const vatPercent = parseFloat(this.invoiceItems.invoice.vat_percent ?? 0) || 0
+        // (E) VAT (calculated from subtotal after discount)
+        const vatPercent = this.invoiceItems.invoice.vat_percent
         const vatAmount = discountedSubtotal * (vatPercent / 100)
 
-        // (E) Final total = discountedSubtotal + VAT
-        const finalTotal = discountedSubtotal + vatAmount
+        // (F) Compute total **before deposit**
+        const baseTotal = discountedSubtotal + vatAmount
+        // (G) Compute deposit based on the final total
+        const depositType = this.invoiceItems.invoice.deposit_type
+        const depositRaw = this.invoiceItems.invoice.deposit_value
+        let depositAmount = 0
 
-        // (F) Round if needed (you already have a rounding function in Alpine.store('price'))
-        const round = value => Alpine.store('price').roundToTwo(value)
+        if (depositType === 1) {
+          // Percentage deposit (apply to final total)
+          depositAmount = (total * depositRaw) / 100
 
-        // (G) Assign computed values back to the invoice object
-        this.invoiceItems.invoice.total_pre_discount = round(baseSubtotal) // base sum, no discount
-        this.invoiceItems.invoice.discount_amount = round(discountAmount) // how much discount was applied
-        this.invoiceItems.invoice.subtotal = round(discountedSubtotal) // post-discount, pre-VAT
-        this.invoiceItems.invoice.vat = round(vatAmount) // numeric VAT
-        this.invoiceItems.invoice.total = round(finalTotal) // final invoice total
+          this.invoiceItems.invoice.depoVal_ifPercent = round(depositAmount)
+        } else if (depositType === 0) {
+          // Flat deposit
+          depositAmount = depositRaw
+        }
+
+        // (H) Assign computed values back to invoice object
+        this.invoiceItems.invoice.total_pre_discount = preDiscountSubtotal // Subtotal before discount
+        this.invoiceItems.invoice.discount_value = round(discountRaw) // Correct discount value
+        this.invoiceItems.invoice.discount_amount = round(discountAmount) // Correct discount calculation
+        this.invoiceItems.invoice.subtotal = round(discountedSubtotal) // Subtotal after discount
+        this.invoiceItems.invoice.vat = round(vatAmount) // VAT after discount
+        this.invoiceItems.invoice.total_before_deposit = round(baseTotal) // Total
+        this.invoiceItems.invoice.total_pre_discount = round(baseTotal) // Total
+        this.invoiceItems.invoice.total = round(baseTotal) // Total
+        this.invoiceItems.invoice.deposit_value = round(depositAmount) // Deposit
+
+        console.log('Recalculated totals ==> ', this.invoiceItems.invoice)
       },
 
       incrementInvoiceItem(uniqueKey) {

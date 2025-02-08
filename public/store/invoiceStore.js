@@ -403,7 +403,13 @@ document.addEventListener('alpine:init', () => {
         this.totals.depositType = this.totals.depositType === 1 ? 0 : 1
         const newType = this.totals.depositType === 1 ? 'Percentage' : 'Flat'
       },
-
+      /*
+        subtotal 90
+        discount 10% = 9 
+        discountedSubtotal 81
+        vat 20% = 16.2
+        total 97.2
+      */
       addNote() {
         if (this.totals.note.length !== 0 || this.totals.note === null) {
           callWarning('Cannot add note', 'Remove existing note to add new.')

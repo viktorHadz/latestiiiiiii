@@ -1,5 +1,5 @@
 <!-- editorMain.html -->
-<div x-data="editorMain" class="px-12 py-4">
+<div x-data="editorMain" class="flex flex-col w-full h-full min-h-0">
   <!-- Top bar -->
   <div
     class="p-2 mb-12 align-baseline border justify-between flex rounded border-vls/40 dark:border-vls/40 dark:bg-vdp bg-white shadow">
@@ -14,10 +14,10 @@
       x-text="$store.clients.selectedClient.name || 'No selected client'"></h3>
   </div>
 
-  <div class="flex w-full">
+  <div class="flex flex-1 min-h-0">
     <!-- Invoice List on the left -->
     <div
-      class="invoice-list-container relative flex flex-col h-screen max-h-[90%] w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp2">
+      class="invoice-list-container flex flex-col w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp2">
       <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp2 shadow-md">
         <div class="w-full flex justify-between">
           <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
@@ -71,6 +71,17 @@
               </div>
               <div class="flex justify-end items-center mt-1.5">
                 <div class="flex gap-4 items-center">
+                  <div x-show="item && item.deposit_value > 0">
+                    <div
+                      x-data="tooltip('Pay this invoice’s deposit and generate a new invoice with the remaining amount.')">
+                      <button class="table-interaction-icon-red hover:!text-vla" @click="$event.stopPropagation()">
+                        <svg class="size-5">
+                          <use href="/icons/icons.svg#cash-bill" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
                   <div
                     x-data="tooltip(`Subtotal: £${item.subtotal}
                       VAT (${item.vat_percent}%): £${item.vat}
@@ -106,6 +117,6 @@
     </div>
 
     <!-- Edit View container (fetched in editorMain.js) -->
-    <div id="edit-view" class="w-[70%]"></div>
+    <div id="edit-view" class="w-[95%]"></div>
   </div>
 </div>
