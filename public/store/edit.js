@@ -395,70 +395,79 @@ document.addEventListener('alpine:init', () => {
         this.calculateTotals()
         callSuccess('Item added from dropdown.')
       },
-
       calculateTotals() {
         const round = value => Alpine.store('price').roundToTwo(value)
 
-        // (A) Compute base subtotal (sum of item prices * quantity)
+        // Compute base subtotal (sum of item prices * quantity)
         let baseSubtotal = 0
-        if (this.invoiceItems.invoiceItems?.length) {
-          this.invoiceItems.invoiceItems.forEach(item => {
-            baseSubtotal += item.price * (item.quantity || 1)
-          })
-        }
-        // (B) Store subtotal **before discount** for frontend display
+        this.invoiceItems.invoiceItems.forEach(item => {
+          baseSubtotal += item.price * item.quantity
+        })
+
+        // Store subtotal **before discount** for frontend display
         const preDiscountSubtotal = round(baseSubtotal)
 
-        // (C) Determine discount
+        // --- Determine discount ---
         const discountType = this.invoiceItems.invoice.discount_type
-        let discountRaw = this.invoiceItems.invoice.discount_value
+        const discountRaw = this.invoiceItems.invoice.discount_value // Copy discount value
         let discountAmount = 0
 
         if (discountType === 1) {
           // Percentage discount (apply to subtotal)
-          discountAmount = (baseSubtotal * discountRaw) / 100
-          this.invoiceItems.invoice.discVal_ifPercent = round(discountAmount)
+          discountAmount = round((baseSubtotal * discountRaw) / 100)
         } else if (discountType === 0) {
           // Flat discount
-          discountAmount = discountRaw
+          discountAmount = round(discountRaw)
         }
 
-        // (D) Calculate discounted subtotal
-        const discountedSubtotal = baseSubtotal - discountAmount
+        // --- Discounted subtotal ---
+        const discountedSubtotal = round(baseSubtotal - discountAmount)
+        // --- VAT Calculation ---
+        const vatAmount = round(discountedSubtotal * 0.2) // 20% VAT
+        // --- Total after VAT ---
+        const baseTotal = round(discountedSubtotal + vatAmount)
 
-        // (E) VAT (calculated from subtotal after discount)
-        const vatPercent = this.invoiceItems.invoice.vat_percent
-        const vatAmount = discountedSubtotal * (vatPercent / 100)
-
-        // (F) Compute total **before deposit**
-        const baseTotal = discountedSubtotal + vatAmount
-        // (G) Compute deposit based on the final total
+        // Deposit
         const depositType = this.invoiceItems.invoice.deposit_type
         const depositRaw = this.invoiceItems.invoice.deposit_value
         let depositAmount = 0
 
         if (depositType === 1) {
           // Percentage deposit (apply to final total)
-          depositAmount = (total * depositRaw) / 100
-
-          this.invoiceItems.invoice.depoVal_ifPercent = round(depositAmount)
+          depositAmount = round((baseTotal * depositRaw) / 100)
         } else if (depositType === 0) {
           // Flat deposit
-          depositAmount = depositRaw
+          depositAmount = round(depositRaw)
         }
 
-        // (H) Assign computed values back to invoice object
-        this.invoiceItems.invoice.total_pre_discount = preDiscountSubtotal // Subtotal before discount
-        this.invoiceItems.invoice.discount_value = round(discountRaw) // Correct discount value
-        this.invoiceItems.invoice.discount_amount = round(discountAmount) // Correct discount calculation
-        this.invoiceItems.invoice.subtotal = round(discountedSubtotal) // Subtotal after discount
-        this.invoiceItems.invoice.vat = round(vatAmount) // VAT after discount
-        this.invoiceItems.invoice.total_before_deposit = round(baseTotal) // Total
-        this.invoiceItems.invoice.total_pre_discount = round(baseTotal) // Total
-        this.invoiceItems.invoice.total = round(baseTotal) // Total
-        this.invoiceItems.invoice.deposit_value = round(depositAmount) // Deposit
+        // --- Ensure deposit is not greater than the total ---
+        if (depositAmount > baseTotal) {
+          console.error(`Deposit (${depositAmount}) exceeds total (${baseTotal}). Resetting deposit to 0.`)
+          return // Exit function early
+        }
 
-        console.log('Recalculated totals ==> ', this.invoiceItems.invoice)
+        // --- Assign computed values back to invoice object at the END ---
+        this.invoiceItems.invoice = {
+          ...this.invoiceItems.invoice, // Preserve other invoice fields
+          total_pre_discount: preDiscountSubtotal, // Subtotal before discount
+          discount_value: round(discountRaw), // Discount value
+          subtotal: discountedSubtotal, // Subtotal after discount
+          vat: vatAmount, // VAT amount
+          total_before_deposit: baseTotal, // Total before deposit
+          total: baseTotal, // Final total
+          deposit_value: depositRaw, // Deposit amount
+          discVal_ifPercent: discountType === 1 ? discountAmount : 0, // Percentage discount value
+          depoVal_ifPercent: depositType === 1 ? depositAmount : depositRaw, // Percentage deposit value
+        }
+
+        console.log('invoice state after recalculation:', JSON.stringify(this.invoiceItems.invoice, null, 2))
+        console.log('preDiscountSubtotal:', preDiscountSubtotal)
+        console.log('discountAmount:', discountAmount)
+        console.log('discountedSubtotal:', discountedSubtotal)
+        console.log('vatAmount:', vatAmount)
+        console.log('baseTotal:', baseTotal)
+        console.log('depositRaw:', depositRaw)
+        console.log('depositAmount:', depositAmount)
       },
 
       incrementInvoiceItem(uniqueKey) {
@@ -485,6 +494,17 @@ document.addEventListener('alpine:init', () => {
           this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(i => i.frontEndId !== uniqueKey)
           this.calculateTotals()
         }
+      },
+      removeDiscount() {
+        this.invoiceItems.invoice.discount_value = 0
+        this.invoiceItems.invoice.discVal_ifPercent = 0
+        this.calculateTotals()
+      },
+
+      removeDeposit() {
+        this.invoiceItems.invoice.deposit_value = 0
+        this.invoiceItems.invoice.depoVal_ifPercent = 0
+        this.calculateTotals()
       },
       // Filter Items
       searchItems() {

@@ -69,13 +69,13 @@
                     x-cloak></label>
                 </div>
               </div>
-              <div class="flex justify-end items-center mt-1.5">
+              <div class="flex justify-end items-center mt-3">
                 <div class="flex gap-4 items-center">
                   <div x-show="item && item.deposit_value > 0">
                     <div
-                      x-data="tooltip('Pay this invoice’s deposit and generate a new invoice with the remaining amount.')">
+                      x-data="tooltip('Use this when the client has payed the deposit and \n you want to invoice them for the remaining amount.')">
                       <button class="table-interaction-icon-red hover:!text-vla" @click="$event.stopPropagation()">
-                        <svg class="size-5">
+                        <svg class="size-4">
                           <use href="/icons/icons.svg#cash-bill" />
                         </svg>
                       </button>
@@ -89,14 +89,14 @@
                       Total: £${item.total}
                       Deposit: ${item.deposit_type === 1 ? item.depoVal_ifPercent + '%' : '£' + item.deposit_value}`)"
                     class="table-interaction-icon-blue">
-                    <svg class="size-5">
+                    <svg class="size-4">
                       <use href="/icons/icons2.svg#deets-ic" />
                     </svg>
                   </div>
                   <button
                     class="table-interaction-icon-red"
                     @click="$store.edit.deleteInvoice(item.id); $event.stopPropagation()">
-                    <svg class="size-5">
+                    <svg class="size-4">
                       <use href="/icons/icons.svg#trash" />
                     </svg>
                   </button>
