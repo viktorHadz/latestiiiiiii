@@ -40,6 +40,8 @@ document.addEventListener('alpine:init', () => {
           if (response.ok) {
             const invoice = await response.json()
             this.generatePDF(invoice.id)
+            // Event to notify the app of invoice generation
+            document.dispatchEvent(new CustomEvent('invoice-created', { detail: { clientId: store.clientId } }))
             // Debuging location: invoiceStore ==>  resetTotals
             Alpine.store('invo').resetTotals()
           } else {

@@ -5,62 +5,62 @@ const db = getDb()
 
 router.use(express.json())
 
-// Big boy route get all
-router.get('/invoice/:clientId/:invoiceId', (req, res) => {
-  const { clientId, invoiceId } = req.params
-  const invoiceEditObj = {}
+// // Big boy route get all
+// router.get('/invoice/:clientId/:invoiceId', (req, res) => {
+//   const { clientId, invoiceId } = req.params
+//   const invoiceEditObj = {}
 
-  // Get client details
-  const clientsQuery = 'SELECT * FROM clients WHERE id = ?'
-  db.get(clientsQuery, [clientId], (err, client) => {
-    if (err) {
-      return res.status(500).json({ error: `Error fetching client: ${err.message}` })
-    }
-    if (!client) {
-      return res.status(404).json({ error: 'Client not found' })
-    }
-    invoiceEditObj.client = client
+//   // Get client details
+//   const clientsQuery = 'SELECT * FROM clients WHERE id = ?'
+//   db.get(clientsQuery, [clientId], (err, client) => {
+//     if (err) {
+//       return res.status(500).json({ error: `Error fetching client: ${err.message}` })
+//     }
+//     if (!client) {
+//       return res.status(404).json({ error: 'Client not found' })
+//     }
+//     invoiceEditObj.client = client
 
-    // Get invoice details for the client
-    const invoiceQuery = 'SELECT * FROM invoices WHERE id = ? AND client_id = ?'
-    db.get(invoiceQuery, [invoiceId, clientId], (err, invoice) => {
-      if (err) {
-        return res.status(500).json({ error: `Error fetching invoice: ${err.message}` })
-      }
-      if (!invoice) {
-        return res.status(404).json({ error: 'Invoice not found' })
-      }
-      invoiceEditObj.invoice = invoice
+//     // Get invoice details for the client
+//     const invoiceQuery = 'SELECT * FROM invoices WHERE id = ? AND client_id = ?'
+//     db.get(invoiceQuery, [invoiceId, clientId], (err, invoice) => {
+//       if (err) {
+//         return res.status(500).json({ error: `Error fetching invoice: ${err.message}` })
+//       }
+//       if (!invoice) {
+//         return res.status(404).json({ error: 'Invoice not found' })
+//       }
+//       invoiceEditObj.invoice = invoice
 
-      // Get invoice items
-      const itemsQuery = 'SELECT * FROM invoice_items WHERE invoice_id = ?'
-      db.all(itemsQuery, [invoiceId], (err, items) => {
-        if (err) {
-          return res.status(500).json({ error: `Error fetching invoice items: ${err.message}` })
-        }
-        invoiceEditObj.invoiceItems = items
+//       // Get invoice items
+//       const itemsQuery = 'SELECT * FROM invoice_items WHERE invoice_id = ?'
+//       db.all(itemsQuery, [invoiceId], (err, items) => {
+//         if (err) {
+//           return res.status(500).json({ error: `Error fetching invoice items: ${err.message}` })
+//         }
+//         invoiceEditObj.invoiceItems = items
 
-        // Fetch styles and samples for this client in parallel.
-        db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (err, styles) => {
-          if (err) {
-            return res.status(500).json({ error: `Error fetching styles: ${err.message}` })
-          }
-          invoiceEditObj.existingStyles = styles
-          db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (err, samples) => {
-            if (err) {
-              return res.status(500).json({ error: `Error fetching samples: ${err.message}` })
-            }
-            invoiceEditObj.existingSamples = samples
-            // Send the unified object
-            res.json(invoiceEditObj)
-          })
-        })
-      })
-    })
-  })
-})
+//         // Fetch styles and samples for this client in parallel.
+//         db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (err, styles) => {
+//           if (err) {
+//             return res.status(500).json({ error: `Error fetching styles: ${err.message}` })
+//           }
+//           invoiceEditObj.existingStyles = styles
+//           db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (err, samples) => {
+//             if (err) {
+//               return res.status(500).json({ error: `Error fetching samples: ${err.message}` })
+//             }
+//             invoiceEditObj.existingSamples = samples
+//             // Send the unified object
+//             res.json(invoiceEditObj)
+//           })
+//         })
+//       })
+//     })
+//   })
+// })
 
-// Gets invoice book list of invoices and orders them
+// 1. InvoiceBook fetch
 router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
   const page = parseInt(req.query.page) || 1
@@ -79,7 +79,7 @@ router.get('/list/:clientId', (req, res) => {
     }
 
     db.all(
-      'SELECT * FROM invoices WHERE client_id = ? ORDER BY date DESC LIMIT ? OFFSET ?',
+      'SELECT * FROM invoices WHERE client_id = ? ORDER BY date DESC, id DESC LIMIT ? OFFSET ?',
       [clientId, limit, offset],
       (err, invoiceDetails) => {
         if (err) {
@@ -94,6 +94,45 @@ router.get('/list/:clientId', (req, res) => {
         res.json(listData)
       },
     )
+  })
+})
+// 2. Individual Invoice Details
+router.get('/invoice/:invoiceId', (req, res) => {
+  const invoiceId = req.params.invoiceId
+  const invoiceData = {}
+
+  // Fetch invoice
+  db.get('SELECT * FROM invoices WHERE id = ?', [invoiceId], (err, invoice) => {
+    if (err) return res.status(500).json({ error: `Error fetching invoice: ${err.message}` })
+    if (!invoice) return res.status(404).json({ error: 'Invoice not found' })
+
+    invoiceData.invoice = invoice
+
+    // Fetch all invoice items for this invoice
+    db.all('SELECT * FROM invoice_items WHERE invoice_id = ?', [invoiceId], (err, items) => {
+      if (err) return res.status(500).json({ error: `Error fetching invoice items: ${err.message}` })
+
+      invoiceData.invoiceItems = items
+      res.json(invoiceData) // Returns single structured object
+    })
+  })
+})
+// 3. Items fetch
+router.get('/client/:clientId/items', (req, res) => {
+  const clientId = req.params.clientId
+  const itemsData = {}
+
+  db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (err, styles) => {
+    if (err) return res.status(500).json({ error: `Error fetching styles: ${err.message}` })
+
+    itemsData.styles = styles
+
+    db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (err, samples) => {
+      if (err) return res.status(500).json({ error: `Error fetching samples: ${err.message}` })
+
+      itemsData.samples = samples
+      res.json(itemsData)
+    })
   })
 })
 // Paid/Unpaid status
@@ -124,15 +163,19 @@ router.post('/invoice/:invoiceId/status', (req, res) => {
     })
   })
 })
+// Delete
 router.delete('/invoice/delete/:invoiceId', (req, res) => {
   const { invoiceId } = req.params
   const deleteQuery = 'DELETE FROM invoices WHERE id = ?'
+
   db.run(deleteQuery, [invoiceId], function (err) {
-    if (err) {
-      res.status(500).send({ error: 'Failed to delete invoice' })
-    } else {
-      res.status(200).send({ message: 'Invoice deleted successfully' })
+    if (err) return res.status(500).json({ error: 'Failed to delete invoice' })
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Invoice not found' })
     }
+
+    res.status(200).json({ message: 'Invoice deleted successfully' })
   })
 })
 

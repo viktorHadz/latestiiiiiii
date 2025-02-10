@@ -21,36 +21,18 @@ router.get('/api/getNextInvoiceNumber', (req, res) => {
 
 const insertItems = (invoiceId, items) => {
   return new Promise((resolve, reject) => {
-    // Validate items (time logic remains the same)
-    const invalidItems = items.filter(item => {
-      if (item.type === 'sample' && !item.time) return true
-      if (item.type === 'style' && typeof item.time !== 'undefined' && item.time !== 0) return true
-      return false
-    })
-    if (invalidItems.length > 0) {
-      return reject(
-        new Error(
-          `Invalid items: ${JSON.stringify(invalidItems)}. "sample" requires valid time, "style" must have time=0.`,
-        ),
-      )
-    }
+    if (!items || items.length === 0) return resolve() // Prevent inserting empty data
 
-    // 1) Make sure origin_id is never null
+    // Ensure each item has `origin_id` set from `id`
     for (const item of items) {
-      // If front-end didn't set item.origin_id, fallback to item.id
-      if (typeof item.origin_id === 'undefined') {
-        if (typeof item.id !== 'undefined') {
-          item.origin_id = item.id
-        } else {
-          return reject(new Error(`No "origin_id" or "id" found for: ${JSON.stringify(item)} (cannot insert NULL).`))
-        }
+      if (!item.id) {
+        return reject(new Error(`Missing item.id, which is required for origin_id: ${JSON.stringify(item)}`))
       }
+      item.origin_id = item.id // Assign item.id as origin_id
     }
 
-    // 2) Prepare placeholders (8 columns)
+    // Prepare SQL placeholders and values
     const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?, ?)').join(',')
-
-    // 3) Flatten values
     const values = items.flatMap(item => [
       item.name,
       item.price,
@@ -59,20 +41,17 @@ const insertItems = (invoiceId, items) => {
       invoiceId,
       item.quantity,
       item.price * item.quantity,
-      // Guaranteed non-null now
-      item.origin_id,
+      item.origin_id, // Now correctly set
     ])
 
-    // 4) Insert into DB
+    // Insert items into `invoice_items`
     db.run(
       `INSERT INTO invoice_items (
-         name, price, type, time, invoice_id, quantity, total_item_price, origin_id
-       ) VALUES ${placeholders}`,
+        name, price, type, time, invoice_id, quantity, total_item_price, origin_id
+      ) VALUES ${placeholders}`,
       values,
       function (error) {
-        if (error) {
-          return reject(new Error(`Error inserting invoice items: ${error.message}`))
-        }
+        if (error) return reject(new Error(`Error inserting invoice items: ${error.message}`))
         resolve()
       },
     )

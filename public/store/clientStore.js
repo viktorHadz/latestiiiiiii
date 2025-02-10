@@ -13,7 +13,7 @@ document.addEventListener('alpine:init', () => {
     isFetched: false,
 
     async init() {
-      console.log('{ ClientStore } init() is called')
+      console.log('{ ClientStore } initialising')
       await this.fetchClients()
       const selected = this.getSelected()
       // Sets client to inform itemStore and LS that there is a client and avoid null client error on startup
