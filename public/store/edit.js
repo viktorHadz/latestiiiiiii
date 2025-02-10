@@ -338,13 +338,7 @@ document.addEventListener('alpine:init', () => {
         this.customItemCounter += 1
 
         // Generate a **proper unique frontendId** for custom items
-        this.customItemCounter += 1
         const uniqueKey = `custom-${this.newItem.type}-${this.customItemCounter}`
-        this.invoiceItems.invoiceItems.push({
-          ...this.newItem,
-          frontendId: uniqueKey,
-          origin_id: null,
-        })
 
         const newItem = {
           name: this.newItem.name.trim(),
