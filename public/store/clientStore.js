@@ -36,7 +36,6 @@ document.addEventListener('alpine:init', () => {
       document.dispatchEvent(new CustomEvent('client-selected', { detail: client }))
 
       console.log('{ ClientStore } Selected client updated:', client)
-      callSuccess(`Client selected ${client.name}`)
       if (this.showClientModal === true) {
         this.showClientModal = false
       }

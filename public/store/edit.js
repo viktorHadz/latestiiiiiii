@@ -357,7 +357,6 @@ document.addEventListener('alpine:init', () => {
         this.newItem = { type: '', name: '', price: null, quantity: null, time: null }
 
         this.calculateTotals()
-        callSuccess('Custom item added.')
       },
 
       // Dropdown add from existing items for client
@@ -409,7 +408,6 @@ document.addEventListener('alpine:init', () => {
         if (dropdownItem) dropdownItem.quantity = 1
 
         this.calculateTotals()
-        callSuccess(`${item.type} added`, `${item.name} added to invoice successfully`)
       },
 
       async deleteInvoice(invoiceId) {

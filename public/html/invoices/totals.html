@@ -118,6 +118,7 @@
               <h3 class="mb-2 modal-title !text-lg !text-center">Discount</h3>
               <div class="relative mb-3">
                 <input
+                  :id="'discount-invo-input'"
                   x-ref="discountInput"
                   type="number"
                   x-model.number="uiDiscount"
@@ -185,6 +186,7 @@
               <h3 class="mb-2 modal-title !text-lg !text-center">Deposit</h3>
               <div class="relative mb-3">
                 <input
+                  :id="'deposit-invo-input'"
                   x-ref="depoInput"
                   type="number"
                   x-model.number="$store.invo.uiDeposit"
@@ -254,6 +256,7 @@
               </div>
               <h3 class="mb-2 modal-title !text-lg !text-center">Note</h3>
               <input
+                :id="'note-invo-input'"
                 x-ref="noteInput"
                 type="text"
                 role="text"

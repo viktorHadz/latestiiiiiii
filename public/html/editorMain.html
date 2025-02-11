@@ -17,6 +17,7 @@
         Select Client
       </button>
     </div>
+
     <h3
       class="self-center text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
       x-text="$store.clients.selectedClient.name || 'No selected client'"></h3>
@@ -26,11 +27,29 @@
     <!-- Invoice List on the left -->
     <div
       class="invoice-list-container flex flex-col w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp2">
+      <div class="flex justify-between p-4">
+        <button class="border rounded border-vds2/40 dark:text-vds" @click="callError('I erred', 'Whoops')">err</button>
+        <button
+          class="border rounded border-vds2/40 dark:text-vds"
+          @click="callWarning('I made a warning', 'Give some text here')">
+          wrn
+        </button>
+        <button
+          class="border rounded border-vds2/40 dark:text-vds"
+          @click="callInfo('I give information', 'When i get clicked i give info ')">
+          info
+        </button>
+        <button
+          class="border rounded border-vds2/40 dark:text-vds"
+          @click="callSuccess('Succeed mayn', 'Whoops hhaha')">
+          succs
+        </button>
+      </div>
       <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp2 shadow-md">
         <div class="w-full flex justify-between">
           <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
         </div>
-        <input type="text" placeholder="Search invoices..." class="srch-style" />
+        <input id="search-invoices-invoice-book" type="text" placeholder="Search invoices..." class="srch-style" />
       </div>
       <!-- Scrollable List -->
       <div class="flex-1 overflow-y-auto table-scrollbar p-2 invoice-book-scroll">
@@ -39,7 +58,7 @@
             @click="$store.edit.fetchInvoice(item.id)"
             :id="'rowid-' + item.id"
             :class="{
-              'border-vla2 bg-vlp dark:bg-vds3neu700 dark:border-vds/80 dark:text-white ': item.id === $store.edit.activeItemId,
+              'border-vla2 bg-vlp dark:bg-vds3neu700 dark:border-vda2/60 dark:text-white ': item.id === $store.edit.activeItemId,
               'border-vls/40 dark:border-vls/40 bg-vlp dark:bg-vds3neu700 dark:hover:bg-vds2 dark:text-vds': item.id !== $store.edit.activeItemId
             }"
             class="mb-2 flex cursor-pointer justify-between rounded border p-2 text-vls2 transition duration-200">
@@ -67,9 +86,10 @@
                     x-cloak>
                     <span
                       :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'"
-                      class="w-4 h-4 duration-200 ease-in-out bg-white dark:bg-vds rounded-full shadow-md"></span>
+                      class="w-4 h-4 duration-200 ease-in-out bg-white dark:bg-vdp3 rounded-full shadow-md"></span>
                   </button>
                   <label
+                    :for="`toggleId-${item.id}`"
                     @click="$refs.switchButton.click(); $refs.switchButton.focus(); $event.stopPropagation()"
                     :id="$id('switch')"
                     class="text-sm select-none"
@@ -102,6 +122,7 @@
                       <use href="/icons/icons2.svg#deets-ic" />
                     </svg>
                   </div>
+
                   <button
                     class="table-interaction-icon-red"
                     @click="$store.edit.deleteInvoice(item.id); $event.stopPropagation()">

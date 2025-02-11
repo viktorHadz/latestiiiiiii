@@ -134,7 +134,8 @@
                   <h3 class="mb-4 modal-title">Add Client</h3>
                   <form>
                     <input
-                      id="addCliName"
+                      :id="'addCliName'"
+                      autocomplete="name"
                       x-model="$store.clients.newClient.name"
                       x-ref="addNewClientName"
                       name="name"
@@ -143,6 +144,8 @@
                       class="w-full mb-2 modal-input-style"
                       required />
                     <input
+                      :id="'addCliCompName'"
+                      autocomplete="company"
                       x-model="$store.clients.newClient.company_name"
                       name="company_name"
                       type="text"
@@ -150,6 +153,8 @@
                       class="w-full mb-2 modal-input-style"
                       required />
                     <input
+                      :id="'addCliAddrName'"
+                      autocomplete="address"
                       x-model="$store.clients.newClient.address"
                       name="address"
                       type="text"
@@ -157,6 +162,8 @@
                       class="w-full mb-2 modal-input-style"
                       required />
                     <input
+                      :id="'addCliEmailName'"
+                      autocomplete="email"
                       x-model="$store.clients.newClient.email"
                       name="email"
                       type="email"
@@ -205,7 +212,7 @@
                     <template x-for="client in $store.clients.clients" :key="client.id">
                       <div class="mb-2">
                         <li
-                          @click="$store.clients.setSelected(client)"
+                          @click="$store.clients.setSelected(client); callSuccess(`Client selected - ${client.name}`)"
                           class="p-1 text-left rounded-md cursor-pointer dark:bg-vdp2 text-vds hover:text-vls2 dark:text-vds3light dark:hover:bg-vdp3 dark:hover:text-vds"
                           x-text="client.name"></li>
                       </div>
@@ -230,11 +237,11 @@
               :id="'toast-' + card.id"
               @mouseenter="$store.toss.hoveredIndex = index"
               @mouseleave="$store.toss.hoveredIndex = null"
-              class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform origin-top bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg toast-animate-enter transition-transform duration-300 ease-in-out"
+              class="pointer-events-auto absolute left-1/2 w-full max-w-xs sm:max-w-[340px] transform origin-top bg-vlp dark:bg-vdp border border-vls2/20 dark:border-vls/40 ring-2 ring-transparent dark:ring-2 dark:ring-transparent shadow-lg rounded toast-animate-enter transition-transform duration-300 ease-in-out"
               :style="`
                 top: ${1.5 + index * 3}rem;
                 z-index: ${999 - index};
-                --flash-color: ${card.type === 'error' ? '#e03d3d' : card.type === 'success' ? '#51a551' : card.type === 'warning' ? 'orange' : '#118ab2'};
+                --flash-color: ${card.type === 'error' ? '#e03d3d' : card.type === 'success' ? '#51a551' : card.type === 'warning' ? 'orange' : '#1c7cca'};
               `"
               @animationend="(evt) => {
         
@@ -260,17 +267,17 @@
                   <div
                     x-html="card.svg"
                     :class="card.colors"
-                    class="flex-shrink-0 bg-gradient-to-tr rounded-full flex items-center justify-center text-white dark:text-gray-900"></div>
+                    class="flex-shrink-0 bg-gradient-to-tr rounded-full flex items-center justify-center text-white dark:text-vdp"></div>
 
                   <!-- Title / Body -->
                   <div class="flex flex-col flex-grow min-w-0 text-left">
-                    <p x-text="card.title" class="font-medium text-gray-900 dark:text-gray-100 text-md truncate"></p>
-                    <p x-text="card.body" class="text-sm text-gray-600 dark:text-gray-300 break-words"></p>
+                    <p x-text="card.title" class="font-medium text-vls3 dark:text-vds text-md truncate"></p>
+                    <p x-text="card.body" class="text-sm text-gray-600 dark:text-vds break-words"></p>
                   </div>
 
                   <!-- Close Button (shows on hover) -->
                   <div
-                    class="absolute top-0 right-0 transition-opacity duration-300 text-gray-900 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
+                    class="absolute top-0 right-0 transition text-vls3 hover:text-gray-700 dark:text-vds3light dark:hover:text-vds"
                     x-show="$store.toss.hoveredIndex === index"
                     x-transition.opacity>
                     <button @click="$store.toss.destroyCard(card.id)">
@@ -280,6 +287,15 @@
                     </button>
                   </div>
                 </div>
+                <div
+                  class="absolute bottom-0 left-0 h-[3px] bg-current transition-all ease-linear"
+                  :class="{
+                    'bg-red-500': card.type === 'error',
+                    'bg-green-500': card.type === 'success',
+                    'bg-orange-500': card.type === 'warning',
+                    'bg-blue-400': card.type === 'info'
+                  }"
+                  x-bind:style="`width: 100%; animation: progress-bar 4s linear forwards;`"></div>
               </div>
             </div>
           </template>

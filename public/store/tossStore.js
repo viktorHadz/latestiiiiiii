@@ -41,12 +41,11 @@ document.addEventListener('alpine:init', () => {
       }, 4000)
     },
 
-    // Example shortcuts
     callError(title, body) {
       this.addCard({
         id: Date.now(),
         type: 'error',
-        svg: `<svg class="size-7 m-1"><use href="/icons/icons.svg#error-msg" /></svg>`,
+        svg: `<svg class="size-5 m-1"><use href="/icons/icons.svg#error-msg" /></svg>`,
         title,
         body,
         colors: this.toast.colors.error,
@@ -57,7 +56,7 @@ document.addEventListener('alpine:init', () => {
       this.addCard({
         id: Date.now(),
         type: 'success',
-        svg: `<svg class="size-7 m-1"><use href="/icons/icons.svg#check-circle" /></svg>`,
+        svg: `<svg class="size-5 m-1"><use href="/icons/icons.svg#check-circle" /></svg>`,
         title,
         body,
         colors: this.toast.colors.success,
@@ -68,7 +67,7 @@ document.addEventListener('alpine:init', () => {
       this.addCard({
         id: Date.now(),
         type: 'warning',
-        svg: `<svg class="size-7 m-1"><use href="/icons/icons.svg#warning-msg" /></svg>`,
+        svg: `<svg class="size-5 m-1"><use href="/icons/icons.svg#warning-msg" /></svg>`,
         title,
         body,
         colors: this.toast.colors.warning,
@@ -79,7 +78,7 @@ document.addEventListener('alpine:init', () => {
       this.addCard({
         id: Date.now(),
         type: 'info',
-        svg: `<svg class="size-7 m-1"><use href="/icons/icons.svg#info-msg" /></svg>`,
+        svg: `<svg class="size-5 m-1"><use href="/icons/icons.svg#info-msg" /></svg>`,
         title,
         body,
         colors: this.toast.colors.info,
