@@ -25,43 +25,26 @@
 
   <div class="flex flex-1 min-h-0">
     <!-- Invoice List on the left -->
-    <div
-      class="invoice-list-container flex flex-col w-[30%] overflow-hidden rounded border border-vls/40 bg-vlp dark:bg-vdp2">
-      <div class="flex justify-between p-4">
-        <button class="border rounded border-vds2/40 dark:text-vds" @click="callError('I erred', 'Whoops')">err</button>
-        <button
-          class="border rounded border-vds2/40 dark:text-vds"
-          @click="callWarning('I made a warning', 'Give some text here')">
-          wrn
-        </button>
-        <button
-          class="border rounded border-vds2/40 dark:text-vds"
-          @click="callInfo('I give information', 'When i get clicked i give info ')">
-          info
-        </button>
-        <button
-          class="border rounded border-vds2/40 dark:text-vds"
-          @click="callSuccess('Succeed mayn', 'Whoops hhaha')">
-          succs
-        </button>
-      </div>
-      <div class="sticky top-0 z-10 p-4 bg-vlp dark:bg-vdp2 shadow-md">
+    <div class="flex flex-col w-[30%] overflow-hidden">
+      <div class="p-4 bg-vlp dark:bg-vdp shadow rounded border border-vls/40">
         <div class="w-full flex justify-between">
           <p class="mb-2 font-medium text-vls3 dark:text-vds">Invoice Book</p>
         </div>
         <input id="search-invoices-invoice-book" type="text" placeholder="Search invoices..." class="srch-style" />
       </div>
+
       <!-- Scrollable List -->
-      <div class="flex-1 overflow-y-auto table-scrollbar p-2 invoice-book-scroll">
+      <div
+        class="overflow-y-auto bg-vlp dark:bg-vdp2 table-scrollbar p-2 invoice-book-scroll border shadow rounded border-vls/40 my-2">
         <template x-for="item in $store.edit.invoiceBook" :key="item.id">
           <div
             @click="$store.edit.fetchInvoice(item.id)"
             :id="'rowid-' + item.id"
             :class="{
-              'border-vla2 bg-vlp dark:bg-vds3neu700 dark:border-vda2/60 dark:text-white ': item.id === $store.edit.activeItemId,
-              'border-vls/40 dark:border-vls/40 bg-vlp dark:bg-vds3neu700 dark:hover:bg-vds2 dark:text-vds': item.id !== $store.edit.activeItemId
-            }"
-            class="mb-2 flex cursor-pointer justify-between rounded border p-2 text-vls2 transition duration-200">
+            'ring-2 dark:ring-1 ring-vls2/60 dark:bg-vdp2/40 dark:ring-vda2/50 dark:text-white shadow-md': item.id === $store.edit.activeItemId,
+            'ring-1 ring-vls/40 dark:ring-0 dark:bg-vds3neu700 dark:hover:bg-vds2 dark:text-vds shadow': item.id !== $store.edit.activeItemId
+          }"
+            class="mb-2 flex cursor-pointer shadow justify-between rounded p-2 text-vls2 transition-all focus:outline-none focus-visible:outline-none">
             <div class="mr-2 flex flex-col text-left text-xs">
               <div x-text="item.client_name"></div>
               <!-- Invoice date -->
@@ -81,7 +64,7 @@
                     $store.edit.updatePaid(item.id, switchOn);  
                     switchOn ? callSuccess('Invoice changed to paid') : callInfo('Invoice changed to unpaid');
                     $event.stopPropagation(); "
-                    :class="switchOn ? 'bg-vla2 dark:bg-vda2/80' : 'bg-vlp2 dark:bg-vds3light '"
+                    :class="switchOn ? 'bg-vla2 dark:bg-vda2/80' : 'bg-vlp3 dark:bg-vds3light '"
                     class="relative inline-flex h-5 py-0.5 ml-4 focus:outline-none rounded-full w-9"
                     x-cloak>
                     <span
@@ -100,7 +83,7 @@
                 <div class="flex gap-4 items-center">
                   <div x-show="item && item.deposit_value > 0">
                     <div
-                      x-data="tooltip('Use after deposit payment to invoice \nthe remaining balance.\n Creates new invoice with related number \n(e.g., SAM-1 → SAM-1.1).')"
+                      x-data="tooltip('Use after deposit payment to invoice \nthe remaining balance.\n Creates new invoice with related number \n(e.g. S.A.M.-1 → S.A.M.-1.1).')"
                       class="">
                       <button class="table-interaction-icon-red hover:!text-vla" @click="$event.stopPropagation()">
                         <svg class="size-4">
@@ -136,7 +119,7 @@
           </div>
         </template>
       </div>
-      <div class="flex w-full justify-between p-4">
+      <div class="flex w-full justify-between p-4 border bg-vlp dark:bg-vdp border-vls/40 rounded shadow">
         <div class="mt-4 text-center" x-show="$store.edit.hasMore">
           <button
             @click="$store.edit.fetchListById()"

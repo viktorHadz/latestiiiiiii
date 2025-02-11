@@ -216,18 +216,60 @@ document.addEventListener('alpine:init', () => {
       saveEdit() {
         if (!this.editMode) return
         if (!confirm('Are you sure you want to save this invoice?')) return
+
         try {
+          const invoice = this.invoiceItems.invoice
+
+          // Construct the payload with correct field names and value handling
           const data = {
-            clientId: this.invoiceItems.client?.id,
-            clientName: this.invoiceItems.client?.name,
-            invoiceNumber: this.invoiceItems.invoice.invoice_number,
-            editType: this.editMode,
+            invoiceId: invoice.id,
+            clientId: invoice.client_id,
+            items: this.invoiceItems.invoiceItems.map(item => ({
+              name: item.name,
+              price: parseFloat(item.price), // Ensure price is valid
+              type: item.type,
+              time: item.type === 'sample' ? parseFloat(item.time) : 0, // Ensure sample items have correct time
+              invoice_id: invoice.id, // Attach invoice ID
+              quantity: parseInt(item.quantity, 10),
+              total_item_price: parseFloat(item.price) * parseInt(item.quantity, 10), // Correct calculation
+              origin_id: item.origin_id, // Keep existing origin_id, don't default to null
+            })),
+            discountType: invoice.discount_type,
+            discountValue: invoice.discount_value, // Must be explicitly provided
+            discVal_ifPercent: invoice.discVal_ifPercent, // No defaulting to 0, must be explicitly correct
+            vatPercent: invoice.vat_percent,
+            vat: invoice.vat, // No defaulting, keep value as provided
+            subtotal: invoice.subtotal, // Ensure it is correctly calculated
+            total: invoice.total, // Ensure total is accurate
+            depositType: invoice.deposit_type,
+            depositValue: invoice.deposit_value, // Explicitly store as given
+            depoVal_ifPercent: invoice.depoVal_ifPercent, // Keep exact value, do not force 0
+            note: invoice.note?.trim(), // Keep note if it exists, don't force empty string
+            totalPreDiscount: invoice.total_pre_discount, // Ensure correct field name
+            date: invoice.date || new Date().toISOString().split('T')[0], // Default to today if missing
           }
-          // (Send data to backend here.)
-          this.editing = false
-          this.editMode = ''
+
+          let endpoint =
+            this.editMode === 'editOverwrite' ? `/editor/invoice/save/overwrite` : `/editor/invoice/save/copy`
+
+          fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          })
+            .then(res => res.json())
+            .then(response => {
+              if (response.error) throw new Error(response.error)
+              callSuccess('Invoice saved successfully')
+              this.editing = false
+              this.editMode = ''
+            })
+            .catch(error => {
+              console.error('Error saving invoice:', error)
+              callError('Error saving invoice', error.message)
+            })
         } catch (error) {
-          console.error('Error saving edit:', error)
+          console.error('Error in saveEdit():', error)
         }
       },
 
@@ -339,14 +381,15 @@ document.addEventListener('alpine:init', () => {
 
         // Generate a **proper unique frontendId** for custom items
         const uniqueKey = `custom-${this.newItem.type}-${this.customItemCounter}`
+        const newOriginId = -this.customItemCounter
 
         const newItem = {
           name: this.newItem.name.trim(),
           type: this.newItem.type,
           price: this.newItem.type === 'sample' ? this.newItem.price * this.newItem.time : this.newItem.price,
           time: this.newItem.type === 'sample' ? this.newItem.time : 0,
-          quantity: Math.floor(this.newItem.quantity), // ✅ FIXED: Use entered quantity, not always 1
-          origin_id: null, // Custom items don't have an existing ID in the database
+          quantity: Math.floor(this.newItem.quantity), //  Use entered quantity, not always 1
+          origin_id: newOriginId, // Custom items don't have an existing ID in the database
           frontendId: uniqueKey, // Unique key for Alpine.js rendering
         }
 

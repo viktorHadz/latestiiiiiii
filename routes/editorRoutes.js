@@ -5,61 +5,6 @@ const db = getDb()
 
 router.use(express.json())
 
-// // Big boy route get all
-// router.get('/invoice/:clientId/:invoiceId', (req, res) => {
-//   const { clientId, invoiceId } = req.params
-//   const invoiceEditObj = {}
-
-//   // Get client details
-//   const clientsQuery = 'SELECT * FROM clients WHERE id = ?'
-//   db.get(clientsQuery, [clientId], (err, client) => {
-//     if (err) {
-//       return res.status(500).json({ error: `Error fetching client: ${err.message}` })
-//     }
-//     if (!client) {
-//       return res.status(404).json({ error: 'Client not found' })
-//     }
-//     invoiceEditObj.client = client
-
-//     // Get invoice details for the client
-//     const invoiceQuery = 'SELECT * FROM invoices WHERE id = ? AND client_id = ?'
-//     db.get(invoiceQuery, [invoiceId, clientId], (err, invoice) => {
-//       if (err) {
-//         return res.status(500).json({ error: `Error fetching invoice: ${err.message}` })
-//       }
-//       if (!invoice) {
-//         return res.status(404).json({ error: 'Invoice not found' })
-//       }
-//       invoiceEditObj.invoice = invoice
-
-//       // Get invoice items
-//       const itemsQuery = 'SELECT * FROM invoice_items WHERE invoice_id = ?'
-//       db.all(itemsQuery, [invoiceId], (err, items) => {
-//         if (err) {
-//           return res.status(500).json({ error: `Error fetching invoice items: ${err.message}` })
-//         }
-//         invoiceEditObj.invoiceItems = items
-
-//         // Fetch styles and samples for this client in parallel.
-//         db.all('SELECT * FROM styles WHERE client_id = ?', [clientId], (err, styles) => {
-//           if (err) {
-//             return res.status(500).json({ error: `Error fetching styles: ${err.message}` })
-//           }
-//           invoiceEditObj.existingStyles = styles
-//           db.all('SELECT * FROM samples WHERE client_id = ?', [clientId], (err, samples) => {
-//             if (err) {
-//               return res.status(500).json({ error: `Error fetching samples: ${err.message}` })
-//             }
-//             invoiceEditObj.existingSamples = samples
-//             // Send the unified object
-//             res.json(invoiceEditObj)
-//           })
-//         })
-//       })
-//     })
-//   })
-// })
-
 // 1. InvoiceBook fetch
 router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
@@ -177,6 +122,214 @@ router.delete('/invoice/delete/:invoiceId', (req, res) => {
 
     res.status(200).json({ message: 'Invoice deleted successfully' })
   })
+})
+
+// ==== Saving Invocies ==== //
+
+// Overwrite
+router.post('/invoice/save/overwrite', async (req, res) => {
+  const {
+    invoiceId,
+    clientId,
+    items,
+    discountType,
+    discountValue,
+    discVal_ifPercent,
+    vatPercent,
+    vat,
+    subtotal,
+    total,
+    depositType,
+    depositValue,
+    depoVal_ifPercent,
+    note,
+    totalPreDiscount,
+    date,
+  } = req.body
+
+  try {
+    // 1. Update invoice values
+    await new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE invoices SET 
+          client_id = ?, discount_type = ?, discount_value = ?, discVal_ifPercent = ?, 
+          vat_percent = ?, vat = ?, subtotal = ?, total = ?, deposit_type = ?, deposit_value = ?, 
+          depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ? 
+        WHERE id = ?`,
+        [
+          clientId,
+          discountType,
+          discountValue,
+          discVal_ifPercent,
+          vatPercent,
+          vat,
+          subtotal,
+          total,
+          depositType,
+          depositValue,
+          depoVal_ifPercent,
+          note,
+          totalPreDiscount,
+          date,
+          invoiceId,
+        ],
+        function (error) {
+          if (error) reject(new Error(`Error updating invoice: ${error.message}`))
+          resolve()
+        },
+      )
+    })
+
+    // 2. Replace all invoice items
+    await new Promise((resolve, reject) => {
+      db.run(`DELETE FROM invoice_items WHERE invoice_id = ?`, [invoiceId], function (error) {
+        if (error) reject(new Error(`Error deleting old invoice items: ${error.message}`))
+        resolve()
+      })
+    })
+
+    const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?, ?)').join(',')
+    const values = items.flatMap(item => [
+      item.name,
+      item.price,
+      item.type,
+      item.time,
+      invoiceId,
+      item.quantity,
+      item.total_item_price,
+      item.origin_id,
+    ])
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO invoice_items (name, price, type, time, invoice_id, quantity, total_item_price, origin_id) 
+        VALUES ${placeholders}`,
+        values,
+        function (error) {
+          if (error) reject(new Error(`Error inserting new invoice items: ${error.message}`))
+          resolve()
+        },
+      )
+    })
+
+    res.status(200).json({ message: 'Invoice updated successfully.' })
+  } catch (error) {
+    res.status(500).json({ error: `Error updating invoice: ${error.message}` })
+  }
+})
+
+// Copy invoice
+router.post('/invoice/save/copy', async (req, res) => {
+  const {
+    invoiceId,
+    clientId,
+    items,
+    discountType,
+    discountValue,
+    discVal_ifPercent,
+    vatPercent,
+    vat,
+    subtotal,
+    total,
+    depositType,
+    depositValue,
+    depoVal_ifPercent,
+    note,
+    totalPreDiscount,
+    date,
+  } = req.body
+
+  try {
+    // Generate a new invoice number (SAM-1 → SAM-1.1)
+    const originalInvoice = await new Promise((resolve, reject) => {
+      db.get(`SELECT invoice_number FROM invoices WHERE id = ?`, [invoiceId], (error, result) => {
+        if (error) reject(new Error(`Error fetching original invoice: ${error.message}`))
+        resolve(result)
+      })
+    })
+
+    if (!originalInvoice) {
+      return res.status(404).json({ error: 'Original invoice not found' })
+    }
+
+    let newInvoiceNumber = originalInvoice.invoice_number + '.1' // Example: SAM-1 → SAM-1.1
+    const existingCopies = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT invoice_number FROM copied_invoices WHERE original_invoice_id = ?`,
+        [invoiceId],
+        (error, results) => {
+          if (error) reject(new Error(`Error checking existing copies: ${error.message}`))
+          resolve(results)
+        },
+      )
+    })
+
+    if (existingCopies.length > 0) {
+      newInvoiceNumber = `${originalInvoice.invoice_number}.${existingCopies.length + 1}`
+    }
+
+    // 1. Insert new copied invoice
+    const newInvoiceId = await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO copied_invoices (
+          original_invoice_id, invoice_number, client_id, discount_type, discount_value, discVal_ifPercent, 
+          vat_percent, vat, subtotal, total, deposit_type, deposit_value, depoVal_ifPercent, note, 
+          total_pre_discount, date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          invoiceId,
+          newInvoiceNumber,
+          clientId,
+          discountType,
+          discountValue,
+          discVal_ifPercent,
+          vatPercent,
+          vat,
+          subtotal,
+          total,
+          depositType,
+          depositValue,
+          depoVal_ifPercent,
+          note,
+          totalPreDiscount,
+          date,
+        ],
+        function (error) {
+          if (error) reject(new Error(`Error creating copied invoice: ${error.message}`))
+          resolve(this.lastID)
+        },
+      )
+    })
+
+    // 2. Insert copied invoice items (including custom ones)
+    const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?, ?)').join(',')
+    const values = items.flatMap(item => [
+      item.name,
+      item.price,
+      item.type,
+      item.type === 'sample' ? item.time : 0,
+      newInvoiceId,
+      item.quantity,
+      item.price * item.quantity,
+      item.origin_id, // Now handles custom items properly
+    ])
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO copied_invoice_items (name, price, type, time, invoice_id, quantity, total_item_price, origin_id) 
+        VALUES ${placeholders}`,
+        values,
+        function (error) {
+          if (error) reject(new Error(`Error inserting copied invoice items: ${error.message}`))
+          resolve()
+        },
+      )
+    })
+
+    return res.status(201).json({ message: 'Copied invoice created successfully.', newInvoiceId })
+  } catch (error) {
+    res.status(500).json({ error: `Error creating copied invoice: ${error.message}` })
+  }
 })
 
 module.exports = router

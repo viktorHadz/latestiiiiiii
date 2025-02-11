@@ -7,7 +7,7 @@ document.addEventListener('alpine:init', () => {
       if (!this.tooltipEl) {
         this.tooltipEl = document.createElement('div')
         this.tooltipEl.className =
-          'fixed px-2 py-1 text-xs text-white bg-black bg-opacity-90 rounded shadow-lg transition-opacity duration-200 z-50'
+          'fixed px-2 py-1 text-xs text-white bg-black bg-opacity-90 rounded shadow-lg transition-opacity duration-200 z-[99]'
         this.tooltipEl.style.position = 'absolute'
         this.tooltipEl.style.whiteSpace = 'nowrap'
         this.tooltipEl.innerText = this.text
