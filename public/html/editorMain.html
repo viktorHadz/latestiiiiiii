@@ -35,7 +35,7 @@
 
       <!-- Scrollable List -->
       <div
-        class="overflow-y-auto bg-vlp dark:bg-vdp2 table-scrollbar p-2 invoice-book-scroll border shadow rounded border-vls/40 my-2">
+        class="overflow-y-auto h-full bg-vlp dark:bg-vdp2 table-scrollbar p-2 invoice-book-scroll border shadow rounded border-vls/40 my-2">
         <template x-for="item in $store.edit.invoiceBook" :key="item.id">
           <div
             @click="$store.edit.fetchInvoice(item.id)"

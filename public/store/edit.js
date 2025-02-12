@@ -277,7 +277,7 @@ document.addEventListener('alpine:init', () => {
       calculateTotals() {
         const round = value => Alpine.store('price').roundToTwo(value)
 
-        // Compute base subtotal (sum of item prices * quantity)
+        // Calculate subtotal (sum of item prices * quantity)
         let baseSubtotal = 0
         this.invoiceItems.invoiceItems.forEach(item => {
           baseSubtotal += item.price * item.quantity
@@ -287,23 +287,30 @@ document.addEventListener('alpine:init', () => {
         const subtotalPreDiscount = round(baseSubtotal)
         const vatBeforeDiscount = round(subtotalPreDiscount * 0.2)
 
-        // --- Determine discount ---
+        // --- Determine discount --- // discountRaw: Holds the discount percentage (if %) or fixed amount (if £)
         const discountType = this.invoiceItems.invoice.discount_type
-        const discountRaw = this.invoiceItems.invoice.discount_value
+        let discountRaw = this.invoiceItems.invoice.discount_value
         let discountAmount = 0
-
+        // Calculate discount based on type
         if (discountType === 1) {
           discountAmount = round((baseSubtotal * discountRaw) / 100) // Percentage discount
         } else if (discountType === 0) {
           discountAmount = round(discountRaw) // Flat discount
         }
+        if (discountAmount > baseSubtotal) {
+          console.error(`Discount (${discountAmount}) exceeds subtotal (${baseSubtotal}). Removing discount.`)
+          // Reset discount
+          this.invoiceItems.invoice.discount_value = 0
+          this.invoiceItems.invoice.discVal_ifPercent = 0
 
+          discountRaw = 0
+          discountAmount = 0
+          callError('Discount exceeds subtotal', 'Resetting discount to 0.')
+        }
         // --- Apply discount ---
         const subtotal = round(baseSubtotal - discountAmount)
-
-        // VAT is now calculated on the **discounted** subtotal
+        // VAT calculated on the discounted subtotal
         const vatAmount = round(subtotal * 0.2)
-
         // Final total after VAT
         const total = round(subtotal + vatAmount)
         // Total before discount (saved in DB, including VAT)
@@ -311,21 +318,21 @@ document.addEventListener('alpine:init', () => {
 
         // --- Deposit Calculation (for display only) ---
         const depositType = this.invoiceItems.invoice.deposit_type
-        const depositRaw = this.invoiceItems.invoice.deposit_value
+        let depositRaw = this.invoiceItems.invoice.deposit_value
         let depositAmount = 0
-
+        // Calculate deposit amount based on type
         if (depositType === 1) {
           depositAmount = round((total * depositRaw) / 100) // Percentage deposit
         } else if (depositType === 0) {
           depositAmount = round(depositRaw) // Flat deposit
         }
-
-        // --- Ensure deposit does not exceed total ---
         if (depositAmount > total) {
           console.error(`Deposit (${depositAmount}) exceeds total (${total}). Resetting deposit to 0.`)
           this.invoiceItems.invoice.deposit_value = 0
           this.invoiceItems.invoice.depoVal_ifPercent = 0
-          return
+          depositAmount = 0
+          depositRaw = 0
+          callError('Deposit exceeds total', 'Resetting deposit to 0.')
         }
 
         // --- Assign computed values back to invoice object ---
