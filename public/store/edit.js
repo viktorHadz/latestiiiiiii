@@ -16,6 +16,7 @@ document.addEventListener('alpine:init', () => {
       invoiceItems: { invoiceItems: [] },
       initialValuesInvItems: {},
       customItemCounter: 0,
+      editCopyPayDeposit: false,
       // ===== 3. Styles & Samples for Dropdown =====
       existingItems: {
         showItemModal: false,
@@ -56,6 +57,21 @@ document.addEventListener('alpine:init', () => {
         this.watchTabSwitch()
         console.log('{ Edit Store } ==> Initialised')
       },
+      processDepositCopy() {
+        const invoice = this.invoiceItems.invoice
+
+        // Create a copy of the original totals, adjusted for the deposit
+        this.updatedTotals = {
+          subtotal: invoice.subtotal - invoice.deposit_value,
+          discount: invoice.discount_value,
+          vat: (invoice.subtotal - invoice.deposit_value - invoice.discount_value) * 0.2, // Ensure VAT is on post-discount value
+          total: invoice.total - invoice.deposit_value,
+        }
+
+        // Show recalculated totals
+        this.editCopyPayDeposit = true
+      },
+
       // ==== FETCH METHODS ====
       // 1. Fetch invoice book list
       async fetchListById() {
@@ -220,7 +236,6 @@ document.addEventListener('alpine:init', () => {
         try {
           const invoice = this.invoiceItems.invoice
 
-          // Construct the payload with correct field names and value handling
           const data = {
             invoiceId: invoice.id,
             clientId: invoice.client_id,
@@ -228,25 +243,25 @@ document.addEventListener('alpine:init', () => {
               name: item.name,
               price: parseFloat(item.price), // Ensure price is valid
               type: item.type,
-              time: item.type === 'sample' ? parseFloat(item.time) : 0, // Ensure sample items have correct time
+              time: item.type === 'sample' ? parseFloat(item.time) : 0,
               invoice_id: invoice.id, // Attach invoice ID
               quantity: parseInt(item.quantity, 10),
-              total_item_price: parseFloat(item.price) * parseInt(item.quantity, 10), // Correct calculation
-              origin_id: item.origin_id, // Keep existing origin_id, don't default to null
+              total_item_price: parseFloat(item.price) * parseInt(item.quantity, 10),
+              origin_id: item.origin_id,
             })),
             discountType: invoice.discount_type,
-            discountValue: invoice.discount_value, // Must be explicitly provided
-            discVal_ifPercent: invoice.discVal_ifPercent, // No defaulting to 0, must be explicitly correct
+            discountValue: invoice.discount_value,
+            discVal_ifPercent: invoice.discVal_ifPercent,
             vatPercent: invoice.vat_percent,
-            vat: invoice.vat, // No defaulting, keep value as provided
-            subtotal: invoice.subtotal, // Ensure it is correctly calculated
-            total: invoice.total, // Ensure total is accurate
+            vat: invoice.vat,
+            subtotal: invoice.subtotal,
+            total: invoice.total,
             depositType: invoice.deposit_type,
-            depositValue: invoice.deposit_value, // Explicitly store as given
-            depoVal_ifPercent: invoice.depoVal_ifPercent, // Keep exact value, do not force 0
-            note: invoice.note?.trim(), // Keep note if it exists, don't force empty string
-            totalPreDiscount: invoice.total_pre_discount, // Ensure correct field name
-            date: invoice.date || new Date().toISOString().split('T')[0], // Default to today if missing
+            depositValue: invoice.deposit_value,
+            depoVal_ifPercent: invoice.depoVal_ifPercent,
+            note: invoice.note?.trim(),
+            totalPreDiscount: invoice.total_pre_discount,
+            date: invoice.date || new Date().toISOString().split('T')[0],
           }
 
           let endpoint =

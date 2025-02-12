@@ -421,20 +421,36 @@ input[type='radio'] {
     background 200ms,
     border-color 200ms;
 }
+
+/* Light Mode */
 input[type='radio']:focus {
-  background-color: #777777;
-  outline-color: #777777;
+  background-color: #525252;
+  outline-color: #525252;
 }
 input[type='radio']:checked {
-  outline: solid 2px #ff8980;
+  outline: solid 2px #2b3440;
   outline-offset: 2px;
-  background-color: #ff8980; /* Background color when checked */
+  background-color: #2b3440;
 }
 input[type='radio']:hover {
-  background-color: #fea09a;
-  outline-color: #fea09a;
+  background-color: #2b3440;
+  outline-color: #2b3440;
 }
 
+/* Dark Mode */
+.dark input[type='radio']:focus {
+  background-color: #d4d4d4;
+  outline-color: #d4d4d4;
+}
+.dark input[type='radio']:checked {
+  outline: solid 2px #4ba85f;
+  outline-offset: 2px;
+  background-color: #4ba85f;
+}
+.dark input[type='radio']:hover {
+  background-color: #4ba85f;
+  outline-color: #4ba85f;
+}
 /* MARK: ANIMATIONS */
 @keyframes glowEffect {
   0% {

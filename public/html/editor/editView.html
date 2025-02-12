@@ -230,7 +230,9 @@
               <th class="p-2 text-left w-[10%]">Type</th>
               <th class="p-2 text-right w-[10%]">Qty</th>
               <th class="p-2 text-right w-[10%]">Price</th>
-              <th class="py-2 round-right-border w-[15%]">Actions</th>
+              <template x-if="$store.edit.editMode === 'editOverwrite'">
+                <th class="py-2 round-right-border w-[15%]">Actions</th>
+              </template>
             </tr>
           </thead>
         </table>
@@ -247,34 +249,36 @@
                   <td class="p-1 w-[10%] text-left" x-text="item.type"></td>
                   <td class="p-1 w-[10%] text-right" x-text="item.quantity"></td>
                   <td class="p-1 w-[10%] text-right" x-text="'£' + item.price"></td>
-                  <td class="p-1 w-[15%] text-right round-right-border">
-                    <div class="flex justify-end gap-1">
-                      <!-- Increment -->
-                      <button
-                        @click="$store.edit.incrementInvoiceItem(item.frontendId)"
-                        class="table-interaction-icon-blue">
-                        <svg class="size-5">
-                          <use href="/icons/icons.svg#plus-circle" />
-                        </svg>
-                      </button>
-                      <!-- Decrement -->
-                      <button
-                        @click="$store.edit.decrementInvoiceItem(item.frontendId)"
-                        class="table-interaction-icon-red">
-                        <svg class="size-5">
-                          <use href="/icons/icons.svg#minus-circle" />
-                        </svg>
-                      </button>
-                      <!-- Remove -->
-                      <button
-                        @click="$store.edit.removeInvoiceItem(item.frontendId)"
-                        class="table-interaction-icon-red">
-                        <svg class="size-5">
-                          <use href="/icons/icons.svg#trash" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
+                  <template x-if="$store.edit.editMode === 'editOverwrite'">
+                    <td class="p-1 w-[15%] text-right round-right-border">
+                      <div class="flex justify-end gap-1">
+                        <!-- Increment -->
+                        <button
+                          @click="$store.edit.incrementInvoiceItem(item.frontendId)"
+                          class="table-interaction-icon-blue">
+                          <svg class="size-5">
+                            <use href="/icons/icons.svg#plus-circle" />
+                          </svg>
+                        </button>
+                        <!-- Decrement -->
+                        <button
+                          @click="$store.edit.decrementInvoiceItem(item.frontendId)"
+                          class="table-interaction-icon-red">
+                          <svg class="size-5">
+                            <use href="/icons/icons.svg#minus-circle" />
+                          </svg>
+                        </button>
+                        <!-- Remove -->
+                        <button
+                          @click="$store.edit.removeInvoiceItem(item.frontendId)"
+                          class="table-interaction-icon-red">
+                          <svg class="size-5">
+                            <use href="/icons/icons.svg#trash" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </template>
                 </tr>
               </template>
             </tbody>
@@ -311,15 +315,16 @@
                   class="text-xs text-vls2/60 dark:text-vds3light">
                   <p x-text="'(' + '£' + $store.edit.invoiceItems.invoice.discVal_ifPercent + ')'"></p>
                 </div>
-
-                <button
-                  x-show="$store.edit.invoiceItems.invoice.discount_value"
-                  @click="$store.edit.removeDiscount()"
-                  class="ml-2 text-red-500 hover:text-red-600">
-                  <svg class="size-4">
-                    <use href="/icons/icons.svg#trash"></use>
-                  </svg>
-                </button>
+                <template x-if="$store.edit.editMode === 'editOverwrite'">
+                  <button
+                    x-show="$store.edit.invoiceItems.invoice.discount_value"
+                    @click="$store.edit.removeDiscount()"
+                    class="ml-2 text-red-500 hover:text-red-600">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#trash"></use>
+                    </svg>
+                  </button>
+                </template>
               </div>
             </div>
           </template>
@@ -355,189 +360,262 @@
                   <p x-text="'(' + '£' + $store.edit.invoiceItems.invoice.depoVal_ifPercent + ')'"></p>
                 </div>
 
-                <button
-                  x-show="$store.edit.invoiceItems.invoice.deposit_value"
-                  @click="$store.edit.removeDeposit()"
-                  class="ml-2 text-red-500 hover:text-red-600">
-                  <svg width="16" height="16">
-                    <use href="/icons/icons.svg#trash"></use>
-                  </svg>
-                </button>
+                <template x-if="$store.edit.editMode === 'editOverwrite'">
+                  <button
+                    x-show="$store.edit.invoiceItems.invoice.deposit_value"
+                    @click="$store.edit.removeDeposit()"
+                    class="ml-2 text-red-500 hover:text-red-600">
+                    <svg width="16" height="16">
+                      <use href="/icons/icons.svg#trash"></use>
+                    </svg>
+                  </button>
+                </template>
               </div>
             </div>
           </template>
         </div>
         <div
-          class="flex flex-col w-[70%] p-6 items-end justify-end bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow">
+          class="flex flex-col w-[70%] px-6 py-3 items-end gap-2 justify-between bg-vlp rounded border-vls/40 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow">
           <!-- NOTE -->
-          <div
-            class="w-full border border-vls/40 text-vls3 dark:text-vds rounded p-2 mb-4 flex flex-col justify-between flex-grow overflow-y-auto bg-white dark:bg-vdp">
-            <div class="flex justify-between">
-              <div>
-                <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note" class="text-xs break-words"></p>
+          <template x-if="$store.edit.editMode === 'editOverwrite'">
+            <div
+              class="w-full h-full border border-vls/40 text-vls3 dark:text-vds rounded p-2 flex flex-col justify-between max-h-[50vh] overflow-y-auto bg-white dark:bg-vdp">
+              <div class="flex justify-between">
+                <div>
+                  <p x-text="'Note: ' + $store.edit.invoiceItems.invoice?.note" class="text-xs break-words"></p>
+                </div>
+              </div>
+              <button
+                x-show="$store.edit.invoiceItems.invoice.note.length !== 0"
+                @click="$store.edit.invoiceItems.invoice.note = ''"
+                class="self-start justify-self-start flex mt-0.5 text-xs text-red-600 hover:underline">
+                Remove Note
+              </button>
+            </div>
+          </template>
+          <template x-if="$store.edit.editMode === 'editCopy'">
+            <div
+              class="w-full h-full text-vls3 dark:text-vds rounded p-2 flex flex-col justify-between overflow-y-auto bg-white dark:bg-vdp relative">
+              <!-- Info Icon (Tooltip) -->
+              <div
+                x-data="tooltip('Use this screen to create a copy of your current invoice.\nThis allows you to invoice clients for any paid deposits they\n may have balanced towards the original ammount due.')"
+                class="absolute top-2 right-2">
+                <div x-data="{ showTooltip: false }" class="relative">
+                  <button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-5">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Message -->
+              <h2 class="text-sm font-semibold text-center mb-2 text-vls2/90 dark:text-vds3light">
+                Follow-up Invoice for
+                <span x-text="$store.edit.invoiceItems.invoice.invoice_number"></span>
+              </h2>
+
+              <!-- Remaining Balance -->
+              <div
+                class="p-2 text-sm font-semibold bg-yellow-200 border border-yellow-400 dark:bg-vdp3 dark:border-vls2/40 rounded flex justify-between">
+                <span>Remaining Balance:</span>
+                <span
+                  x-text="'£' + ($store.edit.invoiceItems.invoice.total - $store.edit.invoiceItems.invoice.deposit_value)"></span>
+              </div>
+
+              <!-- Totals (Always Visible) -->
+              <div class="mt-4 border-t border-vls/40 pt-2">
+                <h3 class="text-sm font-semibold text-center mb-2">Totals After Invoice Payment</h3>
+                <div class="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span
+                    x-text="'£' + ($store.edit.invoiceItems.invoice.subtotal - $store.edit.invoiceItems.invoice.deposit_value)"></span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Discount:</span>
+                  <span x-text="'£' + $store.edit.invoiceItems.invoice.discount_value"></span>
+                </div>
+                <div class="flex justify-between">
+                  <span>VAT:</span>
+                  <span
+                    x-text="'£' + (($store.edit.invoiceItems.invoice.subtotal - $store.edit.invoiceItems.invoice.deposit_value - $store.edit.invoiceItems.invoice.discount_value) * 0.2)"></span>
+                </div>
+                <div class="flex justify-between font-semibold">
+                  <span>Total:</span>
+                  <span
+                    x-text="'£' + ($store.edit.invoiceItems.invoice.total - $store.edit.invoiceItems.invoice.deposit_value)"></span>
+                </div>
               </div>
             </div>
-            <button
-              x-show="$store.edit.invoiceItems.invoice.note.length !== 0"
-              @click="$store.edit.invoiceItems.invoice.note = ''"
-              class="self-end justify-self-end flex mt-2 text-xs text-red-600 hover:underline">
-              Remove Note
-            </button>
-          </div>
+          </template>
+
           <div class="flex justify-between w-full">
             <!-- Add Discount Modal -->
-            <div>
-              <button
-                @click="$store.edit.modDisc = !$store.edit.modDisc"
-                x-ref="discountAnchor"
-                class="modal-btn-prim !text-xs">
-                <svg class="size-4">
-                  <use href="/icons/icons.svg#trending-down"></use>
-                </svg>
-                Discount
-              </button>
-              <div
-                x-show="$store.edit.modDisc; $nextTick(() => { $refs.discountInput.focus() });"
-                @keyup.escape="$store.edit.modDisc = false"
-                @mouseenter="$store.edit.showXDisc = true"
-                @mouseleave="$store.edit.showXDisc = false"
-                x-transition.duration.300
-                x-anchor.top.offset.10="$refs.discountAnchor"
-                class="ml-2">
-                <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg max-w-48">
-                  <div class="relative">
-                    <button
-                      x-show="$store.edit.showXDisc"
-                      @click="$store.edit.modDisc = false"
-                      x-transition.duration.300
-                      class="absolute !-top-3 !-right-3 table-interaction-icon-red">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#xmark-circle"></use>
-                      </svg>
-                    </button>
-                  </div>
-                  <h3 class="mb-2 modal-title !text-lg !text-center">Discount</h3>
-                  <div class="relative mb-3">
-                    <input
-                      :id="'discount-input-edit'"
-                      x-ref="discountInput"
-                      type="number"
-                      x-model.number="$store.edit.uiDiscount"
-                      placeholder="0"
-                      @input="$store.edit.uiDiscount = parseFloat(String($store.edit.uiDiscount).slice(0, 6)) || 0"
-                      class="modal-input-style !p-1 max-w-36 flex place-self-center" />
-                    <span
-                      class="absolute right-4 top-1/2 transform -translate-y-1/2 text-base text-vls2/70 dark:text-vds/70">
-                      <!-- Dynamically show the symbol -->
-                      <span x-text="$store.edit.invoiceItems.invoice.discount_type === 1 ? '%' : '£'"></span>
-                    </span>
-                  </div>
-                  <div class="flex justify-between gap-x-4">
-                    <button
-                      @click="$store.edit.addDiscount(); $nextTick(() => { $refs.discountInput.focus() });"
-                      class="modal-btn-prim !place-self-center !text-xs">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#check-circle"></use>
-                      </svg>
-                      Apply
-                    </button>
-                    <button
-                      @click="$store.edit.changeDiscountType(); $nextTick(() => { $refs.discountInput.focus() });"
-                      class="modal-btn-prim !place-self-center !text-xs">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#rotate"></use>
-                      </svg>
-                      Change
-                    </button>
+            <template x-if="$store.edit.editMode === 'editOverwrite'">
+              <div>
+                <button
+                  @click="$store.edit.modDisc = !$store.edit.modDisc"
+                  x-ref="discountAnchor"
+                  class="modal-btn-prim !text-xs">
+                  <svg class="size-4">
+                    <use href="/icons/icons.svg#trending-down"></use>
+                  </svg>
+                  Discount
+                </button>
+                <div
+                  x-show="$store.edit.modDisc; $nextTick(() => { $refs.discountInput.focus() });"
+                  @keyup.escape="$store.edit.modDisc = false"
+                  @mouseenter="$store.edit.showXDisc = true"
+                  @mouseleave="$store.edit.showXDisc = false"
+                  x-transition.duration.300
+                  x-anchor.top.offset.10="$refs.discountAnchor"
+                  class="ml-2">
+                  <div class="z-10 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg max-w-48">
+                    <div class="relative">
+                      <button
+                        x-show="$store.edit.showXDisc"
+                        @click="$store.edit.modDisc = false"
+                        x-transition.duration.300
+                        class="absolute !-top-3 !-right-3 table-interaction-icon-red">
+                        <svg class="size-4">
+                          <use href="/icons/icons.svg#xmark-circle"></use>
+                        </svg>
+                      </button>
+                    </div>
+                    <h3 class="mb-2 modal-title !text-lg !text-center">Discount</h3>
+                    <div class="relative mb-3">
+                      <input
+                        :id="'discount-input-edit'"
+                        x-ref="discountInput"
+                        type="number"
+                        x-model.number="$store.edit.uiDiscount"
+                        placeholder="0"
+                        @input="$store.edit.uiDiscount = parseFloat(String($store.edit.uiDiscount).slice(0, 6)) || 0"
+                        class="modal-input-style !p-1 max-w-36 flex place-self-center" />
+                      <span
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-base text-vls2/70 dark:text-vds/70">
+                        <!-- Dynamically show the symbol -->
+                        <span x-text="$store.edit.invoiceItems.invoice.discount_type === 1 ? '%' : '£'"></span>
+                      </span>
+                    </div>
+                    <div class="flex justify-between gap-x-4">
+                      <button
+                        @click="$store.edit.addDiscount(); $nextTick(() => { $refs.discountInput.focus() });"
+                        class="modal-btn-prim !place-self-center !text-xs">
+                        <svg class="size-4">
+                          <use href="/icons/icons.svg#check-circle"></use>
+                        </svg>
+                        Apply
+                      </button>
+                      <button
+                        @click="$store.edit.changeDiscountType(); $nextTick(() => { $refs.discountInput.focus() });"
+                        class="modal-btn-prim !place-self-center !text-xs">
+                        <svg class="size-4">
+                          <use href="/icons/icons.svg#rotate"></use>
+                        </svg>
+                        Change
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </template>
             <!-- Add Deposit Modal -->
-            <div class="flex justify-center">
-              <button
-                @click="$store.edit.modDepo = !$store.edit.modDepo; if ($store.edit.modDepo) $nextTick(() => $refs.depoInput.focus())"
-                x-ref="depoAnchor"
-                class="modal-btn-prim !text-xs">
-                <svg class="size-4">
-                  <use href="/icons/icons.svg#cash-bill"></use>
-                </svg>
-                Deposit
-              </button>
-              <div
-                x-show="$store.edit.modDepo"
-                @keyup.escape="$store.edit.modDepo = false"
-                @mouseenter="$store.edit.showXDepo = true"
-                @mouseleave="$store.edit.showXDepo = false"
-                x-transition.duration.300
-                x-anchor.top-start.offset.10="$refs.depoAnchor"
-                class="mr-2">
-                <div class="z-20 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg max-w-48">
-                  <div class="relative">
-                    <button
-                      x-show="$store.edit.showXDepo"
-                      @click="$store.edit.modDepo = false"
-                      x-transition.duration.300
-                      class="absolute !-top-3 !-right-3 table-interaction-icon-red">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#xmark-circle"></use>
-                      </svg>
-                    </button>
-                  </div>
-                  <h3 class="mb-2 modal-title !text-lg !text-center">Deposit</h3>
-                  <div class="relative mb-3">
-                    <input
-                      :id="'deposit-input-edit'"
-                      x-ref="depoInput"
-                      type="number"
-                      x-model.number="$store.edit.uiDeposit"
-                      @input="
-                        $store.edit.uiDeposit = parseFloat(String($store.edit.uiDeposit).slice(0, 6)) || 0;
-                      "
-                      class="modal-input-style !p-1 max-w-36 flex place-self-center" />
-                    <span
-                      class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base text-vls2/70 dark:text-vds/70 mr-2">
-                      <span x-text="$store.edit.invoiceItems.invoice.deposit_type === 1 ? '%' : '£'"></span>
-                    </span>
-                  </div>
-                  <div class="flex justify-between gap-x-4">
-                    <button
-                      @click="$store.edit.addDeposit(); $nextTick(() => $refs.depoInput.focus());"
-                      class="modal-btn-prim !place-self-center !text-xs">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#check-circle"></use>
-                      </svg>
-                      Apply
-                    </button>
-                    <button
-                      @click="$store.edit.changeDepositType(); $nextTick(() => $refs.depoInput.focus());"
-                      class="modal-btn-prim !place-self-center !text-xs">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#rotate"></use>
-                      </svg>
-                      Change
-                    </button>
+            <template x-if="$store.edit.editMode === 'editOverwrite'">
+              <div class="flex justify-center">
+                <button
+                  @click="$store.edit.modDepo = !$store.edit.modDepo; if ($store.edit.modDepo) $nextTick(() => $refs.depoInput.focus())"
+                  x-ref="depoAnchor"
+                  class="modal-btn-prim !text-xs">
+                  <svg class="size-4">
+                    <use href="/icons/icons.svg#cash-bill"></use>
+                  </svg>
+                  Deposit
+                </button>
+                <div
+                  x-show="$store.edit.modDepo"
+                  @keyup.escape="$store.edit.modDepo = false"
+                  @mouseenter="$store.edit.showXDepo = true"
+                  @mouseleave="$store.edit.showXDepo = false"
+                  x-transition.duration.300
+                  x-anchor.top-start.offset.10="$refs.depoAnchor"
+                  class="mr-2">
+                  <div class="z-20 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg max-w-48">
+                    <div class="relative">
+                      <button
+                        x-show="$store.edit.showXDepo"
+                        @click="$store.edit.modDepo = false"
+                        x-transition.duration.300
+                        class="absolute !-top-3 !-right-3 table-interaction-icon-red">
+                        <svg class="size-4">
+                          <use href="/icons/icons.svg#xmark-circle"></use>
+                        </svg>
+                      </button>
+                    </div>
+                    <h3 class="mb-2 modal-title !text-lg !text-center">Deposit</h3>
+                    <div class="relative mb-3">
+                      <input
+                        :id="'deposit-input-edit'"
+                        x-ref="depoInput"
+                        type="number"
+                        x-model.number="$store.edit.uiDeposit"
+                        @input="
+                          $store.edit.uiDeposit = parseFloat(String($store.edit.uiDeposit).slice(0, 6)) || 0;
+                        "
+                        class="modal-input-style !p-1 max-w-36 flex place-self-center" />
+                      <span
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base text-vls2/70 dark:text-vds/70 mr-2">
+                        <span x-text="$store.edit.invoiceItems.invoice.deposit_type === 1 ? '%' : '£'"></span>
+                      </span>
+                    </div>
+                    <div class="flex justify-between gap-x-4">
+                      <button
+                        @click="$store.edit.addDeposit(); $nextTick(() => $refs.depoInput.focus());"
+                        class="modal-btn-prim !place-self-center !text-xs">
+                        <svg class="size-4">
+                          <use href="/icons/icons.svg#check-circle"></use>
+                        </svg>
+                        Apply
+                      </button>
+                      <button
+                        @click="$store.edit.changeDepositType(); $nextTick(() => $refs.depoInput.focus());"
+                        class="modal-btn-prim !place-self-center !text-xs">
+                        <svg class="size-4">
+                          <use href="/icons/icons.svg#rotate"></use>
+                        </svg>
+                        Change
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </template>
             <!-- Note Modal -->
             <div
               x-data="{
-                modNote: false, 
-                uiNote: '',
-                showX: false,
-                addNote() {
-                  if ($store.edit.invoiceItems.invoice.note.length !== 0) {
-                    
-                    callWarning('Note already exists', 'Remove existing note and try again')
-                    return  
+                  modNote: false, 
+                  uiNote: '',
+                  showX: false,
+                  addNote() {
+                    if ($store.edit.invoiceItems.invoice.note.length !== 0) {
+                      
+                      callWarning('Note already exists', 'Remove existing note and try again')
+                      return  
+                    }
+                    $store.edit.invoiceItems.invoice.note = ''
+                    $store.edit.invoiceItems.invoice.note = this.uiNote
+                    this.uiNote = ''
                   }
-                  $store.edit.invoiceItems.invoice.note = ''
-                  $store.edit.invoiceItems.invoice.note = this.uiNote
-                  this.uiNote = ''
-                }
-              }"
+                }"
               class="flex justify-center">
               <button
                 @click="modNote = !modNote; if (modNote) $nextTick(() => $refs.noteInput.focus())"
@@ -548,69 +626,85 @@
                 </svg>
                 Note
               </button>
+              <!-- Note Modal -->
               <div
                 x-show="modNote"
                 @keyup.escape="modNote = false"
                 @mouseenter="showX = true"
                 @mouseleave="showX = false"
-                x-transition.duration.300=""
+                x-transition.duration.300
                 x-anchor.top-start.offset.10="$refs.noteAnchor"
-                style="display: none; left: 909.516px; top: 758.891px; position: absolute">
-                <div class="z-30 p-4 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg max-w-48">
-                  <div class="relative">
+                style="display: none; position: absolute">
+                <div
+                  class="z-30 p-2 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg w-60 flex flex-col relative">
+                  <!-- Close Button -->
+                  <div class="relative flex justify-end">
                     <button
                       x-show="showX"
-                      @click="modNote=false"
-                      x-transition.duration.300=""
-                      class="absolute !-top-3 !-right-3 table-interaction-icon-red"
-                      style="display: none">
+                      @click="modNote = false"
+                      x-transition.duration.300
+                      class="absolute !-top-2 !-right-2 table-interaction-icon-red">
                       <svg class="size-4">
                         <use href="/icons/icons.svg#xmark-circle"></use>
                       </svg>
                     </button>
                   </div>
-                  <h3 class="mb-2 modal-title !text-lg !text-center">Note</h3>
-                  <input
+                  <!-- Scrollable Fixed-Height Textbox -->
+                  <textarea
                     :id="'note-input-edit'"
                     x-ref="noteInput"
-                    type="text"
-                    role="text"
                     x-model="uiNote"
-                    placeholder="Note text..."
-                    maxlength="420"
-                    class="modal-input-style !text-xs mb-3" />
-                  <button
-                    @click="addNote(); $nextTick(() => $refs.noteInput.focus())"
-                    class="modal-btn-prim !place-self-center">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#check-circle"></use>
-                    </svg>
-                    accept
-                  </button>
+                    placeholder="Enter note..."
+                    maxlength="220"
+                    class="modal-input-style text-sm p-2 h-28 pt-2 w-full resize-none overflow-y-auto"></textarea>
+
+                  <div class="relative flex justify-end mt-2">
+                    <button
+                      @click="addNote(); $nextTick(() => $refs.noteInput.focus())"
+                      class="modal-btn-prim !p-1 !text-xs">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle"></use>
+                      </svg>
+                      Accept
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+            <!-- PayDeposit - Copy -->
+            <template x-if="$store.edit.editMode === 'editCopy'">
+              <div class="flex items-center">
+                <button @click="$store.edit.processDepositCopy();" class="modal-btn-prim flex items-center !text-xs">
+                  <svg class="size-4">
+                    <use href="/icons/icons.svg#check-circle"></use>
+                  </svg>
+                  Pay Deposit
+                </button>
+              </div>
+            </template>
             <!-- Add Item Button -->
-            <button
-              @click="$store.edit.existingItems.showItemModal = true"
-              class="modal-btn-prim flex items-center justify-center !text-xs">
-              <svg class="size-4">
-                <use href="/icons/icons.svg#items"></use>
-              </svg>
-              Add Item
-            </button>
+            <template x-if="$store.edit.editMode === 'editOverwrite'">
+              <button
+                @click="$store.edit.existingItems.showItemModal = true"
+                class="modal-btn-prim flex items-center justify-center !text-xs">
+                <svg class="size-4">
+                  <use href="/icons/icons.svg#items"></use>
+                </svg>
+                Add Item
+              </button>
+            </template>
           </div>
         </div>
       </div>
       <div class="flex w-full justify-between mt-2">
-        <button @click="$store.edit.cancelEdit()" class="modal-btn-sec flex items-center !p-1.5 !text-sm">
-          <svg class="size-4 mr-1.5">
+        <button @click="$store.edit.cancelEdit()" class="modal-btn-prim flex items-center !p-1 !text-sm">
+          <svg class="size-4">
             <use href="/icons/icons.svg#xmark-circle"></use>
           </svg>
           Cancel
         </button>
         <!-- Save edit -->
-        <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !p-1.5 !text-sm">
+        <button @click="$store.edit.saveEdit()" class="modal-btn-prim flex items-center !p-1 !text-sm">
           <svg class="size-4">
             <use href="/icons/icons.svg#check-circle"></use>
           </svg>
@@ -642,7 +736,7 @@
               value="editOverwrite"
               x-model="$store.edit.editMode"
               class="mr-6 ml-2 text-lg text-vlp dark:text-vds" />
-            <span>Edit</span>
+            <span>Edit - Fix issues</span>
           </div>
           <div class="flex items-center ml-auto">
             <div
@@ -677,7 +771,7 @@
               value="editCopy"
               x-model="$store.edit.editMode"
               class="mr-6 ml-2 text-lg text-vlp dark:text-vds" />
-            <span>Copy</span>
+            <span>Copy - Pay Deposits</span>
           </div>
           <div class="flex items-center ml-auto">
             <div
