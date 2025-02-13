@@ -16,7 +16,10 @@ document.addEventListener('alpine:init', () => {
       invoiceItems: { invoiceItems: [] },
       initialValuesInvItems: {},
       customItemCounter: 0,
-      editCopyPayDeposit: false,
+      //====Copies====
+
+      showCopies: true,
+      copyInvoices: [],
       // ===== 3. Styles & Samples for Dropdown =====
       existingItems: {
         showItemModal: false,
@@ -57,19 +60,29 @@ document.addEventListener('alpine:init', () => {
         this.watchTabSwitch()
         console.log('{ Edit Store } ==> Initialised')
       },
-      processDepositCopy() {
-        const invoice = this.invoiceItems.invoice
 
-        // Create a copy of the original totals, adjusted for the deposit
-        this.updatedTotals = {
-          subtotal: invoice.subtotal - invoice.deposit_value,
-          discount: invoice.discount_value,
-          vat: (invoice.subtotal - invoice.deposit_value - invoice.discount_value) * 0.2, // Ensure VAT is on post-discount value
-          total: invoice.total - invoice.deposit_value,
-        }
+      getCopyInvoNames(invoiceId) {
+        if (!invoiceId) return
 
-        // Show recalculated totals
-        this.editCopyPayDeposit = true
+        // Avoid duplicate fetches
+        if (this.copyInvoices[invoiceId]) return
+
+        fetch(`/editor/invoice/copy/names/${invoiceId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              console.error('Error fetching copied invoices:', data.error)
+              return
+            }
+
+            this.copyInvoices[invoiceId] = data.map(inv => ({
+              id: inv.id,
+              number: inv.invoice_number,
+            }))
+          })
+          .catch(error => {
+            console.error('Error fetching copied invoices:', error)
+          })
       },
 
       // ==== FETCH METHODS ====
@@ -102,6 +115,8 @@ document.addEventListener('alpine:init', () => {
               if (!this.invoiceBook.some(existing => existing.id === item.id)) {
                 item.date = new Date(item.date).toLocaleDateString('en-GB')
                 this.invoiceBook.push(item)
+                // Fetch copied invoices for each item
+                this.getCopyInvoNames(item.id)
               }
             })
 
@@ -605,6 +620,7 @@ document.addEventListener('alpine:init', () => {
             this.page = 1
             this.hasMore = true
             this.fetchListById()
+            this.getCopyInvoNames(invoiceId)
           }
         })
       },

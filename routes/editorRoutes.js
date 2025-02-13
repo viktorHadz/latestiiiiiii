@@ -332,4 +332,22 @@ router.post('/invoice/save/copy', async (req, res) => {
   }
 })
 
+// Fetch copied invoice names for list
+router.get('/invoice/copy/names/:invoiceId', (req, res) => {
+  const { invoiceId } = req.params
+
+  db.all(
+    `SELECT id, invoice_number FROM copied_invoices 
+     WHERE original_invoice_id = ? 
+     ORDER BY date DESC, id ASC`, // Fetch latest first
+    [invoiceId],
+    (err, copiedInvoices) => {
+      if (err) {
+        return res.status(500).json({ error: `Error fetching copied invoices: ${err.message}` })
+      }
+      res.json(copiedInvoices) // Return both ID and invoice number
+    },
+  )
+})
+
 module.exports = router
