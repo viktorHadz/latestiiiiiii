@@ -24,7 +24,14 @@ router.get('/list/:clientId', (req, res) => {
     }
 
     db.all(
-      'SELECT * FROM invoices WHERE client_id = ? ORDER BY date DESC, id DESC LIMIT ? OFFSET ?',
+      `SELECT 
+        invoices.*, 
+        (SELECT json_group_array(json_object('id', copied_invoices.id, 'invoice_number', copied_invoices.invoice_number)) 
+         FROM copied_invoices WHERE copied_invoices.original_invoice_id = invoices.id) AS copiedInvoices 
+      FROM invoices 
+      WHERE client_id = ? 
+      ORDER BY date DESC, id DESC 
+      LIMIT ? OFFSET ?`,
       [clientId, limit, offset],
       (err, invoiceDetails) => {
         if (err) {
@@ -34,6 +41,7 @@ router.get('/list/:clientId', (req, res) => {
         const listData = invoiceDetails.map(invoice => ({
           ...invoice,
           client_name: clientDetails.name,
+          copiedInvoices: invoice.copiedInvoices ? JSON.parse(invoice.copiedInvoices) : [],
         }))
 
         res.json(listData)
@@ -41,6 +49,7 @@ router.get('/list/:clientId', (req, res) => {
     )
   })
 })
+
 // 2. Individual Invoice Details
 router.get('/invoice/:invoiceId', (req, res) => {
   const invoiceId = req.params.invoiceId
@@ -106,21 +115,6 @@ router.post('/invoice/:invoiceId/status', (req, res) => {
       }
       res.json({ success: true, newStatus })
     })
-  })
-})
-// Delete
-router.delete('/invoice/delete/:invoiceId', (req, res) => {
-  const { invoiceId } = req.params
-  const deleteQuery = 'DELETE FROM invoices WHERE id = ?'
-
-  db.run(deleteQuery, [invoiceId], function (err) {
-    if (err) return res.status(500).json({ error: 'Failed to delete invoice' })
-
-    if (this.changes === 0) {
-      return res.status(404).json({ error: 'Invoice not found' })
-    }
-
-    res.status(200).json({ message: 'Invoice deleted successfully' })
   })
 })
 
@@ -333,21 +327,76 @@ router.post('/invoice/save/copy', async (req, res) => {
 })
 
 // Fetch copied invoice names for list
-router.get('/invoice/copy/names/:invoiceId', (req, res) => {
-  const { invoiceId } = req.params
+router.get('/invoice/copy/names', (req, res) => {
+  const invoiceIds = req.query.invoiceIds
+    ?.split(',')
+    .map(id => parseInt(id))
+    .filter(Boolean)
+
+  if (!invoiceIds || invoiceIds.length === 0) {
+    return res.status(400).json({ error: 'No invoice IDs provided' })
+  }
+
+  const placeholders = invoiceIds.map(() => '?').join(',')
 
   db.all(
-    `SELECT id, invoice_number FROM copied_invoices 
-     WHERE original_invoice_id = ? 
-     ORDER BY date DESC, id ASC`, // Fetch latest first
-    [invoiceId],
+    `SELECT id, invoice_number, original_invoice_id FROM copied_invoices 
+     WHERE original_invoice_id IN (${placeholders}) 
+     ORDER BY CAST(SUBSTR(invoice_number, INSTR(invoice_number, '.') + 1) AS INTEGER) ASC`,
+    invoiceIds,
     (err, copiedInvoices) => {
       if (err) {
         return res.status(500).json({ error: `Error fetching copied invoices: ${err.message}` })
       }
-      res.json(copiedInvoices) // Return both ID and invoice number
+
+      // ✅ Group copied invoices by their original invoice ID
+      const groupedCopies = copiedInvoices.reduce((acc, copy) => {
+        if (!acc[copy.original_invoice_id]) {
+          acc[copy.original_invoice_id] = []
+        }
+        acc[copy.original_invoice_id].push(copy)
+        return acc
+      }, {})
+
+      res.json(groupedCopies)
     },
   )
+})
+
+// ==== Deleting Invocies ==== //
+
+// Delete
+router.delete('/invoice/delete/:invoiceId', (req, res) => {
+  const { invoiceId } = req.params
+
+  db.run('DELETE FROM invoices WHERE id = ?', [invoiceId], function (err) {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to delete invoice' })
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Invoice not found' })
+    }
+
+    res.status(200).json({ message: 'Invoice deleted successfully' })
+  })
+})
+
+// Delete copied invoice and its items
+router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
+  const { invoiceId } = req.params
+
+  db.run('DELETE FROM copied_invoices WHERE id = ?', [invoiceId], function (err) {
+    if (err) {
+      return res.status(500).json({ error: `Failed to delete copied invoice: ${err.message}` })
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Copied invoice not found' })
+    }
+
+    res.status(200).json({ message: 'Copied invoice deleted successfully', invoiceId })
+  })
 })
 
 module.exports = router

@@ -162,12 +162,31 @@
               </svg>
               PDF
             </button>
-            <button @click="$store.edit.openEditModal = true" class="modal-btn-prim flex">
-              <svg class="size-4">
-                <use href="/icons/icons.svg#editor" />
-              </svg>
-              Edit Invoice
-            </button>
+            <!-- Non-editable button  -->
+            <template x-if="$store.edit.copyInvoices[$store.edit.invoiceItems.invoice.id]?.length > 0">
+              <div x-data="tooltip('Cannot edit this invoice. Only invoices without copied versions can be edited.')">
+                <button
+                  @click.stop="callWarning('Cannot edit this invoice.', 'Only invoices without copied versions can be edited.')"
+                  class="!text-gray-400 cursor-not-allowed flex items-center modal-btn-prim">
+                  <svg class="size-4">
+                    <use href="/icons/icons.svg#editor" />
+                  </svg>
+                  Edit Invoice
+                </button>
+              </div>
+            </template>
+
+            <!-- Editable button (no copied children invoices) -->
+            <template x-if="!$store.edit.copyInvoices[$store.edit.invoiceItems.invoice.id]?.length">
+              <div>
+                <button @click="$store.edit.openEditModal = true" class="modal-btn-prim flex">
+                  <svg class="size-4">
+                    <use href="/icons/icons.svg#editor" />
+                  </svg>
+                  Edit Invoice
+                </button>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -356,13 +375,14 @@
                 <span
                   class="text-opacity-90 text-vls2 dark:text-vds"
                   x-text="$store.edit.invoiceItems.invoice.deposit_type === 1 
-            ? $store.edit.invoiceItems.invoice.deposit_value + '%' 
-            : '£' + $store.edit.invoiceItems.invoice.deposit_value"></span>
+            ? $store.price.roundToTwo($store.edit.invoiceItems.invoice.deposit_value) + '%' 
+            : '£' + $store.price.roundToTwo($store.edit.invoiceItems.invoice.deposit_value)"></span>
 
                 <div
                   x-show="$store.edit.invoiceItems.invoice.deposit_type === 1"
                   class="text-xs text-vls2/60 dark:text-vds3light">
-                  <p x-text="'(' + '£' + $store.edit.invoiceItems.invoice.depoVal_ifPercent + ')'"></p>
+                  <p
+                    x-text="'(' + '£' + $store.price.roundToTwo($store.edit.invoiceItems.invoice.depoVal_ifPercent) + ')'"></p>
                 </div>
 
                 <button
@@ -428,20 +448,6 @@
                 <span x-text="$store.edit.invoiceItems.invoice.invoice_number" class="text-xs"></span>
               </h2>
 
-              <!-- Remaining Balance -->
-              <div
-                class="p-1 text-sm font-semibold bg-yellow-200 border border-yellow-400 dark:bg-vdp3 dark:border-vds3light rounded flex justify-between">
-                <span>Remaining Balance:</span>
-                <template x-if="$store.edit.invoiceItems.invoice.discount_value === 0">
-                  <span
-                    x-text="'£' + ($store.edit.invoiceItems.invoice.total - $store.edit.invoiceItems.invoice.depoVal_ifPercent)"></span>
-                </template>
-                <template x-if="$store.edit.invoiceItems.invoice.discount_value > 0">
-                  <span
-                    x-text="'£' + ($store.edit.invoiceItems.invoice.total - $store.edit.invoiceItems.invoice.deposit_value)"></span>
-                </template>
-              </div>
-
               <!-- Totals (Always Visible) -->
               <div class="mt-4 border-t border-vls/40 pt-2 text-sm">
                 <h3 class="font-semibold text-center mb-2">Totals After Invoice Payment</h3>
@@ -473,13 +479,14 @@
                       <span
                         class="text-opacity-90 text-vls2 dark:text-vds"
                         x-text="$store.edit.invoiceItems.invoice.deposit_type === 1 
-            ? $store.edit.invoiceItems.invoice.deposit_value + '%' 
-            : '£' + $store.edit.invoiceItems.invoice.deposit_value"></span>
+            ? $store.price.roundToTwo($store.edit.invoiceItems.invoice.deposit_value) + '%' 
+            : '£' + $store.price.roundToTwo($store.edit.invoiceItems.invoice.deposit_value)"></span>
 
                       <div
                         x-show="$store.edit.invoiceItems.invoice.deposit_type === 1"
                         class="text-xs text-vls2/60 dark:text-vds3light">
-                        <p x-text="'(' + '£' + $store.edit.invoiceItems.invoice.depoVal_ifPercent + ')'"></p>
+                        <p
+                          x-text="'(' + '£' + $store.price.roundToTwo($store.edit.invoiceItems.invoice.depoVal_ifPercent) + ')'"></p>
                       </div>
                     </div>
                   </div>
@@ -492,18 +499,19 @@
                       x-text="
                         $store.edit.invoiceItems.invoice.deposit_type === 1
                           ? '£' + (
-                              $store.edit.invoiceItems.invoice.total -
+                            $store.price.roundToTwo( $store.edit.invoiceItems.invoice.total -
                               $store.edit.invoiceItems.invoice.depoVal_ifPercent
-                            )
+                            ))
                           : '£' + (
-                              $store.edit.invoiceItems.invoice.total -
-                              $store.edit.invoiceItems.invoice.deposit_value
+                              $store.price.roundToTwo($store.edit.invoiceItems.invoice.total -
+                              $store.edit.invoiceItems.invoice.deposit_value)
                             )
                       "></span>
                     <div
                       x-show="$store.edit.invoiceItems.invoice.deposit_type === 1"
                       class="text-xs text-vls2/60 dark:text-vds3light ml-1">
-                      <p x-text="'(' + $store.edit.invoiceItems.invoice.deposit_value + '%)'"></p>
+                      <p
+                        x-text="'(' + $store.price.roundToTwo($store.edit.invoiceItems.invoice.deposit_value) + '%)'"></p>
                     </div>
                   </div>
                 </div>
