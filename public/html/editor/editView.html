@@ -164,9 +164,9 @@
             </button>
             <!-- Non-editable button  -->
             <template x-if="$store.edit.copyInvoices[$store.edit.invoiceItems.invoice.id]?.length > 0">
-              <div x-data="tooltip('Cannot edit this invoice. Only invoices without copied versions can be edited.')">
+              <div x-data="tooltip('Cannot edit invoice. Can only edit invoices without copies.')">
                 <button
-                  @click.stop="callWarning('Cannot edit this invoice.', 'Only invoices without copied versions can be edited.')"
+                  @click.stop="callWarning('Cannot edit this invoice.', 'Can only edit invoices without copies.')"
                   class="!text-gray-400 cursor-not-allowed flex items-center modal-btn-prim">
                   <svg class="size-4">
                     <use href="/icons/icons.svg#editor" />

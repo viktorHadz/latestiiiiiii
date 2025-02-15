@@ -289,11 +289,11 @@ input[type='number'] {
 /* Togglers Ends */
 /* MARK:Search Input*/
 .srch-style {
-  @apply flex items-center gap-2 text-sm p-1 rounded bg-gray-100 text-vls3 border border-gray-300 hover:bg-gray-200 transition placeholder:text-vls2/80;
+  @apply flex items-center shadow gap-2 text-sm p-1 rounded bg-gray-100 text-vls3 border border-gray-300 hover:bg-gray-200 transition placeholder:text-vls2/80;
   @apply focus:border-vls2/20  focus:text-vls3 focus:outline-none focus:bg-gray-200;
 }
 .dark .srch-style {
-  @apply p-1 text-sm font-medium transition duration-500 border-transparent bg-vdp text-vds placeholder:text-vds3light;
+  @apply p-1 text-sm font-medium shadow transition duration-500 border-transparent bg-vdp text-vds placeholder:text-vds3light;
   @apply hover:border-vda hover:text-vds hover:placeholder-vds;
   @apply focus:border-vda focus:text-vds focus:placeholder-vds focus:outline-none;
 }
@@ -344,7 +344,7 @@ input[type='number'] {
 }
 
 .modal-btn-prim {
-  @apply flex items-center gap-2 text-sm p-1 rounded bg-gray-100 text-vls3 border border-gray-300 hover:bg-gray-200 transition;
+  @apply flex items-center gap-2 text-sm p-1 rounded bg-gray-100 text-vls3 border border-gray-300 hover:bg-gray-200 transition shadow;
   position: relative; /* Required for the ripple effect */
   overflow: hidden; /* Ensure the ripple doesn't exceed button boundaries */
 }

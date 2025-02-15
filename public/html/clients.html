@@ -3,12 +3,12 @@
 
   <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 80vh">
     <div
-      class="inset-0 p-2 bg-white shadow mb-8 align-baseline dark:bg-vdp border border-vls/60 dark:border-vls/40 rounded flex justify-between">
+      class="inset-0 p-2 bg-white shadow-md mb-8 align-baseline dark:bg-vdp border border-vls/60 dark:border-vls/40 rounded flex justify-between">
       <button
         @click="$store.clients.showAddClientModal = true; 
           if($store.clients.showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
         @keydown.escape.window="showAddClientModal = false"
-        class="modal-btn-prim">
+        class="modal-btn-prim shadow">
         <svg class="size-4">
           <use href="/icons/icons.svg#user-plus" />
         </svg>

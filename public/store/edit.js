@@ -17,9 +17,8 @@ document.addEventListener('alpine:init', () => {
       initialValuesInvItems: {},
       customItemCounter: 0,
       //====Copies====
-
       showCopies: true,
-      copyInvoices: [],
+      copyInvoices: [], //
       // ===== 3. Styles & Samples for Dropdown =====
       existingItems: {
         showItemModal: false,
@@ -63,12 +62,10 @@ document.addEventListener('alpine:init', () => {
 
       getCopyInvoNames(invoiceId) {
         console.log('getCopyInvoNames called')
-
         if (!invoiceId) {
           callError('Invalid invoice ID', 'Restart the program or call support')
           return
         }
-
         if (!this.copyInvoices[invoiceId]) {
           console.warn(`No copied invoices found for invoice ${invoiceId}`)
           return
@@ -118,17 +115,17 @@ document.addEventListener('alpine:init', () => {
 
                   this.copyInvoices[item.id] = (copyData[item.id] || []).map(copy => ({
                     id: copy.id,
-                    number: copy.invoice_number, // ✅ Ensure invoice_number is properly set
-                    isDeletable: false, // ✅ Set default state
+                    number: copy.invoice_number, // Ensure invoice_number is properly set
+                    isDeletable: false, // Set default state
                   }))
 
                   if (this.copyInvoices[item.id].length > 0) {
-                    // ✅ Sort copies by invoice number numerically
+                    // Sort copies by invoice number numerically
                     this.copyInvoices[item.id].sort((a, b) =>
                       a.number.localeCompare(b.number, undefined, { numeric: true }),
                     )
 
-                    // ✅ Mark only the last copy as deletable
+                    // Mark only the last copy as deletable
                     this.copyInvoices[item.id].forEach((copy, index, array) => {
                       copy.isDeletable = index === array.length - 1
                     })
@@ -191,6 +188,51 @@ document.addEventListener('alpine:init', () => {
           callError('Error retrieving invoice', 'Try again or contact support.')
         }
       },
+      async fetchInvoiceCopy(invoiceId) {
+        try {
+          if (!invoiceId) return
+          if (this.editing) {
+            callWarning('Cannot change while editing', 'Complete edit and try again')
+            return
+          }
+
+          const response = await fetch(`/editor/invoice/copy/${invoiceId}`)
+          if (!response.ok) throw new Error(`Error fetching invoice copy: ${response.statusText}`)
+          const data = await response.json()
+          console.log('Fetched invoice copy data:', data)
+
+          // Reset custom item counter when loading a copied invoice
+          this.customItemCounter = 0
+
+          const uniqueItems = []
+          const seen = new Set()
+
+          data.invoiceItems.forEach(item => {
+            const uniqueKey = `non-edit-${item.type}-${item.origin_id}`
+            if (!seen.has(uniqueKey)) {
+              seen.add(uniqueKey)
+              uniqueItems.push({
+                ...item,
+                frontendId: uniqueKey,
+              })
+            }
+          })
+
+          // Store invoice copy data in the same way as a normal invoice
+          this.invoiceItems = {
+            ...data,
+            invoiceItems: uniqueItems,
+          }
+
+          this.calculateTotals()
+          this.showInvoiceItems = true
+          this.activeItemId = invoiceId
+          this.editing = false
+        } catch (error) {
+          console.error('Error fetching invoice copy:', error)
+          callError('Error retrieving invoice copy', 'Try again or contact support.')
+        }
+      },
 
       // 3. Styles and samples for dropdown menu
       async fetchStylesAndSamples(clientId) {
@@ -238,7 +280,7 @@ document.addEventListener('alpine:init', () => {
           console.error('Error updating invoice status:', error)
         }
       },
-
+      // Edits
       editInvoice() {
         if (this.editMode === 'editOverwrite' || this.editMode === 'editCopy') {
           this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
@@ -246,7 +288,6 @@ document.addEventListener('alpine:init', () => {
           this.openEditModal = false
         }
       },
-
       cancelEdit() {
         return new Promise(resolve => {
           if (this.editing && confirm('You will lose current edits. Continue?')) {
@@ -262,7 +303,6 @@ document.addEventListener('alpine:init', () => {
           }
         })
       },
-
       saveEdit() {
         if (!this.editMode) return
         if (!confirm('Are you sure you want to save this invoice?')) return
@@ -524,6 +564,7 @@ document.addEventListener('alpine:init', () => {
         this.calculateTotals()
       },
 
+      // Delete
       async deleteInvoice(invoiceId) {
         if (!invoiceId) {
           callError('Unable to delete invoice', 'Refresh page and try again or call support.')
@@ -601,7 +642,7 @@ document.addEventListener('alpine:init', () => {
           callError('Deletion failed', error.message)
         }
       },
-
+      // Rendering
       getCustomIndex(item) {
         return this.invoiceItems.invoiceItems.filter(i => i.origin_id === null && i.type === item.type).indexOf(item)
       },
@@ -698,25 +739,25 @@ document.addEventListener('alpine:init', () => {
           if (Alpine.store('clients').selectedClient?.id === clientId) {
             console.log('{ Edit Store } New invoice detected - fetching latest invoice')
 
-            fetch(`/editor/list/${clientId}?page=1&limit=1`) // ✅ Fetch only the latest invoice
+            fetch(`/editor/list/${clientId}?page=1&limit=1`) // Fetch only the latest invoice
               .then(res => res.json())
               .then(data => {
                 if (data.length > 0) {
                   const latestInvoice = data[0]
 
-                  // ✅ Ensure we are not adding duplicates
+                  // Ensure we are not adding duplicates
                   const exists = this.invoiceBook.some(inv => inv.id === latestInvoice.id)
                   if (!exists) {
-                    this.invoiceBook.unshift(latestInvoice) // ✅ Add new invoice to the top
+                    this.invoiceBook.unshift(latestInvoice) // Add new invoice to the top
                   }
 
-                  // ✅ Refresh copied invoices for this invoice
+                  // Refresh copied invoices for this invoice
                   this.getCopyInvoNames(latestInvoice.id)
                 }
               })
               .catch(error => console.error('Error fetching latest invoice:', error))
           } else {
-            // ✅ If the client is different, reset the store
+            // If the client is different, reset the store
             console.log('{ Edit Store } Invoice created for different client - resetting store')
             this.invoiceBook = []
             this.copyInvoices = []
@@ -726,7 +767,6 @@ document.addEventListener('alpine:init', () => {
           }
         })
       },
-
       clientChangeSync() {
         document.addEventListener('client-selected', event => {
           const newClient = event.detail
