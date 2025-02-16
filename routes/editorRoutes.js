@@ -73,7 +73,7 @@ router.get('/invoice/:invoiceId', (req, res) => {
   })
 })
 // 3. Items fetch
-router.get('/client/:clientId/items', (req, res) => {
+router.get('/existing/items/:clientId', (req, res) => {
   const clientId = req.params.clientId
   const itemsData = {}
 

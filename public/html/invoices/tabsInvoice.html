@@ -17,7 +17,7 @@
 
       <!-- MARK: TABS ALPINE -->
       <div class="relative w-full max-w-full mb-12">
-        <div x-ref="invoicingTabButtons" class="mb-2 toggler shadow-md border border-vls/60">
+        <div x-ref="invoicingTabButtons" class="mb-2 toggler shadow-md bg-vlp dark:bg-vdp2">
           <!-- Styles Tab Button -->
           <button
             :id="$id(invoicingTabId)"
@@ -40,8 +40,11 @@
           </div>
         </div>
         <div
-          class="relative text-xs border rounded shadow-md bg-white dark:bg-vdp2 dark:shadow border-vls/60 text-vlp dark:text-vds">
-          <div :id="$id(invoicingTabId + '-content')" x-show="invoicingTabContentActive($el)" class="relative p-2">
+          class="relative text-xs shadow-md bg-vlp dark:bg-vdp2 dark:shadow text-vlp dark:text-vds border rounded border-vls/40">
+          <div
+            :id="$id(invoicingTabId + '-content')"
+            x-show="invoicingTabContentActive($el)"
+            class="relative p-2 border-vls/40">
             <!-- MARK:STYLES -->
             <div class="flex justify-between align-middle mb-2">
               <!-- Style Search Input -->
@@ -97,7 +100,7 @@
             x-cloak>
             <!-- MARK: SAMPLES SECTION -->
             <div class="flex justify-between align-middle mb-2">
-              <!-- Style Search Input -->
+              <!-- Sample Search Input -->
               <input
                 id="sampleSearchInput"
                 type="text"

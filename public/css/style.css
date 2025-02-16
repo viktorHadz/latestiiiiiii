@@ -16,6 +16,7 @@
 html {
   font-size: 16px;
 }
+
 /* MARK: Status */
 /* Toggle button text styling */
 .status-text {
@@ -54,12 +55,12 @@ html {
 /* Table */
 .table-scrollbar::-webkit-scrollbar-track {
   background: #d1d5db;
-  border-radius: 5px;
+  border-radius: 4px;
   clip-path: inset(0);
 }
 .table-scrollbar::-webkit-scrollbar-thumb {
   background: #2b3440; /* The draggable scrolling handle */
-  border-radius: 5px; /* Roundness of the scrollbar handle */
+  border-radius: 4px; /* Roundness of the scrollbar handle */
   clip-path: inset(0);
 }
 .table-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -213,6 +214,22 @@ input[type='number'] {
   align-items: center;
   justify-content: center;
 }
+.table-interaction-icon {
+  @apply transition duration-100 rounded-full text-vls2;
+  @apply hover:bg-vlp2/60;
+  @apply dark:text-vds;
+  @apply dark:hover:bg-vlp2/20;
+  @apply active:scale-95;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Buttons */
 .butt-style {
   @apply flex items-center text-sm duration-500 border border-transparent rounded-md bg-vls2 text-vlp;
@@ -400,7 +417,9 @@ input[type='number'] {
 .dark .border-clipper {
   --border-clipper: #27272a;
 }
-
+.underlined-text {
+  @apply self-center font-medium text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda;
+}
 /* MARK: Inputs */
 input[type='radio'] {
   appearance: none;

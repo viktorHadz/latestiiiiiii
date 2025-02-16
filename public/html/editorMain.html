@@ -1,206 +1,99 @@
-<!-- editorMain.html -->
 <div x-data="editorMain" class="flex flex-col w-full h-full min-h-0">
-  <!-- Top bar -->
-  <div
-    class="p-2 mb-12 align-baseline border justify-between flex rounded border-vls/60 dark:border-vls/40 dark:bg-vdp bg-white shadow-md">
-    <div
-      x-data="tooltip('Cannot change clients while editing.', !$store.edit.editing ? { hidden: true } : { hidden: false })"
-      @click="if ($store.edit.editing) { 
-              callWarning('Cannot change clients', 'Finish editing and try again'); 
-            } else { 
-              $store.clients.showClientModal = true;
-            }"
-      :class="$store.edit.editing ? 'cursor-not-allowed' : 'cursor-pointer'">
-      <button
-        id="clientSelectBtn"
-        :disabled="$store.edit.editing"
-        class="modal-btn-prim disabled:opacity-50 disabled:pointer-events-none shadow">
-        Select Client
-      </button>
-    </div>
-
+  <!-- Top Bar -->
+  <div class="p-2 mb-12 flex justify-between items-center border rounded shadow-md bg-white dark:bg-vdp border-vls/40">
+    <button
+      id="clientSelectBtn"
+      class="modal-btn-prim shadow"
+      @click="$store.clients.showClientModal = true"
+      x-bind:disabled="$store.edit.editing">
+      <svg class="size-4">
+        <use href="/icons/icons.svg#select-client"></use>
+      </svg>
+      Select Client
+    </button>
     <h3
-      class="self-center text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
-      x-text="$store.clients.selectedClient.name || 'No selected client'"></h3>
+      class="self-center font-medium text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
+      x-text="$store.clients.selectedClient?.name || 'No selected client'"></h3>
   </div>
 
-  <div class="flex flex-1 min-h-0">
-    <!-- Invoice List on the left -->
-    <div class="flex flex-col min-w-[260px] w-[35%] overflow-hidden">
-      <div class="p-2 bg-vlp dark:bg-vdp shadow rounded border border-vls/60">
-        <div class="w-full flex justify-between">
-          <p class="mb-2 font-semibold text-vls2 dark:text-vds">Invoice Book</p>
-        </div>
-        <input id="search-invoices-invoice-book" type="text" placeholder="Search invoices..." class="srch-style" />
+  <div class="flex flex-1 min-h-0 text-vls2 dark:text-vds3light">
+    <!-- Invoice List Section -->
+    <div class="flex flex-col min-w-[260px] w-[30%] overflow-hidden">
+      <div class="p-2 bg-vlp dark:bg-vdp shadow rounded border border-vls/40">
+        <p class="mb-2 font-semibold text-vls2 dark:text-vds">Invoice Book</p>
+        <input id="search-invoices" type="text" placeholder="Search invoices..." class="srch-style" />
       </div>
 
-      <!-- Scrollable List -->
       <div
-        class="overflow-y-auto h-full bg-vlp dark:bg-vdp2 table-scrollbar p-2 border shadow-md rounded border-vls/60 mt-2">
-        <template x-for="item in $store.edit.invoiceBook" :key="item.id">
-          <div @click="$store.edit.fetchInvoice(item.id)" :id="'rowid-' + item.id" class="mb-6">
-            <!-- Invoice Item Content-->
+        class="overflow-y-auto h-full p-2 bg-vlp dark:bg-vdp2 table-scrollbar border border-vls/40 shadow-md rounded mt-2">
+        <template x-for="invoice in $store.edit.invoiceBook" :key="invoice.id">
+          <div class="mb-6" @click="$store.edit.fetchInvoice(invoice.id)" :id="'rowid-' + invoice.id">
             <div
-              :class="{
-                // Active item
-              'ring-1 dark:ring-1 ring-vls2 bg-vlp dark:bg-[#27272A] dark:ring-vda2/50 dark:text-white ': item.id === $store.edit.activeItemId,
-                // Inactive item
-              'ring-1 ring-vls/40 dark:ring-0 dark:bg-vds3neu700 dark:hover:bg-vds2 bg-vlp dark:bg-vdp2/40 dark:text-vds shadow-md hover:shadow-lg hover:ring-vls': item.id !== $store.edit.activeItemId
-            }"
-              class="relative z-50 flex justify-between cursor-pointer shadow rounded p-2 text-vls2 transition-all focus:outline-none focus-visible:outline-none">
-              <!-- Bookmark Icon with Tooltip -->
-              <div
-                x-data="tooltip(`Status:${item.invoice_status}\n Click to change.`)"
-                class="absolute -top-[0.2rem] right-3 hover:animate-pulse">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="size-5"
-                  :class="{
-                  'text-vla2/80 dark:text-vla2': item.invoice_status === 'paid',
-                  'text-red-500/70 ': item.invoice_status === 'unpaid',
-                  'text-yellow-300 dark:text-yellow-400/70': item.invoice_status === 'partially paid'
-                }">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-                </svg>
+              :class="{'ring-1 ring-vls2 dark:ring-vda bg-vlp dark:bg-vdp dark:text-white': invoice.id === $store.edit.activeItemId, 
+              'ring-1 ring-vls/40 hover:ring-vls/80 shadow hover:shadow-lg dark:bg-vdp': invoice.id !== $store.edit.activeItemId}"
+              class="flex justify-between items-center shadow rounded p-2 transition-all">
+              <div class="flex flex-col text-xs">
+                <div x-text="invoice.client_name"></div>
+                <div x-text="invoice.date"></div>
+                <div x-text="invoice.invoice_number"></div>
               </div>
-              <!-- Invoice Info -->
-              <div class="mr-2 flex flex-col text-left text-xs">
-                <div x-text="item.client_name"></div>
-                <div x-text="item.date" class="mt-1"></div>
-                <div class="flex text-xs mt-1" x-text="item.invoice_number"></div>
-              </div>
-              <!-- Bottom Icons -->
-              <div class="flex justify-end items-end mt-auto pt-2 mr-1.5">
-                <!-- Deposit Icon -->
-                <div x-show="item.deposit_value > 0" class="mr-1">
-                  <div x-data="tooltip('Contains a deposit')">
-                    <button class="table-interaction-icon-red !scale-100 hover:!text-vla" @click.stop>
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#cash-bill" />
-                      </svg>
-                    </button>
-                  </div>
+              <!-- Deposit Icon (if applicable) -->
+              <div x-show="invoice.deposit_value > 0" class="mr-1">
+                <div x-data="tooltip('Contains a deposit')">
+                  <button @click.stop class="table-interaction-icon-red hover:!text-vla">
+                    <svg class="w-4 h-4">
+                      <use href="/icons/icons.svg#cash-bill" />
+                    </svg>
+                  </button>
                 </div>
-                <!-- Details Icon -->
-                <div
-                  x-data="tooltip(`Subtotal: £${item.subtotal}
-    VAT (${item.vat_percent}%): £${item.vat}
-    Discount: ${item.discount_type === 1 ? item.discVal_ifPercent + '%' : '£' + item.discount_value}
-    Total: £${item.total}
-    Deposit: ${item.deposit_type === 1 ? item.depoVal_ifPercent + '%' : '£' + item.deposit_value}`)"
-                  @click.stop
-                  class="table-interaction-icon-blue !scale-100 mr-1">
-                  <svg class="size-4">
-                    <use href="/icons/icons2.svg#deets-ic" />
-                  </svg>
-                </div>
-                <!-- Delete Button -->
-                <div class="flex items-center">
-                  <!-- Non-deletable delete button -->
-                  <template x-if="$store.edit.copyInvoices[item.id] && $store.edit.copyInvoices[item.id].length > 0">
-                    <div x-data="tooltip('Cannot delete this invoice. \nYou must first delete its copied invoices.')">
-                      <button
-                        @click.stop="callWarning('Cannot delete this invoice.', 'You must first delete its copied invoices.')"
-                        class="text-gray-400 cursor-not-allowed">
-                        <svg class="size-4">
-                          <use href="/icons/icons.svg#trash" />
-                        </svg>
-                      </button>
-                    </div>
-                  </template>
-
-                  <!-- Deletable delete button -->
-                  <template x-if="!($store.edit.copyInvoices[item.id] && $store.edit.copyInvoices[item.id].length > 0)">
-                    <button @click="$store.edit.deleteInvoice(item.id)" class="table-interaction-icon-red">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#trash" />
-                      </svg>
-                    </button>
-                  </template>
+                <div x-data="tooltip('See your attached deposits', {position: 'top'})">
+                  <button
+                    @click.stop="invoice.expanded = !invoice.expanded"
+                    class="transition-transform transform mt-0.5 dark:text-vds table-interaction-icon hover:!text-red-500"
+                    :class="{ 'rotate-180': invoice.expanded }">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#chev-down" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
-
-            <!-- Copied Invoices Dropdown -->
-            <template x-if="$store.edit.copyInvoices[item.id] && $store.edit.copyInvoices[item.id].length > 0">
-              <div
-                class="-mt-2 w-[94%] z-10 mx-auto"
-                x-data="{ open: false, expanded: false, hover: false }"
-                @mouseenter="hover=true"
-                @mouseleave="hover = false; if (!expanded) open = false"
-                @click.stop="expanded = !expanded; open = expanded; $store.edit.getCopyInvoNames(item.id)">
-                <div class="bg-vlp dark:bg-vdp shadow text-vlp rounded">
-                  <!-- Expanding Button -->
-                  <div
-                    class="flex items-center justify-between cursor-pointer transition-all duration-300 bg-vls2 dark:bg-vdp px-3 rounded"
-                    :class="{ 'py-2': hover || expanded, 'py-0.5': !hover && !expanded }">
-                    <div
-                      class="text-xs mt-0.5 -mb-0.5 font-semibold dark:text-vds transition-all duration-300"
-                      :class="{ 'opacity-100 text-xs': hover || expanded, 'opacity-80 text-xs': !hover && !expanded }">
-                      Copied Invoices
-                    </div>
-                    <button
-                      class="transition-transform transform mt-0.5 dark:text-vds"
-                      :class="{ 'rotate-180': expanded }">
-                      <svg class="size-4">
-                        <use href="/icons/icons.svg#chev-down" />
-                      </svg>
-                    </button>
-                  </div>
-                  <!-- Scrollable Dropdown Content -->
-                  <div
-                    :class="open ? 'max-h-[18vh] overflow-y-auto p-2 shadow-md' : 'max-h-0 overflow-hidden'"
-                    class="relative transition-all duration-300"
-                    x-ref="content">
-                    <ul class="space-y-2 p-1 text-xs">
-                      <template x-for="invoice in $store.edit.copyInvoices[item.id] || []" :key="invoice.id">
-                        <li
-                          @click.stop="if($store.edit.editing) { callWarning('Cannot copy invoices', 'Finish editing and try again') }; $store.edit.fetchInvoiceCopy(invoice.id)"
-                          class="px-2 py-0.5 hover:bg-vlp dark:bg-vdp2 dark:hover:bg-vdp3 rounded-md cursor-pointer text-vls3 dark:text-vds bg-blue-50 border hover:text-vls2 transition duration-300"
-                          :class="invoice.isDeletable ? 'border border-spacing-2 border-vla2 dark:border-vda font-semibold dark:font-normal' : 'border-vls2/40'">
-                          <div class="flex justify-between items-center text-xs">
-                            <span x-text="invoice.number"></span>
-                            <div class="flex items-center">
-                              <!-- Non-deletable  -->
-                              <template x-if="!invoice.isDeletable">
-                                <div x-data="tooltip('Cannot delete this invoice \nwhile newer copies exist.')">
-                                  <button
-                                    @click.stop="callWarning('Cannot delete this invoice', 'while newer copies exist.')"
-                                    class="text-gray-400 cursor-not-allowed p-1">
-                                    <svg class="size-4">
-                                      <use href="/icons/icons.svg#trash" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </template>
-                              <!-- Deletable delete button -->
-                              <template x-if="invoice.isDeletable">
-                                <button
-                                  @click="$store.edit.deleteCopiedInvoice(invoice.id, item.id)"
-                                  class="table-interaction-icon-red !p-0.5">
-                                  <svg class="size-4">
-                                    <use href="/icons/icons.svg#trash" />
-                                  </svg>
-                                </button>
-                              </template>
-                            </div>
-                          </div>
-                        </li>
-                      </template>
-                    </ul>
-                  </div>
-                </div>
+            <!-- Copies Dropdown -->
+            <div
+              x-show="invoice.copies && invoice.copies.length > 0 && invoice.expanded"
+              x-transition.scale.origin.top
+              x-transition.duration.300ms>
+              <div class="mt-1 bg-gray-50 shadow-md border border-vls/30 dark:bg-vdp/80 p-2 rounded">
+                <div class="text-xs font-semibold mb-1">Copied Invoices</div>
+                <ul class="space-y-1 text-xs">
+                  <template x-for="copy in invoice.copies" :key="copy.id">
+                    <li
+                      class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls/40">
+                      <span x-text="copy.invoice_number"></span>
+                      <div class="flex gap-2">
+                        <div x-data="tooltip('Delete')">
+                          <button @click.stop="$store.edit.deleteInvoice(copy.id)" class="table-interaction-icon-red">
+                            <svg class="w-4 h-4">
+                              <use href="/icons/icons.svg#trash" />
+                            </svg>
+                          </button>
+                        </div>
+                        <div x-data="tooltip('Edit discount and deposit for ' + copy.invoice_number)">
+                          <button @click.stop="$store.edit.openCopyModal(copy)" class="table-interaction-icon-blue">
+                            <svg class="size-4">
+                              <use href="/icons/icons2.svg#window" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
               </div>
-            </template>
+            </div>
           </div>
         </template>
+
         <div class="mt-4 text-center" x-show="$store.edit.hasMore">
           <button
             @click="$store.edit.fetchListById()"
@@ -210,7 +103,7 @@
       </div>
     </div>
 
-    <!-- Edit View container (fetched in editorMain.js) -->
-    <div id="edit-view" class="w-[95%]"></div>
+    <!-- Invoice Detail View Container -->
+    <div id="edit-view" class="w-[70%]"></div>
   </div>
 </div>
