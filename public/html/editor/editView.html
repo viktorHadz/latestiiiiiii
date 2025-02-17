@@ -670,26 +670,45 @@
   <!-- Copy Invoice Edit Modal -->
   <div
     x-show="$store.edit.showCopyModal"
-    class="fixed inset-0 z-[98] flex items-center justify-center bg-black bg-opacity-50">
-    <div
-      class="bg-white dark:bg-vdp p-6 rounded shadow-lg max-w-[40%] overflow-y-auto relative modal-bg-and-borders z-[99]">
-      <h2 class="text-lg font-semibold">Edit Copy Invoice</h2>
-      <p class="text-sm mb-2">
-        Invoice Number:
-        <span x-text="$store.edit.selectedCopy.invoice_number"></span>
-      </p>
-      <label class="flex flex-col mt-2 gap-2">
-        <span class="text-sm">Deposit:</span>
-        <input type="number" class="modal-input-style !p-1" x-model="$store.edit.selectedCopy.deposit" />
-      </label>
-      <label class="flex flex-col mt-2 gap-2">
-        <span class="text-sm">Discount:</span>
-        <input type="number" class="modal-input-style !p-1" x-model="$store.edit.selectedCopy.discount" />
-      </label>
-      <div class="flex justify-between mt-4 space-x-2">
-        <button @click="$store.edit.showCopyModal = false" class="modal-btn-sec !text-xs">Cancel</button>
-
-        <button @click="$store.edit.saveCopyEdit()" class="modal-btn-prim !text-xs !p-1.5">Save</button>
+    class="fixed inset-0 z-[98] flex items-center justify-center w-full h-full bg-black bg-opacity-50">
+    <div class="z-[99] p-4 modal-bg-and-borders w-[40%] h-[60%] shadow-lg bg-white dark:bg-vdp">
+      <div>
+        <div class="flex w-full justify-between">
+          <div>
+            <h2 class="text-lg font-medium text-vls3 dark:text-vds">Edit Copy Invoice</h2>
+            <p class="text-sm mb-2 text-vls2 dark:text-vds3light">
+              Invoice Number:
+              <span x-text="$store.edit.selectedCopy.invoice_number"></span>
+            </p>
+          </div>
+          <div class="flex flex-col text-xs">
+            <div
+              x-data="tooltip('- Paid - total - deposit = 0,\n\n- Pending - a deposit has been \nattached and a copy invoice created\n\n-- Unpaid - the default value until a\n deposit has been added.')">
+              <button>
+                <span
+                  class="px-1.5 py-0.5 text-xs font-light border rounded-full"
+                  :class="{
+                    'border-green-500 text-green-500': $store.edit.selectedCopy.status === 'paid',
+                    'border-yellow-500 text-yellow-500': $store.edit.selectedCopy.status === 'pending',
+                    'border-red-500 text-red-500': $store.edit.selectedCopy.status === 'unpaid'
+                  }"
+                  x-text="$store.edit.selectedCopy.status"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <label class="flex flex-col mt-2 gap-2">
+          <span class="text-sm text-vls3 dark:text-vds">Deposit:</span>
+          <input type="number" class="modal-input-style !p-1" x-model="$store.edit.selectedCopy.deposit" />
+        </label>
+        <label class="flex flex-col mt-2 gap-2">
+          <span class="text-sm text-vls3 dark:text-vds">Discount:</span>
+          <input type="number" class="modal-input-style !p-1" x-model="$store.edit.selectedCopy.discount" />
+        </label>
+        <div class="flex justify-between mt-4 space-x-2">
+          <button @click="$store.edit.showCopyModal = false" class="modal-btn-sec !text-xs">Cancel</button>
+          <button @click="$store.edit.saveCopyEdit()" class="modal-btn-prim !text-xs !p-1.5">Save</button>
+        </div>
       </div>
     </div>
   </div>

@@ -64,7 +64,7 @@
               x-show="invoice.copiedInvoices.invoice.id && invoice.copies.length > 0"
               x-transition.scale.origin.top
               x-transition.duration.300ms>
-              <div class="mt-1 bg-gray-50 shadow-md border border-vls/30 dark:bg-vdp/80 p-2 rounded">
+              <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
                 <div class="text-xs font-semibold mb-1">Copied Invoices</div>
                 <ul class="space-y-1 text-xs">
                   <template x-for="copy in invoice.copiedInvoices" :key="copy.id">
@@ -106,6 +106,6 @@
     </div>
 
     <!-- Invoice Detail View Container -->
-    <div id="edit-view" class="w-[70%]"></div>
+    <div id="edit-view" class="w-full"></div>
   </div>
 </div>
