@@ -70,25 +70,22 @@ document.addEventListener('alpine:init', () => {
         if (this.totals.clientId === null) {
           this.totals.clientId = Alpine.store('clients').selectedClient.id
         }
-
         const uniqueId = `${type}-${item.id}`
         const qty = Math.max(this.quantities[item.id] || 1, 1)
-
         const existingItem = this.totals.items.find(i => i.uniqueId === uniqueId)
         if (!existingItem) {
+          // NOTE: For sample items, we now simply store the hourly rate and the production time (in minutes)
           this.totals.items.push({
             ...item,
             clientId: Alpine.store('clients').selectedClient.id,
             uniqueId: uniqueId,
             type,
             quantity: qty,
-            price: parseFloat(item.price) * (type === 'sample' ? parseFloat(item.time) : 1),
+            price: parseFloat(item.price), // hourly rate for samples, fixed price for styles
+            time: type === 'sample' ? parseFloat(item.time) : 0, // production time (minutes)
           })
         } else {
           existingItem.quantity += qty
-          if (type === 'sample') {
-            existingItem.price = parseFloat(item.price) * parseFloat(item.time)
-          }
         }
         this.calculateTotals()
         delete this.quantities[item.id]
@@ -194,54 +191,46 @@ document.addEventListener('alpine:init', () => {
         }
       },
 
-      roundToTwo(value) {
-        return Math.round((value + Number.EPSILON) * 100) / 100
+      calculateLineTotal(item) {
+        if (item.type === 'sample') {
+          // Use hourly rate and convert minutes to hours:
+          return item.price * (item.time / 60) * item.quantity
+        } else {
+          return item.price * item.quantity
+        }
       },
       calculateSubTotal() {
         try {
-          const subTotal = this.totals.items.reduce((total, item) => {
-            if (item.type === 'sample' || item.type === 'style') {
-              return total + item.price * item.quantity
-            }
-            return total
-          }, 0)
-
+          const subTotal = this.totals.items.reduce((total, item) => total + this.calculateLineTotal(item), 0)
           return this.roundToTwo(subTotal)
         } catch (error) {
           console.error('Error calculating subtotal:', { items: this.totals.items, error })
           throw new Error('Failed to calculate subtotal. Check the input data.')
         }
       },
+      roundToTwo(value) {
+        return Math.round((value + Number.EPSILON) * 100) / 100
+      },
       calculateTotals() {
         try {
           const subtotal = this.calculateSubTotal()
-
-          // Calculate discount
           let discountedSubtotal = subtotal
           if (this.totals.discountValue !== 0) {
             if (this.totals.discountType === 1) {
-              // Percent discount
               discountedSubtotal -= (this.totals.discountValue / 100) * subtotal
             } else {
-              // Flat discount
               discountedSubtotal -= this.totals.discountValue
             }
           }
-
-          // Calculate VAT and total
           const vat = this.roundToTwo((this.totals.vatPercent / 100) * discountedSubtotal)
           const total = this.roundToTwo(discountedSubtotal + vat)
-
-          // Update state
           this.totals = {
             ...this.totals,
             subtotal: this.roundToTwo(subtotal),
-            discountedSubtotal: this.roundToTwo(discountedSubtotal), // Optional for clarity
+            discountedSubtotal: this.roundToTwo(discountedSubtotal),
             vat,
             total,
           }
-
-          // Debug logger
           console.log(`CalculateTotals => Subtotal: ${subtotal}, VAT: ${vat}, Total: ${total}`)
         } catch (error) {
           console.error('Error calculating totals:', { totals: this.totals, error })

@@ -18,7 +18,7 @@
 
   <div class="flex flex-1 min-h-0 text-vls2 dark:text-vds3light">
     <!-- Invoice List Section -->
-    <div class="flex flex-col min-w-[260px] w-[30%] overflow-hidden">
+    <div class="flex flex-col min-w-[260px] max-w-[30%] overflow-hidden">
       <div class="p-2 bg-vlp dark:bg-vdp shadow rounded border border-vls/40">
         <p class="mb-2 font-semibold text-vls2 dark:text-vds">Invoice Book</p>
         <input id="search-invoices" type="text" placeholder="Search invoices..." class="srch-style" />
@@ -46,7 +46,7 @@
                     </svg>
                   </button>
                 </div>
-                <div x-data="tooltip('See your attached deposits', {position: 'top'})">
+                <div x-data="tooltip('See your attached invoices', {position: 'top'})">
                   <button
                     @click.stop="invoice.expanded = !invoice.expanded"
                     class="transition-transform transform mt-0.5 dark:text-vds table-interaction-icon hover:!text-red-500"
@@ -58,18 +58,20 @@
                 </div>
               </div>
             </div>
-            <!-- Copies Dropdown -->
+
             <div
-              x-show="invoice.copies && invoice.copies.length > 0 && invoice.expanded"
+              x-show="invoice.expanded"
+              x-show="invoice.copiedInvoices.invoice.id && invoice.copies.length > 0"
               x-transition.scale.origin.top
               x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border border-vls/30 dark:bg-vdp/80 p-2 rounded">
                 <div class="text-xs font-semibold mb-1">Copied Invoices</div>
                 <ul class="space-y-1 text-xs">
-                  <template x-for="copy in invoice.copies" :key="copy.id">
+                  <template x-for="copy in invoice.copiedInvoices" :key="copy.id">
                     <li
                       class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls/40">
                       <span x-text="copy.invoice_number"></span>
+                      <p x-text="copy.status" class="text-xs"></p>
                       <div class="flex gap-2">
                         <div x-data="tooltip('Delete')">
                           <button @click.stop="$store.edit.deleteInvoice(copy.id)" class="table-interaction-icon-red">

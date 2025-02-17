@@ -156,7 +156,11 @@
         <!-- MARK: DEPOSIT MODAL -->
         <div class="flex justify-center">
           <button
-            @click="modDepo = !modDepo; if (modDepo) $nextTick(() => $refs.depoInput.focus())"
+            @click="modDepo = !modDepo; if (modDepo) {
+              $nextTick(() => $refs.depoInput.focus())
+              } else {
+                return
+              }"
             x-ref="depoAnchor"
             class="modal-btn-prim">
             <svg class="size-4">

@@ -27,7 +27,7 @@ router.get('/list/:clientId', (req, res) => {
     db.all(
       `SELECT 
         invoices.*, 
-        (SELECT json_group_array(json_object('id', copied_invoices.id, 'invoice_number', copied_invoices.invoice_number)) 
+        (SELECT json_group_array(json_object('id', copied_invoices.id, 'invoice_number', copied_invoices.invoice_number, 'status', copied_invoices.invoice_status)) 
          FROM copied_invoices WHERE copied_invoices.original_invoice_id = invoices.id) AS copiedInvoices 
       FROM invoices 
       WHERE client_id = ? 
@@ -105,10 +105,18 @@ router.post('/invoice/:invoiceId/status', (req, res) => {
       return res.status(404).json({ error: `Invoice ${invoiceId} not found.` })
     }
 
-    // Determine the new status ('paid' or 'unpaid')
-    const newStatus = row.invoice_status === 'unpaid' ? 'paid' : 'unpaid'
+    const statusMap = {
+      unpaid: 'unpaid',
+      partiallyPaid: 'paritally',
+      paid: 'paid',
+    }
 
-    // Update the invoice status in the database
+    // Determine the new status based on current status
+    const newStatus = statusMap[row.invoice_status]
+    if (!newStatus) {
+      return res.status(400).json({ error: `Invalid status type.` })
+    }
+
     const updateQuery = 'UPDATE invoices SET invoice_status = ? WHERE id = ?'
     db.run(updateQuery, [newStatus, invoiceId], function (err) {
       if (err) {

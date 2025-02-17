@@ -18,6 +18,11 @@ document.addEventListener('alpine:init', () => {
       initialValuesInvItems: {}, // deep–copy of invoice details for cancelEdit()
       customItemCounter: 0,
 
+      // Note
+      modNote: false,
+      viewNote: false,
+      uiNote: '',
+
       // ==== 2. Copy Invoice Editing (via Modal) ====
       selectedCopy: {},
       showCopyModal: false,
@@ -32,31 +37,6 @@ document.addEventListener('alpine:init', () => {
       uiDeposit: 0,
       modDepo: false,
       showXDepo: false,
-
-      async saveCopyEdit() {
-        try {
-          let res = await fetch(`/editor/invoice/copy/update/${this.selectedCopy.id}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              deposit: this.selectedCopy.deposit,
-              discount: this.selectedCopy.discount,
-            }),
-          })
-          if (!res.ok) throw new Error('Failed to update copy invoice')
-          // Update the corresponding copy in the parent invoice’s copies array
-          let parentInvoice = this.invoiceBook.find(inv => inv.id === this.selectedCopy.original_invoice_id)
-          if (parentInvoice && parentInvoice.copies) {
-            let idx = parentInvoice.copies.findIndex(c => c.id === this.selectedCopy.id)
-            if (idx !== -1) parentInvoice.copies[idx] = { ...this.selectedCopy }
-          }
-          this.showCopyModal = false
-          callSuccess('Copy Invoice Updated')
-        } catch (error) {
-          console.error('Error saving copy edit:', error)
-          callError('Failed to update invoice copy')
-        }
-      },
 
       // ==== 3. Items for Adding (Existing Items Dropdown & New Item Modal) ====
       existingItems: {
@@ -98,6 +78,16 @@ document.addEventListener('alpine:init', () => {
         console.log('{ Edit Store } ==> Initialised')
       },
 
+      /*
+      1. fetches client 
+      2. checks it and if its okay 
+      3. fetches llist of parent invoices and checks them if okay -->   
+      4. creates !!DATA!! = all iinvoices for this page
+      5. We map over invoiceIds and if thy are more than 0 --> copyRes if ok --> copyData
+      6.  we fetch 2 copies invoiceBook.[invoiceId].copiedInvoices and invoiceBook.invoiceId.copies 
+     
+     
+     */
       // --- Fetch Invoice List (parent invoices plus copies attached) ---
       async fetchListById() {
         if (this.loading || !this.hasMore) return
@@ -210,7 +200,7 @@ document.addEventListener('alpine:init', () => {
           if (!response.ok) {
             throw new Error(`Unable to get existing items. Server issue. Status: ${response.status}`)
           }
-          const data = await response.json() // { styles: [...], samples: [...] }
+          const data = await response.json()
 
           // Transform styles
           const transformedStyles = data.styles.map(item => ({
@@ -256,94 +246,92 @@ document.addEventListener('alpine:init', () => {
           this.openEditModal = true
         }
       },
-
-      // --- Save Full Parent Edit ---
-      async saveEdit(options = { mode: 'overwrite' }) {
-        if (!this.invoiceItems.invoice) return
-        const invoice = this.invoiceItems.invoice
-        // Calculate deposit value by deposit type
-        let depoVal =
-          invoice.deposit_type === 1
-            ? parseFloat(invoice.depoVal_ifPercent) || 0
-            : parseFloat(invoice.deposit_value) || 0
-        let remaining = invoice.total - depoVal
-        // Prevent marking as "paid" if remaining > 0
-        if (options.mode === 'paid' && remaining !== 0) {
-          callError("Invoice total doesn't equal 0", 'Ensure remaining balance is 0 to mark invoice as paid.')
-          console.error('Invoice total does not match the expected value when marked as paid.')
-          return
-        }
-        if (!confirm('Are you sure you want to save this invoice?')) return
+      async saveCopyEdit() {
         try {
-          // Build the data object from the current invoice state
-          const data = {
-            invoiceId: invoice.id,
-            clientId: invoice.client_id,
-            items: this.invoiceItems.invoiceItems.map(item => ({
-              name: item.name,
-              price: parseFloat(item.price),
-              type: item.type,
-              time: item.type === 'sample' ? parseFloat(item.time) : 0,
-              invoice_id: invoice.id,
-              quantity: parseInt(item.quantity, 10),
-              total_item_price: parseFloat(item.price) * parseInt(item.quantity, 10),
-              origin_id: item.origin_id,
-            })),
-            discountType: invoice.discount_type,
-            discountValue: invoice.discount_value,
-            discVal_ifPercent: invoice.discVal_ifPercent,
-            vatPercent: invoice.vat_percent,
-            vat: invoice.vat,
-            subtotal: invoice.subtotal,
-            total: invoice.total,
-            depositType: invoice.deposit_type,
-            depositValue: invoice.deposit_value,
-            depoVal_ifPercent: invoice.depoVal_ifPercent,
-            note: invoice.note ? invoice.note.trim() : '',
-            totalPreDiscount: invoice.total_pre_discount,
-            date: invoice.date || new Date().toISOString().split('T')[0],
-          }
-
-          // --- Determine invoice status ---
-          if (options.mode === 'copy') {
-            data.invoice_status = 'partially paid' // Always mark as "partially paid" when copying
-          } else if (remaining === 0) {
-            data.invoice_status = 'paid' // Mark as paid only if remaining is 0
-          } else if (depoVal > 0) {
-            data.invoice_status = 'partially paid' // Deposit applied but balance remains
-          } else {
-            data.invoice_status = 'unpaid' // No deposit, still unpaid
-          }
-
-          // Choose the endpoint based on mode
-          const endpoint = options.mode === 'overwrite' ? '/editor/invoice/save/overwrite' : '/editor/invoice/save/copy'
-
-          const res = await fetch(endpoint, {
+          let res = await fetch(`/editor/invoice/copy/update/${this.selectedCopy.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify({
+              deposit: this.selectedCopy.deposit,
+              discount: this.selectedCopy.discount,
+            }),
           })
-          const response = await res.json()
-          if (response.error) {
-            throw new Error(response.error)
+          if (!res.ok) throw new Error('Failed to update copy invoice')
+          // Update the corresponding copy in the parent invoice’s copies array
+          let parentInvoice = this.invoiceBook.find(inv => inv.id === this.selectedCopy.original_invoice_id)
+          if (parentInvoice && parentInvoice.copies) {
+            let idx = parentInvoice.copies.findIndex(c => c.id === this.selectedCopy.id)
+            if (idx !== -1) parentInvoice.copies[idx] = { ...this.selectedCopy }
           }
-          callSuccess(
-            options.mode === 'overwrite' ? 'Invoice updated successfully' : 'Invoice copy created successfully',
-          )
-          // Optionally update the invoiceBook with the latest invoice data
-          let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
-          if (existingInvoice) {
-            Object.assign(existingInvoice, invoice)
-          }
-
-          // Reset edit mode flags
-          this.openEditModal = false
-          this.editing = false
-          this.editMode = ''
+          this.showCopyModal = false
+          callSuccess('Copy Invoice Updated')
         } catch (error) {
-          console.error('Error saving invoice:', error)
-          callError('Error saving invoice', error.message)
+          console.error('Error saving copy edit:', error)
+          callError('Failed to update invoice copy')
         }
+      },
+      // --- Save Full Parent Edit ---
+      saveEdit({ mode } = { mode: 'overwrite' }) {
+        if (!confirm('Are you sure you want to save this invoice?')) return
+        const invoice = this.invoiceItems.invoice
+        const data = {
+          invoiceId: invoice.id,
+          clientId: invoice.client_id,
+          items: this.invoiceItems.invoiceItems.map(item => ({
+            name: item.name,
+            price: item.price, // unit price stored as is
+            type: item.type,
+            time: item.type === 'sample' ? item.time : 0,
+            invoice_id: invoice.id,
+            quantity: parseInt(item.quantity, 10),
+            // The total is computed in calculateTotals so you could recalc here or let the backend recalc
+            total_item_price:
+              item.type === 'sample' ? item.price * (item.time / 60) * item.quantity : item.price * item.quantity,
+            origin_id: item.origin_id,
+          })),
+          discountType: invoice.discount_type,
+          discountValue: invoice.discount_value,
+          discVal_ifPercent: invoice.discVal_ifPercent,
+          vatPercent: invoice.vat_percent,
+          vat: invoice.vat,
+          subtotal: invoice.subtotal,
+          total: invoice.total,
+          depositType: invoice.deposit_type,
+          depositValue: invoice.deposit_value,
+          depoVal_ifPercent: invoice.depoVal_ifPercent,
+          note: invoice.note?.trim(),
+          totalPreDiscount: invoice.total_pre_discount,
+          date: invoice.date || new Date().toLocaleDateString('en-GB'),
+        }
+
+        // Choose endpoint based on mode option
+        const endpoint = mode === 'overwrite' ? `/editor/invoice/save/overwrite` : `/editor/invoice/save/copy`
+        const statusUpdate = fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        })
+          .then(res => res.json())
+          .then(response => {
+            if (response.error) throw new Error(response.error)
+            if (mode === 'overwrite') {
+              callSuccess('Invoice updated successfully')
+            } else {
+              callSuccess('Invoice copy saved successfully')
+            }
+            // Update local invoiceBook if needed
+            let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
+            if (existingInvoice) {
+              Object.assign(existingInvoice, invoice)
+            }
+            this.openEditModal = false
+            this.editing = false
+            this.editMode = ''
+          })
+          .catch(error => {
+            console.error('Error saving invoice:', error)
+            callError('Error saving invoice', error.message)
+          })
       },
 
       // --- Totals Calculation (as per original logic) ---
@@ -351,7 +339,15 @@ document.addEventListener('alpine:init', () => {
         const round = value => Alpine.store('price').roundToTwo(value)
         let baseSubtotal = 0
         this.invoiceItems.invoiceItems.forEach(item => {
-          baseSubtotal += item.price * item.quantity
+          let lineTotal = 0
+          if (item.type === 'sample') {
+            // For samples, convert minutes to hours: (time/60) * unit price * quantity
+            lineTotal = item.price * (item.time / 60) * item.quantity
+          } else {
+            // For styles, multiply unit price by quantity
+            lineTotal = item.price * item.quantity
+          }
+          baseSubtotal += lineTotal
         })
         const subtotalPreDiscount = round(baseSubtotal)
         const vatBeforeDiscount = round(subtotalPreDiscount * 0.2)
@@ -379,9 +375,9 @@ document.addEventListener('alpine:init', () => {
         let depositRaw = this.invoiceItems.invoice.deposit_value
         let depositAmount = 0
         if (depositType === 1) {
-          depositAmount = round((total * depositRaw) / 100) // Percentage deposit
+          depositAmount = round((total * depositRaw) / 100)
         } else if (depositType === 0) {
-          depositAmount = round(depositRaw) // Flat deposit
+          depositAmount = round(depositRaw)
         }
         if (depositAmount > total) {
           console.error(`Deposit (${depositAmount}) exceeds total (${total}). Resetting deposit to 0.`)
@@ -392,7 +388,6 @@ document.addEventListener('alpine:init', () => {
           callError('Deposit exceeds total', 'Resetting deposit to 0.')
         }
         const remaining = round(total - depositAmount)
-
         this.invoiceItems.invoice = {
           ...this.invoiceItems.invoice,
           subtotal_pre_discount: subtotalPreDiscount,
@@ -408,7 +403,45 @@ document.addEventListener('alpine:init', () => {
         }
         console.log('invoice state after recalculation:', JSON.stringify(this.invoiceItems.invoice, null, 2))
       },
-
+      // --- Add Item from Existing Items Dropdown ---
+      addDropdownItem(item) {
+        console.log('[addDropdownItem] Adding item from dropdown:', item)
+        if (!item.id || !item.type) {
+          console.error('[addDropdownItem] Invalid item:', item)
+          callError('Invalid item', 'Missing required fields (ID/Type).')
+          return
+        }
+        const uniqueKey = `dropdown-${item.type}-${item.id}`
+        const existingItem = this.invoiceItems.invoiceItems.find(
+          invItem => invItem.origin_id === item.id && invItem.type === item.type,
+        )
+        // Use the quantity input provided by the user (defaulting to 1)
+        const quantity = item.quantity || 1
+        if (existingItem) {
+          console.log('[addDropdownItem] Item already exists, increasing quantity.')
+          existingItem.quantity += quantity
+        } else {
+          if (item.type === 'sample' && (!item.time || isNaN(item.time) || item.time <= 0)) {
+            callError('Invalid Time', 'Samples require a valid time greater than 0.')
+            return
+          }
+          const newItem = {
+            name: item.name,
+            type: item.type,
+            price: item.price, // store unit price (hourly rate for samples or fixed price for styles)
+            time: item.type === 'sample' ? item.time : 0,
+            quantity: quantity,
+            origin_id: item.id,
+            frontendId: uniqueKey,
+          }
+          console.log('[addDropdownItem] Adding new dropdown item:', newItem)
+          this.invoiceItems.invoiceItems.push(newItem)
+        }
+        // Optionally reset the dropdown’s quantity to 1
+        const dropdownItem = this.existingItems.stylesAndSamples.find(x => x.frontEndId === uniqueKey)
+        if (dropdownItem) dropdownItem.quantity = 1
+        this.calculateTotals()
+      },
       // --- Add Custom Item (choose style or sample) ---
       addCustomItem() {
         console.log('[addCustomItem] Adding a new custom item.')
@@ -435,65 +468,24 @@ document.addEventListener('alpine:init', () => {
         const uniqueKey = `custom-${this.newItem.type}-${this.customItemCounter}`
         const newOriginId = -this.customItemCounter
 
-        // For samples, calculate per-unit price as price * time (do not multiply by quantity)
-        const computedPrice =
-          this.newItem.type === 'sample' ? this.newItem.price * this.newItem.time : this.newItem.price
-
+        // For samples, we store the hourly rate and time separately.
+        // For styles, we simply store the price.
+        const unitPrice = this.newItem.price
         const newItem = {
           name: this.newItem.name.trim(),
           type: this.newItem.type,
-          price: computedPrice,
+          price: unitPrice, // store unit price (i.e. hourly rate for samples)
           time: this.newItem.type === 'sample' ? this.newItem.time : 0,
           quantity: Math.floor(this.newItem.quantity),
           origin_id: newOriginId,
           frontendId: uniqueKey,
         }
-
         console.log('[addCustomItem] Adding new item:', newItem)
         this.invoiceItems.invoiceItems.push(newItem)
         // Reset the new item form
         this.newItem = { type: '', name: '', price: null, quantity: null, time: null }
         this.calculateTotals()
       },
-
-      // --- Add Item from Existing Items Dropdown ---
-      addDropdownItem(item) {
-        console.log('[addDropdownItem] Adding item from dropdown:', item)
-        if (!item.id || !item.type) {
-          console.error('[addDropdownItem] Invalid item:', item)
-          callError('Invalid item', 'Missing required fields (ID/Type).')
-          return
-        }
-        const uniqueKey = `dropdown-${item.type}-${item.id}`
-        const existingItem = this.invoiceItems.invoiceItems.find(
-          invItem => invItem.origin_id === item.id && invItem.type === item.type,
-        )
-        if (existingItem) {
-          console.log('[addDropdownItem] Item already exists, increasing quantity.')
-          existingItem.quantity += 1
-        } else {
-          console.log('[addDropdownItem] Item does not exist, adding new.')
-          if (item.type === 'sample' && (!item.time || isNaN(item.time) || item.time <= 0)) {
-            callError('Invalid Time', 'Samples require a valid time greater than 0.')
-            return
-          }
-          const newItem = {
-            name: item.name,
-            type: item.type,
-            price: item.type === 'sample' ? item.price * item.time : item.price,
-            time: item.type === 'sample' ? item.time : 0,
-            quantity: 1,
-            origin_id: item.id,
-            frontendId: uniqueKey,
-          }
-          console.log('[addDropdownItem] Adding new dropdown item:', newItem)
-          this.invoiceItems.invoiceItems.push(newItem)
-        }
-        const dropdownItem = this.existingItems.stylesAndSamples.find(x => x.frontEndId === uniqueKey)
-        if (dropdownItem) dropdownItem.quantity = 1
-        this.calculateTotals()
-      },
-
       // --- Delete Invoice ---
       async deleteInvoice(invoiceId) {
         if (!invoiceId) {
@@ -608,6 +600,15 @@ document.addEventListener('alpine:init', () => {
         this.invoiceItems.invoice.depoVal_ifPercent = 0
         this.calculateTotals()
       },
+      addNote() {
+        if ($store.edit.invoiceItems.invoice.note.length) {
+          callWarning('Note already exists', 'Remove existing note and try again')
+          return
+        }
+        $store.edit.invoiceItems.invoice.note = this.uiNote.trim()
+        this.uiNote = ''
+        this.modNote = false
+      },
 
       // --- Sync Methods ---
       invoiceCreatedSync() {
@@ -615,6 +616,7 @@ document.addEventListener('alpine:init', () => {
           const { clientId } = event.detail
           if (Alpine.store('clients').selectedClient?.id === clientId) {
             console.log('{ Edit Store } New invoice detected - fetching latest invoice')
+
             fetch(`/editor/list/${clientId}?page=1&limit=1`)
               .then(res => res.json())
               .then(data => {
@@ -626,6 +628,7 @@ document.addEventListener('alpine:init', () => {
                   }
                 }
               })
+
               .catch(error => console.error('Error fetching latest invoice:', error))
           } else {
             console.log('{ Edit Store } Invoice created for different client - resetting store')

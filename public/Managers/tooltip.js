@@ -68,6 +68,7 @@ document.addEventListener('alpine:init', () => {
       this.$el.addEventListener('mouseenter', event => this.show(event))
       this.$el.addEventListener('mousemove', event => this.updatePosition(event))
       this.$el.addEventListener('mouseleave', () => this.hide())
+      this.$el.addEventListener('click', () => this.hide())
     },
   }))
 })
