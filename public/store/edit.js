@@ -2,7 +2,7 @@ document.addEventListener('alpine:init', () => {
   Alpine.store(
     'edit',
     Alpine.reactive({
-      // ==== 1. Invoice Book & Full Invoice Details ====
+      // ==== 1. Invoice Book & Full Invoice Details - Paginated ====
       invoiceBook: [],
       page: 1,
       hasMore: true,
@@ -10,6 +10,7 @@ document.addEventListener('alpine:init', () => {
       activeClientId: null,
       activeItemId: null, // currently selected parent invoice ID
       invoiceItems: { invoiceItems: [] }, // full details for the selected parent invoice
+      activeInvoices: [], // Stores active invoice IDs on the page
 
       // Flags for parent invoice editing
       editing: false,
@@ -61,20 +62,17 @@ document.addEventListener('alpine:init', () => {
       },
 
       // ==== 4. Utility Modals for Discounts & Deposits ====
-      modDisc: false,
-      showXDisc: false,
-      uiDiscount: 0,
-      modDepo: false,
-      showXDepo: false,
-      uiDeposit: 0,
 
       // ==== ALL METHODS ====
       async init() {
         console.log('{ Edit Store } Initialising')
         await this.fetchListById()
+        this.activeInvoices = [...this.activeInvoices]
         this.clientChangeSync()
         this.invoiceCreatedSync()
         this.watchTabSwitch()
+        // Alpine effect for copies on change
+        // this.invoBookCopiesSync()
         console.log('{ Edit Store } ==> Initialised')
       },
 
@@ -109,19 +107,21 @@ document.addEventListener('alpine:init', () => {
           } else {
             const invoiceIds = data.map(item => item.id)
             if (invoiceIds.length > 0) {
-              // Fetch copies summaries for these parent invoices
               let copyRes = await fetch(`/editor/invoice/copy/names?invoiceIds=${invoiceIds.join(',')}`)
               let copyData = await copyRes.json()
               if (!copyRes.ok) throw new Error(`Error fetching copied invoices: ${copyData.error}`)
               data.forEach(item => {
                 if (!this.invoiceBook.some(existing => existing.id === item.id)) {
                   item.date = new Date(item.date).toLocaleDateString('en-GB')
-                  // Attach copies (if any) to the parent invoice
                   item.copies = copyData[item.id] || []
                   item.expanded = false
-                  this.invoiceBook.push(item)
+                  // this.invoiceBook.push(item)
+                  this.invoiceBook = [...this.invoiceBook, item]
+                  this.activeInvoices = [...this.activeInvoices]
                 }
               })
+              // Update activeInvoices
+              this.activeInvoices = invoiceIds
             }
             this.page++
           }
@@ -263,6 +263,7 @@ document.addEventListener('alpine:init', () => {
             let idx = parentInvoice.copies.findIndex(c => c.id === this.selectedCopy.id)
             if (idx !== -1) parentInvoice.copies[idx] = { ...this.selectedCopy }
           }
+          this.activeInvoices = [...this.activeInvoices]
           this.showCopyModal = false
           callSuccess('Copy Invoice Updated')
         } catch (error) {
@@ -273,6 +274,10 @@ document.addEventListener('alpine:init', () => {
       // --- Save Full Parent Edit ---
       saveEdit({ mode } = { mode: 'overwrite' }) {
         if (!confirm('Are you sure you want to save this invoice?')) return
+        if (this.invoiceItems.invoice.deposit_value <= 0) {
+          callInfo('Cannot save a copy', 'Attached invoices must have a deposit')
+          return
+        }
         const invoice = this.invoiceItems.invoice
         const data = {
           invoiceId: invoice.id,
@@ -316,13 +321,14 @@ document.addEventListener('alpine:init', () => {
             if (response.error) throw new Error(response.error)
             if (mode === 'overwrite') {
               callSuccess('Invoice updated successfully')
-            } else {
+            } else if (mode === 'copy') {
               callSuccess('Invoice copy saved successfully')
             }
             // Update local invoiceBook if needed
             let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
             if (existingInvoice) {
               Object.assign(existingInvoice, invoice)
+              this.activeInvoices = [...this.activeInvoices] // triggers effect in invoiceBookCopiesSync
             }
             this.openEditModal = false
             this.editing = false
@@ -509,6 +515,7 @@ document.addEventListener('alpine:init', () => {
               this.invoiceItems = { invoiceItems: [] }
             }
             this.invoiceBook = this.invoiceBook.filter(i => i.id !== invoiceId)
+            this.activeInvoices = [...this.activeInvoices]
             callInfo('Invoice deleted')
           } catch (error) {
             callError('Invoice does not exist', 'Refresh page and try again or call support.')
@@ -636,9 +643,29 @@ document.addEventListener('alpine:init', () => {
             this.page = 1
             this.hasMore = true
             this.fetchListById()
+            this.activeInvoices = [...this.activeInvoices]
           }
         })
       },
+
+      invoBookCopiesSync() {
+        Alpine.effect(() => {
+          if (this.activeInvoices.length > 0) {
+            console.log('Active invoices changed, fetching copies...')
+            fetch(`/editor/invoice/copy/names?invoiceIds=${this.activeInvoices.join(',')}`)
+              .then(res => res.json())
+              .then(copyData => {
+                this.invoiceBook.forEach(invoice => {
+                  if (copyData[invoice.id]) {
+                    invoice.copies = copyData[invoice.id]
+                  }
+                })
+              })
+              .catch(error => console.error('Error fetching copied invoices:', error))
+          }
+        })
+      },
+
       clientChangeSync() {
         document.addEventListener('client-selected', event => {
           const newClient = event.detail
@@ -650,6 +677,7 @@ document.addEventListener('alpine:init', () => {
           this.showInvoiceItems = false
           this.activeItemId = null
           this.fetchListById()
+          this.activeInvoices = [...this.activeInvoices]
         })
       },
       watchTabSwitch() {
@@ -661,6 +689,7 @@ document.addEventListener('alpine:init', () => {
               this.page = 1
               this.hasMore = true
               this.fetchListById()
+              this.activeInvoices = [...this.activeInvoices]
             }
           })
         }

@@ -31,8 +31,8 @@
             <div
               :class="{'ring-1 ring-vls2 dark:ring-vda bg-vlp dark:bg-vdp dark:text-white': invoice.id === $store.edit.activeItemId, 
               'ring-1 ring-vls/40 hover:ring-vls/80 shadow hover:shadow-lg dark:bg-vdp': invoice.id !== $store.edit.activeItemId}"
-              class="flex justify-between items-center shadow rounded p-2 transition-all">
-              <div class="flex flex-col text-xs">
+              class="flex justify-between items-center shadow rounded p-2 transition-all text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
+              <div class="flex flex-col text-xs cursor-default">
                 <div x-text="invoice.client_name"></div>
                 <div x-text="invoice.date"></div>
                 <div x-text="invoice.invoice_number"></div>
@@ -60,28 +60,30 @@
             </div>
 
             <div
-              x-show="invoice.expanded"
-              x-show="invoice.copiedInvoices.invoice.id && invoice.copies.length > 0"
+              x-show="invoice.expanded && invoice.copies && invoice.copies.length > 0"
               x-transition.scale.origin.top
               x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
-                <div class="text-xs font-semibold mb-1">Copied Invoices</div>
-                <ul class="space-y-1 text-xs">
-                  <template x-for="copy in invoice.copiedInvoices" :key="copy.id">
+                <div class="text-xs font-semibold mb-1 text-center">Attached Invoices</div>
+                <ul class="space-y-1 text-xs flex flex-col max-h-[300px] overflow-y-scroll pr-2 table-scrollbar">
+                  <template x-for="copy in invoice.copies" :key="copy.id">
                     <li
-                      class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls/40">
+                      class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
                       <span x-text="copy.invoice_number"></span>
-                      <p x-text="copy.status" class="text-xs"></p>
                       <div class="flex gap-2">
                         <div x-data="tooltip('Delete')">
-                          <button @click.stop="$store.edit.deleteInvoice(copy.id)" class="table-interaction-icon-red">
+                          <button
+                            @click.stop="$store.edit.deleteInvoice(copy.id)"
+                            class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
                             <svg class="w-4 h-4">
                               <use href="/icons/icons.svg#trash" />
                             </svg>
                           </button>
                         </div>
                         <div x-data="tooltip('Edit discount and deposit for ' + copy.invoice_number)">
-                          <button @click.stop="$store.edit.openCopyModal(copy)" class="table-interaction-icon-blue">
+                          <button
+                            @click.stop="$store.edit.openCopyModal(copy)"
+                            class="table-interaction-icon-blue !text-vls2 hover:!text-blue-500 dark:!text-vds3light dark:hover:!text-blue-500">
                             <svg class="size-4">
                               <use href="/icons/icons2.svg#window" />
                             </svg>
