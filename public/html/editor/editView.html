@@ -152,13 +152,15 @@
         class="bg-white p-6 rounded border border-vls/40 shadow-lg w-[90%] max-h-[90%] overflow-y-auto relative dark:bg-vdp2">
         <h1 class="self-center justify-center text-xl font-medium text-vls2 dark:text-vds flex w-full mb-2">
           Edit Invoice –
-          <span x-text="$store.edit.invoiceItems.invoice.invoice_number"></span>
+          <span x-text="$store.edit.invoiceItems.invoice.invoice_number + ' '"></span>
           - Overwrites Existing
         </h1>
         <hr class="border-vls/40" />
         <!-- SECTION 1: Existing Items for Client -->
         <div>
-          <h2 class="my-4 font-medium text-lg text-center dark:text-vds self-center text-vls2">Existing Items</h2>
+          <h2
+            class="my-4 font-medium text-lg text-center dark:text-vds self-center text-vls2"
+            x-text="`${$store.clients.selectedClient?.name}'s styles and samples`"></h2>
           <div class="flex flex-col items-center justify-center w-full">
             <!-- Search Input (outside scrollable container) -->
             <div class="w-full flex justify-center">
@@ -219,9 +221,9 @@
           </div>
           <!-- SECTION 2: Current Invoice Items -->
           <div>
-            <h2 class="my-4 font-medium text-lg text-center dark:text-vds self-center text-vls2">
-              Current Invoice Items
-            </h2>
+            <h2
+              class="my-4 font-medium text-lg text-center dark:text-vds self-center text-vls2"
+              x-text="`${$store.edit.invoiceItems.invoice.invoice_number}'s items`"></h2>
             <!-- Outer container is limited to 30% of the modal height -->
             <div class="relative p-2 border rounded border-vls/40">
               <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 30vh">

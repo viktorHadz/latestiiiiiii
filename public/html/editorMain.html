@@ -39,17 +39,29 @@
               </div>
               <!-- Deposit Icon (if applicable) -->
               <div x-show="invoice.deposit_value > 0" class="mr-1">
-                <div x-data="tooltip('Contains a deposit')">
-                  <button @click.stop class="table-interaction-icon-red hover:!text-vla">
-                    <svg class="w-4 h-4">
-                      <use href="/icons/icons.svg#cash-bill" />
-                    </svg>
-                  </button>
+                <div class="flex gap-2">
+                  <div x-data="tooltip('Contains a deposit')">
+                    <button @click.stop class="table-interaction-icon-red hover:!text-vla">
+                      <svg class="w-4 h-4">
+                        <use href="/icons/icons.svg#cash-bill" />
+                      </svg>
+                    </button>
+                  </div>
+                  <template x-if="invoice.invoice_status === 'paid'">
+                    <div x-data="tooltip('Invoice paid')">
+                      <button @click.stop class="table-interaction-icon !text-vla">
+                        <svg class="w-5 h-5">
+                          <use href="/icons/icons.svg#check-circle"></use>
+                        </svg>
+                      </button>
+                    </div>
+                  </template>
                 </div>
-                <div x-data="tooltip('See your attached invoices', {position: 'top'})">
+                <div class="w-full flex items-end justify-end">
                   <button
+                    x-data="tooltip('See your attached invoices', {position: 'top'})"
                     @click.stop="invoice.expanded = !invoice.expanded"
-                    class="transition-transform transform mt-0.5 dark:text-vds table-interaction-icon hover:!text-red-500"
+                    class="transition-transform transform mt-0.5 dark:text-vds table-interaction-icon hover:!text-red-500 self-end"
                     :class="{ 'rotate-180': invoice.expanded }">
                     <svg class="size-4">
                       <use href="/icons/icons.svg#chev-down" />
@@ -60,7 +72,7 @@
             </div>
 
             <div
-              x-show="invoice.expanded && invoice.copies && invoice.copies.length > 0"
+              x-show="invoice.expanded && Array.isArray(invoice.copies) && invoice.copies.length > 0"
               x-transition.scale.origin.top
               x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
@@ -98,11 +110,21 @@
           </div>
         </template>
 
-        <div class="mt-4 text-center" x-show="$store.edit.hasMore">
+        <div class="mt-4 text-center flex">
+          <button class="modal-btn-sec" @click="$store.edit.prevPage()" :disabled="$store.edit.currentPage === 1">
+            Previous
+          </button>
+          <span class="mx-2">
+            <span x-text="$store.edit.currentPage"></span>
+            /
+            <span x-text="$store.edit.totalPages || '?'"></span>
+          </span>
           <button
-            @click="$store.edit.fetchListById()"
             class="modal-btn-prim"
-            x-text="$store.edit.loading ? 'Loading...' : 'Load More'"></button>
+            @click="$store.edit.nextPage()"
+            :disabled="!$store.edit.hasMore || $store.edit.loading">
+            <span x-text="$store.edit.loading ? 'Loading...' : 'Next'"></span>
+          </button>
         </div>
       </div>
     </div>

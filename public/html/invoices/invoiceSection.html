@@ -60,11 +60,23 @@
           <tr class="border-hover-ring-efect">
             <td class="round-left-border w-[50%] px-2 py-1 text-sm" x-text="item.name"></td>
             <td class="w-[10%] px-2 py-1 text-left text-sm" x-text="item.type"></td>
-            <td class="w-[10%] px-2 py-1 text-right text-sm" x-text="'£' + item.price"></td>
+            <td
+              class="w-[10%] px-2 py-1 text-right text-sm"
+              x-text="
+                item.type === 'sample' 
+                  ? '£' + (item.price * (item.time / 60)).toFixed(2) 
+                  : '£' + parseFloat(item.price).toFixed(2)
+              "></td>
             <td class="w-[10%] px-2 py-1 text-right text-sm" x-text="'x' + item.quantity"></td>
             <td
               class="w-[15%] px-2 py-1 text-right text-sm"
-              x-text="'£' + (item.price * item.quantity).toFixed(2)"></td>
+              x-text="
+                '£' + (
+                  item.type === 'sample' 
+                    ? (item.price * (item.time / 60) * item.quantity) 
+                    : (item.price * item.quantity)
+                ).toFixed(2)
+              "></td>
             <td class="round-right-border w-[10%] px-2 py-1 text-sm">
               <div class="flex">
                 <button @click="$store.invo.removeOneItem(item)" class="ml-4 table-interaction-icon-red">

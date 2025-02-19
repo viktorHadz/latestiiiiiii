@@ -15,38 +15,46 @@ router.get('/list/:clientId', (req, res) => {
 
   db.get('SELECT name, address FROM clients WHERE id = ?', [clientId], (err, clientDetails) => {
     if (err) {
-      res.status(500).json({
-        error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}`,
-      })
+      res.status(500).json({ error: `Couldn't fetch client details for client ${clientId}. Status: ${err.message}` })
       return
     }
     if (!clientDetails) {
       return res.status(404).json({ error: `Client ${clientId} not found.` })
     }
-    // Copied invoices fetch general details - number, status,
-    db.all(
-      `SELECT 
-      invoices.*, 
-      (SELECT json_group_array(json_object('id', copied_invoices.id, 'invoice_number', copied_invoices.invoice_number, 'status', copied_invoices.invoice_status)) 
-       FROM copied_invoices WHERE copied_invoices.original_invoice_id = invoices.id) AS copies 
-    FROM invoices 
-      WHERE client_id = ? 
-      ORDER BY date DESC, id DESC 
-      LIMIT ? OFFSET ?`,
-      [clientId, limit, offset],
-      (err, invoiceDetails) => {
-        if (err) {
-          return res.status(500).json({ error: `Couldn't fetch invoices. ${err.message}` })
-        }
 
-        const listData = invoiceDetails.map(invoice => ({
-          ...invoice,
-          client_name: clientDetails.name,
-        }))
+    // First, count total invoices:
+    db.get('SELECT COUNT(*) AS count FROM invoices WHERE client_id = ?', [clientId], (err, countResult) => {
+      if (err) {
+        return res.status(500).json({ error: `Couldn't fetch invoice count: ${err.message}` })
+      }
+      const totalCount = countResult.count
+      const totalPages = Math.ceil(totalCount / limit)
 
-        res.json(listData)
-      },
-    )
+      // Now fetch the invoices for the current page:
+      db.all(
+        `SELECT 
+          invoices.*, 
+          (SELECT json_group_array(json_object('id', copied_invoices.id, 'invoice_number', copied_invoices.invoice_number, 'status', copied_invoices.invoice_status)) 
+           FROM copied_invoices WHERE copied_invoices.original_invoice_id = invoices.id) AS copies 
+         FROM invoices 
+         WHERE client_id = ? 
+         ORDER BY date DESC, id DESC 
+         LIMIT ? OFFSET ?`,
+        [clientId, limit, offset],
+        (err, invoiceDetails) => {
+          if (err) {
+            return res.status(500).json({ error: `Couldn't fetch invoices. ${err.message}` })
+          }
+
+          const listData = invoiceDetails.map(invoice => ({
+            ...invoice,
+            client_name: clientDetails.name,
+          }))
+
+          res.json({ data: listData, totalPages: totalPages })
+        },
+      )
+    })
   })
 })
 
