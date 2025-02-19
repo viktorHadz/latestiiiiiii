@@ -38,7 +38,7 @@
                 <div x-text="invoice.invoice_number"></div>
               </div>
               <!-- Deposit Icon (if applicable) -->
-              <div x-show="invoice.deposit_value > 0" class="mr-1">
+              <div x-show="invoice.copies" class="mr-1">
                 <div class="flex gap-2">
                   <div x-data="tooltip('Contains a deposit')">
                     <button @click.stop class="table-interaction-icon-red hover:!text-vla">
@@ -71,10 +71,7 @@
               </div>
             </div>
 
-            <div
-              x-show="invoice.expanded && Array.isArray(invoice.copies) && invoice.copies.length > 0"
-              x-transition.scale.origin.top
-              x-transition.duration.300ms>
+            <div x-show="invoice.expanded" x-transition.scale.origin.top x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
                 <div class="text-xs font-semibold mb-1 text-center">Attached Invoices</div>
                 <ul class="space-y-1 text-xs flex flex-col max-h-[300px] overflow-y-scroll pr-2 table-scrollbar">
@@ -110,20 +107,30 @@
           </div>
         </template>
 
-        <div class="mt-4 text-center flex">
-          <button class="modal-btn-sec" @click="$store.edit.prevPage()" :disabled="$store.edit.currentPage === 1">
-            Previous
+        <div class="mt-4 mb-4 text-center flex items-center justify-center">
+          <button
+            class="flex items-center modal-btn-prim"
+            @click="$store.edit.prevPage()"
+            :disabled="$store.edit.currentPage === 1"
+            :class="{ 'cursor-not-allowed': $store.edit.currentPage === 1 }">
+            <svg class="w-5 h-5">
+              <use xlink:href="/icons/icons2.xml#chevdblleft"></use>
+            </svg>
+            Prev
           </button>
-          <span class="mx-2">
+          <span class="mx-4 text-base">
             <span x-text="$store.edit.currentPage"></span>
             /
             <span x-text="$store.edit.totalPages || '?'"></span>
           </span>
           <button
-            class="modal-btn-prim"
+            class="flex items-center modal-btn-prim"
             @click="$store.edit.nextPage()"
             :disabled="!$store.edit.hasMore || $store.edit.loading">
             <span x-text="$store.edit.loading ? 'Loading...' : 'Next'"></span>
+            <svg class="w-5 h-5">
+              <use xlink:href="/icons/icons2.xml?v=2#chevdblright"></use>
+            </svg>
           </button>
         </div>
       </div>

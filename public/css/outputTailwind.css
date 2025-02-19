@@ -770,6 +770,11 @@ video {
   margin-bottom: 1rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .-ms-32 {
   margin-inline-start: -8rem;
 }
@@ -1103,6 +1108,10 @@ video {
 
 .w-56 {
   width: 14rem;
+}
+
+.w-6 {
+  width: 1.5rem;
 }
 
 .w-60 {
@@ -1456,10 +1465,6 @@ video {
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
-.place-self-end {
-  place-self: end;
-}
-
 .\!place-self-center {
   place-self: center !important;
 }
@@ -1588,6 +1593,10 @@ video {
 
 .border-t-8 {
   border-top-width: 8px;
+}
+
+.\!border-none {
+  border-style: none !important;
 }
 
 .border-gray-300 {
@@ -2108,6 +2117,11 @@ video {
   line-height: 1.25;
 }
 
+.\!text-vla {
+  --tw-text-opacity: 1 !important;
+  color: rgb(83 207 110 / var(--tw-text-opacity, 1)) !important;
+}
+
 .\!text-vls2 {
   --tw-text-opacity: 1 !important;
   color: rgb(43 52 64 / var(--tw-text-opacity, 1)) !important;
@@ -2217,11 +2231,6 @@ video {
 .text-yellow-500 {
   --tw-text-opacity: 1;
   color: rgb(234 179 8 / var(--tw-text-opacity, 1));
-}
-
-.\!text-vla {
-  --tw-text-opacity: 1 !important;
-  color: rgb(83 207 110 / var(--tw-text-opacity, 1)) !important;
 }
 
 .text-opacity-90 {
@@ -4746,6 +4755,11 @@ input[type='radio']:hover {
 .dark\:hover\:text-white:hover:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.dark\:hover\:\!text-vds:hover:is(.dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(212 212 212 / var(--tw-text-opacity, 1)) !important;
 }
 
 .dark\:hover\:placeholder-vred-300:hover:is(.dark *)::-moz-placeholder {
