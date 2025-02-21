@@ -20,12 +20,10 @@
     <!-- Invoice List Section -->
     <div class="flex flex-col min-w-[260px] max-w-[30%] overflow-hidden">
       <div class="p-2 bg-vlp dark:bg-vdp shadow rounded border border-vls/40">
-        <p class="mb-2 font-semibold text-vls2 dark:text-vds">Invoice Book</p>
-        <input id="search-invoices" type="text" placeholder="Search invoices..." class="srch-style" />
+        <p class="font-semibold text-center text-vls2 dark:text-vds">Invoice Book</p>
       </div>
 
-      <div
-        class="overflow-y-auto h-full p-2 bg-vlp dark:bg-vdp2 table-scrollbar border border-vls/40 shadow-md rounded mt-2">
+      <div class="overflow-y-auto h-full p-2 bg-vlp dark:bg-vdp2 mt-2 border rounded border-vls/40 alt-table-scrollbar">
         <template x-for="invoice in $store.edit.invoiceBook" :key="invoice.id">
           <div class="mb-6" @click="$store.edit.fetchInvoice(invoice.id)" :id="'rowid-' + invoice.id">
             <div
@@ -106,52 +104,52 @@
             </div>
           </div>
         </template>
-
-        <div class="my-4 text-center flex items-center justify-center">
-          <!-- Previous Button -->
-          <button
-            class="relative inline-flex items-center py-2 text-xs rounded transition font-medium tracking-wide whitespace-nowrap gap-2 disabled:cursor-not-allowed"
-            @click="$store.edit.prevPage()"
-            :disabled="$store.edit.currentPage === 1"
-            :class="{ 'opacity-75': $store.edit.currentPage === 1}">
-            <svg class="w-4 h-4">
-              <use href="/icons/icons2.xml?v=2#chevdblleft"></use>
-            </svg>
-            <div x-show="!$store.edit.loadPrev">
-              <span class="">Previous</span>
+      </div>
+      <!-- Pagination -->
+      <div
+        class="mt-2 text-center flex items-center justify-center w-[100%] bg-vlp dark:bg-vdp shadow rounded border border-vls/40 p-2">
+        <!-- Previous Button -->
+        <button
+          class="relative inline-flex justify-center items-center py-2 text-xs rounded transition font-medium tracking-wide whitespace-nowrap gap-2 disabled:cursor-not-allowed w-[40%] dark:hover:brightness-150"
+          @click="$store.edit.prevPage()"
+          :disabled="$store.edit.currentPage === 1"
+          :class="{ 'opacity-75': $store.edit.currentPage === 1}">
+          <svg class="w-4 h-4">
+            <use href="/icons/icons2.xml?v=2#chevdblleft"></use>
+          </svg>
+          <div x-show="!$store.edit.loadPrev">
+            <span class="">Prev</span>
+          </div>
+          <div x-show="$store.edit.loadPrev" class="flex items-center justify-center">
+            <div class="inline-flex items-center gap-2 px-2">
+              <div class="loading-spin size-4"></div>
             </div>
-            <div x-show="$store.edit.loadPrev" class="absolute inset-0 flex items-center justify-center">
-              <div class="inline-flex items-center gap-2">
-                <div class="loading-spin size-4"></div>
-                <p>Loading...</p>
-              </div>
+          </div>
+        </button>
+        <!-- Page 1/10 -->
+        <span class="mx-4 text-sm flex items-center justify-center w-[20%]">
+          <span x-text="$store.edit.currentPage"></span>
+          <span>/</span>
+          <span x-text="$store.edit.totalPages || '?'"></span>
+        </span>
+        <!-- Next Button -->
+        <button
+          class="relative inline-flex items-center justify-center py-2 text-xs rounded transition font-medium tracking-wide whitespace-nowrap gap-2 disabled:cursor-not-allowed w-[40%] dark:hover:brightness-150"
+          @click="$store.edit.nextPage()"
+          :disabled="$store.edit.currentPage === $store.edit.totalPages"
+          :class="{ 'opacity-50': $store.edit.currentPage === $store.edit.totalPages }">
+          <div x-show="!$store.edit.loadNext">
+            <span class="">Next</span>
+          </div>
+          <div x-show="$store.edit.loadNext" class="flex items-center justify-center">
+            <div class="inline-flex items-center gap-2 px-2">
+              <div class="loading-spin size-4"></div>
             </div>
-          </button>
-          <!-- Page 1/10 -->
-          <span class="mx-4 text-base flex items-center">
-            <span x-text="$store.edit.currentPage"></span>
-            <span>/</span>
-            <span x-text="$store.edit.totalPages || '?'"></span>
-          </span>
-          <!-- Next Button -->
-          <button
-            class="relative inline-flex items-center py-2 text-xs rounded transition font-medium tracking-wide whitespace-nowrap gap-2 disabled:cursor-not-allowed"
-            @click="$store.edit.nextPage()"
-            :disabled="$store.edit.currentPage === $store.edit.totalPages"
-            :class="{ 'opacity-50': $store.edit.currentPage === $store.edit.totalPages }">
-            <div x-show="!$store.edit.loadNext">
-              <span class="">Next</span>
-            </div>
-            <div x-show="$store.edit.loadNext" class="flex items-center justify-center">
-              <div class="inline-flex items-center gap-2 px-2">
-                <div class="loading-spin size-4"></div>
-              </div>
-            </div>
-            <svg class="w-4 h-4">
-              <use href="/icons/icons2.xml?v=2#chevdblright"></use>
-            </svg>
-          </button>
-        </div>
+          </div>
+          <svg class="w-4 h-4">
+            <use href="/icons/icons2.xml?v=2#chevdblright"></use>
+          </svg>
+        </button>
       </div>
     </div>
 
