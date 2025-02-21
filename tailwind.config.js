@@ -24,8 +24,10 @@ module.exports = {
         vds2: '#525252', // Secondary Light #525252
         vds3light: '#a3a3a3', // Secondary Lighter
         vds3neu700: '#404040', // Secondary Darker
-        vda: '#FEA09A', // Accent VRED 300
-        vda2: '#FE7F76', // Accent Dark - vred 400
+        vda: '#FE7F76', // Accent VRED 300
+        // vda: '#FEA09A', // Accent VRED 300
+        // vda2: '#FE7F76', // Accent Dark - vred 400
+        vda2: '#ef4444 ', // Accent Dark - vred 400
 
         // Custom color definitions
         'vlp-1': {
