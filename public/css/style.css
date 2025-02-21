@@ -481,7 +481,7 @@ input[type='radio']:hover {
     border-radius: 0.375rem;
   }
   50% {
-    box-shadow: 0 0 6px 6px rgba(83, 207, 110, 0.644) inset; /* Intense glow */
+    box-shadow: 0 0 6px 6px rgba(84, 207, 111, 0.644) inset; /* Intense glow */
     border-radius: 0.375rem;
   }
   80% {
@@ -552,17 +552,14 @@ input[type='radio']:hover {
   0% {
     transform: rotateY(0deg);
     font-weight: normal;
-    color: #b8b8b8; /* Original color */
   }
   50% {
     transform: rotateY(90deg);
     font-weight: bold;
-    color: #3b82f6; /* Color during animation (e.g., red) */
   }
   100% {
     transform: rotateY(180deg);
     font-weight: normal;
-    color: #b8b8b8; /* Revert to original color */
   }
 }
 /* MARK: Alpine like transition fade in and fade out when x-show isnt applicable */
@@ -668,5 +665,22 @@ input[type='radio']:hover {
   }
   to {
     width: 0%;
+  }
+}
+.loading-spin {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #4ba85f;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+.dark .loading-spin {
+  border: 3px solid rgba(24, 24, 27, 0.76);
+  border-top: 3px solid #ef4444;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

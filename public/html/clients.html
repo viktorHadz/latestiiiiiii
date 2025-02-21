@@ -1,107 +1,109 @@
 <div x-data="clientManager" class="relative w-full px-12 py-4 2xl:px-20">
   <!-- If no client is selected, show the selection modal -->
-
-  <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 80vh">
-    <div
-      class="inset-0 p-2 bg-white shadow-md mb-8 align-baseline dark:bg-vdp border border-vls/60 dark:border-vls/40 rounded flex justify-between">
-      <button
-        @click="$store.clients.showAddClientModal = true; 
+  <div
+    class="relative text-xs shadow-md bg-vlp dark:bg-vdp2 dark:shadow text-vlp dark:text-vds border rounded border-vls/40 p-2">
+    <div class="relative px-2 py-0 overflow-y-auto table-scrollbar" style="max-height: 80vh">
+      <div
+        class="inset-0 p-2 bg-white shadow-md mb-8 align-baseline dark:bg-vdp border border-vls/60 dark:border-vls/40 rounded flex justify-between">
+        <button
+          @click="$store.clients.showAddClientModal = true; 
           if($store.clients.showAddClientModal) $nextTick(() => $refs.addNewClientName.focus())"
-        @keydown.escape.window="showAddClientModal = false"
-        class="modal-btn-prim shadow">
-        <svg class="size-4">
-          <use href="/icons/icons.svg#user-plus" />
-        </svg>
-        <span class="flex self-center">Add Client</span>
-      </button>
-      <h3
-        class="self-center text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
-        x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
-    </div>
-    <!-- Clients Table -->
-    <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
-      <thead class="table-head-style">
-        <tr>
-          <th class="hidden max-w-1/12">ID</th>
-          <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
-          <th class="p-2 text-base text-left max-w-2/12">Company</th>
-          <th class="p-2 text-base text-left max-w-2/12">Address</th>
-          <th class="p-2 text-base text-left max-w-2/12">Email</th>
-          <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="table-scrollbar table-body-style">
-        <template x-for="client in $store.clients.clients" :key="client.id">
-          <tr class="border-hover-ring-efect">
-            <td class="hidden" x-text="client.id"></td>
-            <td class="p-2 text-sm round-left-border">
-              <template x-if="client.isEditing">
-                <input type="text" x-model="client.name" class="table-edit-input-style" />
-              </template>
-              <template x-if="!client.isEditing">
-                <span x-text="client.name" class="mr-6"></span>
-              </template>
-            </td>
-            <td class="p-2 text-sm">
-              <template x-if="client.isEditing">
-                <input type="text" x-model="client.company_name" class="table-edit-input-style" />
-              </template>
-              <template x-if="!client.isEditing">
-                <span x-text="client.company_name" class="mr-6"></span>
-              </template>
-            </td>
-            <td class="p-2 text-sm">
-              <template x-if="client.isEditing">
-                <input type="text" x-model="client.address" class="table-edit-input-style" />
-              </template>
-              <template x-if="!client.isEditing">
-                <span x-text="client.address" class="mr-6"></span>
-              </template>
-            </td>
-            <td class="p-2 text-sm">
-              <template x-if="client.isEditing">
-                <input type="text" x-model="client.email" class="table-edit-input-style" />
-              </template>
-              <template x-if="!client.isEditing">
-                <span x-text="client.email" class="mr-6"></span>
-              </template>
-            </td>
-            <td class="text-sm text-center round-right-border">
-              <template x-if="client.isEditing">
-                <div class="flex items-center justify-evenly">
-                  <button @click="$store.clients.updateClient(client)" class="table-interaction-icon-blue p-1.5">
-                    <svg width="20" height="20" class="">
-                      <use href="/icons/icons.svg#check-circle" />
-                    </svg>
-                  </button>
-                  <button
-                    class="table-interaction-icon-red flex items-center justify-center p-1.5"
-                    @click="cancelEdit(client)"
-                    class="table-interaction-icon-red p-1.5">
-                    <svg width="20" height="20" class="">
-                      <use href="/icons/icons.svg#xmark-circle" />
-                    </svg>
-                  </button>
-                </div>
-              </template>
-              <template x-if="!client.isEditing">
-                <div class="flex items-center justify-evenly">
-                  <button @click="editClient(client)" class="table-interaction-icon-blue p-1.5">
-                    <svg width="20" height="20" class="">
-                      <use href="/icons/icons.svg#pencil" />
-                    </svg>
-                  </button>
-                  <button @click="$store.clients.removeClient(client.id)" class="table-interaction-icon-red p-1.5">
-                    <svg width="20" height="20" class="">
-                      <use href="/icons/icons.svg#trash" />
-                    </svg>
-                  </button>
-                </div>
-              </template>
-            </td>
+          @keydown.escape.window="showAddClientModal = false"
+          class="modal-btn-prim shadow">
+          <svg class="size-4">
+            <use href="/icons/icons.svg#user-plus" />
+          </svg>
+          <span class="flex self-center">Add Client</span>
+        </button>
+        <h3
+          class="self-center text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
+          x-text="`${$store.clients.selectedClient.name || 'No selected client'}`"></h3>
+      </div>
+      <!-- Clients Table -->
+      <table class="w-full border-separate text-vls" style="border-spacing: 0 10px">
+        <thead class="table-head-style">
+          <tr>
+            <th class="hidden max-w-1/12">ID</th>
+            <th id="sortNameClients" class="p-2 pl-2 text-lg text-left max-w-2/12 round-left-border">Name</th>
+            <th class="p-2 text-base text-left max-w-2/12">Company</th>
+            <th class="p-2 text-base text-left max-w-2/12">Address</th>
+            <th class="p-2 text-base text-left max-w-2/12">Email</th>
+            <th class="p-2 pr-2 text-base text-center max-w-2/12 round-right-border">Actions</th>
           </tr>
-        </template>
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="table-scrollbar table-body-style">
+          <template x-for="client in $store.clients.clients" :key="client.id">
+            <tr class="border-hover-ring-efect">
+              <td class="hidden" x-text="client.id"></td>
+              <td class="p-2 text-sm round-left-border">
+                <template x-if="client.isEditing">
+                  <input type="text" x-model="client.name" class="table-edit-input-style" />
+                </template>
+                <template x-if="!client.isEditing">
+                  <span x-text="client.name" class="mr-6"></span>
+                </template>
+              </td>
+              <td class="p-2 text-sm">
+                <template x-if="client.isEditing">
+                  <input type="text" x-model="client.company_name" class="table-edit-input-style" />
+                </template>
+                <template x-if="!client.isEditing">
+                  <span x-text="client.company_name" class="mr-6"></span>
+                </template>
+              </td>
+              <td class="p-2 text-sm">
+                <template x-if="client.isEditing">
+                  <input type="text" x-model="client.address" class="table-edit-input-style" />
+                </template>
+                <template x-if="!client.isEditing">
+                  <span x-text="client.address" class="mr-6"></span>
+                </template>
+              </td>
+              <td class="p-2 text-sm">
+                <template x-if="client.isEditing">
+                  <input type="text" x-model="client.email" class="table-edit-input-style" />
+                </template>
+                <template x-if="!client.isEditing">
+                  <span x-text="client.email" class="mr-6"></span>
+                </template>
+              </td>
+              <td class="text-sm text-center round-right-border">
+                <template x-if="client.isEditing">
+                  <div class="flex items-center justify-evenly">
+                    <button @click="$store.clients.updateClient(client)" class="table-interaction-icon-blue p-1.5">
+                      <svg width="20" height="20" class="">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                    <button
+                      class="table-interaction-icon-red flex items-center justify-center p-1.5"
+                      @click="cancelEdit(client)"
+                      class="table-interaction-icon-red p-1.5">
+                      <svg width="20" height="20" class="">
+                        <use href="/icons/icons.svg#xmark-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </template>
+                <template x-if="!client.isEditing">
+                  <div class="flex items-center justify-evenly">
+                    <button @click="editClient(client)" class="table-interaction-icon-blue p-1.5">
+                      <svg width="20" height="20" class="">
+                        <use href="/icons/icons.svg#pencil" />
+                      </svg>
+                    </button>
+                    <button @click="$store.clients.removeClient(client.id)" class="table-interaction-icon-red p-1.5">
+                      <svg width="20" height="20" class="">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                  </div>
+                </template>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

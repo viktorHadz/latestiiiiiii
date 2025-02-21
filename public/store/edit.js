@@ -8,6 +8,8 @@ document.addEventListener('alpine:init', () => {
       totalPages: null, // Set from the backend
       hasMore: true, // We set this based on currentPage < totalPages
       loading: false,
+      loadPrev: false,
+      loadNext: false,
       activeClientId: null,
       activeItemId: null, // currently selected parent invoice ID
       invoiceItems: { invoiceItems: [] }, // full details for the selected parent invoice
@@ -26,11 +28,24 @@ document.addEventListener('alpine:init', () => {
 
       // ==== 2. Copy Invoice Editing (via Modal) ====
       selectedCopy: {},
+      copyInitialValues: {},
+      tempValues: {},
       showCopyModal: false,
-      openCopyModal(copy) {
-        this.selectedCopy = { ...copy }
+
+      // Open copy modal and back up original values for cancellation.
+      async openCopyModal(copy) {
+        await this.fetchCopyInvoice(copy.id)
+        this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
         this.showCopyModal = true
       },
+
+      // Revert changes and close the copy modal.
+      cancelCopyEdit() {
+        this.selectedCopy = JSON.parse(JSON.stringify(this.copyInitialValues))
+        this.showCopyModal = false
+      },
+
+      //Disc/Depo
       uiDiscount: 0,
       modDisc: false,
       showXDisc: false,
@@ -78,7 +93,6 @@ document.addEventListener('alpine:init', () => {
       },
       // --- Fetch Invoice List (for the current page, with copies attached) ---
       async fetchListById() {
-        this.loading = true
         try {
           const client = Alpine.store('clients').selectedClient
           if (!client?.id) return
@@ -112,8 +126,6 @@ document.addEventListener('alpine:init', () => {
           }
         } catch (error) {
           console.error('Error fetching invoice list:', error)
-        } finally {
-          this.loading = false
         }
       },
       // Helper to fetch copies for a list of invoice IDs.
@@ -127,19 +139,23 @@ document.addEventListener('alpine:init', () => {
         return copyData
       },
       // Pagination navigation methods:
-      nextPage() {
+      async nextPage() {
         if (this.currentPage < this.totalPages) {
+          this.loadNext = true
           this.currentPage++
-          this.fetchListById()
+          await this.fetchListById()
+          this.loadNext = false
         }
       },
 
-      prevPage() {
+      async prevPage() {
         if (this.currentPage > 1) {
+          this.loadPrev = true
           this.currentPage--
           // Optionally, when going back, reset hasMore to true.
           this.hasMore = true
-          this.fetchListById()
+          await this.fetchListById()
+          this.loadPrev = false
         }
       },
 
@@ -211,6 +227,38 @@ document.addEventListener('alpine:init', () => {
         } catch (error) {
           console.error('Error fetching invoice:', error)
           callError('Error retrieving invoice', 'Try again or contact support.')
+        }
+      },
+      // Fetch individual copy invoice details
+      async fetchCopyInvoice(copyInvoiceId) {
+        try {
+          if (!copyInvoiceId) {
+            console.warn('No copy invoice ID provided.')
+            this.selectedCopy = { invoiceItems: [] }
+            return
+          }
+
+          const response = await fetch(`/editor/invoice/copy/${copyInvoiceId}`)
+          if (!response.ok) throw new Error(response.statusText)
+          const data = await response.json()
+
+          // Ensure uniqueness for invoiceItems.
+          const uniqueItems = []
+          const seen = new Set()
+          data.invoice.invoiceItems.forEach(item => {
+            const key = `copy-${item.type}-${item.origin_id}`
+            if (!seen.has(key)) {
+              seen.add(key)
+              uniqueItems.push({ ...item, frontendId: key })
+            }
+          })
+          this.selectedCopy = { ...data.invoice, invoiceItems: uniqueItems }
+          // Initial values for copies
+          this.showCopyModal = true
+          this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
+        } catch (error) {
+          console.error('Error fetching copy invoice:', error)
+          callError('Error retrieving copy invoice', 'Try again or contact support.')
         }
       },
       // --- Open Full Parent Edit Modal ---
@@ -581,7 +629,7 @@ document.addEventListener('alpine:init', () => {
 
       // --- Discount Functions ---
       addDiscount() {
-        const invoice = this.invoiceItems.invoice
+        const invoice = isCopy ? this.selectedCopy : this.invoiceItems.invoice
         if (invoice.discount_value !== 0) {
           callWarning('Cannot change discount', 'Remove existing discount and try again.')
           return
@@ -593,23 +641,24 @@ document.addEventListener('alpine:init', () => {
         invoice.discount_value = this.uiDiscount
         this.calculateTotals()
       },
-      changeDiscountType() {
-        const invoice = this.invoiceItems.invoice
+      changeDiscountType(isCopy = false) {
+        const invoice = isCopy ? this.selectedCopy : this.invoiceItems.invoice
         if (invoice.discount_value !== 0) {
           callWarning('Cannot change discount', 'Remove existing discount and try again.')
           return
         }
         invoice.discount_type = invoice.discount_type === 1 ? 0 : 1
       },
-      removeDiscount() {
-        this.invoiceItems.invoice.discount_value = 0
-        this.invoiceItems.invoice.discVal_ifPercent = 0
+      removeDiscount(isCopy = false) {
+        const invoice = isCopy ? this.selectedCopy : this.invoiceItems.invoice
+        invoice.discount_value = 0
+        invoice.discVal_ifPercent = 0
         this.calculateTotals()
       },
 
       // --- Deposit Functions ---
-      addDeposit() {
-        const invoice = this.invoiceItems.invoice
+      addDeposit(isCopy = false) {
+        const invoice = isCopy ? this.selectedCopy : this.invoiceItems.invoice
         if (invoice.deposit_value !== 0) {
           callWarning('Cannot change deposit', 'Remove existing deposit and try again.')
           return
@@ -618,19 +667,30 @@ document.addEventListener('alpine:init', () => {
         this.uiDeposit = 0
         this.calculateTotals()
       },
-      changeDepositType() {
-        const invoice = this.invoiceItems.invoice
+      changeDepositType(isCopy = false) {
+        const invoice = isCopy ? this.selectedCopy : this.invoiceItems.invoice
         if (invoice.deposit_value !== 0) {
           callWarning('Cannot change deposit', 'Remove existing deposit and try again.')
           return
         }
         invoice.deposit_type = invoice.deposit_type === 1 ? 0 : 1
+        if (isCopy) {
+          const svgElem = document.getElementById('change-deposit-type-copy')
+          if (svgElem) {
+            svgElem.classList.remove('animate-spin-once')
+            void svgElem.offsetWidth
+            svgElem.classList.add('animate-spin-once')
+          }
+        }
       },
-      removeDeposit() {
-        this.invoiceItems.invoice.deposit_value = 0
-        this.invoiceItems.invoice.depoVal_ifPercent = 0
+      removeDeposit(isCopy = false) {
+        const invoice = isCopy ? this.selectedCopy : this.invoiceItems.invoice
+
+        invoice.deposit_value = 0
+        invoice.depoVal_ifPercent = 0
         this.calculateTotals()
       },
+
       addNote() {
         if ($store.edit.invoiceItems.invoice.note.length) {
           callWarning('Note already exists', 'Remove existing note and try again')

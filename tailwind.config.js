@@ -179,6 +179,9 @@ module.exports = {
       fontFamily: {
         sans: ['Manrope', 'sans-serif'],
       },
+      animation: {
+        'spin-once': 'spin 1s linear 1',
+      },
     },
   },
   plugins: [],

@@ -70,7 +70,7 @@
                 </div>
               </div>
             </div>
-
+            <!-- Dropdown copy invoices -->
             <div x-show="invoice.expanded" x-transition.scale.origin.top x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
                 <div class="text-xs font-semibold mb-1 text-center">Attached Invoices</div>
@@ -91,10 +91,10 @@
                         </div>
                         <div x-data="tooltip('Edit discount and deposit for ' + copy.invoice_number)">
                           <button
-                            @click.stop="$store.edit.openCopyModal(copy)"
+                            @click.stop="$store.edit.fetchCopyInvoice(copy.id); console.log('COPIED INVO ID', copy);"
                             class="table-interaction-icon-blue !text-vls2 hover:!text-blue-500 dark:!text-vds3light dark:hover:!text-blue-500">
                             <svg class="size-4">
-                              <use href="/icons/icons2.svg#window" />
+                              <use href="/icons/icons2.xml#window" />
                             </svg>
                           </button>
                         </div>
@@ -107,29 +107,48 @@
           </div>
         </template>
 
-        <div class="mt-4 mb-4 text-center flex items-center justify-center">
+        <div class="my-4 text-center flex items-center justify-center">
+          <!-- Previous Button -->
           <button
-            class="flex items-center modal-btn-prim"
+            class="relative inline-flex items-center py-2 text-xs rounded transition font-medium tracking-wide whitespace-nowrap gap-2 disabled:cursor-not-allowed"
             @click="$store.edit.prevPage()"
             :disabled="$store.edit.currentPage === 1"
-            :class="{ 'cursor-not-allowed': $store.edit.currentPage === 1 }">
-            <svg class="w-5 h-5">
-              <use xlink:href="/icons/icons2.xml#chevdblleft"></use>
+            :class="{ 'opacity-75': $store.edit.currentPage === 1}">
+            <svg class="w-4 h-4">
+              <use href="/icons/icons2.xml?v=2#chevdblleft"></use>
             </svg>
-            Prev
+            <div x-show="!$store.edit.loadPrev">
+              <span class="">Previous</span>
+            </div>
+            <div x-show="$store.edit.loadPrev" class="absolute inset-0 flex items-center justify-center">
+              <div class="inline-flex items-center gap-2">
+                <div class="loading-spin size-4"></div>
+                <p>Loading...</p>
+              </div>
+            </div>
           </button>
-          <span class="mx-4 text-base">
+          <!-- Page 1/10 -->
+          <span class="mx-4 text-base flex items-center">
             <span x-text="$store.edit.currentPage"></span>
-            /
+            <span>/</span>
             <span x-text="$store.edit.totalPages || '?'"></span>
           </span>
+          <!-- Next Button -->
           <button
-            class="flex items-center modal-btn-prim"
+            class="relative inline-flex items-center py-2 text-xs rounded transition font-medium tracking-wide whitespace-nowrap gap-2 disabled:cursor-not-allowed"
             @click="$store.edit.nextPage()"
-            :disabled="!$store.edit.hasMore || $store.edit.loading">
-            <span x-text="$store.edit.loading ? 'Loading...' : 'Next'"></span>
-            <svg class="w-5 h-5">
-              <use xlink:href="/icons/icons2.xml?v=2#chevdblright"></use>
+            :disabled="$store.edit.currentPage === $store.edit.totalPages"
+            :class="{ 'opacity-50': $store.edit.currentPage === $store.edit.totalPages }">
+            <div x-show="!$store.edit.loadNext">
+              <span class="">Next</span>
+            </div>
+            <div x-show="$store.edit.loadNext" class="flex items-center justify-center">
+              <div class="inline-flex items-center gap-2 px-2">
+                <div class="loading-spin size-4"></div>
+              </div>
+            </div>
+            <svg class="w-4 h-4">
+              <use href="/icons/icons2.xml?v=2#chevdblright"></use>
             </svg>
           </button>
         </div>

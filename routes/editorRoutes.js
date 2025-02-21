@@ -170,45 +170,23 @@ router.get('/invoice/copy/names', (req, res) => {
     },
   )
 })
-router.get('/invoice/invoiceBook/copyInvoices/names', (req, res) => {
-  db.all(
-    `SELECT id, invoice_number, original_invoice_id, invoice_status, FROM copied_invoices 
-     ORDER BY CAST(SUBSTR(invoice_number, INSTR(invoice_number, '.') + 1) AS INTEGER) ASC`,
-    (err, copiedInvoices) => {
+
+// Get details for a copied invoice (for display/editing)
+router.get('/invoice/copy/:copyInvoiceId', (req, res) => {
+  const copyInvoiceId = req.params.copyInvoiceId
+  db.get('SELECT * FROM copied_invoices WHERE id = ?', [copyInvoiceId], (err, invoiceCopy) => {
+    if (err) {
+      return res.status(500).json({ error: `Error fetching invoice copy: ${err.message}` })
+    }
+    if (!invoiceCopy) {
+      return res.status(404).json({ error: 'Invoice copy not found' })
+    }
+    db.all('SELECT * FROM copied_invoice_items WHERE invoice_id = ?', [copyInvoiceId], (err, items) => {
       if (err) {
-        return res.status(500).json({ error: `Error fetching copied invoices: ${err.message}` })
+        return res.status(500).json({ error: `Error fetching invoice copy items: ${err.message}` })
       }
-      // Groups copied invoices by their original invoice ID
-      const groupedCopies = copiedInvoices.reduce((acc, copy) => {
-        if (!acc[copy.original_invoice_id]) {
-          acc[copy.original_invoice_id] = []
-        }
-        acc[copy.original_invoice_id].push(copy)
-        return acc
-      }, {})
-
-      res.json(groupedCopies)
-    },
-  )
-})
-// Fetch individual invoice copy from invoice where id
-router.get('/invoice/copy/:invoiceId', (req, res) => {
-  const invoiceId = req.params.invoiceId
-  const copyInvoiceData = {}
-
-  // Fetch invoice
-  db.get('SELECT * FROM copied_invoices WHERE id = ?', [invoiceId], (err, invoice) => {
-    if (err) return res.status(500).json({ error: `Error fetching invoice: ${err.message}` })
-    if (!invoice) return res.status(404).json({ error: 'Invoice not found' })
-
-    copyInvoiceData.invoice = invoice
-
-    // Fetch all invoice items for this invoice
-    db.all('SELECT * FROM copied_invoice_items WHERE invoice_id = ?', [invoiceId], (err, items) => {
-      if (err) return res.status(500).json({ error: `Error fetching invoice items: ${err.message}` })
-
-      copyInvoiceData.invoiceItems = items
-      res.json(copyInvoiceData) // Returns single structured object
+      invoiceCopy.invoiceItems = items
+      res.json({ invoice: invoiceCopy })
     })
   })
 })
