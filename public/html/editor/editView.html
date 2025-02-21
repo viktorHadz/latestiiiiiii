@@ -730,10 +730,10 @@
           <input type="date" class="modal-input-style !p-1" x-model="$store.edit.selectedCopy.due_date" />
         </label>
       </div>
-      <div class="w-full flex items-center justify-between mt-6">
-        <!-- Deposit Editing Component -->
-        <div class="p-4 border border-vls/40 rounded flex flex-col space-y-2">
-          <h3 class="text-md text-start font-medium">Deposit</h3>
+      <div class="grid grid-cols-2 gap-4 mt-4">
+        <!-- DEPOSIT Editing Component -->
+        <div class="flex flex-col gap-2 border border-vls/40 rounded p-2">
+          <h3 class="font-medium text-vls3 dark:text-vds text-start">Deposit</h3>
           <!-- Toggle Type Button -->
           <div class="flex items-center justify-between whitespace-nowrap">
             <!--Input -->
@@ -760,33 +760,29 @@
                 type="number"
                 step="any"
                 min="0"
-                class="modal-input-style !p-1 max-w-full"
+                class="modal-input-style !p-1 pr-12"
                 x-model.number="$store.edit.tempValues.deposit_value"
                 placeholder="New value" />
             </div>
           </div>
           <div class="w-full flex items-center justify-between py-2">
-            <button
-              @click="$store.edit.changeDepositType(true)"
-              class="modal-btn-prim !text-xs !border-yellow-500 !text-yellow-500 !bg-yellow-500/10">
+            <button @click="$store.edit.changeDepositType(true)" class="modal-btn-prim">
               <svg class="size-4">
                 <use href="../../icons/icons.svg#rotate"></use>
               </svg>
               Change
             </button>
-            <button
-              @click="$store.edit.removeDeposit(true)"
-              class="modal-btn-prim !text-xs !border-red-500 !text-red-500 !bg-red-500/10">
+            <button @click="$store.edit.removeDeposit(true)" class="modal-btn-prim">
               <svg class="size-4"><use href="/icons/icons.svg#trash" /></svg>
               Clear
             </button>
             <button
               @click="$store.edit.tempValues = {
-                  ...$store.edit.tempValues,
-                  deposit_type: $store.edit.selectedCopy.deposit_type,
-                  deposit_value: $store.edit.tempValues.deposit_value
-                }"
-              class="modal-btn-prim !text-xs !border-green-500 !text-green-500 !bg-green-500/10">
+                    ...$store.edit.tempValues,
+                    deposit_type: $store.edit.selectedCopy.deposit_type,
+                    deposit_value: $store.edit.tempValues.deposit_value
+                  }"
+              class="modal-btn-prim">
               <svg class="size-4">
                 <use href="../../icons/icons.svg#check-circle"></use>
               </svg>
@@ -794,129 +790,135 @@
             </button>
           </div>
         </div>
-        <!-- Discount Editing Component -->
-        <div class="mt-6 p-3 border border-vls/40 rounded">
-          <div class="w-full flex items-center justify-between">
-            <h3 class="text-md font-medium mb-2">Discount</h3>
-            <!-- Toggle Type Button -->
-            <button @click="$store.edit.changeDiscountType(true)" class="modal-btn-prim !text-xs">
-              <svg class="size-4">
-                <use href="../../icons/icons.svg#rotate"></use>
-              </svg>
-              Change
-            </button>
-          </div>
+        <!-- DISCOUNT Editing Component -->
+        <div class="flex flex-col gap-2 border border-vls/40 rounded p-2">
+          <h3 class="font-medium text-vls3 dark:text-vds text-start">Discount</h3>
           <div class="flex items-center space-x-2">
             <!-- Current Value Display -->
             <div class="flex-1 text-sm text-vls2 dark:text-vds3light">
               Current:
               <template x-if="$store.edit.selectedCopy.discount_type == 1">
                 <span>
-                  <span x-text="$store.edit.selectedCopy.discount_value"></span>
-                  % (
+                  <span x-text="$store.edit.selectedCopy.discount_value + '%'"></span>
                   <span class="font-medium">
-                    £
-                    <span x-text="$store.edit.selectedCopy.discVal_ifPercent"></span>
+                    <span x-text="'(£' + $store.edit.selectedCopy.discVal_ifPercent + ')'"></span>
                   </span>
-                  )
                 </span>
               </template>
               <template x-if="$store.edit.selectedCopy.discount_type == 0">
                 <span>
-                  £
-                  <span x-text="$store.edit.selectedCopy.discount_value"></span>
+                  <span x-text="'£' + $store.edit.selectedCopy.discount_value"></span>
                 </span>
               </template>
-            </div>
-
-            <!-- Input & Save Section (compact) -->
-            <div class="w-1/5 relative">
-              <input
-                type="number"
-                step="any"
-                min="0"
-                class="modal-input-style !p-1 pr-12"
-                x-model.number="$store.edit.tempValues.discount_value"
-                placeholder="New value" />
-              <button
-                @click="$store.edit.tempValues = { 
-                                ...$store.edit.tempValues, 
-                                discount_type: $store.edit.selectedCopy.discount_type, 
-                                discount_value: $store.edit.tempValues.discount_value 
-                              }"
-                class="absolute top-0 right-0 h-full px-2 text-xs border border-green-500 rounded bg-green-500/10 text-green-500 hover:opacity-75 active:scale-90 transition">
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Note Field -->
-      <label class="flex flex-col mt-6 gap-2">
-        <span class="text-sm text-vls3 dark:text-vds">Notes:</span>
-        <textarea class="modal-input-style !p-1" rows="3" x-model="$store.edit.selectedCopy.note"></textarea>
-      </label>
-
-      <!-- Copy Invoice Summary -->
-      <div
-        class="flex flex-col gap-2 p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow-md text-vls3 dark:text-vds text-sm">
-        <div class="flex flex-col gap-2">
-          <h2 class="font-semibold text-base">Invoice Summary</h2>
-          <div class="flex justify-between">
-            <span>Subtotal:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.subtotal_pre_discount"></span>
-          </div>
-          <template x-if="$store.edit.selectedCopy.discount_value > 0">
-            <div class="flex justify-between items-center">
-              <span>Discount:</span>
-              <div class="flex items-center">
-                <span
-                  x-text="$store.edit.selectedCopy.discount_type === 1 
-            ? ($store.edit.selectedCopy.discount_value + '%') 
-            : ('£' + $store.edit.selectedCopy.discount_value)"></span>
-                <span
-                  x-show="$store.edit.selectedCopy.discount_type === 1"
-                  class="text-xs"
-                  x-text="`(£${$store.edit.selectedCopy.discVal_ifPercent})`"></span>
+              <!-- Input & Save Section (compact) -->
+              <div class="w-1/5 relative">
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  class="modal-input-style !p-1 pr-12"
+                  x-model.number="$store.edit.tempValues.discount_value"
+                  placeholder="New value" />
               </div>
-            </div>
-          </template>
-          <div class="flex justify-between">
-            <span>VAT:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.vat"></span>
-          </div>
-          <div class="flex justify-between">
-            <span>Total:</span>
-            <span class="font-semibold" x-text="'£' + $store.edit.selectedCopy.total"></span>
-          </div>
-          <template x-if="$store.edit.selectedCopy.deposit_value > 0">
-            <div class="flex justify-between">
-              <span>Deposit:</span>
-              <div class="flex items-center">
-                <div class="flex items-center">
-                  <span
-                    x-text="$store.edit.selectedCopy.deposit_type === 1 
-              ? ($store.edit.selectedCopy.deposit_value + '%') 
-              : ('£' + $store.edit.selectedCopy.deposit_value)"></span>
-                  <span
-                    x-show="$store.edit.selectedCopy.deposit_type === 1"
-                    class="text-xs"
-                    x-text="'(£' + $store.edit.selectedCopy.depoVal_ifPercent + ')'"></span>
-                </div>
-                <button @click="$store.edit.removeDeposit(true)" class="text-red-600 hover:text-red-500">
-                  <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+
+              <div class="w-full flex items-center justify-between py-2">
+                <button @click="$store.edit.changeDiscountType(true)" class="modal-btn-prim !text-xs">
+                  <svg class="size-4">
+                    <use href="../../icons/icons.svg#rotate"></use>
+                  </svg>
+                  Change
+                </button>
+                <button @click="$store.edit.removeDiscount(true)" class="modal-btn-prim">
+                  <svg class="size-4"><use href="/icons/icons.svg#trash" /></svg>
+                  Clear
+                </button>
+                <button
+                  @click="$store.edit.tempValues = {
+                  ...$store.edit.tempValues,
+                  discount_type: $store.edit.selectedCopy.discount_type,
+                  discount_value: $store.edit.tempValues.discount_value
+                }"
+                  class="modal-btn-prim">
+                  <svg class="size-4">
+                    <use href="../../icons/icons.svg#check-circle"></use>
+                  </svg>
+                  Save
                 </button>
               </div>
             </div>
-          </template>
-          <div class="flex justify-between font-semibold">
-            <span>Remaining:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.remaining"></span>
+          </div>
+        </div>
+
+        <!-- Copy Invoice Summary -->
+        <div
+          class="flex flex-col gap-2 p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow-md text-vls3 dark:text-vds text-sm">
+          <div class="flex flex-col gap-2">
+            <h2 class="font-semibold text-base">Invoice Summary</h2>
+            <div class="flex justify-between">
+              <span>Subtotal:</span>
+              <span x-text="'£' + $store.edit.selectedCopy.subtotal_pre_discount"></span>
+            </div>
+            <template x-if="$store.edit.selectedCopy.discount_value > 0">
+              <div class="flex justify-between items-center">
+                <span>Discount:</span>
+                <div class="flex items-center">
+                  <span
+                    x-text="$store.edit.selectedCopy.discount_type === 1 
+  ? ($store.edit.selectedCopy.discount_value + '%') 
+  : ('£' + $store.edit.selectedCopy.discount_value)"></span>
+                  <span
+                    x-show="$store.edit.selectedCopy.discount_type === 1"
+                    class="text-xs"
+                    x-text="`(£${$store.edit.selectedCopy.discVal_ifPercent})`"></span>
+                </div>
+              </div>
+            </template>
+            <div class="flex justify-between">
+              <span>VAT:</span>
+              <span x-text="'£' + $store.edit.selectedCopy.vat"></span>
+            </div>
+            <div class="flex justify-between">
+              <span>Total:</span>
+              <span class="font-semibold" x-text="'£' + $store.edit.selectedCopy.total"></span>
+            </div>
+            <template x-if="$store.edit.selectedCopy.deposit_value > 0">
+              <div class="flex justify-between">
+                <span>Deposit:</span>
+                <div class="flex items-center">
+                  <div class="flex items-center">
+                    <span
+                      x-text="$store.edit.selectedCopy.deposit_type === 1 
+    ? ($store.edit.selectedCopy.deposit_value + '%') 
+    : ('£' + $store.edit.selectedCopy.deposit_value)"></span>
+                    <span
+                      x-show="$store.edit.selectedCopy.deposit_type === 1"
+                      class="text-xs"
+                      x-text="'(£' + $store.edit.selectedCopy.depoVal_ifPercent + ')'"></span>
+                  </div>
+                  <button @click="$store.edit.removeDeposit(true)" class="text-red-600 hover:text-red-500">
+                    <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+                  </button>
+                </div>
+              </div>
+            </template>
+            <div class="flex justify-between font-semibold">
+              <span>Remaining:</span>
+              <span x-text="'£' + $store.edit.selectedCopy.remaining"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Note Field -->
+        <div class="h-full flex justify-between">
+          <label class="flex flex-col mt-6 gap-2">
+            <span class="text-sm text-vls3 dark:text-vds">Note:</span>
+            <textarea class="modal-input-style !p-1" rows="3" x-model="$store.edit.selectedCopy.note"></textarea>
+          </label>
+          <div x-show="$store.edit.selectedCopy.note.length">
+            
           </div>
         </div>
       </div>
-
       <!-- Final Action Buttons -->
       <div class="flex justify-between mt-6">
         <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec !text-xs">Cancel</button>
