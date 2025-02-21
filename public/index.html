@@ -219,12 +219,14 @@
                     </template>
                   </ul>
                 </div>
-                <button
-                  x-show="$store.clients.selectedClient !== null"
-                  @click="$store.clients.showClientModal = false"
-                  class="modal-btn-sec flex place-self-center">
-                  Close
-                </button>
+                <div class="w-full flex items-center justify-center">
+                  <button
+                    x-show="$store.clients.selectedClient !== null"
+                    @click="$store.clients.showClientModal = false"
+                    class="modal-btn-sec flex place-self-center">
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>
