@@ -732,12 +732,12 @@
       </div>
       <div class="w-full flex items-center justify-between mt-6">
         <!-- Deposit Editing Component -->
-        <div class="p-4 border border-vls/40 rounded">
+        <div class="p-4 border border-vls/40 rounded flex flex-col space-y-2">
           <h3 class="text-md text-start font-medium">Deposit</h3>
           <!-- Toggle Type Button -->
-          <div class="flex items-center space-x-2 mt-2">
-            <!-- Current Value Display -->
-            <div class="flex-1 text-sm text-vls2 dark:text-vds3light">
+          <div class="flex items-center justify-between whitespace-nowrap">
+            <!--Input -->
+            <div class="flex-1 text-sm text-vls2 w-[49%] dark:text-vds3light whitespace-nowrap">
               Current:
               <template x-if="$store.edit.selectedCopy.deposit_type == 1">
                 <span>
@@ -755,12 +755,12 @@
               </template>
             </div>
             <!-- Input & Save Section (compact) -->
-            <div class="flex">
+            <div class="flex w-[49%]">
               <input
                 type="number"
                 step="any"
                 min="0"
-                class="modal-input-style !p-1"
+                class="modal-input-style !p-1 max-w-full"
                 x-model.number="$store.edit.tempValues.deposit_value"
                 placeholder="New value" />
             </div>
@@ -777,7 +777,7 @@
             <button
               @click="$store.edit.removeDeposit(true)"
               class="modal-btn-prim !text-xs !border-red-500 !text-red-500 !bg-red-500/10">
-              <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+              <svg class="size-4"><use href="/icons/icons.svg#trash" /></svg>
               Clear
             </button>
             <button
