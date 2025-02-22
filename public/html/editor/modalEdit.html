@@ -481,7 +481,7 @@
                   </button>
                 </div>
                 <div
-                  x-data="tooltip('Ready to invoice client? \n Saves as an attached invoice.\n In your invoice book.\n Must contain deposit to use.', { position: 'top' })">
+                  x-data="tooltip('Ready to issue a deposit or send\n a follow up invoice? \n This saves a copy in your invoice book\n with a follow up number.\n Must contain deposit to use.', { position: 'top' })">
                   <div
                     @click="if ($store.edit.invoiceItems.invoice.deposit_value <= 0) {
                         callInfo('Cannot save a copy', 'Invoice must contain a deposit.');

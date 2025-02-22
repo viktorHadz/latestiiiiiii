@@ -229,7 +229,7 @@
           <h2 class="font-semibold text-base">Invoice Summary</h2>
           <div class="flex justify-between">
             <span>Subtotal:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.subtotal_pre_discount"></span>
+            <span x-text="'£' + $store.edit.selectedCopy.subtotal"></span>
           </div>
           <template x-if="$store.edit.selectedCopy.discount_value > 0">
             <div class="flex justify-between items-center">
@@ -330,6 +330,7 @@
     </main>
     <footer class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-t border-vls/40">
       <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">Cancel</button>
+      <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">PDF</button>
       <button @click="$store.edit.saveCopyEdit()" class="modal-btn-prim text-xs">Save</button>
     </footer>
   </div>

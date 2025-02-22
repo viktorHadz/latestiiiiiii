@@ -17,7 +17,9 @@ document.addEventListener('alpine:init', () => {
         depoValIfPercent: 0,
         note: '',
         totalPreDiscount: 0,
-        date: new Date().toLocaleDateString(),
+        date: new Date().toLocaleDateString('en-GB'),
+        remaining_balance: 0,
+        due_by_date: '',
       },
       quantities: {},
       invoItemSearch: '',
@@ -224,12 +226,15 @@ document.addEventListener('alpine:init', () => {
           }
           const vat = this.roundToTwo((this.totals.vatPercent / 100) * discountedSubtotal)
           const total = this.roundToTwo(discountedSubtotal + vat)
+          const remaining_balance = total - (total.depositValue || 0)
+
           this.totals = {
             ...this.totals,
             subtotal: this.roundToTwo(subtotal),
             discountedSubtotal: this.roundToTwo(discountedSubtotal),
             vat,
             total,
+            remaining_balance,
           }
           console.log(`CalculateTotals => Subtotal: ${subtotal}, VAT: ${vat}, Total: ${total}`)
         } catch (error) {
@@ -355,9 +360,9 @@ document.addEventListener('alpine:init', () => {
         this.totals = {
           ...this.totals,
           depositValue: depositValue,
-          remainingTotalBalance: this.roundToTwo(total - depositAmount),
           depositType,
           depoValIfPercent: depoPercentVal,
+          remaining_balance: this.roundToTwo(total - depositAmount),
         }
 
         this.uiDeposit = 0
@@ -375,8 +380,8 @@ document.addEventListener('alpine:init', () => {
           ...this.totals,
           depositValue: 0,
           depoValIfPercent: 0,
-          remainingTotalBalance: this.totals.total,
           depositType: 0,
+          remaining_balance: this.totals.total,
         }
 
         callSuccess('Deposit removed successfully.')
@@ -428,7 +433,8 @@ document.addEventListener('alpine:init', () => {
           depoValIfPercent: 0,
           note: '',
           totalPreDiscount: 0,
-          date: new Date().toLocaleDateString(),
+          date: new Date().toLocaleDateString('en-GB'),
+          remaining_balance: 0,
         }
 
         // Resetting other properties related to totals

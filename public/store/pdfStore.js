@@ -9,6 +9,10 @@ document.addEventListener('alpine:init', () => {
       // Sends to DB then receives the data sent and generates PDF after - could be optimised
       async generateInvoice() {
         const store = Alpine.store('invo').totals
+        const today = new Date()
+        const twoWeeksLater = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000)
+        const formattedToday = today.toLocaleDateString('en-GB')
+        const formattedDue = twoWeeksLater.toLocaleDateString('en-GB')
         const invoiceData = {
           clientId: store.clientId,
           items: store.items,
@@ -25,7 +29,9 @@ document.addEventListener('alpine:init', () => {
           // depositPercentValue: 0,
           note: store.note,
           totalPreDiscount: store.totalPreDiscount,
-          date: new Date().toISOString().split('T')[0],
+          date: formattedToday,
+          due_by_date: formattedDue,
+          remaining_balance: store.remaining_balance,
         }
         console.log('generateInvoice => invoiceData: ', invoiceData)
         try {
@@ -41,7 +47,7 @@ document.addEventListener('alpine:init', () => {
             const invoice = await response.json()
             this.generatePDF(invoice.id)
             // Event to notify the app of invoice generation
-            document.dispatchEvent(new CustomEvent('invoice-created', { detail: { clientId: store.clientId } }))
+            document.dispatchEvent(new CustomEvent('invoice:created', { detail: { clientId: store.clientId } }))
             // Debuging location: invoiceStore ==>  resetTotals
             Alpine.store('invo').resetTotals()
           } else {

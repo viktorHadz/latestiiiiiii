@@ -76,6 +76,8 @@ router.post('/api/saveInvoice', async (req, res) => {
     note,
     totalPreDiscount,
     date,
+    remaining_balance,
+    due_by_date,
   } = req.body
   if (!items || items.length === 0) {
     return res.status(400).json({ error: 'Cannot create an invoice without items.' })
@@ -85,8 +87,8 @@ router.post('/api/saveInvoice', async (req, res) => {
     const invoiceId = await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO invoices (
-          client_id, discount_type, discount_value, discVal_ifPercent, vat_percent, vat, subtotal, total, deposit_type, deposit_value, depoVal_ifPercent, note, total_pre_discount, date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          client_id, discount_type, discount_value, discVal_ifPercent, vat_percent, vat, subtotal, total, deposit_type, deposit_value, depoVal_ifPercent, note, total_pre_discount, date, remaining_balance, due_by_date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           clientId,
           discountType,
@@ -102,6 +104,8 @@ router.post('/api/saveInvoice', async (req, res) => {
           note,
           totalPreDiscount,
           date,
+          remaining_balance,
+          due_by_date,
         ],
         function (error) {
           if (error) {
@@ -358,7 +362,7 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     startY += 10
 
     const terms = [
-      `1. Full payment is due within one week of invoice date.`,
+      `1. Full payment is due within two weeks of invoice date.`,
       `2. A deposit of 50% is required at the start of production, unless otherwise agreed.`,
       `3. Late Payments: A 1% daily fee will be applied to outstanding balances after two weeks.`,
       `4. Late deliveries and delays on the client's end will result in adjusted payment deadlines.`,

@@ -72,6 +72,8 @@ function getDb() {
             total_pre_discount REAL NOT NULL DEFAULT 0,
             date TEXT NOT NULL,
             invoice_status TEXT NOT NULL DEFAULT 'unpaid',
+            remaining_balance REAL NOT NULL DEFAULT 0,
+            due_by_date TEXT NOT NULL,
             FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
           )
         `)
@@ -113,6 +115,8 @@ function getDb() {
           total_pre_discount REAL NOT NULL DEFAULT 0,
           date TEXT NOT NULL,
           invoice_status TEXT NOT NULL DEFAULT 'unpaid',
+          remaining_balance REAL NOT NULL DEFAULT 0,
+          due_by_date TEXT NOT NULL,
           FOREIGN KEY (original_invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
         )

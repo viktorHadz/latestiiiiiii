@@ -11,7 +11,7 @@
     <div class="overflow-y-auto h-full p-2 text-vls2 dark:text-vds table-scrollbar">
       <div>
         <div
-          class="mb-2 flex justify-between items-center rounded bg-vlp dark:bg-vdp border border-vls/40 shadow p-2 font-medium">
+          class="mb-2 flex justify-between items-center rounded bg-vls2 text-vlp dark:bg-vdp border border-vls/40 shadow p-2 font-medium">
           <div>
             <span class="mr-1">Invoice:</span>
             <span x-text="$store.edit.invoiceItems.invoice.invoice_number"></span>
@@ -38,6 +38,14 @@
           <div class="flex justify-between">
             <p>Email:</p>
             <span x-text="$store.clients.selectedClient?.email"></span>
+          </div>
+          <div class="flex justify-between">
+            <p>Created on:</p>
+            <span x-text="$store.edit.invoiceItems.invoice.date"></span>
+          </div>
+          <div class="flex justify-between">
+            <p>Due-by-date:</p>
+            <span x-text="$store.edit.invoiceItems.invoice.due_by_date"></span>
           </div>
         </div>
         <!-- Invoice Items Table -->

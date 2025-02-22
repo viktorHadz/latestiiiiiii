@@ -5,7 +5,6 @@ const createDbBackup = require('./backupScript')
 const clientsRoutes = require('./routes/clientsRoutes')
 const invoicingRoutes = require('./routes/invoicingRoutes')
 const editorRoutes = require('./routes/editorRoutes')
-const globalRoutes = require('./routes/globalRoutes')
 const itemRoutes = require('./routes/itemRoutes')
 
 const connection = require('./database')
@@ -21,7 +20,6 @@ app.use('/clients', clientsRoutes)
 app.use('/invo', invoicingRoutes)
 app.use('/editor', editorRoutes)
 app.use('/item', itemRoutes)
-app.use(globalRoutes)
 
 app.listen(port, () => {
   // createDbBackup()

@@ -80,7 +80,7 @@
                       <div class="flex gap-2">
                         <div x-data="tooltip('Delete')">
                           <button
-                            @click.stop="$store.edit.deleteInvoice(copy.id)"
+                            @click.stop="$store.edit.deleteInvoice(copy.id, true, copy.original_invoice_id)"
                             class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
                             <svg class="w-4 h-4">
                               <use href="/icons/icons.svg#trash" />
@@ -89,7 +89,7 @@
                         </div>
                         <div x-data="tooltip('Edit discount and deposit for ' + copy.invoice_number)">
                           <button
-                            @click.stop="$store.edit.fetchCopyInvoice(copy.id); console.log('COPIED INVO ID', copy);"
+                            @click.stop="$store.edit.fetchCopyInvoice(copy.id); console.log('COPIED INVO ID', copy); console.log('COPIED INVO ID', copy.original_invoice_id)"
                             class="table-interaction-icon-blue !text-vls2 hover:!text-blue-500 dark:!text-vds3light dark:hover:!text-blue-500">
                             <svg class="size-4">
                               <use href="/icons/icons2.xml#window" />

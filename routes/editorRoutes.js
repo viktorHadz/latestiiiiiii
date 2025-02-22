@@ -56,6 +56,42 @@ router.get('/list/:clientId', (req, res) => {
     })
   })
 })
+// Fetch copied invoice names for invoiceBook list
+router.get('/invoice/copy/names', (req, res) => {
+  const invoiceIds = req.query.invoiceIds
+    ?.split(',')
+    .map(id => parseInt(id))
+    .filter(Boolean)
+
+  if (!invoiceIds || invoiceIds.length === 0) {
+    return res.status(400).json({ error: 'No invoice IDs provided' })
+  }
+
+  const placeholders = invoiceIds.map(() => '?').join(',')
+
+  db.all(
+    `SELECT id, invoice_number, original_invoice_id, invoice_status FROM copied_invoices 
+     WHERE original_invoice_id IN (${placeholders}) 
+     ORDER BY CAST(SUBSTR(invoice_number, INSTR(invoice_number, '.') + 1) AS INTEGER) ASC`,
+    invoiceIds,
+    (err, copiedInvoices) => {
+      if (err) {
+        return res.status(500).json({ error: `Error fetching copied invoices: ${err.message}` })
+      }
+
+      // Group copied invoices by their original invoice ID
+      const groupedCopies = copiedInvoices.reduce((acc, copy) => {
+        if (!acc[copy.original_invoice_id]) {
+          acc[copy.original_invoice_id] = []
+        }
+        acc[copy.original_invoice_id].push(copy)
+        return acc
+      }, {})
+
+      res.json(groupedCopies)
+    },
+  )
+})
 // 2. Individual Invoice Details
 router.get('/invoice/:invoiceId', (req, res) => {
   const invoiceId = req.params.invoiceId
@@ -132,7 +168,7 @@ router.post('/invoice/:invoiceId/status', (req, res) => {
   })
 })
 
-// Get details for a copied invoice (for display/editing)
+// Individual Copy Invoice Details (for display/editing)
 router.get('/invoice/copy/:copyInvoiceId', (req, res) => {
   const copyInvoiceId = req.params.copyInvoiceId
   db.get('SELECT * FROM copied_invoices WHERE id = ?', [copyInvoiceId], (err, invoiceCopy) => {
@@ -150,42 +186,6 @@ router.get('/invoice/copy/:copyInvoiceId', (req, res) => {
       res.json({ invoice: invoiceCopy })
     })
   })
-})
-// Fetch copied invoice names for invoiceBook list
-router.get('/invoice/copy/names', (req, res) => {
-  const invoiceIds = req.query.invoiceIds
-    ?.split(',')
-    .map(id => parseInt(id))
-    .filter(Boolean)
-
-  if (!invoiceIds || invoiceIds.length === 0) {
-    return res.status(400).json({ error: 'No invoice IDs provided' })
-  }
-
-  const placeholders = invoiceIds.map(() => '?').join(',')
-
-  db.all(
-    `SELECT id, invoice_number, original_invoice_id, invoice_status FROM copied_invoices 
-     WHERE original_invoice_id IN (${placeholders}) 
-     ORDER BY CAST(SUBSTR(invoice_number, INSTR(invoice_number, '.') + 1) AS INTEGER) ASC`,
-    invoiceIds,
-    (err, copiedInvoices) => {
-      if (err) {
-        return res.status(500).json({ error: `Error fetching copied invoices: ${err.message}` })
-      }
-
-      // Group copied invoices by their original invoice ID
-      const groupedCopies = copiedInvoices.reduce((acc, copy) => {
-        if (!acc[copy.original_invoice_id]) {
-          acc[copy.original_invoice_id] = []
-        }
-        acc[copy.original_invoice_id].push(copy)
-        return acc
-      }, {})
-
-      res.json(groupedCopies)
-    },
-  )
 })
 
 // ==== Deleting Invocies ==== //
@@ -205,7 +205,7 @@ router.delete('/invoice/delete/:invoiceId', (req, res) => {
     res.status(200).json({ message: 'Invoice deleted successfully' })
   })
 })
-// Delete Copy
+// Delete copied invoice and its items
 router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
   const { invoiceId } = req.params
 
@@ -221,7 +221,6 @@ router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
     res.status(200).json({ message: 'Copied invoice deleted successfully', invoiceId })
   })
 })
-
 // ==== Invoce Status ==== //
 router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
   const { deposit, discount } = req.body
@@ -235,7 +234,6 @@ router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
     },
   )
 })
-
 // ==== Saving Invocies ==== //
 // Overwrite
 router.post('/invoice/save/overwrite', async (req, res) => {
@@ -256,6 +254,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
     note,
     totalPreDiscount,
     date,
+    remaining_balance,
   } = req.body
 
   try {
@@ -265,7 +264,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
         `UPDATE invoices SET 
           client_id = ?, discount_type = ?, discount_value = ?, discVal_ifPercent = ?, 
           vat_percent = ?, vat = ?, subtotal = ?, total = ?, deposit_type = ?, deposit_value = ?, 
-          depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ? 
+          depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ?, remaining_balance = ? 
         WHERE id = ?`,
         [
           clientId,
@@ -283,6 +282,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
           totalPreDiscount,
           date,
           invoiceId,
+          remaining_balance,
         ],
         function (error) {
           if (error) reject(new Error(`Error updating invoice: ${error.message}`))
@@ -328,8 +328,8 @@ router.post('/invoice/save/overwrite', async (req, res) => {
     res.status(500).json({ error: `Error updating invoice: ${error.message}` })
   }
 })
-// Save Copy - overwrites
-router.post('/invoice/copy/save', async (req, res) => {
+// Copy invoice
+router.post('/invoice/save/copy', async (req, res) => {
   const {
     invoiceId,
     clientId,
@@ -347,6 +347,7 @@ router.post('/invoice/copy/save', async (req, res) => {
     note,
     totalPreDiscount,
     date,
+    remaining_balance,
   } = req.body
 
   try {
@@ -378,14 +379,14 @@ router.post('/invoice/copy/save', async (req, res) => {
       newInvoiceNumber = `${originalInvoice.invoice_number}.${existingCopies.length + 1}`
     }
 
-    // 1. Insert new copied invoice /////// IT NEEED TO HAVE REMAINING INSERTED
+    // 1. Insert new copied invoice
     const newInvoiceId = await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO copied_invoices (
           original_invoice_id, invoice_number, client_id, discount_type, discount_value, discVal_ifPercent, 
           vat_percent, vat, subtotal, total, deposit_type, deposit_value, depoVal_ifPercent, note, 
-          total_pre_discount, date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          total_pre_discount, date, remaining_balance
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           invoiceId,
           newInvoiceNumber,
@@ -403,6 +404,7 @@ router.post('/invoice/copy/save', async (req, res) => {
           note,
           totalPreDiscount,
           date,
+          remaining_balance,
         ],
         function (error) {
           if (error) reject(new Error(`Error creating copied invoice: ${error.message}`))
