@@ -19,16 +19,16 @@
   <div class="flex flex-1 min-h-0 text-vls2 dark:text-vds3light">
     <!-- Invoice List Section -->
     <div class="flex flex-col min-w-[260px] max-w-[30%] overflow-hidden">
-      <div class="p-2 bg-vlp dark:bg-vdp shadow rounded border border-vls/40">
-        <p class="font-semibold text-center text-vls2 dark:text-vds">Invoice Book</p>
+      <div class="p-2 bg-vls2 dark:bg-vdp shadow rounded border border-vls/40">
+        <p class="font-semibold text-center text-vlp dark:text-vds">Invoice Book</p>
       </div>
 
       <div class="overflow-y-auto h-full p-2 bg-vlp dark:bg-vdp2 mt-2 border rounded border-vls/40 alt-table-scrollbar">
         <template x-for="invoice in $store.edit.invoiceBook" :key="invoice.id">
           <div class="mb-6" @click="$store.edit.fetchInvoice(invoice.id)" :id="'rowid-' + invoice.id">
             <div
-              :class="{'ring-1 ring-vls2 dark:ring-vda bg-vlp dark:bg-vdp dark:text-white': invoice.id === $store.edit.activeItemId, 
-              'ring-1 ring-vls/40 hover:ring-vls/80 shadow hover:shadow-lg dark:bg-vdp': invoice.id !== $store.edit.activeItemId}"
+              :class="{'ring-1 ring-vls2 dark:ring-vda bg-blue-50 dark:bg-vdp dark:text-white': invoice.id === $store.edit.activeItemId, 
+              'ring-1 ring-vls/40 hover:ring-vls/80  hover:bg-blue-50 shadow hover:shadow-lg dark:bg-vdp': invoice.id !== $store.edit.activeItemId}"
               class="flex justify-between items-center shadow rounded p-2 transition-all text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
               <div class="flex flex-col text-xs cursor-default">
                 <div x-text="invoice.client_name"></div>
@@ -72,7 +72,7 @@
             <div x-show="invoice.expanded" x-transition.scale.origin.top x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
                 <div class="text-xs font-semibold mb-1 text-center">Attached Invoices</div>
-                <ul class="space-y-1 text-xs flex flex-col max-h-[300px] overflow-y-scroll pr-2 table-scrollbar">
+                <ul class="space-y-1 text-xs flex flex-col max-h-[300px] overflow-y-scroll pr-2 alt-table-scrollbar">
                   <template x-for="copy in invoice.copies" :key="copy.id">
                     <li
                       class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">

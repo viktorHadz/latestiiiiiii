@@ -2,7 +2,7 @@ document.addEventListener('alpine:init', () => {
   Alpine.store(
     'edit',
     Alpine.reactive({
-      // ==== 1. Invoice Book & Full Invoice Details - Paginated ====
+      // ==== 1. Invoice Book & Full Invoice Details - Pagination ====
       invoiceBook: [],
       currentPage: 1,
       totalPages: null, // Set from the backend
@@ -31,8 +31,7 @@ document.addEventListener('alpine:init', () => {
       copyInitialValues: {},
       tempValues: {},
       showCopyModal: false,
-
-      // Open copy modal and back up original values for cancellation.
+      // Open copy modal and back up original values for cancellation
       async openCopyModal(copy) {
         await this.fetchCopyInvoice(copy.id)
         this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
@@ -43,6 +42,7 @@ document.addEventListener('alpine:init', () => {
       cancelCopyEdit() {
         this.selectedCopy = JSON.parse(JSON.stringify(this.copyInitialValues))
         this.showCopyModal = false
+        this.copyInitialValues = {}
       },
 
       //Disc/Depo
@@ -261,7 +261,7 @@ document.addEventListener('alpine:init', () => {
           callError('Error retrieving copy invoice', 'Try again or contact support.')
         }
       },
-      // --- Open Full Parent Edit Modal ---
+      // --- Open Edit Modal ---
       async openParentEditModal() {
         if (!this.invoiceItems.invoice) {
           callWarning('No invoice loaded', 'Select an invoice first')
@@ -569,7 +569,7 @@ document.addEventListener('alpine:init', () => {
         this.calculateTotals()
       },
 
-      // --- Delete Invoice ---
+      // --- DELETE ---
       async deleteInvoice(invoiceId) {
         if (!invoiceId) {
           callError('Unable to delete invoice', 'Refresh page and try again or call support.')
@@ -581,6 +581,7 @@ document.addEventListener('alpine:init', () => {
         }
         if (confirm('This will delete invoice and its items. Proceed?')) {
           try {
+            const endpoint = copy ? '/editor/invoice/copy/delete/' : '/editor/invoice/delete/'
             let res = await fetch(`/editor/invoice/delete/${invoiceId}`, {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },

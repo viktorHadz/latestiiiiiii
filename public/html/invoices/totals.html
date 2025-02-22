@@ -141,9 +141,9 @@
                   Apply
                 </button>
                 <button
-                  @click="$store.invo.changeDiscountType(); $nextTick(() => { $refs.discountInput.focus() });"
+                  @click="$store.invo.changeDiscountType(); $store.effs.addEff($refs.rotateDisc, 'spin', 500); $nextTick(() => { $refs.discountInput.focus() }); "
                   class="modal-btn-prim !place-self-center !text-xs">
-                  <svg class="size-4">
+                  <svg x-ref="rotateDisc" class="size-4">
                     <use href="/icons/icons.svg#rotate"></use>
                   </svg>
                   Change
@@ -216,9 +216,9 @@
                   Apply
                 </button>
                 <button
-                  @click="$store.invo.changeDepositType(); $nextTick(() => $refs.depoInput.focus());"
+                  @click="$store.invo.changeDepositType(); $store.effs.addEff($refs.rotateDepo, 'spin', 500); $nextTick(() => $refs.depoInput.focus());"
                   class="modal-btn-prim !place-self-center !text-xs">
-                  <svg class="size-4">
+                  <svg x-ref="rotateDepo" class="size-4">
                     <use href="/icons/icons.svg#rotate"></use>
                   </svg>
                   Change

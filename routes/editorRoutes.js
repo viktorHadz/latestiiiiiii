@@ -5,7 +5,6 @@ const db = getDb()
 
 router.use(express.json())
 
-// ==== Fetching ====
 // 1. InvoiceBook fetch
 router.get('/list/:clientId', (req, res) => {
   const clientId = req.params.clientId
@@ -57,7 +56,6 @@ router.get('/list/:clientId', (req, res) => {
     })
   })
 })
-
 // 2. Individual Invoice Details
 router.get('/invoice/:invoiceId', (req, res) => {
   const invoiceId = req.params.invoiceId
@@ -134,6 +132,25 @@ router.post('/invoice/:invoiceId/status', (req, res) => {
   })
 })
 
+// Get details for a copied invoice (for display/editing)
+router.get('/invoice/copy/:copyInvoiceId', (req, res) => {
+  const copyInvoiceId = req.params.copyInvoiceId
+  db.get('SELECT * FROM copied_invoices WHERE id = ?', [copyInvoiceId], (err, invoiceCopy) => {
+    if (err) {
+      return res.status(500).json({ error: `Error fetching invoice copy: ${err.message}` })
+    }
+    if (!invoiceCopy) {
+      return res.status(404).json({ error: 'Invoice copy not found' })
+    }
+    db.all('SELECT * FROM copied_invoice_items WHERE invoice_id = ?', [copyInvoiceId], (err, items) => {
+      if (err) {
+        return res.status(500).json({ error: `Error fetching invoice copy items: ${err.message}` })
+      }
+      invoiceCopy.invoiceItems = items
+      res.json({ invoice: invoiceCopy })
+    })
+  })
+})
 // Fetch copied invoice names for invoiceBook list
 router.get('/invoice/copy/names', (req, res) => {
   const invoiceIds = req.query.invoiceIds
@@ -171,26 +188,6 @@ router.get('/invoice/copy/names', (req, res) => {
   )
 })
 
-// Get details for a copied invoice (for display/editing)
-router.get('/invoice/copy/:copyInvoiceId', (req, res) => {
-  const copyInvoiceId = req.params.copyInvoiceId
-  db.get('SELECT * FROM copied_invoices WHERE id = ?', [copyInvoiceId], (err, invoiceCopy) => {
-    if (err) {
-      return res.status(500).json({ error: `Error fetching invoice copy: ${err.message}` })
-    }
-    if (!invoiceCopy) {
-      return res.status(404).json({ error: 'Invoice copy not found' })
-    }
-    db.all('SELECT * FROM copied_invoice_items WHERE invoice_id = ?', [copyInvoiceId], (err, items) => {
-      if (err) {
-        return res.status(500).json({ error: `Error fetching invoice copy items: ${err.message}` })
-      }
-      invoiceCopy.invoiceItems = items
-      res.json({ invoice: invoiceCopy })
-    })
-  })
-})
-
 // ==== Deleting Invocies ==== //
 // Delete
 router.delete('/invoice/delete/:invoiceId', (req, res) => {
@@ -208,7 +205,7 @@ router.delete('/invoice/delete/:invoiceId', (req, res) => {
     res.status(200).json({ message: 'Invoice deleted successfully' })
   })
 })
-// Delete copied invoice and its items
+// Delete Copy
 router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
   const { invoiceId } = req.params
 
@@ -224,8 +221,8 @@ router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
     res.status(200).json({ message: 'Copied invoice deleted successfully', invoiceId })
   })
 })
-// ==== Invoce Status ==== //
 
+// ==== Invoce Status ==== //
 router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
   const { deposit, discount } = req.body
   const invoiceId = req.params.invoiceId
@@ -238,6 +235,7 @@ router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
     },
   )
 })
+
 // ==== Saving Invocies ==== //
 // Overwrite
 router.post('/invoice/save/overwrite', async (req, res) => {
@@ -330,8 +328,8 @@ router.post('/invoice/save/overwrite', async (req, res) => {
     res.status(500).json({ error: `Error updating invoice: ${error.message}` })
   }
 })
-// Copy invoice
-router.post('/invoice/save/copy', async (req, res) => {
+// Save Copy - overwrites
+router.post('/invoice/copy/save', async (req, res) => {
   const {
     invoiceId,
     clientId,
