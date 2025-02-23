@@ -122,64 +122,56 @@
             x-html="tabHtml"
             class="2xl:max-w-[80%] mx-auto flex flex-col h-full min-h-0"></div>
           <!-- MARK: CREATE CLIENT MODAL -->
-          <div
-            x-show="$store.clients.showAddClientModal"
-            x-transition.opacity.duration.300
-            class="z-50 outter-modal-overlay-blur-fixed"
-            id="my-modal">
+          <div x-show="$store.clients.showAddClientModal" class="z-50" id="my-modal">
             <!-- Modal content -->
-            <div class="inner-modal-size-positioning-relative modal-bg-and-borders">
-              <div @keyup.escape="$store.clients.showAddClientModal = false">
-                <div class="p-6">
-                  <h3 class="mb-4 modal-title">Add Client</h3>
-                  <form>
-                    <input
-                      :id="'addCliName'"
-                      autocomplete="name"
-                      x-model="$store.clients.newClient.name"
-                      x-ref="addNewClientName"
-                      name="name"
-                      type="text"
-                      placeholder="Name"
-                      class="w-full mb-2 modal-input-style"
-                      required />
-                    <input
-                      :id="'addCliCompName'"
-                      autocomplete="company"
-                      x-model="$store.clients.newClient.company_name"
-                      name="company_name"
-                      type="text"
-                      placeholder="Company Name"
-                      class="w-full mb-2 modal-input-style"
-                      required />
-                    <input
-                      :id="'addCliAddrName'"
-                      autocomplete="address"
-                      x-model="$store.clients.newClient.address"
-                      name="address"
-                      type="text"
-                      placeholder="Address"
-                      class="w-full mb-2 modal-input-style"
-                      required />
-                    <input
-                      :id="'addCliEmailName'"
-                      autocomplete="email"
-                      x-model="$store.clients.newClient.email"
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      class="w-full mb-2 modal-input-style"
-                      required />
-                    <div class="flex justify-end gap-8 mt-2">
-                      <button class="modal-btn-prim" @click.prevent="$store.clients.addClient()">Add</button>
-                      <button
-                        @click="$store.clients.showAddClientModal = false"
-                        class="dark:modal-btn-sec modal-btn-sec">
-                        Close
-                      </button>
-                    </div>
-                  </form>
-                </div>
+            <div
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+              @keyup.escape="$store.clients.showAddClientModal = false">
+              <div class="modal-bg-and-borders p-6 rounded shadow-md">
+                <h3 class="mb-4 modal-title text-center">Add Client</h3>
+                <form>
+                  <input
+                    :id="'addCliName'"
+                    autocomplete="name"
+                    x-model="$store.clients.newClient.name"
+                    x-ref="addNewClientName"
+                    name="name"
+                    type="text"
+                    placeholder="Name"
+                    class="w-full mb-2 modal-input-style"
+                    required />
+                  <input
+                    :id="'addCliCompName'"
+                    autocomplete="company"
+                    x-model="$store.clients.newClient.company_name"
+                    name="company_name"
+                    type="text"
+                    placeholder="Company Name"
+                    class="w-full mb-2 modal-input-style"
+                    required />
+                  <input
+                    :id="'addCliAddrName'"
+                    autocomplete="address"
+                    x-model="$store.clients.newClient.address"
+                    name="address"
+                    type="text"
+                    placeholder="Address"
+                    class="w-full mb-2 modal-input-style"
+                    required />
+                  <input
+                    :id="'addCliEmailName'"
+                    autocomplete="email"
+                    x-model="$store.clients.newClient.email"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    class="w-full mb-2 modal-input-style"
+                    required />
+                  <div class="flex justify-end gap-8 mt-2">
+                    <button class="modal-btn-prim" @click.prevent="$store.clients.addClient()">Add New Client</button>
+                    <button @click="$store.clients.showAddClientModal = false" class="btn-sec">Close</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -223,7 +215,7 @@
                   <button
                     x-show="$store.clients.selectedClient !== null"
                     @click="$store.clients.showClientModal = false"
-                    class="modal-btn-sec flex place-self-center">
+                    class="btn-sec flex place-self-center">
                     Close
                   </button>
                 </div>
@@ -232,7 +224,7 @@
           </div>
         </div>
         <!-- MARK: TOAST -->
-        <div x-data class="fixed inset-0 z-[999] pointer-events-none">
+        <div x-data class="fixed inset-0 z-[998] pointer-events-none">
           <template x-for="(card, index) in $store.toss.cards" :key="card.id">
             <!-- Each toast gets an ID to be caught in JS -->
             <div
@@ -302,6 +294,31 @@
             </div>
           </template>
         </div>
+
+        <!-- Confirm Modal - Replaces browser confirm -->
+        <div x-data>
+          <div
+            x-show="$store.confirm.visible"
+            x-transition
+            class="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-50"
+            x-init="$nextTick(() => $refs.confirm.focus())">
+            <div class="bg-vls2 dark:bg-vdp rounded-lg shadow p-6 w-full max-w-sm relative border border-vls/40">
+              <div class="w-full h-full">
+                <h3 class="text-lg font-medium mb-4 text-vlp dark:text-vds" x-text="$store.confirm.message"></h3>
+                <div class="flex justify-between">
+                  <button class="btn-sec !px-4 !py-2" @click="$store.confirm.confirmNo()">Cancel</button>
+                  <button
+                    x-ref="confirm"
+                    class="modal-btn-prim !px-4 !py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    @click="$store.confirm.confirmYes()"
+                    @keydown.enter="$store.confirm.confirmYes()">
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- 1) The store definitions  -->
@@ -315,6 +332,7 @@
     <script type="module" src="/store/colorTheme.js"></script>
     <script type="module" src="/store/tossStore.js"></script>
     <script type="module" src="/store/effects.js"></script>
+    <script type="module" src="/store/customConfirm.js"></script>
     <!-- 2) Then app.js, which sets up tabManager and etc -->
     <script type="module" src="/app.js" defer></script>
     <!--  Alpine Plugins  -->
@@ -322,6 +340,7 @@
     <script src="/alpinejs/plugins/anchor.js" defer></script>
     <script src="/alpinejs/plugins/persist.js" defer></script>
     <script src="/alpinejs/plugins/collapse.js" defer></script>
+    <script src="/alpinejs/plugins/focus.js" defer></script>
     <!--  Alpine Core  -->
     <script>
       console.log('\!!-------Alpine_Start_Index.html----------!!')

@@ -46,19 +46,21 @@ document.addEventListener('alpine:init', () => {
       },
       // Receives event from clientStore and updates totals.clientId and checks
       syncClientId() {
-        document.addEventListener('client-selected', event => {
+        const eventHandler = event => {
           const newClient = event.detail
           if (newClient?.id !== this.totals.clientId) {
             console.log('{ InvoiceStore } Client changed - syncing clientId')
             this.totals.clientId = newClient.id
 
-            // Clear totals only if items exist for a different client
+            // Clears totals only if items exist for a different client
             if (this.totals.items.length > 0 && this.totals.items[0].clientId !== newClient.id) {
               console.log('{ InvoiceStore } Resetting totals due to client change')
               this.totals.items = []
             }
           }
-        })
+        }
+        document.removeEventListener('client-selected', eventHandler)
+        document.addEventListener('client-selected', eventHandler)
       },
       // Business logic
       addItemToInvoice(item, type) {
@@ -111,23 +113,23 @@ document.addEventListener('alpine:init', () => {
 
         this.calculateTotals()
       },
-      removeEntireItem(targetItem) {
+      async removeEntireItem(targetItem) {
         if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
           callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
           return
         }
-        if (confirm('Remove item from invoice?')) {
+        if (await callConfirm('Remove item from invoice?')) {
           this.totals.items = this.totals.items.filter(item => item.uniqueId !== targetItem.uniqueId)
           this.calculateTotals()
           callInfo('Item removed from invoice.')
         }
       },
-      removeAllItems() {
+      async removeAllItems() {
         if (this.totals.discountValue !== 0 || this.totals.depositValue !== 0) {
           callError('Cannot remove item.', 'Please clear any existing discount/deposit first.')
           return
         }
-        if (confirm('You are about to remove all items from the invoice. Proceed?')) {
+        if (await callConfirm('You are about to remove all items from the invoice. Proceed?')) {
           this.totals.items = []
           if (this.totals.items.length > 0) {
             calculateTotals()

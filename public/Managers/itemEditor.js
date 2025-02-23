@@ -168,7 +168,7 @@ export default function itemEditor() {
       }
     },
     async deleteStyle(id) {
-      if (confirm('Are you sure you want to delete this style?')) {
+      if (await callConfirm('Are you sure you want to delete this style?')) {
         try {
           const res = await fetch(`/item/styles/delete/${id}`, { method: 'DELETE' })
           if (!res.ok) throw new Error('Failed to delete style in DB')
@@ -182,7 +182,7 @@ export default function itemEditor() {
     },
 
     async deleteSample(id) {
-      if (confirm('Are you sure you want to delete this sample?')) {
+      if (await callConfirm('Are you sure you want to delete this sample?')) {
         try {
           const res = await fetch(`/item/samples/delete/${id}`, { method: 'DELETE' })
           if (!res.ok) throw new Error('Failed to delete sample in DB')

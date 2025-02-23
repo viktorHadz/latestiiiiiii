@@ -27,16 +27,26 @@
     </header>
     <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
       <!-- Date Fields -->
-      <section class="grid grid-cols-2 gap-4 mb-4">
+      <section class="grid grid-cols-2 gap-4 mb-2">
         <label class="flex flex-col">
           <span class="text-sm text-vls3 dark:text-vds">Invoice Date:</span>
-          <input type="date" class="modal-input-style" x-model="$store.edit.selectedCopy.date" />
+          <input
+            type="date"
+            class="modal-input-style"
+            x-model="$store.edit.dateProxy"
+            :placeholder="$store.edit.selectedCopy.date" />
         </label>
+
         <label class="flex flex-col">
           <span class="text-sm text-vls3 dark:text-vds">Due By:</span>
-          <input type="date" class="modal-input-style" x-model="$store.edit.selectedCopy.due_date" />
+          <input
+            type="date"
+            class="modal-input-style"
+            x-model="$store.edit.dueDateProxy"
+            :placeholder="$store.edit.selectedCopy.due_by_date" />
         </label>
       </section>
+
       <!-- Deposit & Discount Editing -->
       <section class="grid grid-cols-2 gap-4 mb-4">
         <!-- Deposit Component -->
@@ -315,7 +325,8 @@
                 style="height: 12vh; resize: none"
                 rows="3"></textarea>
               <div class="flex justify-between mt-4">
-                <button @click="showNoteModal = false" class="modal-btn-sec text-xs mr-2">Cancel</button>
+                <button @click="showNoteModal = false" class="btn-sec">Cancel</button>
+
                 <button
                   @click="$store.edit.tempValues.note = noteText; showNoteModal = false"
                   class="modal-btn-prim text-xs">
@@ -329,9 +340,17 @@
       <!-- Footer Action Buttons -->
     </main>
     <footer class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-t border-vls/40">
-      <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">Cancel</button>
-      <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">PDF</button>
-      <button @click="$store.edit.saveCopyEdit()" class="modal-btn-prim text-xs">Save</button>
+      <button @click="$store.edit.cancelCopyEdit()" class="btn-sec">Cancel</button>
+      <div class="flex items-center gap-4">
+        <button
+          @click="$store.edit.deleteInvoice($store.edit.invoiceItems.invoice.id, isCopy === true, $store.edit.selectedCopy.original_invoice_id
+        )"
+          class="modal-btn-sec text-xs">
+          Delete
+        </button>
+        <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">PDF</button>
+        <button @click="$store.edit.saveCopyEdit()" class="modal-btn-prim text-xs">Save</button>
+      </div>
     </footer>
   </div>
 </div>

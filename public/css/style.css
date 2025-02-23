@@ -356,6 +356,9 @@ input[type='number'] {
 .modal-btn-sec {
   @apply p-1 text-sm transition bg-red-700 rounded text-vlp hover:bg-red-600 active:scale-95;
 }
+.btn-sec {
+  @apply inline-flex items-center justify-center px-2 py-1 text-sm font-medium tracking-wide text-red-500 transition-colors duration-100 bg-transparent border border-red-500 rounded hover:text-white hover:bg-red-600 active:scale-95;
+}
 .dark .modal-btn-sec {
   @apply p-1 text-sm transition bg-red-800 rounded text-vlp hover:bg-red-700 active:scale-95;
 }
@@ -380,7 +383,7 @@ input[type='number'] {
   margin-left: -150%;
   margin-top: -150%;
   opacity: 0;
-  transition: all 0.6s ease; /* Smooth transition for the ripple */
+  transition: all 0.3s ease; /* Smooth transition for the ripple */
 }
 .dark .modal-btn-prim:after {
   content: '';
@@ -392,7 +395,7 @@ input[type='number'] {
   margin-left: -150%;
   margin-top: -150%;
   opacity: 0;
-  transition: all 0.6s ease; /* Smooth transition for the ripple */
+  transition: all 0.3s ease; /* Smooth transition for the ripple */
 }
 .modal-btn-prim:active:after {
   padding: 0;

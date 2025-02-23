@@ -189,7 +189,7 @@ router.get('/invoice/copy/:copyInvoiceId', (req, res) => {
 })
 
 // ==== Deleting Invocies ==== //
-// Delete
+// Delete regular invoice
 router.delete('/invoice/delete/:invoiceId', (req, res) => {
   const { invoiceId } = req.params
 
@@ -205,7 +205,7 @@ router.delete('/invoice/delete/:invoiceId', (req, res) => {
     res.status(200).json({ message: 'Invoice deleted successfully' })
   })
 })
-// Delete copied invoice and its items
+// Deletes copied invoice and its items
 router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
   const { invoiceId } = req.params
 
@@ -235,7 +235,7 @@ router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
   )
 })
 // ==== Saving Invocies ==== //
-// Overwrite
+// Overwrites existing invoice
 router.post('/invoice/save/overwrite', async (req, res) => {
   const {
     invoiceId,
@@ -328,7 +328,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
     res.status(500).json({ error: `Error updating invoice: ${error.message}` })
   }
 })
-// Copy invoice
+// Saves a Copy invoice
 router.post('/invoice/save/copy', async (req, res) => {
   const {
     invoiceId,
@@ -347,6 +347,7 @@ router.post('/invoice/save/copy', async (req, res) => {
     note,
     totalPreDiscount,
     date,
+    due_by_date,
     remaining_balance,
   } = req.body
 
@@ -385,8 +386,8 @@ router.post('/invoice/save/copy', async (req, res) => {
         `INSERT INTO copied_invoices (
           original_invoice_id, invoice_number, client_id, discount_type, discount_value, discVal_ifPercent, 
           vat_percent, vat, subtotal, total, deposit_type, deposit_value, depoVal_ifPercent, note, 
-          total_pre_discount, date, remaining_balance
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          total_pre_discount, date, due_by_date, remaining_balance
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           invoiceId,
           newInvoiceNumber,
@@ -404,6 +405,7 @@ router.post('/invoice/save/copy', async (req, res) => {
           note,
           totalPreDiscount,
           date,
+          due_by_date,
           remaining_balance,
         ],
         function (error) {

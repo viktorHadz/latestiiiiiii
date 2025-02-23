@@ -83,12 +83,14 @@ document.addEventListener('alpine:init', () => {
         console.log('{ Edit Store } ==> Initialised')
       },
       async fetchInvoiceBookEffect() {
-        document.addEventListener('invoice:created', () => {
+        const eventHandler = async () => {
           Alpine.effect(async () => {
             console.log('fetchInvoiceBookEffect')
             await this.fetchListById()
           })
-        })
+        }
+        document.removeEventListener('invoice:created', eventHandler)
+        document.addEventListener('invoice:created', eventHandler)
       },
       // --- Fetch Invoice List (for the current page, with copies attached) ---
       async fetchListById() {
@@ -294,8 +296,8 @@ document.addEventListener('alpine:init', () => {
           console.error('Error fetching existing items:', error)
         }
       },
-      exitEditMode() {
-        if (confirm('You are about to exit. Continue?')) {
+      async exitEditMode() {
+        if (await callConfirm('You are about to exit. Continue?')) {
           this.invoiceItems = JSON.parse(JSON.stringify(this.initialValuesInvItems))
           this.editing = false
           this.editMode = ''
@@ -332,65 +334,115 @@ document.addEventListener('alpine:init', () => {
           callError('Failed to update invoice copy')
         }
       },
-      async saveEdit({ mode } = { mode: 'overwrite' }) {
-        if (!confirm('Are you sure you want to save this invoice?')) return
-        if (this.invoiceItems.invoice.deposit_value <= 0 && mode === 'copy') {
-          callInfo('Cannot save a copy', 'Attached invoices must have a deposit')
+      get dateProxy() {
+        // The store has "dd/mm/yyyy"
+        let ddmmyyyy = this.selectedCopy.date
+        if (!ddmmyyyy || !ddmmyyyy.includes('/')) return ''
+        const [day, month, year] = ddmmyyyy.split('/')
+        // Return yyyy-mm-dd for the <input type="date">
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      },
+      set dateProxy(newValue) {
+        // The user picks "2025-02-22" from the date picker
+        if (!newValue) {
+          this.selectedCopy.date = ''
           return
         }
-        const invoice = this.invoiceItems.invoice
-        const data = {
-          invoiceId: invoice.id,
-          clientId: invoice.client_id,
-          items: this.invoiceItems.invoiceItems.map(item => ({
-            name: item.name,
-            price: item.price,
-            type: item.type,
-            time: item.type === 'sample' ? item.time : 0,
-            invoice_id: invoice.id,
-            quantity: parseInt(item.quantity, 10),
-            total_item_price:
-              item.type === 'sample' ? item.price * (item.time / 60) * item.quantity : item.price * item.quantity,
-            origin_id: item.origin_id,
-          })),
-          discountType: invoice.discount_type,
-          discountValue: invoice.discount_value,
-          discVal_ifPercent: invoice.discVal_ifPercent,
-          vatPercent: invoice.vat_percent,
-          vat: invoice.vat,
-          subtotal: invoice.subtotal,
-          total: invoice.total,
-          depositType: invoice.deposit_type,
-          depositValue: invoice.deposit_value,
-          depoVal_ifPercent: invoice.depoVal_ifPercent,
-          note: invoice.note?.trim(),
-          totalPreDiscount: invoice.total_pre_discount,
-          remaining_balance: invoice.remaining_balance,
-          date: invoice.date || new Date().toLocaleDateString('en-GB'),
+        const [year, month, day] = newValue.split('-')
+        // Save back as dd/mm/yyyy
+        this.selectedCopy.date = `${day}/${month}/${year}`
+      },
+      get dueDateProxy() {
+        let ddmmyyyy = this.selectedCopy.due_by_date
+        if (!ddmmyyyy || !ddmmyyyy.includes('/')) return ''
+        const [day, month, year] = ddmmyyyy.split('/')
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      },
+      set dueDateProxy(newValue) {
+        if (!newValue) {
+          this.selectedCopy.due_by_date = ''
+          return
         }
+        const [year, month, day] = newValue.split('-')
+        this.selectedCopy.due_by_date = `${day}/${month}/${year}`
+      },
+      parseUkDate(ddmmyyyy) {
+        if (!ddmmyyyy) return new Date('') // returns invalid date if empty
+        const [day, month, year] = ddmmyyyy.split('/').map(Number)
+        // JS months are zero-based
+        return new Date(year, month - 1, day)
+      },
+      async saveEdit({ mode } = { mode: 'overwrite' }) {
+        if (await callConfirm(`Are you sure you want to ${mode} this invoice?`)) {
+          if (this.invoiceItems.invoice.deposit_value <= 0 && mode === 'copy') {
+            callInfo('Cannot save a copy', 'Attached invoices must have a deposit')
+            return
+          }
+          const invoice = this.invoiceItems.invoice
 
-        const endpoint = mode === 'overwrite' ? `/editor/invoice/save/overwrite` : `/editor/invoice/save/copy`
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-          })
-          const response = await res.json()
-          if (response.error) throw new Error(response.error)
+          const invoiceDate = parseUkDate(invoice.date) // "dd/mm/yyyy" → a valid Date object
+          const formattedDate = invoiceDate.toLocaleDateString('en-GB')
 
-          callSuccess(mode === 'overwrite' ? 'Invoice updated successfully' : 'Invoice copy saved successfully')
+          const dueByDateObj = new Date(invoiceDate)
+          dueByDateObj.setDate(dueByDateObj.getDate() + 14)
+          const formattedDueBy = dueByDateObj.toLocaleDateString('en-GB')
 
-          // Update the invoiceBook and refresh copies.
-          let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
-          if (existingInvoice) Object.assign(existingInvoice, invoice)
-          await this.refreshInvoiceCopies(invoice.id)
-          this.openEditModal = false
-          this.editing = false
-          this.editMode = ''
-        } catch (error) {
-          console.error('Error saving invoice:', error)
-          callError('Error saving invoice', error.message)
+          const data = {
+            invoiceId: invoice.id,
+            clientId: invoice.client_id,
+            items: this.invoiceItems.invoiceItems.map(item => ({
+              name: item.name,
+              price: item.price,
+              type: item.type,
+              time: item.type === 'sample' ? item.time : 0,
+              invoice_id: invoice.id,
+              quantity: parseInt(item.quantity, 10),
+              total_item_price:
+                item.type === 'sample' ? item.price * (item.time / 60) * item.quantity : item.price * item.quantity,
+              origin_id: item.origin_id,
+            })),
+            discountType: invoice.discount_type,
+            discountValue: invoice.discount_value,
+            discVal_ifPercent: invoice.discVal_ifPercent,
+            vatPercent: invoice.vat_percent,
+            vat: invoice.vat,
+            subtotal: invoice.subtotal,
+            total: invoice.total,
+            depositType: invoice.deposit_type,
+            depositValue: invoice.deposit_value,
+            depoVal_ifPercent: invoice.depoVal_ifPercent,
+            note: invoice.note?.trim(),
+            totalPreDiscount: invoice.total_pre_discount,
+            remaining_balance: invoice.remaining_balance,
+            date: formattedDate,
+            due_by_date: formattedDueBy,
+          }
+
+          const endpoint = mode === 'overwrite' ? `/editor/invoice/save/overwrite` : `/editor/invoice/save/copy`
+          try {
+            const res = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            })
+            const response = await res.json()
+            if (response.error) throw new Error(response.error)
+
+            callSuccess(mode === 'overwrite' ? 'Invoice updated successfully' : 'Invoice copy saved successfully')
+
+            // Update the invoiceBook and refresh copies.
+            let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
+            if (existingInvoice) Object.assign(existingInvoice, invoice)
+            await this.refreshInvoiceCopies(invoice.id)
+            this.openEditModal = false
+            this.editing = false
+            this.editMode = ''
+          } catch (error) {
+            console.error('Error saving invoice:', error)
+            callError('Error saving invoice', error.message)
+          }
+        } else {
+          return
         }
       },
 
@@ -544,39 +596,51 @@ document.addEventListener('alpine:init', () => {
       },
 
       // --- DELETE ---
-      async deleteInvoice(invoiceId, isCopy, originalInvoiceId) {
+      async deleteInvoice(invoiceId, isCopy, originalInvoiceId = null) {
         if (!invoiceId) {
-          callError('Unable to delete invoice', 'Refresh page and try again or call support.')
+          callError('Unable to delete invoice', 'Refresh page and try again...')
           return
         }
         if (this.editing) {
           callWarning('Cannot delete while editing', 'Complete edit and try again')
           return
         }
-        if (confirm('This will delete invoice and its items. Proceed?')) {
-          try {
-            // Copy vs Normal delete routes
-            const endpoint =
-              isCopy === true ? `/editor/invoice/copy/delete/${invoiceId}` : `/editor/invoice/delete/${invoiceId}`
+        // Determine the original invoice ID if not provided
+        if (!originalInvoiceId) {
+          originalInvoiceId = isCopy ? this.invoiceItems.invoice?.original_invoice_id : invoiceId
+        }
+        const confirmed = await callConfirm('This will delete invoice and its items. Proceed?')
+        if (!confirmed) return
 
-            let res = await fetch(endpoint, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-            })
-            if (!res.ok) throw new Error(`Error deleting invoice: ${res.statusText}`)
-            // Delete the activeItemId if invoice selected
-            if (this.activeItemId === invoiceId) {
-              this.activeItemId = null
-              this.showInvoiceItems = false
-              this.invoiceItems = { invoiceItems: [] }
-            }
-            this.invoiceBook = this.invoiceBook.filter(i => i.id !== invoiceId)
-            this.refreshInvoiceCopies(originalInvoiceId)
-            callInfo('Invoice deleted')
-          } catch (error) {
-            callError('Invoice does not exist', 'Refresh page and try again or call support.')
-            console.error('Error deleting invoice', error)
+        const endpoint = isCopy ? `/editor/invoice/copy/delete/${invoiceId}` : `/editor/invoice/delete/${invoiceId}`
+
+        try {
+          const res = await fetch(endpoint, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+          })
+
+          if (!res.ok) {
+            throw new Error(`Error deleting invoice: ${res.statusText}`)
           }
+
+          // If the deleted invoice was the active one, clear its state
+          if (this.activeItemId === invoiceId) {
+            this.activeItemId = null
+            this.showInvoiceItems = false
+            this.invoiceItems = { invoiceItems: [] }
+          }
+
+          // Remove the invoice from the local invoice book
+          this.invoiceBook = this.invoiceBook.filter(invoice => invoice.id !== invoiceId)
+
+          // Refresh copies tied to the original invoice
+          await this.refreshInvoiceCopies(originalInvoiceId)
+
+          callInfo('Invoice deleted')
+        } catch (error) {
+          console.error('Error deleting invoice', error)
+          callError('Invoice does not exist', 'Refresh page and try again or call support.')
         }
       },
 
@@ -600,8 +664,8 @@ document.addEventListener('alpine:init', () => {
           this.calculateTotals()
         }
       },
-      removeInvoiceItem(uniqueKey) {
-        if (confirm('Remove this item?')) {
+      async removeInvoiceItem(uniqueKey) {
+        if (await callConfirm('Remove this item?')) {
           this.invoiceItems.invoiceItems = this.invoiceItems.invoiceItems.filter(i => i.frontendId !== uniqueKey)
           this.calculateTotals()
         }

@@ -183,7 +183,6 @@
 
         <!-- SECTION 4: Invoice Summary and Cancel/Save Buttons -->
         <div class="flex mt-4">
-          <!-- Invoice Summary -->
           <div
             class="w-[40%] flex flex-col gap-2 p-4 mr-2 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow-md text-vls3 dark:text-vds text-sm">
             <div class="flex flex-col gap-2">
@@ -221,16 +220,20 @@
                 <span class="font-semibold" x-text="'£' + $store.edit.invoiceItems.invoice.total"></span>
               </div>
               <template x-if="$store.edit.invoiceItems.invoice.deposit_value > 0">
-                <div class="flex justify-between">
+                <div class="flex justify-between items-center">
                   <span>Deposit:</span>
                   <div class="flex items-center">
-                    <div class="flex items-center">
-                      <span x-text="$store.edit.invoiceItems.invoice.deposit_value + '%'"></span>
-                      <span
-                        x-text="'(£' + $store.edit.invoiceItems.invoice.depoVal_ifPercent + ')'"
-                        class="text-xs"></span>
-                    </div>
-                    <button @click="$store.edit.removeDeposit()" class="text-red-600 hover:text-red-500">
+                    <span
+                      x-text="$store.edit.invoiceItems.invoice.deposit_type === 1
+                    ? ($store.edit.invoiceItems.invoice.deposit_value + '%')
+                    : ('£' + $store.edit.invoiceItems.invoice.deposit_value)"></span>
+                    <span
+                      x-show="$store.edit.invoiceItems.invoice.deposit_type === 1"
+                      class="text-xs"
+                      x-text="`(£${$store.edit.invoiceItems.invoice.depoVal_ifPercent})`"></span>
+                    <button
+                      @click="$store.edit.removeDeposit(); $store.edit.modDepo = false"
+                      class="text-red-600 hover:text-red-500">
                       <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
                     </button>
                   </div>
@@ -283,6 +286,7 @@
                         maxlength="220"
                         class="modal-input-style text-sm p-2 h-28 pt-2 w-full resize-none overflow-y-auto"></textarea>
                       <div class="w-full items-center flex justify-between mt-2">
+                        <button @click="modNote = false" class="btn-sec flex items-center !text-xs">Close</button>
                         <button
                           @click="addNote(); $nextTick(() => modNote = false)"
                           class="modal-btn-prim !p-1 !text-xs">
@@ -290,12 +294,6 @@
                             <use href="/icons/icons.svg#check-circle"></use>
                           </svg>
                           Accept
-                        </button>
-                        <button @click="modNote = false" class="modal-btn-sec flex items-center !text-xs">
-                          <svg class="size-4 mr-0.5">
-                            <use href="/icons/icons.svg#xmark-circle"></use>
-                          </svg>
-                          Close
                         </button>
                       </div>
                     </div>
@@ -336,7 +334,7 @@
                             <button
                               x-show="$store.edit.invoiceItems.invoice.note.length"
                               @click="$store.edit.invoiceItems.invoice.note = ''; viewNote = false"
-                              class="modal-btn-sec flex items-center text-sm">
+                              class="btn-sec flex items-center !text-sm">
                               <svg class="size-4">
                                 <use href="/icons/icons.svg#trash"></use>
                               </svg>
@@ -403,7 +401,7 @@
                         class="modal-btn-prim">
                         Change Type
                       </button>
-                      <button @click="$store.edit.removeDiscount(); $store.edit.modDisc = false" class="modal-btn-sec">
+                      <button @click="$store.edit.removeDiscount(); $store.edit.modDisc = false" class="btn-sec">
                         Remove
                       </button>
                     </div>
@@ -456,7 +454,7 @@
                         class="modal-btn-prim">
                         Change Type
                       </button>
-                      <button @click="$store.edit.removeDeposit(); $store.edit.modDepo = false" class="modal-btn-sec">
+                      <button @click="$store.edit.removeDeposit(); $store.edit.modDepo = false" class="btn-sec">
                         Remove
                       </button>
                     </div>
@@ -467,10 +465,7 @@
 
             <div class="flex items-end justify-between gap-2 w-full mb-0.5">
               <div x-data="tooltip('Close modal and revert any changes', { position: 'top' })">
-                <button @click="$store.edit.exitEditMode();" class="modal-btn-sec flex items-center">
-                  <svg class="w-5 h-5 mr-2"><use href="/icons/icons.svg#xmark-circle" /></svg>
-                  Cancel
-                </button>
+                <button @click="$store.edit.exitEditMode();" class="btn-sec">Cancel</button>
               </div>
               <div class="flex gap-4">
                 <div
@@ -510,7 +505,7 @@
                   x-data="tooltip('Mark this invoice as fully paid in the invoice book.\n Remaining balance must be 0 to mark as paid.', { position: 'top' })">
                   <div
                     @click="if ($store.edit.invoiceItems.invoice.remaining !== 0) {
-                  callWarning('Cannot mark as complete', 'Remaining balance must be 0.');
+                  callInfo('Cannot mark as complete', 'Remaining balance must be 0.');
                   return;
                 } else {
                   $store.edit.saveEdit({ mode: 'paid' })

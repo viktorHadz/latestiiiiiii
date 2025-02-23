@@ -113,7 +113,7 @@ document.addEventListener('alpine:init', () => {
       }
     },
     async removeClient(clientId) {
-      if (confirm('Are you sure you want to remove this client?')) {
+      if (await callConfirm('Are you sure you want to remove this client?')) {
         try {
           const response = await fetch(`/clients/delete/${clientId}`, {
             method: 'DELETE',

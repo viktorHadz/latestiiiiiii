@@ -187,7 +187,7 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Content-Disposition', `attachment; filename=Invoice-${invoice.invoice_number}.pdf`)
     doc
-      .image('./public/images/samlogonew.png', 25, 25, {
+      .image('./public/images/samlogo.png', 25, 25, {
         width: 150,
         align: 'left',
       })
@@ -197,20 +197,17 @@ router.get('/api/invoices/:id/pdf', async (req, res) => {
       .text('London', 120, 65, { align: 'right' })
       .text('SE13 6QB', 120, 80, { align: 'right' })
 
-    doc.text(`Invoice Number: ${invoice.invoice_number}`, 25, 150, {
-      align: 'left',
-    })
     // client details and own bank details
-    doc.fontSize(17).text(`Invoice:`, 25, 180, { align: 'left' })
+    doc.fontSize(16).text(`Invoice: ${invoice.invoice_number}`, 25, 180, { align: 'left' })
     // line
     doc.moveTo(25, 200).lineTo(585, 200).stroke()
     // endline
     doc
       .fontSize(12)
-      .text(`Company Name:    ${client.company_name}`, 25, 215, {
+      .text(`Company:    ${client.company_name}`, 25, 215, {
         align: 'left',
       })
-      .text(`Client Name:    ${client.name}`, 25, 235, { align: 'left' })
+      .text(`Client:    ${client.name}`, 25, 235, { align: 'left' })
       .text(`Invoice Date:    ${invoice.date}`, 25, 255, { align: 'left' })
 
     // If deposit is present
