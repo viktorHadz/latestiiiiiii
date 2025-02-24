@@ -1,6 +1,4 @@
-// copyEditor.js
+// public/js/copyEditor.js
 export default function copyEditor() {
-  return {
-    init() {},
-  }
+  return {}
 }

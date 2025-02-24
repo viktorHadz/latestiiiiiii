@@ -26,181 +26,120 @@
       </div>
     </header>
     <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
-      <!-- Date Fields -->
-      <section class="grid grid-cols-2 gap-4 mb-2">
-        <label class="flex flex-col">
-          <span class="text-sm text-vls3 dark:text-vds">Invoice Date:</span>
-          <input
-            type="date"
-            class="modal-input-style"
-            x-model="$store.edit.dateProxy"
-            :placeholder="$store.edit.selectedCopy.date" />
-        </label>
-
-        <label class="flex flex-col">
-          <span class="text-sm text-vls3 dark:text-vds">Due By:</span>
-          <input
-            type="date"
-            class="modal-input-style"
-            x-model="$store.edit.dueDateProxy"
-            :placeholder="$store.edit.selectedCopy.due_by_date" />
-        </label>
-      </section>
-
       <!-- Deposit & Discount Editing -->
       <section class="grid grid-cols-2 gap-4 mb-4">
-        <!-- Deposit Component -->
-        <div
-          class="p-2 rounded border border-vls/40 flex flex-col shadow dark:bg-vdp"
-          x-data="{
-              editable: false,
-              tempDeposit: $store.edit.tempValues.deposit_value,
-              displayValue() {
-                return $store.edit.selectedCopy.deposit_type == 1
-                  ? ('%' + $store.edit.selectedCopy.deposit_value)
-                  : ('£' + $store.edit.selectedCopy.deposit_value);
-              },
-              activateEdit() {
-                this.editable = true;
-                this.$nextTick(() => { this.$refs.depositInput.focus(); });
-              },
-              cancelEdit() {
-                this.tempDeposit = $store.edit.selectedCopy.deposit_value;
-                this.editable = false;
-              }
-            }">
-          <div class="flex items-center justify-between">
-            <h3 class="font-medium text-vls3 dark:text-vds mb-2">Deposit</h3>
-            <svg
-              x-data="tooltip('Click deposit value to edit.')"
-              class="size-4 flex place-self-start hover:brightness-125 cursor-pointer">
-              <use href="/icons/icons2.xml#tool-tip" />
-            </svg>
-          </div>
-          <!-- Fixed height container to avoid layout shifts -->
-          <div class="relative h-8">
-            <!-- Non-editable display -->
-            <div
-              x-show="!editable"
-              x-transition
-              class="absolute inset-0 flex items-center justify-center cursor-pointer border border-vls/40 rounded bg-blue-50 hover:bg-blue-100 dark:bg-vdp2 hover:dark:brightness-125 transition duration-200"
-              @click="activateEdit()">
-              <span x-text="displayValue()"></span>
-            </div>
-            <!-- Editable input with cancel button -->
-            <div x-show="editable" x-transition class="absolute inset-0 flex items-center space-x-2">
-              <input
-                x-ref="depositInput"
-                type="number"
-                step="any"
-                min="0"
-                class="w-full bg-transparent border p-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-vls/60 focus:border-vls/40"
-                x-model.number="tempDeposit"
-                @keydown.enter="$store.edit.tempValues.deposit_value = tempDeposit; editable = false"
-                :placeholder="'Original: ' + $store.edit.selectedCopy.deposit_value" />
-              <button type="button" class="modal-btn-prim text-xs" @click="cancelEdit()">
-                <svg class="size-4">
-                  <use href="/icons/icons.svg#xmark-circle" />
-                </svg>
-              </button>
+        <!-- Deposit/Date -->
+        <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+          <!-- Deposit -->
+          <div class="w-1/2 relative mr-4">
+            <span class="absolute top-0 left-0 text-sm text-gray-500">Deposit:</span>
+            <div class="mt-6">
+              <div class="relative">
+                <input
+                  id="depositInput"
+                  x-ref="depInput"
+                  type="text"
+                  :placeholder="'£' + $store.edit.selectedCopy.deposit_value"
+                  onfocus="this.type='number'"
+                  onblur="this.type='text'"
+                  class="w-full p-1 pr-20 border text-sm rounded border-vls/40 focus:outline-none focus:ring-1 focus:ring-vls/60 bg-blue-50 hover:bg-blue-100 dark:cursor-pointer mt-0 dark:bg-vdp2 hover:dark:brightness-125 transition duration-200" />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                  <!-- Trash Button -->
+                  <button
+                    class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#trash" />
+                    </svg>
+                  </button>
+                  <!-- Edit Button -->
+                  <button
+                    @click="$store.effs.addEff($refs.rotateDepo, 'spin', 500); $nextTick(() => { $refs.depInput.focus() });"
+                    class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                    <svg x-ref="rotateDepo" class="size-4">
+                      <use href="/icons/icons.svg#rotate" />
+                    </svg>
+                  </button>
+                  <!-- Check Button -->
+                  <button
+                    class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#check-circle" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- Uniform action buttons -->
-          <div class="flex justify-evenly mt-2">
-            <button
-              @click="$store.edit.changeDepositType(true); $store.effs.addEff($refs.rott,'spin', 500)"
-              class="modal-btn-prim text-xs">
-              <svg x-ref="rott" class="size-4">
-                <use href="/icons/icons.svg#rotate" />
-              </svg>
-            </button>
-            <button @click="$store.edit.removeDeposit(true)" class="modal-btn-prim text-xs">
-              <svg class="size-4">
-                <use href="/icons/icons.svg#trash" />
-              </svg>
-            </button>
-            <button
-              @click="$store.edit.tempValues = { ...$store.edit.tempValues, deposit_type: $store.edit.selectedCopy.deposit_type, deposit_value: tempDeposit }"
-              class="modal-btn-prim text-xs">
-              <svg class="size-4">
-                <use href="/icons/icons.svg#check" />
-              </svg>
-            </button>
+          <!-- Date -->
+          <div class="w-1/2 relative">
+            <span class="absolute top-0 left-0 text-sm text-gray-500">Date issued:</span>
+            <template x-if="$store.edit.showCopyModal === true">
+              <div class="mt-6" x-data="flatpickrWidget('selectedCopy', 'date')" x-init="init()">
+                <!-- Flatpickr text input -->
+                <input
+                  x-ref="fpInput"
+                  type="text"
+                  id="dateInput"
+                  class="w-full p-1 border text-sm rounded border-vls/40 focus:outline-none focus:ring-1 focus:ring-vls/60 bg-blue-50 hover:bg-blue-100 dark:cursor-pointer mt-0 dark:bg-vdp2 hover:dark:brightness-125 transition duration-200" />
+              </div>
+            </template>
           </div>
         </div>
-        <!-- DISCOUNT Component -->
-        <div
-          class="p-2 rounded border border-vls/40 flex flex-col shadow dark:bg-vdp"
-          x-data="{
-          editable: false,
-          tempDiscount: $store.edit.tempValues.discount_value,
-          displayValue() {
-            return $store.edit.selectedCopy.discount_type == 1
-              ? ('%' + $store.edit.selectedCopy.discount_value)
-              : ('£' + $store.edit.selectedCopy.discount_value);
-          },
-          activateEdit() {
-            this.editable = true;
-            this.$nextTick(() => { this.$refs.discountInput.focus(); });
-          },
-          cancelEdit() {
-            this.tempDiscount = $store.edit.selectedCopy.discount_value;
-            this.editable = false;
-          }
-              }">
-          <div class="flex items-center justify-between">
-            <h3 class="font-medium text-vls3 dark:text-vds mb-2">Discount</h3>
-            <svg
-              x-data="tooltip('Click discount value to edit.')"
-              class="size-4 flex place-self-start hover:brightness-125 cursor-pointer">
-              <use href="/icons/icons2.xml#tool-tip" />
-            </svg>
-          </div>
-          <div class="relative h-8">
-            <!-- Non-editable display -->
-            <div
-              x-show="!editable"
-              x-transition
-              class="absolute inset-0 flex items-center justify-center cursor-pointer border border-vls/40 rounded bg-blue-50 hover:bg-blue-100 dark:bg-vdp2 hover:dark:brightness-125 transition duration-200"
-              @click="activateEdit()"
-              x-text="displayValue()"></div>
-            <!-- Editable input with cancel button -->
-            <div x-show="editable" x-transition class="absolute inset-0 flex items-center space-x-2">
-              <input
-                x-ref="discountInput"
-                type="number"
-                step="0.01"
-                min="0"
-                class="w-full bg-transparent border p-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-vls/60 focus:border-vls/40"
-                x-model.number="tempDiscount"
-                @keydown.enter="$store.edit.tempValues.discount_value = tempDiscount; editable = false"
-                :placeholder="'Original: ' + $store.edit.selectedCopy.discount_value" />
-              <button type="button" class="modal-btn-prim text-xs" @click="cancelEdit()">
-                <svg class="size-4">
-                  <use href="/icons/icons.svg#xmark-circle" />
-                </svg>
-              </button>
+
+        <!-- Discount Component -->
+        <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+          <div class="w-1/2 relative mr-4">
+            <span class="absolute top-0 left-0 text-sm text-gray-500">Discount:</span>
+            <div class="mt-6">
+              <div class="relative">
+                <input
+                  id="discountInput"
+                  x-ref="discInput"
+                  type="text"
+                  :placeholder="'£'+$store.edit.selectedCopy.discount_value"
+                  onfocus="this.type='number'"
+                  onblur="this.type='text'"
+                  class="w-full p-1 border text-sm rounded border-vls/40 focus:outline-none focus:ring-1 focus:ring-vls/60 bg-blue-50 hover:bg-blue-100 dark:cursor-pointer mt-0 dark:bg-vdp2 hover:dark:brightness-125 transition duration-200" />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                  <!-- Trash Button -->
+                  <button
+                    class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#trash" />
+                    </svg>
+                  </button>
+                  <!-- Edit Button -->
+                  <button
+                    @click="$store.effs.addEff($refs.rotateDisc, 'spin', 500); $nextTick(() => { $refs.discInput.focus() });"
+                    class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                    <svg x-ref="rotateDisc" class="size-4">
+                      <use href="/icons/icons.svg#rotate" />
+                    </svg>
+                  </button>
+                  <!-- Check Button -->
+                  <button
+                    class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
+                    <svg class="size-4">
+                      <use href="/icons/icons.svg#check-circle" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- Uniform action buttons -->
-          <div class="flex justify-evenly mt-2">
-            <button @click="$store.edit.changeDiscountType(true)" class="modal-btn-prim text-xs">
-              <svg x-ref="rott" class="size-4">
-                <use href="/icons/icons.svg#rotate" />
-              </svg>
-            </button>
-            <button @click="$store.edit.removeDiscount(true)" class="modal-btn-prim text-xs">
-              <svg class="size-4">
-                <use href="/icons/icons.svg#trash" />
-              </svg>
-            </button>
-            <button
-              @click="$store.edit.tempValues = { ...$store.edit.tempValues, discount_value: tempDiscount }"
-              class="modal-btn-prim text-xs">
-              <svg class="size-4">
-                <use href="/icons/icons.svg#check" />
-              </svg>
-            </button>
+          <!-- Due By Date -->
+          <div class="w-1/2 relative">
+            <span class="absolute top-0 left-0 text-sm text-gray-500">Due by date:</span>
+            <template x-if="$store.edit.showCopyModal === true">
+              <div class="mt-6" x-data="flatpickrWidget('selectedCopy', 'due_by_date')" x-init="init()">
+                <!-- Flatpickr text input -->
+                <input
+                  x-ref="fpInput"
+                  type="text"
+                  id="dueDateInput"
+                  class="w-full p-1 border text-sm rounded border-vls/40 focus:outline-none focus:ring-1 focus:ring-vls/60 bg-blue-50 hover:bg-blue-100 dark:cursor-pointer mt-0 dark:bg-vdp2 hover:dark:brightness-125 transition duration-200" />
+              </div>
+            </template>
           </div>
         </div>
       </section>
@@ -210,21 +149,21 @@
           <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
             <thead class="sticky top-0 table-head-style border-clipper">
               <tr>
-                <th class="border text-left border-transparent round-left-border p-2 text-base w-[50%]">Name</th>
-                <th class="p-2 text-left w-[15%]">Type</th>
-                <th class="p-2 text-right w-[15%]">Qty</th>
-                <th class="p-2 text-right w-[20%] round-right-border">Price</th>
+                <th class="border text-left border-transparent round-left-border p-1 text-base w-[50%]">Name</th>
+                <th class="p-1 text-left w-[15%]">Type</th>
+                <th class="p-1 text-right w-[15%]">Qty</th>
+                <th class="p-1 text-right w-[20%] round-right-border">Price</th>
               </tr>
             </thead>
 
             <tbody class="table-body-style table-scrollbar">
               <template x-for="item in $store.edit.selectedCopy.invoiceItems" :key="item.frontendId">
                 <tr class="border-hover-ring-efect">
-                  <td class="p-2 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
-                  <td class="p-2 text-sm" x-text="item.type" style="width: 15"></td>
-                  <td class="p-2 text-right text-sm" x-text="item.quantity" style="width: 15%"></td>
+                  <td class="p-1 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
+                  <td class="p-1 text-sm" x-text="item.type" style="width: 15"></td>
+                  <td class="p-1 text-right text-sm" x-text="item.quantity" style="width: 15%"></td>
                   <td
-                    class="p-2 text-right round-right-border text-sm"
+                    class="p-1 text-right round-right-border text-sm"
                     x-text="'£' + item.price"
                     style="width: 20%"></td>
                 </tr>
@@ -281,20 +220,20 @@
           </template>
           <div class="flex justify-between font-semibold">
             <span>Remaining:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.remaining"></span>
+            <span x-text="'£' + $store.edit.selectedCopy.remaining_balance"></span>
           </div>
         </div>
       </section>
       <!-- Note Section with modal -->
       <section
         class="mb-4"
-        x-data="{ showNoteModal: false, noteText: $store.edit.tempValues.note || $store.edit.selectedCopy.note || '' }">
+        x-data="{ showNoteModal: false, noteText: $store.edit.selectedCopy.note || $store.edit.selectedCopy.note || '' }">
         <div class="p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm flex justify-between">
           <div class="h-[2rem]">
             <span class="font-medium text-vls3 dark:text-vds">Note:</span>
             <span
               class="text-xs text-vls2 dark:text-vds3light"
-              x-text="$store.edit.tempValues.note ? 'Note: ' + $store.edit.tempValues.note : 'No note added'"></span>
+              x-text="$store.edit.selectedCopy.note ? $store.edit.selectedCopy.note : 'No note added'"></span>
           </div>
           <div class="flex items-center gap-2">
             <button @click="showNoteModal = true" class="modal-btn-prim text-xs flex items-center">
@@ -305,7 +244,7 @@
             <button
               x-show="noteText.length > 0 && !showNoteModal"
               x-transition
-              @click="noteText = ''; $store.edit.tempValues.note = ''; showNoteModal = false"
+              @click="noteText = ''; $store.edit.selectedCopy.note = ''; showNoteModal = false"
               class="modal-btn-sec text-xs flex items-center">
               <svg class="w-4 h-4">
                 <use href="/icons/icons.svg#trash" />
@@ -328,7 +267,7 @@
                 <button @click="showNoteModal = false" class="btn-sec">Cancel</button>
 
                 <button
-                  @click="$store.edit.tempValues.note = noteText; showNoteModal = false"
+                  @click="$store.edit.selectedCopy.note = noteText; showNoteModal = false"
                   class="modal-btn-prim text-xs">
                   Save Note
                 </button>

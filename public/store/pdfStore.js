@@ -10,9 +10,9 @@ document.addEventListener('alpine:init', () => {
       async generateInvoice() {
         const store = Alpine.store('invo').totals
         const today = new Date()
-        const twoWeeksLater = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000)
-        const formattedToday = today.toLocaleDateString('en-GB')
-        const formattedDue = twoWeeksLater.toLocaleDateString('en-GB')
+        const twoWeeksLater = new Date(today)
+        twoWeeksLater.setDate(today.getDate() + 14) // Add 14 days
+
         const invoiceData = {
           clientId: store.clientId,
           items: store.items,
@@ -26,11 +26,10 @@ document.addEventListener('alpine:init', () => {
           depositType: store.depositType, // 0: flat, 1: percent
           depositValue: store.depositValue,
           depoValIfPercent: store.depoValIfPercent,
-          // depositPercentValue: 0,
           note: store.note,
           totalPreDiscount: store.totalPreDiscount,
-          date: formattedToday,
-          due_by_date: formattedDue,
+          date: today.toISOString().split('T')[0], // YYYY-MM-DD format - proper ISO string for sql
+          due_by_date: twoWeeksLater.toISOString().split('T')[0], // YYYY-MM-DD format
           remaining_balance: store.remaining_balance,
         }
         console.log('generateInvoice => invoiceData: ', invoiceData)

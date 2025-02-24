@@ -27,25 +27,36 @@ document.addEventListener('alpine:init', () => {
       uiNote: '',
 
       // ==== 2. Copy Invoice Editing (via Modal) ====
-      selectedCopy: {},
+      selectedCopy: { invoiceItems: [] },
       copyInitialValues: {},
-      tempValues: {},
       showCopyModal: false,
+
       // Open copy modal and back up original values for cancellation
       async openCopyModal(copy) {
-        this.copyInitialValues = {}
-        await this.fetchCopyInvoice(copy.id)
+        // clears up any leftover values
+        // this.copyInitialValues should not be reset to an empty object
+
+        await this.fetchCopyInvoice(copy)
+
+        // Backs up initial values
         this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
+
         this.showCopyModal = true
+
+        console.log(
+          `Initial values for ${this.copyInitialValues.invoice_number} are:\n${JSON.stringify(this.copyInitialValues, null, 2)}`,
+        )
+        console.log(`Selected Copy values for are:\n${JSON.stringify(this.selectedCopy, null, 2)}`)
       },
 
       // Revert changes and close the copy modal.
       cancelCopyEdit() {
+        this.selectedCopy = { invoiceItems: [] }
+        this.selectedCopy = { invoiceItems: [] }
         this.selectedCopy = JSON.parse(JSON.stringify(this.copyInitialValues))
         this.copyInitialValues = {}
         this.showCopyModal = false
       },
-
       //Disc/Depo
       uiDiscount: 0,
       modDisc: false,
@@ -115,7 +126,6 @@ document.addEventListener('alpine:init', () => {
 
             // Process each invoice:
             data.forEach(item => {
-              item.date = new Date(item.date).toLocaleDateString('en-GB')
               item.copies = copyData[item.id]
               item.expanded = false
             })
@@ -217,12 +227,17 @@ document.addEventListener('alpine:init', () => {
           callError('Error retrieving invoice', 'Try again or contact support.')
         }
       },
+      changeDate(objectName, fieldName, newValue) {
+        // Alpine.store('edit')[objectName] => "selectedCopy"
+        this[objectName][fieldName] = newValue
+        console.log(`Updated ${objectName}.${fieldName} =>`, newValue)
+      },
       // Fetch individual copy invoice details
       async fetchCopyInvoice(copyInvoiceId) {
         try {
           if (!copyInvoiceId) {
-            console.warn('No copy invoice ID provided.')
-            this.selectedCopy = { invoiceItems: [] }
+            console.warn('No copy invoice ID provided. Resetting to initial values.')
+            this.cancelCopyEdit()
             return
           }
 
@@ -230,13 +245,10 @@ document.addEventListener('alpine:init', () => {
           if (!response.ok) throw new Error(response.statusText)
           const data = await response.json()
 
-          // Ensures uniqueness for invoiceItems.
+          // Ensures uniqueness for invoiceItems
           this.selectedCopy.invoiceItems = this.processInvoiceItems(data.invoice.invoiceItems, 'copy')
 
           this.selectedCopy = { ...data.invoice, invoiceItems: this.selectedCopy.invoiceItems, isCopy: true }
-          // Initial values for copies
-          this.showCopyModal = true
-          this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
         } catch (error) {
           console.error('Error fetching copy invoice:', error)
           callError('Error retrieving copy invoice', 'Try again or contact support.')
@@ -334,44 +346,21 @@ document.addEventListener('alpine:init', () => {
           callError('Failed to update invoice copy')
         }
       },
-      get dateProxy() {
-        // The store has "dd/mm/yyyy"
-        let ddmmyyyy = this.selectedCopy.date
-        if (!ddmmyyyy || !ddmmyyyy.includes('/')) return ''
-        const [day, month, year] = ddmmyyyy.split('/')
-        // Return yyyy-mm-dd for the <input type="date">
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-      },
-      set dateProxy(newValue) {
-        // The user picks "2025-02-22" from the date picker
-        if (!newValue) {
-          this.selectedCopy.date = ''
-          return
-        }
-        const [year, month, day] = newValue.split('-')
-        // Save back as dd/mm/yyyy
-        this.selectedCopy.date = `${day}/${month}/${year}`
-      },
-      get dueDateProxy() {
-        let ddmmyyyy = this.selectedCopy.due_by_date
-        if (!ddmmyyyy || !ddmmyyyy.includes('/')) return ''
-        const [day, month, year] = ddmmyyyy.split('/')
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-      },
-      set dueDateProxy(newValue) {
-        if (!newValue) {
-          this.selectedCopy.due_by_date = ''
-          return
-        }
-        const [year, month, day] = newValue.split('-')
-        this.selectedCopy.due_by_date = `${day}/${month}/${year}`
-      },
-      parseUkDate(ddmmyyyy) {
-        if (!ddmmyyyy) return new Date('') // returns invalid date if empty
-        const [day, month, year] = ddmmyyyy.split('/').map(Number)
-        // JS months are zero-based
-        return new Date(year, month - 1, day)
-      },
+
+      // get the date from db
+      // have two functions like get and set as the only interface
+      //
+      // format into dd/mm/yyyy for display
+      // when user saves invoice reformat into the appropriate format
+      //
+      // get dateGetter() {
+      //   if (Alpine.store('edit').selectedCopy.client_id) {
+      //     console.log('Formating date')
+      //   } else {
+      //     console.error(false)
+      //   }
+      // },
+
       async saveEdit({ mode } = { mode: 'overwrite' }) {
         if (await callConfirm(`Are you sure you want to ${mode} this invoice?`)) {
           if (this.invoiceItems.invoice.deposit_value <= 0 && mode === 'copy') {
@@ -379,13 +368,6 @@ document.addEventListener('alpine:init', () => {
             return
           }
           const invoice = this.invoiceItems.invoice
-
-          const invoiceDate = parseUkDate(invoice.date) // "dd/mm/yyyy" → a valid Date object
-          const formattedDate = invoiceDate.toLocaleDateString('en-GB')
-
-          const dueByDateObj = new Date(invoiceDate)
-          dueByDateObj.setDate(dueByDateObj.getDate() + 14)
-          const formattedDueBy = dueByDateObj.toLocaleDateString('en-GB')
 
           const data = {
             invoiceId: invoice.id,
@@ -414,8 +396,8 @@ document.addEventListener('alpine:init', () => {
             note: invoice.note?.trim(),
             totalPreDiscount: invoice.total_pre_discount,
             remaining_balance: invoice.remaining_balance,
-            date: formattedDate,
-            due_by_date: formattedDueBy,
+            date: invoice.date,
+            due_by_date: invoice.due_by_date,
           }
 
           const endpoint = mode === 'overwrite' ? `/editor/invoice/save/overwrite` : `/editor/invoice/save/copy`

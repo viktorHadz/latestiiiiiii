@@ -17,9 +17,13 @@ document.addEventListener('alpine:init', () => {
         depoValIfPercent: 0,
         note: '',
         totalPreDiscount: 0,
-        date: new Date().toLocaleDateString('en-GB'),
+        date: new Date().toISOString().split('T')[0],
         remaining_balance: 0,
-        due_by_date: '',
+        due_by_date: (() => {
+          let d = new Date()
+          d.setDate(d.getDate() + 14) // Add 14 days
+          return d.toISOString().split('T')[0]
+        })(),
       },
       quantities: {},
       invoItemSearch: '',
@@ -435,7 +439,12 @@ document.addEventListener('alpine:init', () => {
           depoValIfPercent: 0,
           note: '',
           totalPreDiscount: 0,
-          date: new Date().toLocaleDateString('en-GB'),
+          date: new Date().toISOString().split('T')[0],
+          due_by_date: (() => {
+            let d = new Date()
+            d.setDate(d.getDate() + 14) // Adds 14 days
+            return d.toISOString().split('T')[0]
+          })(),
           remaining_balance: 0,
         }
 

@@ -254,6 +254,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
     note,
     totalPreDiscount,
     date,
+    due_by_date,
     remaining_balance,
   } = req.body
 
@@ -264,7 +265,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
         `UPDATE invoices SET 
           client_id = ?, discount_type = ?, discount_value = ?, discVal_ifPercent = ?, 
           vat_percent = ?, vat = ?, subtotal = ?, total = ?, deposit_type = ?, deposit_value = ?, 
-          depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ?, remaining_balance = ? 
+          depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ?, due_by_date = ?, remaining_balance = ? 
         WHERE id = ?`,
         [
           clientId,
@@ -282,6 +283,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
           totalPreDiscount,
           date,
           invoiceId,
+          due_by_date,
           remaining_balance,
         ],
         function (error) {

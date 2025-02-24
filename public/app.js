@@ -20,12 +20,11 @@ document.addEventListener('alpine:init', () => {
         }
       })
 
-      // Attempt loading content right away
+      // Attempts loading content right away
       this.loadTabContent(this.tabSelected || 'clients')
     },
 
     onClientsFetched() {
-      // Example: if you want to do something special once clients are fetched
       const store = Alpine.store('clients')
       console.log('[TabManager] Clients =>', store.clients)
 
