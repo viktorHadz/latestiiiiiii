@@ -31,32 +31,6 @@ document.addEventListener('alpine:init', () => {
       copyInitialValues: {},
       showCopyModal: false,
 
-      // Open copy modal and back up original values for cancellation
-      async openCopyModal(copy) {
-        // clears up any leftover values
-        // this.copyInitialValues should not be reset to an empty object
-
-        await this.fetchCopyInvoice(copy)
-
-        // Backs up initial values
-        this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
-
-        this.showCopyModal = true
-
-        console.log(
-          `Initial values for ${this.copyInitialValues.invoice_number} are:\n${JSON.stringify(this.copyInitialValues, null, 2)}`,
-        )
-        console.log(`Selected Copy values for are:\n${JSON.stringify(this.selectedCopy, null, 2)}`)
-      },
-
-      // Revert changes and close the copy modal.
-      cancelCopyEdit() {
-        this.selectedCopy = { invoiceItems: [] }
-        this.selectedCopy = { invoiceItems: [] }
-        this.selectedCopy = JSON.parse(JSON.stringify(this.copyInitialValues))
-        this.copyInitialValues = {}
-        this.showCopyModal = false
-      },
       //Disc/Depo
       uiDiscount: 0,
       modDisc: false,
@@ -92,16 +66,6 @@ document.addEventListener('alpine:init', () => {
         this.clientChangeEffect()
         await this.fetchInvoiceBookEffect()
         console.log('{ Edit Store } ==> Initialised')
-      },
-      async fetchInvoiceBookEffect() {
-        const eventHandler = async () => {
-          Alpine.effect(async () => {
-            console.log('fetchInvoiceBookEffect')
-            await this.fetchListById()
-          })
-        }
-        document.removeEventListener('invoice:created', eventHandler)
-        document.addEventListener('invoice:created', eventHandler)
       },
       // --- Fetch Invoice List (for the current page, with copies attached) ---
       async fetchListById() {
@@ -139,7 +103,6 @@ document.addEventListener('alpine:init', () => {
           console.error('Error fetching invoice list:', error)
         }
       },
-
       // Pagination navigation methods:
       async nextPage() {
         if (this.currentPage < this.totalPages) {
@@ -149,7 +112,6 @@ document.addEventListener('alpine:init', () => {
           this.loadNext = false
         }
       },
-
       async prevPage() {
         if (this.currentPage > 1) {
           this.loadPrev = true
@@ -159,7 +121,6 @@ document.addEventListener('alpine:init', () => {
           this.loadPrev = false
         }
       },
-
       resetInvoicePagination(clientId) {
         this.invoiceBook = []
         this.currentPage = 1
@@ -227,11 +188,6 @@ document.addEventListener('alpine:init', () => {
           callError('Error retrieving invoice', 'Try again or contact support.')
         }
       },
-      changeDate(objectName, fieldName, newValue) {
-        // Alpine.store('edit')[objectName] => "selectedCopy"
-        this[objectName][fieldName] = newValue
-        console.log(`Updated ${objectName}.${fieldName} =>`, newValue)
-      },
       // Fetch individual copy invoice details
       async fetchCopyInvoice(copyInvoiceId) {
         try {
@@ -253,19 +209,6 @@ document.addEventListener('alpine:init', () => {
           console.error('Error fetching copy invoice:', error)
           callError('Error retrieving copy invoice', 'Try again or contact support.')
         }
-      },
-      // --- Open Edit Modal ---
-      async openParentEditModal() {
-        if (!this.invoiceItems.invoice) {
-          callWarning('No invoice loaded', 'Select an invoice first')
-          return
-        }
-        await this.getExistingItems(this.activeClientId)
-        // Store a deep copy for canceling edits
-        this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
-        this.editing = true
-        this.editMode = 'editOverwrite'
-        this.openEditModal = true
       },
       // --- Fetch existing items when modal opens ---
       async getExistingItems(selectedClientId) {
@@ -308,6 +251,7 @@ document.addEventListener('alpine:init', () => {
           console.error('Error fetching existing items:', error)
         }
       },
+
       async exitEditMode() {
         if (await callConfirm('You are about to exit. Continue?')) {
           this.invoiceItems = JSON.parse(JSON.stringify(this.initialValuesInvItems))
@@ -346,20 +290,46 @@ document.addEventListener('alpine:init', () => {
           callError('Failed to update invoice copy')
         }
       },
+      // ==== Open Edit Modal ====
+      async openParentEditModal() {
+        if (!this.invoiceItems.invoice) {
+          callWarning('No invoice loaded', 'Select an invoice first')
+          return
+        }
+        await this.getExistingItems(this.activeClientId)
+        // Store a deep copy for canceling edits
+        this.initialValuesInvItems = JSON.parse(JSON.stringify(this.invoiceItems))
+        this.editing = true
+        this.editMode = 'editOverwrite'
+        this.openEditModal = true
+      },
+      // Open copy modal and back up original values for cancellation
+      async openCopyModal(copy) {
+        // clears up any leftover values
+        await this.fetchCopyInvoice(copy)
 
-      // get the date from db
-      // have two functions like get and set as the only interface
-      //
-      // format into dd/mm/yyyy for display
-      // when user saves invoice reformat into the appropriate format
-      //
-      // get dateGetter() {
-      //   if (Alpine.store('edit').selectedCopy.client_id) {
-      //     console.log('Formating date')
-      //   } else {
-      //     console.error(false)
-      //   }
-      // },
+        // Backs up initial values
+        this.copyInitialValues = JSON.parse(JSON.stringify(this.selectedCopy))
+
+        this.showCopyModal = true
+        this.editing = true
+        this.editMode = 'copy'
+        console.log(
+          `Initial values for ${this.copyInitialValues.invoice_number} are:\n${JSON.stringify(this.copyInitialValues, null, 2)}`,
+        )
+        console.log(`Selected Copy values for are:\n${JSON.stringify(this.selectedCopy, null, 2)}`)
+      },
+
+      // Revert changes and close the copy modal.
+      async cancelCopyEdit() {
+        if (!(await callConfirm('You are about to exit editing. All edits will be lost. Proceed?'))) return
+        this.selectedCopy = { invoiceItems: [] }
+        this.selectedCopy = JSON.parse(JSON.stringify(this.copyInitialValues))
+        this.copyInitialValues = {}
+        this.editing = false
+        this.editMode = ''
+        this.showCopyModal = false
+      },
 
       async saveEdit({ mode } = { mode: 'overwrite' }) {
         if (await callConfirm(`Are you sure you want to ${mode} this invoice?`)) {
@@ -410,12 +380,13 @@ document.addEventListener('alpine:init', () => {
             const response = await res.json()
             if (response.error) throw new Error(response.error)
 
-            callSuccess(mode === 'overwrite' ? 'Invoice updated successfully' : 'Invoice copy saved successfully')
+            callSuccess(mode === 'overwrite' ? 'Invoice updated successfully' : 'Invoice copy saved')
 
             // Update the invoiceBook and refresh copies.
             let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
             if (existingInvoice) Object.assign(existingInvoice, invoice)
             await this.refreshInvoiceCopies(invoice.id)
+
             this.openEditModal = false
             this.editing = false
             this.editMode = ''
@@ -726,7 +697,21 @@ document.addEventListener('alpine:init', () => {
       },
 
       // ==== Effects & Helpers ====
-
+      // changeDate(path, newValue) {
+      //   setNestedWithError(this, path, newValue)
+      //   console.log(`Updated path "${path}" =>`, newValue)
+      //   console.log('Store now:', JSON.parse(JSON.stringify(this)))
+      // },
+      async fetchInvoiceBookEffect() {
+        const eventHandler = async () => {
+          Alpine.effect(async () => {
+            console.log('fetchInvoiceBookEffect')
+            await this.fetchListById()
+          })
+        }
+        document.removeEventListener('invoice:created', eventHandler)
+        document.addEventListener('invoice:created', eventHandler)
+      },
       processInvoiceItems(items, prefix = 'item') {
         const uniqueItems = []
         const seen = new Set()

@@ -180,7 +180,135 @@
           </div>
           <hr class="border-vls/40" />
         </div>
+        <section class="grid grid-cols-2 gap-4 my-4">
+          <!-- Deposit Component -->
+          <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+            <!-- Deposit -->
+            <div class="w-1/2 relative mr-4">
+              <span class="absolute top-0 left-0 text-sm text-gray-500">Deposit:</span>
+              <div class="mt-6">
+                <div class="relative">
+                  <input
+                    id="depositInputEdit"
+                    x-ref="depoInput"
+                    x-model.number="$store.edit.uiDeposit"
+                    :placeholder="$store.edit.invoiceItems.invoice.deposit_type === 0 ? '£'+$store.edit.invoiceItems.invoice.deposit_value : $store.edit.invoiceItems.invoice.deposit_value + '%'"
+                    class="mod-input" />
+                  <span class="absolute right-1/2 top-1/2 transform -translate-y-1/2 text-base">
+                    <span x-text="$store.edit.invoiceItems.invoice.deposit_type === 1 ? '%' : '£'"></span>
+                  </span>
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                    <!-- Trash Button -->
+                    <button
+                      @click="$store.edit.removeDeposit();"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      @click="$store.edit.changeDepositType(); $store.effs.addEff($refs.rotateDepo, 'spin', 500); $nextTick(() => { $refs.depoInput.focus() });"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                      <svg x-ref="rotateDepo" class="size-4">
+                        <use href="/icons/icons.svg#rotate" />
+                      </svg>
+                    </button>
+                    <!-- Check Button -->
+                    <button
+                      @click="$store.edit.addDeposit()"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-sm text-gray-500">Discount:</span>
+              <div class="mt-6">
+                <div class="relative">
+                  <input
+                    id="discountInputEdit"
+                    x-ref="discInputEdit"
+                    x-model.number="$store.edit.uiDiscount"
+                    :placeholder="$store.edit.invoiceItems.invoice.discount_type === 0 ? '£'+$store.edit.invoiceItems.invoice.discount_value : $store.edit.invoiceItems.invoice.discount_value + '%'"
+                    class="mod-input" />
+                  <span class="absolute right-1/2 top-1/2 transform -translate-y-1/2 text-base">
+                    <span x-text="$store.edit.invoiceItems.invoice.discount_type === 1 ? '%' : '£'"></span>
+                  </span>
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                    <!-- Trash Button -->
+                    <button
+                      @click="$store.edit.removeDiscount();"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      @click="$store.edit.changeDiscountType(); $store.effs.addEff($refs.rotateDisc, 'spin', 500); $nextTick(() => { $refs.discInputEdit.focus() });"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                      <svg x-ref="rotateDisc" class="size-4">
+                        <use href="/icons/icons.svg#rotate" />
+                      </svg>
+                    </button>
+                    <!-- Check Button -->
+                    <button
+                      @click="$store.edit.addDiscount()"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Discount Component -->
+          <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+            <!-- Date -->
+            <div class="w-1/2 relative mr-4">
+              <span class="absolute top-0 left-0 text-sm text-gray-500">Date issued:</span>
+              <div x-data="{}" class="mt-6">
+                <input
+                  x-ref="dueDateInput"
+                  type="text"
+                  x-init="
+                    $store.datePicker.createNew(
+                      $refs.dueDateInput,
+                      'edit',
+                      'invoiceItems.invoice.date'
+                    )
+                  "
+                  class="mod-input" />
+              </div>
+            </div>
+            <!-- Due By Date -->
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-sm text-gray-500">Due by date:</span>
+              <div x-data="{}" class="mt-6">
+                <input
+                  x-ref="dueDateInput"
+                  type="text"
+                  x-init="
+                    $store.datePicker.createNew(
+                      $refs.dueDateInput,
+                      'edit',
+                      'invoiceItems.invoice.due_by_date'
+                    )
+                  "
+                  class="mod-input" />
+              </div>
+            </div>
+          </div>
+        </section>
         <!-- SECTION 4: Invoice Summary and Cancel/Save Buttons -->
         <div class="flex mt-4">
           <div
@@ -248,221 +376,6 @@
           <!-- Cancel / Save Buttons -->
           <div
             class="flex w-[70%] px-4 bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow flex-col items-end justify-end gap-4 py-2">
-            <!-- Discount & Deposit Controls -->
-            <div class="flex flex-col gap-4">
-              <!-- Discount Control Trigger -->
-              <div class="flex items-center gap-4">
-                <!-- Note Modals and buttons -->
-                <div
-                  x-data="{
-                    modNote: false,
-                    uiNote: '',
-                    showX: false,
-                    addNote() {
-                      if ($store.edit.invoiceItems.invoice.note.length) {
-                        callWarning('Note already exists', 'Remove existing note and try again')
-                        return
-                      }
-                      $store.edit.invoiceItems.invoice.note = this.uiNote
-                      this.uiNote = ''
-                    }
-                  }"
-                  class="flex justify-center">
-                  <div
-                    x-show="modNote"
-                    @keyup.escape="modNote = false"
-                    @mouseenter="showX = true"
-                    @mouseleave="showX = false"
-                    x-transition.duration.300
-                    x-anchor.top-start.offset.10="$refs.noteAnchor"
-                    style="display: none; position: absolute">
-                    <div
-                      class="z-30 p-2 bg-white border-vls/40 border dark:bg-vdp2 text-vls3 rounded shadow-lg w-60 flex flex-col relative">
-                      <textarea
-                        id="note-input-edit"
-                        x-ref="noteInput"
-                        x-model="uiNote"
-                        placeholder="Enter note..."
-                        maxlength="220"
-                        class="modal-input-style text-sm p-2 h-28 pt-2 w-full resize-none overflow-y-auto"></textarea>
-                      <div class="w-full items-center flex justify-between mt-2">
-                        <button @click="modNote = false" class="btn-sec flex items-center !text-xs">Close</button>
-                        <button
-                          @click="addNote(); $nextTick(() => modNote = false)"
-                          class="modal-btn-prim !p-1 !text-xs">
-                          <svg class="size-4">
-                            <use href="/icons/icons.svg#check-circle"></use>
-                          </svg>
-                          Accept
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <template x-if="$store.edit.invoiceItems.invoice.note !== ''">
-                    <div x-data="{ viewNote: false }" class="flex justify-center items-center ml-2">
-                      <div x-data="tooltip('View existing note.')">
-                        <button
-                          @click="!$store.edit.invoiceItems.invoice.note.length ? callWarning('No note for this invoice') : viewNote = true"
-                          class="modal-btn-prim p-2 mr-2">
-                          <svg class="size-4">
-                            <use href="/icons/icons.svg#clipboard"></use>
-                          </svg>
-                        </button>
-                      </div>
-                      <div
-                        x-show="viewNote"
-                        x-transition.opacity.duration.300
-                        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div
-                          class="p-4 bg-white dark:bg-vdp text-vls3 dark:text-vds rounded shadow-lg w-80 flex flex-col relative">
-                          <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-left">Invoice Note</h3>
-                            <button
-                              @click="viewNote = false"
-                              x-transition.duration.300
-                              class="flex items-center justify-end table-interaction-icon-red">
-                              <svg class="size-5">
-                                <use href="/icons/icons.svg#xmark-circle"></use>
-                              </svg>
-                            </button>
-                          </div>
-                          <div class="overflow-y-auto max-h-40 dark:bg-vdp2 p-2 border-vls/40 rounded">
-                            <p class="text-sm break-words" x-text="$store.edit.invoiceItems.invoice.note"></p>
-                          </div>
-                          <div class="mt-4 flex w-full items-center justify-end">
-                            <button
-                              x-show="$store.edit.invoiceItems.invoice.note.length"
-                              @click="$store.edit.invoiceItems.invoice.note = ''; viewNote = false"
-                              class="btn-sec flex items-center !text-sm">
-                              <svg class="size-4">
-                                <use href="/icons/icons.svg#trash"></use>
-                              </svg>
-                              Delete Note
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                  <button
-                    @click="modNote = !modNote; modNote && $nextTick(() => $refs.noteInput.focus())"
-                    x-ref="noteAnchor"
-                    class="modal-btn-prim mr-2">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#clipboard"></use>
-                    </svg>
-                    Note
-                  </button>
-                </div>
-
-                <button
-                  @click="$store.edit.modDisc = true; $nextTick(() => $refs.discountInput.focus())"
-                  class="modal-btn-prim flex items-center">
-                  <svg class="w-4 h-4 mr-1">
-                    <use href="/icons/icons.svg#trending-down" />
-                  </svg>
-                  Discount
-                </button>
-                <!-- Discount Modal -->
-                <div
-                  x-show="$store.edit.modDisc"
-                  @keyup.escape="$store.edit.modDisc = false"
-                  x-transition.duration.300
-                  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div
-                    @mouseenter="$store.edit.showXDisc = true"
-                    @mouseleave="$store.edit.showXDisc = false"
-                    class="bg-white dark:bg-vdp p-4 rounded shadow-lg w-80 relative">
-                    <h3 class="text-lg font-semibold mb-2">Set Discount</h3>
-                    <button
-                      x-show="$store.edit.showXDisc"
-                      @click="$store.edit.modDisc = false"
-                      class="table-interaction-icon-red absolute top-3 right-3">
-                      <svg class="w-4 h-4"><use href="/icons/icons.svg#xmark" /></svg>
-                    </button>
-                    <div class="relative mb-3">
-                      <input
-                        type="number"
-                        x-ref="discountInput"
-                        x-model.number="$store.edit.uiDiscount"
-                        placeholder="Enter discount"
-                        class="modal-input-style w-full" />
-                      <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base">
-                        <span x-text="$store.edit.invoiceItems.invoice.discount_type === 1 ? '%' : '£'"></span>
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <button @click="$store.edit.addDiscount(); $store.edit.modDisc = false" class="modal-btn-prim">
-                        Apply
-                      </button>
-                      <button
-                        @click="$store.edit.changeDiscountType(); $nextTick(() => { $refs.discountInput.focus() })"
-                        class="modal-btn-prim">
-                        Change Type
-                      </button>
-                      <button @click="$store.edit.removeDiscount(); $store.edit.modDisc = false" class="btn-sec">
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <!-- Deposit Control Trigger -->
-                <button
-                  @click="$store.edit.modDepo = true; $nextTick(() => $refs.depoInput.focus())"
-                  class="modal-btn-prim flex items-center">
-                  <svg class="w-4 h-4 mr-1">
-                    <use href="/icons/icons.svg#cash-bill" />
-                  </svg>
-                  Deposit
-                </button>
-
-                <!-- Deposit Modal -->
-
-                <div
-                  x-show="$store.edit.modDepo"
-                  x-transition.duration.300
-                  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 w-full h-full">
-                  <div
-                    @mouseenter="$store.edit.showXDepo = true"
-                    @mouseleave="$store.edit.showXDepo = false"
-                    class="bg-white dark:bg-vdp p-4 rounded shadow-lg w-80 relative">
-                    <h3 class="text-lg font-semibold mb-2">Set Deposit</h3>
-                    <button
-                      x-show="$store.edit.showXDepo"
-                      @click="$store.edit.modDepo = false"
-                      class="table-interaction-icon-red absolute top-3 right-3">
-                      <svg class="w-4 h-4"><use href="/icons/icons.svg#xmark" /></svg>
-                    </button>
-                    <div class="relative mb-3">
-                      <input
-                        type="number"
-                        x-ref="depoInput"
-                        x-model.number="$store.edit.uiDeposit"
-                        placeholder="Enter deposit"
-                        class="modal-input-style w-full" />
-                      <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base">
-                        <span x-text="$store.edit.invoiceItems.invoice.deposit_type === 1 ? '%' : '£'"></span>
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <button @click="$store.edit.addDeposit(); $store.edit.modDepo = false" class="modal-btn-prim">
-                        Apply
-                      </button>
-                      <button
-                        @click="$store.edit.changeDepositType(); $nextTick(() => { $refs.depoInput.focus() })"
-                        class="modal-btn-prim">
-                        Change Type
-                      </button>
-                      <button @click="$store.edit.removeDeposit(); $store.edit.modDepo = false" class="btn-sec">
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div class="flex items-end justify-between gap-2 w-full mb-0.5">
               <div x-data="tooltip('Close modal and revert any changes', { position: 'top' })">
                 <button @click="$store.edit.exitEditMode();" class="btn-sec">Cancel</button>
@@ -531,6 +444,57 @@
             </div>
           </div>
         </div>
+        <section
+          class="my-4"
+          x-data="{ showNoteModal: false, noteText: $store.edit.invoiceItems.invoice.note || $store.edit.invoiceItems.invoice.note || '' }">
+          <div class="p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm flex justify-between">
+            <div class="h-[2rem]">
+              <span class="font-medium text-vls3 dark:text-vds">Note:</span>
+              <span
+                class="text-xs text-vls2 dark:text-vds3light"
+                x-text="$store.edit.invoiceItems.invoice.note ? $store.edit.invoiceItems.invoice.note : 'No note added'"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button @click="showNoteModal = true" class="modal-btn-prim text-xs flex items-center">
+                <svg class="w-4 h-4">
+                  <use href="/icons/icons.svg#pencil" />
+                </svg>
+              </button>
+              <button
+                x-show="noteText.length > 0 && !showNoteModal"
+                x-transition
+                @click="noteText = ''; $store.edit.invoiceItems.invoice.note = ''; showNoteModal = false"
+                class="modal-btn-sec text-xs flex items-center">
+                <svg class="w-4 h-4">
+                  <use href="/icons/icons.svg#trash" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <template x-if="showNoteModal">
+            <div class="fixed inset-0 z-[99] flex items-center justify-center bg-black bg-opacity-50">
+              <div class="bg-white dark:bg-vdp rounded shadow-lg p-4 w-1/2">
+                <h3 class="font-medium mb-2">Invoice Note</h3>
+                <textarea
+                  x-model="noteText"
+                  maxlength="220"
+                  placeholder="Enter note (max 220 chars)"
+                  class="modal-input-style p-1 w-full alt-table-scrollbar"
+                  style="height: 12vh; resize: none"
+                  rows="3"></textarea>
+                <div class="flex justify-between mt-4">
+                  <button @click="showNoteModal = false" class="btn-sec">Cancel</button>
+
+                  <button
+                    @click="$store.edit.invoiceItems.invoice.note = noteText; showNoteModal = false"
+                    class="modal-btn-prim text-xs">
+                    Save Note
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </section>
       </div>
     </div>
   </template>

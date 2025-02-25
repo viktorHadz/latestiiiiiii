@@ -16,9 +16,11 @@
             <span class="mr-1">Invoice:</span>
             <span x-text="$store.edit.invoiceItems.invoice.invoice_number"></span>
           </div>
-          <div>
+          <div class="flex gap-4">
             <span class="ml-4 mr-1">Date:</span>
             <span x-text="$store.edit.invoiceItems.invoice.date"></span>
+            <p>Due-by-date:</p>
+            <span x-text="$store.edit.invoiceItems.invoice.due_by_date"></span>
           </div>
         </div>
         <!-- Client Details -->
@@ -38,14 +40,6 @@
           <div class="flex justify-between">
             <p>Email:</p>
             <span x-text="$store.clients.selectedClient?.email"></span>
-          </div>
-          <div class="flex justify-between">
-            <p>Created on:</p>
-            <span x-text="$store.edit.invoiceItems.invoice.date"></span>
-          </div>
-          <div class="flex justify-between">
-            <p>Due-by-date:</p>
-            <span x-text="$store.edit.invoiceItems.invoice.due_by_date"></span>
           </div>
         </div>
         <!-- Invoice Items Table -->

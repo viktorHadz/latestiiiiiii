@@ -372,7 +372,9 @@ input[type='number'] {
 .dark .modal-btn-prim {
   @apply transition dark:text-vds dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700;
 }
-
+.mod-input {
+  @apply w-full p-1 pr-20 border text-sm rounded border-vls/40 focus:outline-none focus:ring-1 focus:ring-vls/60 bg-blue-50 hover:bg-blue-100 cursor-pointer dark:bg-vdp2 hover:dark:brightness-125 transition duration-200;
+}
 .modal-btn-prim:after {
   content: '';
   background: rgb(255, 255, 255);

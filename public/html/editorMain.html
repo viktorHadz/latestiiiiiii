@@ -72,7 +72,7 @@
             <div x-show="invoice.expanded" x-transition.scale.origin.top x-transition.duration.300ms>
               <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
                 <div class="text-xs font-semibold mb-1 text-center">Attached Invoices</div>
-                <ul class="space-y-1 text-xs flex flex-col max-h-[300px] overflow-y-scroll pr-2 alt-table-scrollbar">
+                <ul class="space-y-1 text-xs flex flex-col max-h-[150px] overflow-y-scroll pr-2 alt-table-scrollbar">
                   <template x-for="copy in invoice.copies" :key="copy.id">
                     <li
                       class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">

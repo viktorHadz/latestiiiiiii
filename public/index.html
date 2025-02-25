@@ -334,6 +334,7 @@
     <script type="module" src="/store/tossStore.js"></script>
     <script type="module" src="/store/effects.js"></script>
     <script type="module" src="/store/customConfirm.js"></script>
+    <script type="module" src="/store/datePicker.js"></script>
     <!-- 2) Then app.js, which sets up tabManager and etc -->
     <script type="module" src="/app.js" defer></script>
     <!--  Alpine Plugins  -->
@@ -351,37 +352,5 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.9/dayjs.min.js"></script>
-    <script>
-      function flatpickrWidget(object, fieldName) {
-        return {
-          instance: null,
-
-          init() {
-            // 1) Read the initial ISO date from the Alpine store
-            const initialISO = Alpine.store('edit')[object][fieldName] || ''
-
-            this.instance = flatpickr(this.$refs.fpInput, {
-              // Display format e.g. "10/Feb/2025"
-              dateFormat: 'd/M/Y',
-              // Provide initial date for Flatpickr
-              defaultDate: initialISO,
-
-              // 3) Whenever user picks a new date...
-              onChange: selectedDates => {
-                if (selectedDates.length > 0) {
-                  // Convert the picked JS Date object => "YYYY-MM-DD"
-                  const iso = dayjs(selectedDates[0]).format('YYYY-MM-DD')
-                  // Update the Alpine store
-                  Alpine.store('edit').changeDate(object, fieldName, iso)
-                } else {
-                  // If the user clears the date, store empty
-                  Alpine.store('edit').changeDate(object, fieldName, '')
-                }
-              },
-            })
-          },
-        }
-      }
-    </script>
   </body>
 </html>
