@@ -327,7 +327,7 @@ input[type='number'] {
   @apply focus:bg-vds2 focus:text-vds focus:placeholder-vds focus:ring-vds3light;
 }
 .outter-modal-overlay-blur-fixed {
-  @apply fixed inset-0 w-full h-full overflow-y-auto bg-gray-800/50 backdrop-blur-sm;
+  @apply fixed inset-0 w-full h-full overflow-y-auto bg-black/50;
 }
 .dark .modal-title {
   @apply text-2xl font-medium tracking-tighter text-vds;

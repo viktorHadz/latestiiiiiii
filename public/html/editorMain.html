@@ -22,44 +22,43 @@
       <div class="p-2 bg-vls2 dark:bg-vdp shadow rounded border border-vls/40">
         <p class="font-semibold text-center text-vlp dark:text-vds">Invoice Book</p>
       </div>
-
       <div class="overflow-y-auto h-full p-2 bg-vlp dark:bg-vdp2 mt-2 border rounded border-vls/40 alt-table-scrollbar">
         <template x-for="invoice in $store.edit.invoiceBook" :key="invoice.id">
-          <div class="mb-6" @click="$store.edit.fetchInvoice(invoice.id)" :id="'rowid-' + invoice.id">
+          <div class="mb-6" @click="$store.edit.fetchInvoiceById(invoice.id, false)" :id="'rowid-' + invoice.id">
             <div
-              :class="{'ring-1 ring-vls2 dark:ring-vda bg-blue-50 dark:bg-vdp dark:text-white': invoice.id === $store.edit.activeItemId, 
-              'ring-1 ring-vls/40 hover:ring-vls/80  hover:bg-blue-50 shadow hover:shadow-lg dark:bg-vdp': invoice.id !== $store.edit.activeItemId}"
-              class="flex justify-between items-center shadow rounded p-2 transition-all text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
+              :class="{'shadow-md bg-blue-100  ring-vls/90 text-vdp dark:text-white dark:ring-vda2': (invoice.id === $store.edit.currentInvoice.invoice_id) && (!$store.edit.currentInvoice.isCopy)}"
+              class="flex justify-between items-center shadow hover:shadow-md rounded p-1.5 bg-vlp dark:bg-vdp transition-all ring-1 ring-vls/40 hover:ring-vls/90 text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
               <div class="flex flex-col text-xs cursor-default">
                 <div x-text="invoice.client_name"></div>
                 <div x-text="invoice.date"></div>
                 <div x-text="invoice.invoice_number"></div>
               </div>
-              <!-- Deposit Icon (if applicable) -->
-              <div x-show="invoice.copies" class="mr-1">
-                <div class="flex gap-2">
-                  <div x-data="tooltip('Contains a deposit')">
-                    <button @click.stop class="table-interaction-icon-red hover:!text-vla">
-                      <svg class="w-4 h-4">
+              <div class="flex flex-col">
+                <!-- Deposit Icon (if deposit exists) -->
+                <div class="gap-2 flex items-center justify-end">
+                  <div x-data="tooltip('Contains attached deposit')">
+                    <div @click.stop class="table-interaction-icon-red hover:!text-vda2 hover:!bg-blp">
+                      <svg class="size-5">
                         <use href="/icons/icons.svg#cash-bill" />
                       </svg>
-                    </button>
+                    </div>
                   </div>
+                  <!-- If paid-->
                   <template x-if="invoice.invoice_status === 'paid'">
                     <div x-data="tooltip('Invoice paid')">
-                      <button @click.stop class="table-interaction-icon !text-vla">
-                        <svg class="w-5 h-5">
+                      <div @click.stop class="table-interaction-icon !text-vda">
+                        <svg class="size-5">
                           <use href="/icons/icons.svg#check-circle"></use>
                         </svg>
-                      </button>
+                      </div>
                     </div>
                   </template>
                 </div>
-                <div class="w-full flex items-end justify-end">
+                <div x-show="invoice.copies" class="w-full flex items-end justify-end">
                   <button
-                    x-data="tooltip('See your attached invoices', {position: 'top'})"
+                    x-data="tooltip('See edited invoices', {position: 'top'})"
                     @click.stop="invoice.expanded = !invoice.expanded"
-                    class="transition-transform transform mt-0.5 dark:text-vds table-interaction-icon hover:!text-red-500 self-end"
+                    class="transition-transform transform dark:text-vds table-interaction-icon hover:!text-red-400 dark:hover:!text-vda2 self-end"
                     :class="{ 'rotate-180': invoice.expanded }">
                     <svg class="size-4">
                       <use href="/icons/icons.svg#chev-down" />
@@ -69,38 +68,34 @@
               </div>
             </div>
             <!-- Dropdown copy invoices -->
-            <div x-show="invoice.expanded" x-transition.scale.origin.top x-transition.duration.300ms>
-              <div class="mt-1 bg-gray-50 shadow-md border cursor-default border-vls/30 dark:bg-vdp/80 p-2 rounded">
-                <div class="text-xs font-semibold mb-1 text-center">Attached Invoices</div>
-                <ul class="space-y-1 text-xs flex flex-col max-h-[150px] overflow-y-scroll pr-2 alt-table-scrollbar">
-                  <template x-for="copy in invoice.copies" :key="copy.id">
-                    <li
-                      class="flex justify-between items-center p-1 shadow-sm hover:shadow border rounded border-vls/30 hover:border-vls text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
+            <div
+              x-show="invoice.expanded"
+              x-transition:enter.scale.origin.top
+              x-transition:enter.duration.300ms
+              x-transition:leave.scale.origin.bottom
+              x-transition:leave.duration.200ms
+              class="border mt-2 border-vls/40 rounded bg-vlp2 dark:bg-vdp/80">
+              <div class="text-center text-vls2 dark:text-vds3light">Attached Invoices</div>
+              <ul>
+                <template x-for="copy in invoice.copies" :key="copy.id + '-' + copy.original_invoice_id">
+                  <li @click.stop="$store.edit.fetchInvoiceById(copy.id, true)" class="p-2">
+                    <div
+                      :class="{'bg-blue-100 border-vls/80 dark:border-vda2 dark:text-white': (copy.id === $store.edit.currentInvoice.invoice_id) && ($store.edit.currentInvoice.isCopy)}"
+                      class="flex bg-vlp border-vls/40 justify-between items-center border rounded p-1 text-xs dark:bg-vdp cursor-pointer transition">
                       <span x-text="copy.invoice_number"></span>
-                      <div class="flex gap-2">
-                        <div x-data="tooltip('Delete')">
-                          <button
-                            @click.stop="$store.edit.deleteInvoice(copy.id, true, copy.original_invoice_id)"
-                            class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
-                            <svg class="w-4 h-4">
-                              <use href="/icons/icons.svg#trash" />
-                            </svg>
-                          </button>
-                        </div>
-                        <div x-data="tooltip('Edit discount and deposit for ' + copy.invoice_number)">
-                          <button
-                            @click.stop="$store.edit.openCopyModal(copy.id)"
-                            class="table-interaction-icon-blue !text-vls2 hover:!text-blue-500 dark:!text-vds3light dark:hover:!text-blue-500">
-                            <svg class="size-4">
-                              <use href="/icons/icons2.xml#window" />
-                            </svg>
-                          </button>
-                        </div>
+                      <div x-data="tooltip('Delete')">
+                        <button
+                          @click.stop="$store.edit.deleteInvoice(copy.id, true, copy.original_invoice_id)"
+                          class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                          <svg class="w-4 h-4">
+                            <use href="/icons/icons.svg#trash" />
+                          </svg>
+                        </button>
                       </div>
-                    </li>
-                  </template>
-                </ul>
-              </div>
+                    </div>
+                  </li>
+                </template>
+              </ul>
             </div>
           </div>
         </template>

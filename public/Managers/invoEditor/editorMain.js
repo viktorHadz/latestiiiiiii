@@ -22,9 +22,11 @@ export default function editorMain() {
         .then(html => {
           const targetElement = document.querySelector(target)
           targetElement.innerHTML = html
-
-          // Re-initialises Alpine on the injected content
           Alpine.initTree(targetElement)
+          // Ensure Alpine updates dynamically injected content
+          Alpine.nextTick(() => {
+            console.log(`[EditorMain] Loaded ${file}`)
+          })
         })
         .catch(err => console.error('Error fetching file:', err))
     },

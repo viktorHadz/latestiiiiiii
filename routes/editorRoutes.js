@@ -3,6 +3,65 @@ const router = express.Router()
 const getDb = require('../database')
 const db = getDb()
 
+function gettingData(body) {
+  const requiredFields = [
+    'clientId',
+    'items',
+    'discountType',
+    'discountValue',
+    'discVal_ifPercent',
+    'vatPercent',
+    'vat',
+    'subtotal',
+    'total',
+    'depositType',
+    'depositValue',
+    'depoVal_ifPercent',
+    'note',
+    'totalPreDiscount',
+    'date',
+    'due_by_date',
+    'remaining_balance',
+    'invoiceId',
+  ]
+
+  // Check for missing fields
+  const missingFields = requiredFields.filter(field => body[field] === undefined)
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+  }
+
+  // Validate data types
+  if (typeof body.clientId !== 'number') throw new Error('clientId must be a number.')
+  if (!Array.isArray(body.items) || body.items.length === 0) throw new Error('items must be a non-empty array.')
+  if (typeof body.discountValue !== 'number') throw new Error('discountValue must be a number.')
+  if (typeof body.total !== 'number') throw new Error('total must be a number.')
+  if (typeof body.invoiceId !== 'number') throw new Error('invoiceId must be a number.')
+  if (typeof body.date !== 'string') throw new Error('date must be a string.')
+  if (typeof body.due_by_date !== 'string') throw new Error('due_by_date must be a string.')
+
+  return {
+    clientId: body.clientId,
+    items: body.items,
+    discountType: body.discountType,
+    discountValue: body.discountValue,
+    discVal_ifPercent: body.discVal_ifPercent,
+    vatPercent: body.vatPercent,
+    vat: body.vat,
+    subtotal: body.subtotal,
+    total: body.total,
+    depositType: body.depositType,
+    depositValue: body.depositValue,
+    depoVal_ifPercent: body.depoVal_ifPercent,
+    note: body.note,
+    totalPreDiscount: body.totalPreDiscount,
+    date: body.date,
+    due_by_date: body.due_by_date,
+    remaining_balance: body.remaining_balance,
+    invoiceId: body.invoiceId,
+  }
+}
+
 router.use(express.json())
 
 // 1. InvoiceBook fetch
@@ -84,7 +143,7 @@ router.get('/invoice/copy/names', (req, res) => {
         if (!acc[copy.original_invoice_id]) {
           acc[copy.original_invoice_id] = []
         }
-        acc[copy.original_invoice_id].push(copy)
+        acc[copy.original_invoice_id].push({ ...copy, isCopy: true })
         return acc
       }, {})
 
@@ -237,26 +296,29 @@ router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
 // ==== Saving Invocies ==== //
 // Overwrites existing invoice
 router.post('/invoice/save/overwrite', async (req, res) => {
-  const {
-    invoiceId,
-    clientId,
-    items,
-    discountType,
-    discountValue,
-    discVal_ifPercent,
-    vatPercent,
-    vat,
-    subtotal,
-    total,
-    depositType,
-    depositValue,
-    depoVal_ifPercent,
-    note,
-    totalPreDiscount,
-    date,
-    due_by_date,
-    remaining_balance,
-  } = req.body
+  const invoiceData = gettingData(req.body)
+  const { items, ...invoiceFields } = invoiceData
+
+  // const {
+  //   invoiceId,
+  //   clientId,
+  //   items,
+  //   discountType,
+  //   discountValue,
+  //   discVal_ifPercent,
+  //   vatPercent,
+  //   vat,
+  //   subtotal,
+  //   total,
+  //   depositType,
+  //   depositValue,
+  //   depoVal_ifPercent,
+  //   note,
+  //   totalPreDiscount,
+  //   date,
+  //   due_by_date,
+  //   remaining_balance,
+  // } = req.body
 
   try {
     // 1. Update invoice values
@@ -267,25 +329,26 @@ router.post('/invoice/save/overwrite', async (req, res) => {
           vat_percent = ?, vat = ?, subtotal = ?, total = ?, deposit_type = ?, deposit_value = ?, 
           depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ?, due_by_date = ?, remaining_balance = ? 
         WHERE id = ?`,
-        [
-          clientId,
-          discountType,
-          discountValue,
-          discVal_ifPercent,
-          vatPercent,
-          vat,
-          subtotal,
-          total,
-          depositType,
-          depositValue,
-          depoVal_ifPercent,
-          note,
-          totalPreDiscount,
-          date,
-          invoiceId,
-          due_by_date,
-          remaining_balance,
-        ],
+        // [
+        //   clientId,
+        //   discountType,
+        //   discountValue,
+        //   discVal_ifPercent,
+        //   vatPercent,
+        //   vat,
+        //   subtotal,
+        //   total,
+        //   depositType,
+        //   depositValue,
+        //   depoVal_ifPercent,
+        //   note,
+        //   totalPreDiscount,
+        //   date,
+        //   invoiceId,
+        //   due_by_date,
+        //   remaining_balance,
+        // ],
+        Object.values(invoiceFields),
         function (error) {
           if (error) reject(new Error(`Error updating invoice: ${error.message}`))
           resolve()
@@ -295,39 +358,45 @@ router.post('/invoice/save/overwrite', async (req, res) => {
 
     // 2. Replace all invoice items
     await new Promise((resolve, reject) => {
-      db.run(`DELETE FROM invoice_items WHERE invoice_id = ?`, [invoiceId], function (error) {
+      db.run(`DELETE FROM invoice_items WHERE invoice_id = ?`, [invoiceData.invoiceId], function (error) {
         if (error) reject(new Error(`Error deleting old invoice items: ${error.message}`))
         resolve()
       })
     })
 
-    const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?, ?)').join(',')
-    const values = items.flatMap(item => [
-      item.name,
-      item.price,
-      item.type,
-      item.time,
-      invoiceId,
-      item.quantity,
-      item.total_item_price,
-      item.origin_id,
-    ])
+    if (items.length > 0) {
+      const placeholders = items.map(() => '(?, ?, ?, ?, ?, ?, ?, ?)').join(',')
+      const values = items.flatMap(item => [
+        item.name,
+        item.price,
+        item.type,
+        item.time,
+        invoiceData.invoiceId,
+        item.quantity,
+        item.total_item_price,
+        item.origin_id,
+      ])
 
-    await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO invoice_items (name, price, type, time, invoice_id, quantity, total_item_price, origin_id) 
-        VALUES ${placeholders}`,
-        values,
-        function (error) {
-          if (error) reject(new Error(`Error inserting new invoice items: ${error.message}`))
-          resolve()
-        },
-      )
-    })
+      await new Promise((resolve, reject) => {
+        db.run(
+          `INSERT INTO invoice_items (name, price, type, time, invoice_id, quantity, total_item_price, origin_id) 
+          VALUES ${placeholders}`,
+          values,
+          function (error) {
+            if (error) reject(new Error(`Error inserting new invoice items: ${error.message}`))
+            resolve()
+          },
+        )
+      })
+    }
 
     res.status(200).json({ message: 'Invoice updated successfully.' })
   } catch (error) {
-    res.status(500).json({ error: `Error updating invoice: ${error.message}` })
+    if (error.message.startsWith('Missing required fields') || error.message.includes('must be')) {
+      res.status(400).json({ error: error.message }) // Validation error (bad request)
+    } else {
+      res.status(500).json({ error: `Error updating invoice: ${error.message}` }) // Server error
+    }
   }
 })
 // Saves a Copy invoice

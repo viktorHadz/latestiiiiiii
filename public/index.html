@@ -128,7 +128,7 @@
             <div
               class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
               @keyup.escape="$store.clients.showAddClientModal = false">
-              <div class="modal-bg-and-borders p-6 rounded shadow-md">
+              <div class="modal-bg-and-borders p-6 rounded shadow-md max-w-[50%]">
                 <h3 class="mb-4 modal-title text-center">Add Client</h3>
                 <form>
                   <input
@@ -300,17 +300,24 @@
         <div x-data>
           <div
             x-show="$store.confirm.visible"
-            x-transition
-            class="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-50"
-            x-init="$nextTick(() => $refs.confirm.focus())">
-            <div class="bg-vls2 dark:bg-vdp rounded-lg shadow p-6 w-full max-w-sm relative border border-vls/40">
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95"
+            class="fixed inset-0 z-[999] flex items-center justify-center"
+            x-init="$watch('$store.confirm.visible', value => { if (value) $nextTick(() => $refs.confirm.focus()) })">
+            <div class="bg-vls2 dark:bg-vdp rounded-lg p-6 w-full max-w-sm relative border border-vls/40">
               <div class="w-full h-full">
-                <h3 class="text-lg font-medium mb-4 text-vlp dark:text-vds" x-text="$store.confirm.message"></h3>
+                <h3 class="text-lg font-medium mb-4 min-h-14 text-vlp dark:text-vds">
+                  <p x-text="$store.confirm.message"></p>
+                </h3>
                 <div class="flex justify-between">
-                  <button class="btn-sec !px-4 !py-2" @click="$store.confirm.confirmNo()">Cancel</button>
+                  <button class="btn-sec" @click="$store.confirm.confirmNo()">Cancel</button>
                   <button
                     x-ref="confirm"
-                    class="modal-btn-prim !px-4 !py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    class="modal-btn-prim"
                     @click="$store.confirm.confirmYes()"
                     @keydown.enter="$store.confirm.confirmYes()">
                     Confirm

@@ -1,301 +1,299 @@
 <!-- Copy Invoice Edit Modal -->
-<div
-  x-data="copyEditor"
-  x-show="$store.edit.showCopyModal"
-  class="fixed inset-0 z-[98] flex items-center justify-center w-full h-full bg-black bg-opacity-50">
-  <div class="bg-white dark:bg-vdp shadow-lg w-[80%] max-h-[90%] flex flex-col">
-    <!-- Header -->
-    <header class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-b border-vls/40">
-      <div>
-        <h2 class="text-lg font-medium text-vlp2 dark:text-vds">Edit Copy Invoice</h2>
-        <p class="text-sm text-vlp2 dark:text-vds3light">
-          Invoice Number:
-          <span x-text="$store.edit.selectedCopy.invoice_number"></span>
-        </p>
-      </div>
-      <div
-        x-data="tooltip('Status info: paid means total - deposit = 0,\n pending means deposit attached,\n unpaid is default')">
-        <button
-          class="px-2 py-1 text-xs font-light border rounded-full"
-          :class="{
-              'border-green-500 text-green-500': $store.edit.selectedCopy.invoice_status==='paid',
-              'border-yellow-500 text-yellow-500': $store.edit.selectedCopy.invoice_status==='pending',
-              'border-red-500 text-red-500': $store.edit.selectedCopy.invoice_status==='unpaid'
-            }"
-          x-text="$store.edit.selectedCopy.invoice_status"></button>
-      </div>
-    </header>
-    <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
-      <!-- Deposit & Discount & Dates -->
-      <section class="grid grid-cols-2 gap-4 mb-4">
-        <!-- Deposit Component-->
-        <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
-          <!-- Deposit -->
-          <div class="w-1/2 relative mr-4">
-            <span class="absolute top-0 left-0 text-sm text-gray-500">Deposit:</span>
-            <div class="mt-6">
-              <div class="relative">
-                <input
-                  id="depositInput"
-                  x-ref="depInputCopy"
-                  type="text"
-                  :placeholder="$store.edit.selectedCopy.deposit_type === 0 ? '£'+$store.edit.selectedCopy.deposit_value : $store.edit.selectedCopy.deposit_value + '%'"
-                  class="mod-input" />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
-                  <!-- Trash Button -->
-                  <button
-                    @click="$store.edit.removeDeposit(isCopy = true);"
-                    class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#trash" />
-                    </svg>
-                  </button>
-                  <!-- Edit Button -->
-                  <button
-                    @click="$store.edit.changeDepositType(isCopy = true); $store.effs.addEff($refs.rotateDepCopy, 'spin', 500); $nextTick(() => { $refs.depInputCopy.focus() });"
-                    class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
-                    <svg x-ref="rotateDepCopy" class="size-4">
-                      <use href="/icons/icons.svg#rotate" />
-                    </svg>
-                  </button>
-                  <!-- Check Button -->
-                  <button
-                    @click="$store.edit.addDeposit(isCopy = true)"
-                    class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#check-circle" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="w-1/2 relative">
-            <span class="absolute top-0 left-0 text-sm text-gray-500">Discount:</span>
-            <div class="mt-6">
-              <div class="relative">
-                <input
-                  id="discountInputCopy"
-                  x-ref="discInputCopy"
-                  type="text"
-                  :placeholder="$store.edit.selectedCopy.discount_type === 0 ? '£'+$store.edit.selectedCopy.discount_value : $store.edit.selectedCopy.discount_value + '%'"
-                  class="mod-input" />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
-                  <!-- Trash Button -->
-                  <button
-                    @click="$store.edit.removeDiscount(isCopy = true);"
-                    class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#trash" />
-                    </svg>
-                  </button>
-                  <!-- Edit Button -->
-                  <button
-                    @click="$store.edit.changeDiscountType(isCopy = true); $store.effs.addEff($refs.rotateDiscCopy, 'spin', 500); $nextTick(() => { $refs.discInputCopy.focus() });"
-                    class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
-                    <svg x-ref="rotateDiscCopy" class="size-4">
-                      <use href="/icons/icons.svg#rotate" />
-                    </svg>
-                  </button>
-                  <!-- Check Button -->
-                  <button
-                    @click="$store.edit.addDiscount(isCopy = true)"
-                    class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
-                    <svg class="size-4">
-                      <use href="/icons/icons.svg#check-circle" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+<template x-if="$store.edit.invoiceViewMode === 'editCopy'">
+  <div
+    x-data="copyEditor"
+    x-show="$store.edit.invoiceViewMode === 'editCopy'"
+    x-transition
+    class="fixed inset-0 z-[98] flex items-center justify-center w-full h-full bg-black bg-opacity-50">
+    <div class="bg-white dark:bg-vdp shadow-lg w-[80%] max-h-[90%] flex flex-col">
+      <!-- Header -->
+      <header class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-b border-vls/40">
+        <div>
+          <h2 class="text-lg font-medium text-vlp2 dark:text-vds">Edit Copy Invoice</h2>
+          <p class="text-sm text-vlp2 dark:text-vds3light">
+            Invoice Number:
+            <span x-text="$store.edit.currentInvoice.invoice_number"></span>
+          </p>
         </div>
-        <!-- Discount Component -->
-        <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
-          <!-- Date -->
-          <div class="w-1/2 relative">
-            <span class="absolute top-0 left-0 text-sm text-gray-500">Date issued:</span>
-            <div x-data="{}" class="mt-6 mr-4">
-              <input
-                x-ref="copyDateInput"
-                type="text"
-                x-init="
+        <div
+          x-data="tooltip('Status info: paid means total - deposit = 0,\n pending means deposit attached,\n unpaid is default')">
+          <button
+            class="px-2 py-1 text-xs font-light border rounded-full"
+            :class="{
+                'border-green-500 text-green-500': $store.edit.currentInvoice.data.invoice_status==='paid',
+                'border-yellow-500 text-yellow-500': $store.edit.currentInvoice.data.invoice_status==='pending',
+                'border-red-500 text-red-500': $store.edit.currentInvoice.data.invoice_status==='unpaid'
+              }"
+            x-text="$store.edit.currentInvoice.data.invoice_status"></button>
+        </div>
+      </header>
+      <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
+        <!-- Deposit & Discount & Dates -->
+        <section class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Deposit Component-->
+          <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+            <!-- Deposit -->
+            <div class="w-1/2 relative mr-4">
+              <span class="absolute top-0 left-0 text-sm text-vls2 dark:text-vds3light">Deposit:</span>
+              <div class="mt-6">
+                <div class="relative">
+                  <input
+                    id="depositInput"
+                    x-ref="depInputCopy"
+                    type="text"
+                    :placeholder="$store.edit.currentInvoice.data.deposit_type === 0 ? '£'+ $store.edit.currentInvoice.data.deposit_value : $store.edit.currentInvoice.data.deposit_value + '%'"
+                    class="mod-input" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                    <!-- Trash Button -->
+                    <button
+                      @click="$store.edit.removeDeposit(isCopy = true);"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      @click="$store.edit.changeDepositType(isCopy = true); $store.effs.addEff($refs.rotateDepCopy, 'spin', 500); $nextTick(() => { $refs.depInputCopy.focus() });"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                      <svg x-ref="rotateDepCopy" class="size-4">
+                        <use href="/icons/icons.svg#rotate" />
+                      </svg>
+                    </button>
+                    <!-- Check Button -->
+                    <button
+                      @click="$store.edit.addDeposit(isCopy = true)"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-sm text-vls2 dark:text-vds3light">Discount:</span>
+              <div class="mt-6">
+                <div class="relative">
+                  <input
+                    id="discountInputCopy"
+                    x-ref="discInputCopy"
+                    type="text"
+                    :placeholder="$store.edit.currentInvoice.data.discount_type === 0 ? '£'+ $store.edit.currentInvoice.data.discount_value : $store.edit.currentInvoice.data.discount_value + '%'"
+                    class="mod-input" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                    <!-- Trash Button -->
+                    <button
+                      @click="$store.edit.removeDiscount(isCopy = true);"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      @click="$store.edit.changeDiscountType(isCopy = true); $store.effs.addEff($refs.rotateDiscCopy, 'spin', 500); $nextTick(() => { $refs.discInputCopy.focus() });"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                      <svg x-ref="rotateDiscCopy" class="size-4">
+                        <use href="/icons/icons.svg#rotate" />
+                      </svg>
+                    </button>
+                    <!-- Check Button -->
+                    <button
+                      @click="$store.edit.addDiscount(isCopy = true)"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Discount Component -->
+          <div class="p-2 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+            <!-- Date -->
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-sm text-vls2 dark:text-vds3light">Date issued:</span>
+              <div x-data="{}" class="mt-6 mr-4">
+                <input
+                  x-ref="copyDateInput"
+                  type="text"
+                  x-init="
+                  $store.datePicker.createNew(
+                    $refs.copyDateInput,
+                    'edit',
+                    'currentInvoice.totals.date'
+                  )
+                "
+                  class="mod-input" />
+              </div>
+            </div>
+            <!-- Due by Date -->
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-sm text-vls2 dark:text-vds3light">Due by date:</span>
+              <div x-data="{}" class="mt-6">
+                <input
+                  x-ref="copyDueDateInput"
+                  type="text"
+                  x-init="
                 $store.datePicker.createNew(
-                  $refs.copyDateInput,
+                  $refs.copyDueDateInput,
                   'edit',
-                  'selectedCopy.date'
+                  'currentInvoice.totals.due_by_date'
                 )
               "
-                class="mod-input" />
+                  class="mod-input" />
+              </div>
             </div>
           </div>
-          <!-- Due by Date -->
-          <div class="w-1/2 relative">
-            <span class="absolute top-0 left-0 text-sm text-gray-500">Due by date:</span>
-            <div x-data="{}" class="mt-6">
-              <input
-                x-ref="copyDueDateInput"
-                type="text"
-                x-init="
-              $store.datePicker.createNew(
-                $refs.copyDueDateInput,
-                'edit',
-                'selectedCopy.due_by_date'
-              )
-            "
-                class="mod-input" />
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- Invoice Items Table -->
-      <div class="relative p-2 border rounded border-vls/40">
-        <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 30vh">
-          <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
-            <thead class="sticky top-0 table-head-style border-clipper">
-              <tr>
-                <th class="border text-left border-transparent round-left-border p-1 text-base w-[50%]">Name</th>
-                <th class="p-1 text-left w-[15%]">Type</th>
-                <th class="p-1 text-right w-[15%]">Qty</th>
-                <th class="p-1 text-right w-[20%] round-right-border">Price</th>
-              </tr>
-            </thead>
-
-            <tbody class="table-body-style table-scrollbar">
-              <template x-for="item in $store.edit.selectedCopy.invoiceItems" :key="item.frontendId">
-                <tr class="border-hover-ring-efect">
-                  <td class="p-1 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
-                  <td class="p-1 text-sm" x-text="item.type" style="width: 15"></td>
-                  <td class="p-1 text-right text-sm" x-text="item.quantity" style="width: 15%"></td>
-                  <td
-                    class="p-1 text-right round-right-border text-sm"
-                    x-text="'£' + item.price"
-                    style="width: 20%"></td>
+        </section>
+        <!-- Invoice Items Table -->
+        <div class="relative p-2 border rounded border-vls/40">
+          <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 30vh">
+            <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
+              <thead class="sticky top-0 table-head-style border-clipper">
+                <tr>
+                  <th class="border text-left border-transparent round-left-border p-1 text-base w-[50%]">Name</th>
+                  <th class="p-1 text-left w-[15%]">Type</th>
+                  <th class="p-1 text-right w-[15%]">Qty</th>
+                  <th class="p-1 text-right w-[20%] round-right-border">Price</th>
                 </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- Invoice Summary -->
-      <section class="my-4">
-        <div class="p-2 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm text-vls3 dark:text-vds">
-          <h2 class="font-semibold text-base">Invoice Summary</h2>
-          <div class="flex justify-between">
-            <span>Subtotal:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.subtotal"></span>
-          </div>
-          <template x-if="$store.edit.selectedCopy.discount_value > 0">
-            <div class="flex justify-between items-center">
-              <span>Discount:</span>
-              <div class="flex items-center">
-                <span
-                  x-text="$store.edit.selectedCopy.discount_type === 1
-                    ? ($store.edit.selectedCopy.discount_value + '%')
-                    : ('£' + $store.edit.selectedCopy.discount_value)"></span>
-                <span
-                  x-show="$store.edit.selectedCopy.discount_type === 1"
-                  class="text-xs"
-                  x-text="`(£${$store.edit.selectedCopy.discVal_ifPercent})`"></span>
-              </div>
-            </div>
-          </template>
-          <div class="flex justify-between">
-            <span>VAT:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.vat"></span>
-          </div>
-          <div class="flex justify-between">
-            <span>Total:</span>
-            <span class="font-semibold" x-text="'£' + $store.edit.selectedCopy.total"></span>
-          </div>
-          <template x-if="$store.edit.selectedCopy.deposit_value > 0">
-            <div class="flex justify-between">
-              <span>Deposit:</span>
-              <div class="flex items-center">
-                <span
-                  x-text="$store.edit.selectedCopy.deposit_type === 1
-                    ? ($store.edit.selectedCopy.deposit_value + '%')
-                    : ('£' + $store.edit.selectedCopy.deposit_value)"></span>
-                <span
-                  x-show="$store.edit.selectedCopy.deposit_type === 1"
-                  class="text-xs"
-                  x-text="'(£' + $store.edit.selectedCopy.depoVal_ifPercent + ')'"></span>
-              </div>
-            </div>
-          </template>
-          <div class="flex justify-between font-semibold">
-            <span>Remaining:</span>
-            <span x-text="'£' + $store.edit.selectedCopy.remaining_balance"></span>
-          </div>
-        </div>
-      </section>
-      <!-- Note Section with modal -->
-      <section
-        class="mb-4"
-        x-data="{ showNoteModal: false, noteText: $store.edit.selectedCopy.note || $store.edit.selectedCopy.note || '' }">
-        <div class="p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm flex justify-between">
-          <div class="h-[2rem]">
-            <span class="font-medium text-vls3 dark:text-vds">Note:</span>
-            <span
-              class="text-xs text-vls2 dark:text-vds3light"
-              x-text="$store.edit.selectedCopy.note ? $store.edit.selectedCopy.note : 'No note added'"></span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button @click="showNoteModal = true" class="modal-btn-prim text-xs flex items-center">
-              <svg class="w-4 h-4">
-                <use href="/icons/icons.svg#pencil" />
-              </svg>
-            </button>
-            <button
-              x-show="noteText.length > 0 && !showNoteModal"
-              x-transition
-              @click="noteText = ''; $store.edit.selectedCopy.note = ''; showNoteModal = false"
-              class="modal-btn-sec text-xs flex items-center">
-              <svg class="w-4 h-4">
-                <use href="/icons/icons.svg#trash" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <template x-if="showNoteModal">
-          <div class="fixed inset-0 z-[99] flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white dark:bg-vdp rounded shadow-lg p-4 w-1/2">
-              <h3 class="font-medium mb-2">Invoice Note</h3>
-              <textarea
-                x-model="noteText"
-                maxlength="220"
-                placeholder="Enter note (max 220 chars)"
-                class="modal-input-style p-1 w-full alt-table-scrollbar"
-                style="height: 12vh; resize: none"
-                rows="3"></textarea>
-              <div class="flex justify-between mt-4">
-                <button @click="showNoteModal = false" class="btn-sec">Cancel</button>
+              </thead>
 
-                <button
-                  @click="$store.edit.selectedCopy.note = noteText; showNoteModal = false"
-                  class="modal-btn-prim text-xs">
-                  Save Note
-                </button>
+              <tbody class="table-body-style table-scrollbar">
+                <template x-for="item in $store.edit.currentInvoice.items" :key="item.frontendId">
+                  <tr class="border-hover-ring-efect">
+                    <td class="p-1 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
+                    <td class="p-1 text-sm" x-text="item.type" style="width: 15"></td>
+                    <td class="p-1 text-right text-sm" x-text="item.quantity" style="width: 15%"></td>
+                    <td
+                      class="p-1 text-right round-right-border text-sm"
+                      x-text="'£' + item.price"
+                      style="width: 20%"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Invoice Summary -->
+        <section class="my-4">
+          <div class="p-2 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm text-vls3 dark:text-vds">
+            <h2 class="font-semibold text-base">Invoice Summary</h2>
+            <div class="flex justify-between">
+              <span>Subtotal:</span>
+              <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal"></span>
+            </div>
+            <template x-if="$store.edit.currentInvoice.totals.discount_value > 0">
+              <div class="flex justify-between items-center">
+                <span>Discount:</span>
+                <div class="flex items-center">
+                  <span
+                    x-text="$store.edit.currentInvoice.totals.discount_type === 1
+                      ? ($store.edit.currentInvoice.totals.discount_value + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.discount_value)"></span>
+                  <span
+                    x-show="$store.edit.currentInvoice.totals.discount_type === 1"
+                    class="text-xs"
+                    x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
+                </div>
               </div>
+            </template>
+            <div class="flex justify-between">
+              <span>VAT:</span>
+              <span x-text="'£' + $store.edit.currentInvoice.totals.vat"></span>
+            </div>
+            <div class="flex justify-between">
+              <span>Total:</span>
+              <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
+            </div>
+            <template x-if="$store.edit.currentInvoice.totals.deposit_value > 0">
+              <div class="flex justify-between">
+                <span>Deposit:</span>
+                <div class="flex items-center">
+                  <span
+                    x-text="$store.edit.currentInvoice.totals.deposit_type === 1
+                      ? ($store.edit.currentInvoice.totals.deposit_value + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.deposit_value)"></span>
+                  <span
+                    x-show="$store.edit.currentInvoice.totals.deposit_type === 1"
+                    class="text-xs"
+                    x-text="'(£' + $store.edit.currentInvoice.totals.depoVal_ifPercent + ')'"></span>
+                </div>
+              </div>
+            </template>
+            <div class="flex justify-between font-semibold">
+              <span>Remaining:</span>
+              <span x-text="'£' + $store.edit.currentInvoice.totals.remaining_balance"></span>
             </div>
           </div>
-        </template>
-      </section>
-      <!-- Footer Action Buttons -->
-    </main>
-    <footer class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-t border-vls/40">
-      <button @click="$store.edit.cancelCopyEdit()" class="btn-sec">Cancel</button>
-      <div class="flex items-center gap-4">
-        <button
-          @click="$store.edit.deleteInvoice($store.edit.invoiceItems.invoice.id, isCopy === true, $store.edit.selectedCopy.original_invoice_id
-        )"
-          class="modal-btn-sec text-xs">
-          Delete
-        </button>
-        <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">PDF</button>
-        <button @click="$store.edit.saveCopyEdit()" class="modal-btn-prim text-xs">Save</button>
-      </div>
-    </footer>
+        </section>
+        <!-- Note Section with modal -->
+        <section
+          class="mb-4"
+          x-data="{ showNoteModal: false, noteText: $store.edit.currentInvoice.totals.note || $store.edit.currentInvoice.totals.note || '' }">
+          <div class="p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm flex justify-between">
+            <div class="h-[2rem] flex items-center">
+              <span class="font-medium text-vls3 dark:text-vds mr-2">Note:</span>
+              <span
+                class="text-xs text-vls2 dark:text-vds3light"
+                x-text="$store.edit.currentInvoice.totals.note ? $store.edit.currentInvoice.totals.note : 'No note added'"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button @click="showNoteModal = true" class="modal-btn-prim text-xs flex items-center">
+                <svg class="w-4 h-4">
+                  <use href="/icons/icons.svg#pencil" />
+                </svg>
+              </button>
+              <button
+                x-show="noteText.length > 0 && !showNoteModal"
+                x-transition
+                @click="noteText = ''; $store.edit.currentInvoice.totals.note = ''; showNoteModal = false"
+                class="modal-btn-sec text-xs flex items-center">
+                <svg class="w-4 h-4">
+                  <use href="/icons/icons.svg#trash" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <template x-if="showNoteModal">
+            <div class="fixed inset-0 z-[99] flex items-center justify-center bg-black bg-opacity-50">
+              <div class="bg-white dark:bg-vdp rounded shadow-lg p-4 w-1/2">
+                <h3 class="font-medium mb-2">Invoice Note</h3>
+                <textarea
+                  x-model="noteText"
+                  maxlength="220"
+                  placeholder="Enter note (max 220 chars)"
+                  class="modal-input-style p-1 w-full alt-table-scrollbar"
+                  style="height: 12vh; resize: none"
+                  rows="3"></textarea>
+                <div class="flex justify-between mt-4">
+                  <button @click="showNoteModal = false" class="btn-sec">Cancel</button>
+
+                  <button
+                    @click="$store.edit.currentInvoice.totals.note = noteText; showNoteModal = false"
+                    class="modal-btn-prim text-xs">
+                    Save Note
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </section>
+        <!-- Footer Action Buttons -->
+      </main>
+      <footer class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-t border-vls/40">
+        <button @click="$store.edit.cancelCopyEdit()" class="btn-sec">Cancel</button>
+        <div class="flex items-center gap-4">
+          <button @click="$store.edit.deleteInvoice()" class="modal-btn-sec text-xs">Delete</button>
+          <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">PDF</button>
+          <button @click="$store.edit.updateCopy()" class="modal-btn-prim text-xs">Save</button>
+        </div>
+      </footer>
+    </div>
   </div>
-</div>
+</template>

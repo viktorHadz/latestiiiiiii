@@ -23,7 +23,7 @@
             :id="$id(invoicingTabId)"
             @click="invoicingTabButtonClicked($el);"
             type="button"
-            :class="{ 'toggler-active' : invoicingTabButtonActive($el), 'toggler-inactive': !invoicingTabButtonActive($el) }">
+            :class="{ 'toggler-active focus:!outline-none' : invoicingTabButtonActive($el), 'toggler-inactive focus:!outline-none': !invoicingTabButtonActive($el) }">
             Styles
           </button>
           <!-- Samples Tab Button -->
@@ -31,7 +31,7 @@
             :id="$id(invoicingTabId)"
             @click="invoicingTabButtonClicked($el);"
             type="button"
-            :class="{ 'toggler-active' : invoicingTabButtonActive($el), 'toggler-inactive': !invoicingTabButtonActive($el) }">
+            :class="{ 'toggler-active focus:!outline-none' : invoicingTabButtonActive($el), 'toggler-inactive focus:!outline-none': !invoicingTabButtonActive($el) }">
             Samples
           </button>
           <!-- Slider Background -->

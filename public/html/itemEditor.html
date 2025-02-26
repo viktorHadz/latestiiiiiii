@@ -29,12 +29,6 @@
                         x-model="search"
                         @x-on:click="console.log(search)" />
                     </div>
-                    <button @click="slideOverOpen=false" class="modal-btn-prim">
-                      <svg width="16" height="16" class="">
-                        <use href="/icons/icons.svg#xmark" />
-                      </svg>
-                      <span>Close</span>
-                    </button>
                   </div>
                 </div>
                 <div class="relative flex-1 mt-5">
@@ -68,14 +62,14 @@
                             :id="1"
                             @click="tabButtonClicked($el)"
                             type="button"
-                            class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap">
+                            class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap focus:outline-none">
                             Styles
                           </button>
                           <button
                             :id="2"
                             @click="tabButtonClicked($el)"
                             type="button"
-                            class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap">
+                            class="relative z-20 inline-flex items-center justify-center w-full h-8 px-3 text-sm font-medium transition-all rounded-md cursor-pointer whitespace-nowrap focus:outline-none">
                             Samples
                           </button>
                           <div
@@ -255,10 +249,21 @@
                   </div>
                 </div>
                 <!-- Add Style Button -->
-                <div class="flex justify-between mr-4">
-                  <button @click="modalStyle = !modalStyle" class="modal-btn-prim">New Style</button>
+                <div class="flex justify-between">
+                  <button
+                    @click="modalStyle = !modalStyle; $nextTick(() => { $refs.nameRefSty.focus() });"
+                    class="modal-btn-prim">
+                    New Style
+                  </button>
+                  <button @click="slideOverOpen=false" class="btn-sec">
+                    <span>Close</span>
+                  </button>
                   <!-- Add Sample Button -->
-                  <button @click="modalSample = !modalSample" class="modal-btn-prim">New Sample</button>
+                  <button
+                    @click="modalSample = !modalSample; $nextTick(() => { $refs.nameRefSamp.focus() });"
+                    class="modal-btn-prim">
+                    New Sample
+                  </button>
                 </div>
                 <div>
                   <template x-teleport="body">
@@ -267,6 +272,7 @@
                         <h2 class="modal-title">Add Sample</h2>
                         <form @submit.prevent="addSample()" class="space-y-4">
                           <input
+                            x-ref="nameRefSamp"
                             x-model="item.name"
                             name="name"
                             type="text"
@@ -292,9 +298,13 @@
                             class="w-full modal-input-style !p-1.5"
                             required />
                         </form>
-                        <div class="w-full flex items-center justify-end space-x-6">
-                          <button @click.prevent="addSample()" class="modal-btn-prim !py-2">Add Sample</button>
-                          <button @click="modalSample = false" class="modal-btn-sec !p-2">Close</button>
+                        <div class="w-full flex items-center justify-between space-x-6">
+                          <button
+                            @click.prevent="addSample(); $nextTick(() => { $refs.nameRefSamp.focus() })"
+                            class="modal-btn-prim">
+                            Add Sample
+                          </button>
+                          <button @click="modalSample = false" class="btn-sec">Close</button>
                         </div>
                       </div>
                     </div>
@@ -307,6 +317,7 @@
                         <h2 class="modal-title">Add Style</h2>
                         <form @submit.prevent="addStyke()" class="space-y-4">
                           <input
+                            x-ref="nameRefSty"
                             x-model="item.name"
                             name="name"
                             type="text"
@@ -323,9 +334,13 @@
                             class="w-full modal-input-style !p-1.5"
                             required />
                         </form>
-                        <div class="w-full flex items-center justify-end space-x-6">
-                          <button @click.prevent="addStyle()" class="modal-btn-prim !p-2">Add Style</button>
-                          <button @click="modalStyle = false" class="modal-btn-sec !p-2">Close</button>
+                        <div class="w-full flex items-center justify-between space-x-6">
+                          <button
+                            @click.prevent="addStyle(); $nextTick(() => { $refs.nameRefSty.focus() })"
+                            class="modal-btn-prim">
+                            Add Style
+                          </button>
+                          <button @click="modalStyle = false" class="btn-sec">Close</button>
                         </div>
                       </div>
                     </div>
