@@ -125,7 +125,7 @@
           <div
             class="flex w-[70%] p-4 items-end justify-around bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
             <div class="flex justify-around w-full">
-              <button @click="$store.edit.deleteInvoice()" class="btn-sec flex items-center">
+              <button @click="$store.edit.deleteInvoice()" class="modal-btn-prim">
                 <svg class="size-4 mr-1">
                   <use href="/icons/icons.svg#trash" />
                 </svg>
@@ -133,8 +133,8 @@
               </button>
 
               <button @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec flex items-center">
-                <svg class="size-4 mr-1">
-                  <use href="/icons/icons.svg#trash" />
+                <svg class="size-5 mr-1.5">
+                  <use href="/icons/icons.svg#download-document"></use>
                 </svg>
                 PDF
               </button>
@@ -224,58 +224,56 @@
         <!-- Summary -->
         <div
           class="text-sm flex flex-col w-[30%] p-4 gap-4 mr-2 bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
-          <h2 class="font-semibold text-base">Copy Invoice Summary</h2>
+          <h2 class="font-semibold text-base">Invoice Summary</h2>
           <div class="flex justify-between">
             <span>Subtotal:</span>
-            <span x-text="'£' + ($store.edit.currentInvoice.total_pre_discount ?? 0)"></span>
+            <span x-text="'£' + ($store.edit.currentInvoice.totals.total_pre_discount ?? 0)"></span>
           </div>
           <!-- Discount (if present) -->
-          <template x-if="$store.edit.currentInvoice.discount_value > 0">
+          <template x-if="$store.edit.currentInvoice.totals.discount_value > 0">
             <div class="flex justify-between">
               <span>Discount:</span>
               <div>
                 <span
-                  x-text="$store.edit.currentInvoice.discount_type === 1 ? ($store.edit.currentInvoice.discount_value + '%') : ('£' + $store.edit.currentInvoice.discount_value)"></span>
+                  x-text="$store.edit.currentInvoice.totals.discount_type === 1 ? ($store.edit.currentInvoice.totals.discount_value + '%') : ('£' + $store.edit.currentInvoice.totals.discount_value)"></span>
                 <span
-                  x-show="$store.edit.currentInvoice.discount_type === 1"
-                  x-text="`(£${$store.edit.currentInvoice.discVal_ifPercent})`"></span>
+                  x-show="$store.edit.currentInvoice.totals.discount_type === 1"
+                  x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
               </div>
             </div>
           </template>
           <div class="flex justify-between">
             <span>VAT:</span>
-            <span x-text="'£' + ($store.edit.currentInvoice.vat ?? 0)"></span>
+            <span x-text="'£' + ($store.edit.currentInvoice.totals.vat ?? 0)"></span>
           </div>
           <div class="flex justify-between">
             <span>Total:</span>
-            <span class="font-semibold" x-text="'£' + ($store.edit.currentInvoice.total ?? 0)"></span>
+            <span class="font-semibold" x-text="'£' + ($store.edit.currentInvoice.totals.total ?? 0)"></span>
           </div>
           <!-- Deposit (if present) -->
-          <template x-if="$store.edit.currentInvoice.deposit_value > 0">
+          <template x-if="$store.edit.currentInvoice.totals.deposit_value > 0">
             <div class="flex justify-between">
               <span>Deposit:</span>
               <div>
                 <span
-                  x-text="$store.edit.currentInvoice.deposit_type === 1 ? ($store.edit.currentInvoice.deposit_value + '%') : ('£' + $store.edit.currentInvoice.deposit_value)"></span>
+                  x-text="$store.edit.currentInvoice.totals.deposit_type === 1 ? ($store.edit.currentInvoice.totals.deposit_value + '%') : ('£' + $store.edit.currentInvoice.totals.deposit_value)"></span>
                 <span
-                  x-show="$store.edit.currentInvoice.deposit_type === 1"
-                  x-text="`(£${$store.edit.currentInvoice.depoVal_ifPercent})`"></span>
+                  x-show="$store.edit.currentInvoice.totals.deposit_type === 1"
+                  x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
               </div>
             </div>
           </template>
           <div class="flex justify-between font-semibold">
             <span>Remaining:</span>
-            <span x-text="'£' + ($store.edit.currentInvoice.remaining_balance ?? 0)"></span>
+            <span x-text="'£' + ($store.edit.currentInvoice.totals.remaining_balance ?? 0)"></span>
           </div>
         </div>
         <!-- Action Buttons -->
         <div
           class="flex w-[70%] p-4 items-end justify-around bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
           <div class="flex justify-around w-full">
-            <button
-              @click="$store.edit.deleteInvoice($store.edit.currentInvoice.invoice_id, $store.edit.currentInvoice.isCopy)"
-              class="btn-sec flex items-center">
-              <svg class="size-4 mr-1">
+            <button @click="$store.edit.deleteInvoice()" class="modal-btn-prim flex items-center">
+              <svg class="size-4">
                 <use href="/icons/icons.svg#trash" />
               </svg>
               Delete Copy
@@ -283,8 +281,8 @@
             <button
               @click="$store.pdfStore.generateInvoice($store.edit.currentInvoice.invoice_id, $store.edit.currentInvoice.isCopy)"
               class="modal-btn-sec flex items-center">
-              <svg class="size-4 mr-1">
-                <use href="/icons/icons.svg#pdf" />
+              <svg class="size-5 mr-1.5">
+                <use href="/icons/icons.svg#download-document"></use>
               </svg>
               PDF
             </button>

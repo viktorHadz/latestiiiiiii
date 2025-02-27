@@ -26,8 +26,10 @@
         <template x-for="invoice in $store.edit.invoiceBook" :key="invoice.id">
           <div class="mb-6" @click="$store.edit.fetchInvoiceById(invoice.id, false)" :id="'rowid-' + invoice.id">
             <div
-              :class="{'shadow-md bg-blue-100  ring-vls/90 text-vdp dark:text-white dark:ring-vda2': (invoice.id === $store.edit.currentInvoice.invoice_id) && (!$store.edit.currentInvoice.isCopy)}"
-              class="flex justify-between items-center shadow hover:shadow-md rounded p-1.5 bg-vlp dark:bg-vdp transition-all ring-1 ring-vls/40 hover:ring-vls/90 text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds">
+              :class="$store.edit.getInvoiceClass(invoice)"
+              role="button"
+              :aria-pressed="invoice.id === $store.edit.currentInvoice.invoice_id"
+              tabindex="0">
               <div class="flex flex-col text-xs cursor-default">
                 <div x-text="invoice.client_name"></div>
                 <div x-text="invoice.date"></div>
@@ -74,24 +76,22 @@
               x-transition:enter.duration.300ms
               x-transition:leave.scale.origin.bottom
               x-transition:leave.duration.200ms
-              class="border mt-2 border-vls/40 rounded bg-vlp2 dark:bg-vdp/80">
-              <div class="text-center text-vls2 dark:text-vds3light">Attached Invoices</div>
-              <ul>
+              class="flex place-self-center mt-2 border border-vls/40 w-[96%] dark:border-vls/40 rounded shadow bg-vlp dark:bg-vdt-800">
+              <ul class="h-full w-full flex flex-col px-2 py-2 gap-2">
                 <template x-for="copy in invoice.copies" :key="copy.id + '-' + copy.original_invoice_id">
-                  <li @click.stop="$store.edit.fetchInvoiceById(copy.id, true)" class="p-2">
-                    <div
-                      :class="{'bg-blue-100 border-vls/80 dark:border-vda2 dark:text-white': (copy.id === $store.edit.currentInvoice.invoice_id) && ($store.edit.currentInvoice.isCopy)}"
-                      class="flex bg-vlp border-vls/40 justify-between items-center border rounded p-1 text-xs dark:bg-vdp cursor-pointer transition">
-                      <span x-text="copy.invoice_number"></span>
-                      <div x-data="tooltip('Delete')">
-                        <button
-                          @click.stop="$store.edit.deleteInvoice(copy.id, true, copy.original_invoice_id)"
-                          class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
-                          <svg class="w-4 h-4">
-                            <use href="/icons/icons.svg#trash" />
-                          </svg>
-                        </button>
-                      </div>
+                  <li
+                    @click.stop="$store.edit.fetchInvoiceById(copy.id, true)"
+                    :class="$store.edit.getCopyClass(copy)"
+                    class="h-full px-2 py-0.5 flex items-center justify-between shadow bg-vlp-2-800 dark:bg-vdp hover:bg-blue-50 border border-vls/40 hover:border-vls/80 rounded transition-all text-xs text-vls2 dark:text-vds3light cursor-pointer">
+                    <span x-text="copy.invoice_number"></span>
+                    <div x-data="tooltip('Delete')">
+                      <button
+                        @click.stop="$store.edit.deleteInvoice(copy.id, true, copy.original_invoice_id)"
+                        class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                        <svg class="w-4 h-4">
+                          <use href="/icons/icons.svg#trash" />
+                        </svg>
+                      </button>
                     </div>
                   </li>
                 </template>

@@ -144,6 +144,20 @@ module.exports = {
           800: '#8ed99e',
           900: '#c6eccf',
         },
+
+        vdt: {
+          50: '#303036',
+          100: '#2E2E33',
+          200: '#2B2B31',
+          300: '#29292E',
+          400: '#26262B',
+          500: '#242429',
+          600: '#222226',
+          700: '#1F1F23',
+          800: '#1D1D20',
+          900: '#1A1A1E',
+          950: '#18181B', // vdp
+        },
         vblue: {
           50: '#D6EEFF',
           100: '#B3DFFF',
@@ -192,16 +206,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    function ({ addBase }) {
-      addBase({
-        '*:focus': {
-          outline: '2px solid #4299e199',
-        },
-        '.dark *:focus': {
-          outline: '2px solid #53cf6e',
-        },
-      })
-    },
-  ],
+  plugins: [],
 }

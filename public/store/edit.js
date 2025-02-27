@@ -67,7 +67,7 @@ document.addEventListener('alpine:init', () => {
       uiNote: '',
       // ==== State Keeping Variables
       currentInvoice: {
-        client_id: null,
+        clientId: null,
         invoice_id: null,
         invoice_number: '',
         invoice_status: '',
@@ -191,6 +191,12 @@ document.addEventListener('alpine:init', () => {
         this.editing = false
         this.editMode = ''
       },
+      // non async escape for functions
+      exitEdit() {
+        this.currentInvoice = JSON.parse(JSON.stringify(this.initialEditValues))
+        this.editing = false
+        this.editMode = ''
+      },
       async deleteInvoice() {
         if (!this.invoiceExists) {
           callError('No invoice selected', 'Pick an invoice first')
@@ -200,14 +206,15 @@ document.addEventListener('alpine:init', () => {
         if (!confirmed) return
 
         const endpoint = this.currentInvoice.isCopy
-          ? `/editor/invoice/copy/delete/${this.currentInvoice.id}`
-          : `/editor/invoice/delete/${this.currentInvoice.id}`
+          ? `/editor/invoice/copy/delete/${this.currentInvoice.invoice_id}`
+          : `/editor/invoice/delete/${this.currentInvoice.invoice_id}`
 
         try {
           const res = await fetch(endpoint, { method: 'DELETE' })
           if (!res.ok) throw new Error('Failed to delete invoice')
 
-          this.currentInvoice = { id: null, isCopy: false, totals: {}, invoiceItems: [] }
+          this.currentInvoice = { invoice_id: null, isCopy: false, totals: {}, invoiceItems: [] }
+          this.refreshInvoiceCopies(this.currentInvoice.invoice_id)
           callSuccess('Invoice deleted successfully')
         } catch (error) {
           console.error('Error deleting invoice:', error)
@@ -461,19 +468,19 @@ document.addEventListener('alpine:init', () => {
       // ====== SAVING ======
       async updateCopy() {
         try {
-          let res = await fetch(`/editor/invoice/copy/update/${this.currentInvoice.data.id}`, {
+          let res = await fetch(`/editor/invoice/copy/update/${this.currentInvoice.invoice_id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              deposit: this.currentInvoice.data.deposit,
-              discount: this.currentInvoice.data.discount,
+              deposit: this.currentInvoice.totals.depositValue,
+              discount: this.currentInvoice.totals.discountValue,
             }),
           })
           if (!res.ok) throw new Error('Failed to update copy invoice')
           // Update the corresponding copy in the parent invoice’s copies array
-          let parentInvoice = this.invoiceBook.find(inv => inv.id === this.currentInvoice.data.original_invoice_id)
+          let parentInvoice = this.invoiceBook.find(inv => inv.id === this.currentInvoice.invoice_id)
           if (parentInvoice && parentInvoice.copies) {
-            let idx = parentInvoice.copies.findIndex(c => c.id === this.currentInvoice.data.id)
+            let idx = parentInvoice.copies.findIndex(c => c.id === this.currentInvoice.invoice_id)
             if (idx !== -1) parentInvoice.copies[idx] = { ...this.currentInvoice.data }
           }
           this.showCopyModal = false
@@ -526,69 +533,77 @@ document.addEventListener('alpine:init', () => {
 
       async saveEdit({ mode } = { mode: 'overwrite' }) {
         if (await callConfirm(`Are you sure you want to ${mode} this invoice?`)) {
-          if (this.currentInvoice.data.deposit_value <= 0 && mode === 'copy') {
+          if (this.currentInvoice.totals.depositValue <= 0 && mode === 'copy') {
             callInfo('Cannot save a copy', 'Attached invoices must have a deposit')
             return
           }
-          const invoice = this.currentInvoice.data
+
+          const invoice = this.currentInvoice
+          const totals = this.currentInvoice.totals
+          const invoiceId = invoice.invoiceId
 
           const data = {
-            invoiceId: invoice.id,
-            clientId: invoice.client_id,
-            items: this.currentInvoice.dataItems.map(item => ({
+            invoice_id: invoice.invoice_id,
+            clientId: invoice.clientId,
+            items: this.currentInvoice.items.map(item => ({
+              id: item.id,
               name: item.name,
               price: item.price,
               type: item.type,
               time: item.type === 'sample' ? item.time : 0,
-              invoice_id: invoice.id,
+              invoice_id: invoice.invoice_id,
+              origin_id: item.origin_id,
               quantity: parseInt(item.quantity, 10),
               total_item_price:
                 item.type === 'sample' ? item.price * (item.time / 60) * item.quantity : item.price * item.quantity,
-              origin_id: item.origin_id,
             })),
-            discountType: invoice.discount_type,
-            discountValue: invoice.discount_value,
-            discVal_ifPercent: invoice.discVal_ifPercent,
-            vatPercent: invoice.vat_percent,
-            vat: invoice.vat,
-            subtotal: invoice.subtotal,
-            total: invoice.total,
-            depositType: invoice.deposit_type,
-            depositValue: invoice.deposit_value,
-            depoVal_ifPercent: invoice.depoVal_ifPercent,
-            note: invoice.note?.trim(),
-            totalPreDiscount: invoice.total_pre_discount,
-            remaining_balance: invoice.remaining_balance,
-            date: invoice.date,
-            due_by_date: invoice.due_by_date,
+            original_invoice_id: invoice.invoice_id,
+            discountType: totals.discountType,
+            discountValue: totals.discountValue,
+            discVal_ifPercent: totals.discVal_ifPercent,
+            vatPercent: totals.vatPercent || 0,
+            vat: totals.vat,
+            subtotal: totals.subtotal,
+            total: totals.total,
+            depositType: totals.depositType,
+            depositValue: totals.depositValue,
+            depoVal_ifPercent: totals.depoVal_ifPercent,
+            note: totals.note?.trim(),
+            totalPreDiscount: totals.totalPreDiscount,
+            remaining_balance: totals.remaining_balance,
+            date: totals.date,
+            due_by_date: totals.due_by_date,
+            invoice_number: invoice.invoice_number,
           }
+
           const endpoint =
             mode === 'overwrite'
               ? `/editor/invoice/save/overwrite`
               : mode === 'copy'
                 ? `/editor/invoice/save/copy`
-                : mode === 'paid' || this.currentInvoice.data.remaining_balance === 0
+                : mode === 'paid' || this.currentInvoice.totals.remaining_balance === 0
                   ? `/editor/invoice/save/paid`
                   : ''
+
           try {
+            console.log(data)
             const res = await fetch(endpoint, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(data),
             })
+
             const response = await res.json()
             if (response.error) throw new Error(response.error)
 
             callSuccess(mode === 'overwrite' ? 'Invoice updated successfully' : 'Invoice copy saved')
 
             // Update the invoiceBook and refresh copies.
-            let existingInvoice = this.invoiceBook.find(inv => inv.id === invoice.id)
+            let existingInvoice = this.invoiceBook.find(inv => inv.invoice_id === invoice.invoice_id)
             if (existingInvoice) Object.assign(existingInvoice, invoice)
-            await this.refreshInvoiceCopies(invoice.id)
+            await this.refreshInvoiceCopies(invoice.invoice_id)
 
-            // this.openEditModal = false removing after refactor
-            this.editing = false
-            this.editMode = ''
+            this.exitEdit()
           } catch (error) {
             console.error('Error saving invoice:', error)
             callError('Error saving invoice', error.message)
@@ -597,6 +612,7 @@ document.addEventListener('alpine:init', () => {
           return
         }
       },
+
       calculateTotals() {
         const round = value => Alpine.store('price').roundToTwo(value)
 
@@ -996,6 +1012,27 @@ document.addEventListener('alpine:init', () => {
       //   console.log(`Updated path "${path}" =>`, newValue)
       //   console.log('Store now:', JSON.parse(JSON.stringify(this)))
       // },
+      getInvoiceClass(invoice) {
+        return {
+          'flex justify-between items-center shadow-md ring-vls/80 text-vdp dark:text-white dark:ring-bg-vlp-2-800':
+            invoice.id === this.currentInvoice.invoice_id && !this.currentInvoice.isCopy,
+          'flex justify-between items-center shadow hover:shadow-md rounded p-1.5 bg-vlp hover:bg-blue-50 dark:bg-vdp transition-all ring-1 ring-vls/40 hover:ring-vls/80 text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds cursor-pointer':
+            invoice.id !== this.currentInvoice.invoice_id || this.currentInvoice.isCopy,
+          'bg-blue-50 dark:bg-vdp p-1.5 transition-all ring-1 ring-vls/80 rounded text-vls3 dark:text-vds':
+            invoice.id === this.currentInvoice.invoice_id && !this.currentInvoice.isCopy,
+        }
+      },
+
+      getCopyClass(copy) {
+        return {
+          'flex justify-between items-center shadow-md border-vls/80 text-vdp dark:text-white dark:border-bg-vlp-2-800':
+            copy.id === this.currentInvoice.invoice_id && this.currentInvoice.isCopy,
+          'flex justify-between items-center shadow hover:shadow-md rounded p-1.5 bg-vlp hover:bg-blue-50 dark:bg-vdp transition-all border-1 border-vls/40 hover:border-vls/80 text-vls2 hover:text-vls3 dark:text-vds3light dark:hover:text-vds cursor-pointer':
+            copy.id !== this.currentInvoice.invoice_id || !this.currentInvoice.isCopy,
+          '!bg-blue-50 dark:!bg-vdp p-1.5 transition-all border-1 border-vls/80 rounded text-vls3 dark:text-vds':
+            copy.id === this.currentInvoice.invoice_id && this.currentInvoice.isCopy,
+        }
+      },
       async fetchInvoiceBookEffect() {
         const eventHandler = async () => {
           Alpine.effect(async () => {
