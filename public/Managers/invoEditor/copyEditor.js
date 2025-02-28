@@ -1,4 +1,8 @@
 // public/js/copyEditor.js
 export default function copyEditor() {
-  return {}
+  return {
+    init() {
+      console.log('[copyEditor] - initialised')
+    },
+  }
 }

@@ -83,16 +83,16 @@
               <span>Subtotal:</span>
               <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal_pre_discount"></span>
             </div>
-            <template x-if="$store.edit.currentInvoice.totals.discount_value > 0">
+            <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
               <div class="flex justify-between">
                 <span>Discount:</span>
                 <div>
                   <span
-                    x-text="$store.edit.currentInvoice.totals.discount_type === 1
-                    ? ($store.edit.currentInvoice.totals.discount_value + '%')
-                    : ('£' + $store.edit.currentInvoice.totals.discount_value)"></span>
+                    x-text="$store.edit.currentInvoice.totals.discountType === 1
+                    ? ($store.edit.currentInvoice.totals.discountValue + '%')
+                    : ('£' + $store.edit.currentInvoice.totals.discountValue)"></span>
                   <span
-                    x-show="$store.edit.currentInvoice.totals.discount_type === 1"
+                    x-show="$store.edit.currentInvoice.totals.discountType === 1"
                     x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
                 </div>
               </div>
@@ -105,14 +105,14 @@
               <span>Total:</span>
               <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
             </div>
-            <template x-if="$store.edit.currentInvoice.totals.deposit_value > 0">
+            <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
               <div class="flex justify-between">
                 <span>Deposit:</span>
                 <div>
                   <span
-                    x-text="$store.edit.currentInvoice.totals.deposit_type === 1 ? ($store.edit.currentInvoice.totals.deposit_value + '%') : ('£' + $store.edit.currentInvoice.totals.deposit_value)"></span>
+                    x-text="$store.edit.currentInvoice.totals.depositType === 1 ? ($store.edit.currentInvoice.totals.depositValue + '%') : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
                   <span
-                    x-show="$store.edit.currentInvoice.totals.deposit_type === 1"
+                    x-show="$store.edit.currentInvoice.totals.depositType === 1"
                     x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
                 </div>
               </div>
@@ -230,14 +230,14 @@
             <span x-text="'£' + ($store.edit.currentInvoice.totals.total_pre_discount ?? 0)"></span>
           </div>
           <!-- Discount (if present) -->
-          <template x-if="$store.edit.currentInvoice.totals.discount_value > 0">
+          <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
             <div class="flex justify-between">
               <span>Discount:</span>
               <div>
                 <span
-                  x-text="$store.edit.currentInvoice.totals.discount_type === 1 ? ($store.edit.currentInvoice.totals.discount_value + '%') : ('£' + $store.edit.currentInvoice.totals.discount_value)"></span>
+                  x-text="$store.edit.currentInvoice.totals.discountType === 1 ? ($store.edit.currentInvoice.totals.discountValue + '%') : ('£' + $store.edit.currentInvoice.totals.discountValue)"></span>
                 <span
-                  x-show="$store.edit.currentInvoice.totals.discount_type === 1"
+                  x-show="$store.edit.currentInvoice.totals.discountType === 1"
                   x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
               </div>
             </div>
@@ -251,14 +251,14 @@
             <span class="font-semibold" x-text="'£' + ($store.edit.currentInvoice.totals.total ?? 0)"></span>
           </div>
           <!-- Deposit (if present) -->
-          <template x-if="$store.edit.currentInvoice.totals.deposit_value > 0">
+          <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
             <div class="flex justify-between">
               <span>Deposit:</span>
               <div>
                 <span
-                  x-text="$store.edit.currentInvoice.totals.deposit_type === 1 ? ($store.edit.currentInvoice.totals.deposit_value + '%') : ('£' + $store.edit.currentInvoice.totals.deposit_value)"></span>
+                  x-text="$store.edit.currentInvoice.totals.depositType === 1 ? ($store.edit.currentInvoice.totals.depositValue + '%') : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
                 <span
-                  x-show="$store.edit.currentInvoice.totals.deposit_type === 1"
+                  x-show="$store.edit.currentInvoice.totals.depositType === 1"
                   x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
               </div>
             </div>

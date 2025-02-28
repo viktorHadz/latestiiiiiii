@@ -364,13 +364,13 @@ input[type='number'] {
 }
 
 .modal-btn-prim {
-  @apply flex items-center gap-2 text-sm p-1 rounded bg-gray-100 text-vls3 border border-gray-300 hover:bg-gray-200 transition shadow;
+  @apply flex items-center gap-2 text-sm p-1 rounded bg-vlp-2-700 text-vls3 border border-vls/40 hover:bg-blue-50 hover:text-black hover:border-vls/80 transition shadow;
   position: relative; /* Required for the ripple effect */
   overflow: hidden; /* Ensure the ripple doesn't exceed button boundaries */
 }
 
 .dark .modal-btn-prim {
-  @apply transition dark:text-vds dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700;
+  @apply transition dark:text-vds dark:bg-zinc-800 dark:border-vls/40 dark:hover:text-vlp dark:hover:bg-zinc-700 dark:hover:border-vls/80;
 }
 .mod-input {
   @apply w-full p-1 pr-20 border text-sm rounded border-vls/40 focus:outline-none focus:ring-1 focus:ring-vls/60 bg-blue-50 hover:bg-blue-100 cursor-pointer dark:bg-vdp2 hover:dark:brightness-125 transition duration-200;

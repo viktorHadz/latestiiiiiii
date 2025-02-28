@@ -47,7 +47,7 @@
                           x-text="item.type === 'sample' ? item.time + ' min' : 'N/A'"></td>
                         <td class="w-[15%]">
                           <div class="flex items-center justify-center w-full">
-                            <button @click="handleAddItem(item)" class="mx-1 table-interaction-icon-blue">
+                            <button @click="handleAddItem(item)" class="mx-1 table-interaction-icon hover:!text-vda">
                               <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
                             </button>
                             <input
@@ -136,11 +136,10 @@
                       id="discountInputEdit"
                       x-ref="discInputEdit"
                       x-model.number="$store.edit.uiDiscount"
-                      :placeholder="$store.edit.currentInvoice.totals.discount_type === 0 ? '£'+ $store.edit.currentInvoice.totals.discount_value : $store.edit.currentInvoice.totals.discount_value + '%'"
                       class="mod-input" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
                       <span class="text-base mr-2">
-                        <span x-text="$store.edit.currentInvoice.totals.discount_type === 1 ? '%' : '£'"></span>
+                        <span x-text="$store.edit.currentInvoice.totals.discountType === 1 ? '%' : '£'"></span>
                       </span>
                       <!-- Trash Button -->
                       <button
@@ -180,11 +179,10 @@
                       id="depositInputEdit"
                       x-ref="depoInput"
                       x-model.number="$store.edit.uiDeposit"
-                      :placeholder="$store.edit.currentInvoice.totals.deposit_type === 0 ? '£'+$store.edit.currentInvoice.totals.deposit_value : $store.edit.currentInvoice.totals.deposit_value + '%'"
                       class="mod-input" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
                       <span class="text-base mr-2">
-                        <span x-text="$store.edit.currentInvoice.totals.deposit_type === 1 ? '%' : '£'"></span>
+                        <span x-text="$store.edit.currentInvoice.totals.depositType === 1 ? '%' : '£'"></span>
                       </span>
                       <!-- Trash Button -->
                       <button
@@ -264,21 +262,19 @@
                   <span>Subtotal:</span>
                   <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal_pre_discount"></span>
                 </div>
-                <template x-if="$store.edit.currentInvoice.totals.discount_value > 0">
+                <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
                   <div class="flex justify-between items-center">
                     <span>Discount:</span>
                     <div class="flex items-center">
                       <span
-                        x-text="$store.edit.currentInvoice.totals.discount_type === 1
-                      ? ($store.edit.currentInvoice.totals.discount_value + '%')
-                      : ('£' + $store.edit.currentInvoice.totals.discount_value)"></span>
+                        x-text="$store.edit.currentInvoice.totals.discountType === 1
+                      ? ($store.edit.currentInvoice.totals.discountValue + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.discountValue)"></span>
                       <span
-                        x-show="$store.edit.currentInvoice.totals.discount_type === 1"
+                        x-show="$store.edit.currentInvoice.totals.discountType === 1"
                         class="text-xs"
                         x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
-                      <button
-                        @click="$store.edit.removeDiscount(); $store.edit.modDisc = false"
-                        class="text-red-600 hover:text-red-500">
+                      <button @click="$store.edit.removeDiscount()" class="text-red-600 hover:text-red-500">
                         <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
                       </button>
                     </div>
@@ -292,21 +288,19 @@
                   <span>Total:</span>
                   <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
                 </div>
-                <template x-if="$store.edit.currentInvoice.totals.deposit_value > 0">
+                <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
                   <div class="flex justify-between items-center">
                     <span>Deposit:</span>
                     <div class="flex items-center">
                       <span
-                        x-text="$store.edit.currentInvoice.totals.deposit_type === 1
-                      ? ($store.edit.currentInvoice.totals.deposit_value + '%')
-                      : ('£' + $store.edit.currentInvoice.totals.deposit_value)"></span>
+                        x-text="$store.edit.currentInvoice.totals.depositType === 1
+                      ? ($store.edit.currentInvoice.totals.depositValue + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
                       <span
-                        x-show="$store.edit.currentInvoice.totals.deposit_type === 1"
+                        x-show="$store.edit.currentInvoice.totals.depositType === 1"
                         class="text-xs"
                         x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
-                      <button
-                        @click="$store.edit.removeDeposit(); $store.edit.modDepo = false"
-                        class="text-red-600 hover:text-red-500">
+                      <button @click="$store.edit.removeDeposit()" class="text-red-600 hover:text-red-500">
                         <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
                       </button>
                     </div>
@@ -481,14 +475,14 @@
               <div
                 x-data="tooltip(`Save a copy of this with a new invoice number e.g. \n${$store.edit.currentInvoice.totals.invoice_number} to ${$store.edit.currentInvoice.totals.invoice_number}.1. Useful for invoicing a paid deposit.`, { position: 'top' })">
                 <div
-                  @click="if ($store.edit.currentInvoice.totals.deposit_value <= 0) {
+                  @click="if ($store.edit.currentInvoice.totals.depositValue <= 0) {
                     callInfo('Cannot save a copy', 'Invoice must contain a deposit.');
                     return;
                 } else {
                     $store.edit.saveEdit({ mode: 'copy' })
                 }"
                   class="modal-btn-prim flex items-center"
-                  :class="{ 'opacity-50 cursor-not-allowed': $store.edit.currentInvoice.totals.deposit_value <= 0, 'cursor-pointer': $store.edit.currentInvoice.totals.deposit_value > 0 }">
+                  :class="{ 'opacity-50 cursor-not-allowed': $store.edit.currentInvoice.totals.depositValue <= 0, 'cursor-pointer': $store.edit.currentInvoice.totals.depositValue > 0 }">
                   <svg class="size-4">
                     <use href="/icons/icons2.xml?v=2#docDuplicate" />
                   </svg>

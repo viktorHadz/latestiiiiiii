@@ -20,11 +20,11 @@
           <button
             class="px-2 py-1 text-xs font-light border rounded-full"
             :class="{
-                'border-green-500 text-green-500': $store.edit.currentInvoice.data.invoice_status==='paid',
-                'border-yellow-500 text-yellow-500': $store.edit.currentInvoice.data.invoice_status==='pending',
-                'border-red-500 text-red-500': $store.edit.currentInvoice.data.invoice_status==='unpaid'
+                'border-green-500 text-green-500': $store.edit.currentInvoice.invoice_status==='paid',
+                'border-yellow-500 text-yellow-500': $store.edit.currentInvoice.invoice_status==='pending',
+                'border-red-500 text-red-500': $store.edit.currentInvoice.invoice_status==='unpaid'
               }"
-            x-text="$store.edit.currentInvoice.data.invoice_status"></button>
+            x-text="$store.edit.currentInvoice.invoice_status"></button>
         </div>
       </header>
       <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
@@ -41,12 +41,12 @@
                     id="depositInput"
                     x-ref="depInputCopy"
                     type="text"
-                    :placeholder="$store.edit.currentInvoice.data.deposit_type === 0 ? '£'+ $store.edit.currentInvoice.data.deposit_value : $store.edit.currentInvoice.data.deposit_value + '%'"
+                    :placeholder="$store.edit.currentInvoice.totals.depositType === 0 ? '£'+ $store.edit.currentInvoice.totals.depositValue : $store.edit.currentInvoice.totals.depositValue + '%'"
                     class="mod-input" />
                   <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
                     <!-- Trash Button -->
                     <button
-                      @click="$store.edit.removeDeposit(isCopy = true);"
+                      @click="$store.edit.removeDeposit();"
                       class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
                       <svg class="size-4">
                         <use href="/icons/icons.svg#trash" />
@@ -54,7 +54,7 @@
                     </button>
                     <!-- Edit Button -->
                     <button
-                      @click="$store.edit.changeDepositType(isCopy = true); $store.effs.addEff($refs.rotateDepCopy, 'spin', 500); $nextTick(() => { $refs.depInputCopy.focus() });"
+                      @click="$store.edit.changeDepositType(); $store.effs.addEff($refs.rotateDepCopy, 'spin', 500); $nextTick(() => { $refs.depInputCopy.focus() });"
                       class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
                       <svg x-ref="rotateDepCopy" class="size-4">
                         <use href="/icons/icons.svg#rotate" />
@@ -62,7 +62,7 @@
                     </button>
                     <!-- Check Button -->
                     <button
-                      @click="$store.edit.addDeposit(isCopy = true)"
+                      @click="$store.edit.addDeposit()"
                       class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
                       <svg class="size-4">
                         <use href="/icons/icons.svg#check-circle" />
@@ -81,12 +81,12 @@
                     id="discountInputCopy"
                     x-ref="discInputCopy"
                     type="text"
-                    :placeholder="$store.edit.currentInvoice.data.discount_type === 0 ? '£'+ $store.edit.currentInvoice.data.discount_value : $store.edit.currentInvoice.data.discount_value + '%'"
+                    :placeholder="$store.edit.currentInvoice.totals.discountType === 0 ? '£'+ $store.edit.currentInvoice.totals.discountValue : $store.edit.currentInvoice.totals.discountValue + '%'"
                     class="mod-input" />
                   <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
                     <!-- Trash Button -->
                     <button
-                      @click="$store.edit.removeDiscount(isCopy = true);"
+                      @click="$store.edit.removeDiscount();"
                       class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
                       <svg class="size-4">
                         <use href="/icons/icons.svg#trash" />
@@ -94,7 +94,7 @@
                     </button>
                     <!-- Edit Button -->
                     <button
-                      @click="$store.edit.changeDiscountType(isCopy = true); $store.effs.addEff($refs.rotateDiscCopy, 'spin', 500); $nextTick(() => { $refs.discInputCopy.focus() });"
+                      @click="$store.edit.changeDiscountType(); $store.effs.addEff($refs.rotateDiscCopy, 'spin', 500); $nextTick(() => { $refs.discInputCopy.focus() });"
                       class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
                       <svg x-ref="rotateDiscCopy" class="size-4">
                         <use href="/icons/icons.svg#rotate" />
@@ -102,7 +102,7 @@
                     </button>
                     <!-- Check Button -->
                     <button
-                      @click="$store.edit.addDiscount(isCopy = true)"
+                      @click="$store.edit.addDiscount()"
                       class="table-interaction-icon-red !text-vls2 hover:!text-vla2 dark:!text-vds3light dark:hover:!text-vla2">
                       <svg class="size-4">
                         <use href="/icons/icons.svg#check-circle" />
@@ -188,16 +188,16 @@
               <span>Subtotal:</span>
               <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal"></span>
             </div>
-            <template x-if="$store.edit.currentInvoice.totals.discount_value > 0">
+            <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
               <div class="flex justify-between items-center">
                 <span>Discount:</span>
                 <div class="flex items-center">
                   <span
-                    x-text="$store.edit.currentInvoice.totals.discount_type === 1
-                      ? ($store.edit.currentInvoice.totals.discount_value + '%')
-                      : ('£' + $store.edit.currentInvoice.totals.discount_value)"></span>
+                    x-text="$store.edit.currentInvoice.totals.discountType === 1
+                      ? ($store.edit.currentInvoice.totals.discountValue + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.discountValue)"></span>
                   <span
-                    x-show="$store.edit.currentInvoice.totals.discount_type === 1"
+                    x-show="$store.edit.currentInvoice.totals.discountType === 1"
                     class="text-xs"
                     x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
                 </div>
@@ -211,16 +211,16 @@
               <span>Total:</span>
               <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
             </div>
-            <template x-if="$store.edit.currentInvoice.totals.deposit_value > 0">
+            <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
               <div class="flex justify-between">
                 <span>Deposit:</span>
                 <div class="flex items-center">
                   <span
-                    x-text="$store.edit.currentInvoice.totals.deposit_type === 1
-                      ? ($store.edit.currentInvoice.totals.deposit_value + '%')
-                      : ('£' + $store.edit.currentInvoice.totals.deposit_value)"></span>
+                    x-text="$store.edit.currentInvoice.totals.depositType === 1
+                      ? ($store.edit.currentInvoice.totals.depositValue + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
                   <span
-                    x-show="$store.edit.currentInvoice.totals.deposit_type === 1"
+                    x-show="$store.edit.currentInvoice.totals.depositType === 1"
                     class="text-xs"
                     x-text="'(£' + $store.edit.currentInvoice.totals.depoVal_ifPercent + ')'"></span>
                 </div>
@@ -287,10 +287,10 @@
         <!-- Footer Action Buttons -->
       </main>
       <footer class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-t border-vls/40">
-        <button @click="$store.edit.cancelCopyEdit()" class="btn-sec">Cancel</button>
+        <button @click="$store.edit.cancelEdit()" class="btn-sec">Cancel</button>
         <div class="flex items-center gap-4">
-          <button @click="$store.edit.deleteInvoice()" class="modal-btn-sec text-xs">Delete</button>
-          <button @click="$store.edit.cancelCopyEdit()" class="modal-btn-sec text-xs">PDF</button>
+          <button @click="$store.edit.deleteInvoice()" class="modal-btn-prim text-xs">Delete</button>
+          <button @click="$store.edit.cancelyEdit()" class="modal-btn-prim text-xs">PDF</button>
           <button @click="$store.edit.updateCopy()" class="modal-btn-prim text-xs">Save</button>
         </div>
       </footer>

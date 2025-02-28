@@ -1,6 +1,8 @@
 // modalEdit.js
 export default function modalEdit() {
   return {
-    init() {},
+    init() {
+      console.log('[modalEdit] - initialised')
+    },
   }
 }

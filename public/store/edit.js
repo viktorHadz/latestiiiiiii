@@ -26,11 +26,11 @@ document.addEventListener('alpine:init', () => {
 
       //Disc/Depo
       uiDiscount: 0,
-      modDisc: false,
-      showXDisc: false,
       uiDeposit: 0,
-      modDepo: false,
-      showXDepo: false,
+      // modDisc: false,
+      // showXDisc: false,
+      // modDepo: false,
+      // showXDepo: false,
 
       // ==== 3. Items for Adding (Existing Items Dropdown & New Item Modal) ====
       existingItems: {
@@ -182,6 +182,7 @@ document.addEventListener('alpine:init', () => {
         }
         this.initialEditValues = JSON.parse(JSON.stringify(this.currentInvoice))
         this.editing = true
+        this.editMode = 'editParent'
         this.editMode = this.currentInvoice.isCopy ? 'copy' : 'editParent'
       },
 
@@ -467,27 +468,42 @@ document.addEventListener('alpine:init', () => {
 
       // ====== SAVING ======
       async updateCopy() {
+        if (!(await callConfirm(`Overwrite ${this.currentInvoice.invoice_number}'s copy with current values?`))) return
         try {
-          let res = await fetch(`/editor/invoice/copy/update/${this.currentInvoice.invoice_id}`, {
+          const totals = this.currentInvoice.totals
+          // Prepare only the necessary fields
+          const data = {
+            discountType: totals.discountType,
+            discountValue: totals.discountValue,
+            discVal_ifPercent: totals.discVal_ifPercent,
+            vatPercent: totals.vatPercent || 0,
+            vat: totals.vat,
+            subtotal: totals.subtotal,
+            total: totals.total,
+            depositType: totals.depositType,
+            depositValue: totals.depositValue,
+            depoVal_ifPercent: totals.depoVal_ifPercent,
+            note: totals.note?.trim(),
+            totalPreDiscount: totals.totalPreDiscount,
+            remaining_balance: totals.remaining_balance,
+            date: totals.date,
+            due_by_date: totals.due_by_date,
+          }
+
+          const res = await fetch(`/editor/invoice/copy/update/${this.currentInvoice.invoice_id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              deposit: this.currentInvoice.totals.depositValue,
-              discount: this.currentInvoice.totals.discountValue,
-            }),
+            body: JSON.stringify(data),
           })
-          if (!res.ok) throw new Error('Failed to update copy invoice')
-          // Update the corresponding copy in the parent invoice’s copies array
-          let parentInvoice = this.invoiceBook.find(inv => inv.id === this.currentInvoice.invoice_id)
-          if (parentInvoice && parentInvoice.copies) {
-            let idx = parentInvoice.copies.findIndex(c => c.id === this.currentInvoice.invoice_id)
-            if (idx !== -1) parentInvoice.copies[idx] = { ...this.currentInvoice.data }
-          }
-          this.showCopyModal = false
+
+          const response = await res.json()
+          if (response.error) throw new Error(response.error)
+
           callSuccess('Copy Invoice Updated')
+          this.exitEdit()
         } catch (error) {
-          console.error('Error saving copy edit:', error)
-          callError('Failed to update invoice copy')
+          console.error('Error updating copy invoice:', error)
+          callError('Failed to update invoice copy', error.message)
         }
       },
       // ==== Open Edit Modal ====
@@ -935,9 +951,9 @@ document.addEventListener('alpine:init', () => {
       },
 
       // --- Discount Functions ---
-      addDiscount(isCopy = false) {
-        const invoice = this.getActiveInvoice(isCopy)
-        if (invoice.discount_value !== 0) {
+      addDiscount() {
+        const invoice = this.currentInvoice.totals
+        if (invoice.discountValue !== 0) {
           callWarning('Cannot change discount', 'Remove existing discount and try again.')
           return
         }
@@ -945,54 +961,46 @@ document.addEventListener('alpine:init', () => {
           callError('Discount cannot exceed subtotal', 'Adjust amount and try again.')
           return
         }
-        invoice.discount_value = this.uiDiscount
+        invoice.discountValue = this.uiDiscount
         this.calculateTotals()
       },
-      changeDiscountType(isCopy = false) {
-        const invoice = this.getActiveInvoice(isCopy)
-        if (invoice.discount_value !== 0) {
+      changeDiscountType() {
+        const invoice = this.currentInvoice.totals
+        if (invoice.discountValue !== 0) {
           callWarning('Cannot change discount', 'Remove existing discount and try again.')
           return
         }
-        invoice.discount_type = invoice.discount_type === 1 ? 0 : 1
+        invoice.discountType = invoice.discountType === 1 ? 0 : 1
       },
-      removeDiscount(isCopy = false) {
-        const invoice = this.getActiveInvoice(isCopy)
-        invoice.discount_value = 0
+      removeDiscount() {
+        const invoice = this.currentInvoice.totals
+        invoice.discountValue = 0
         invoice.discVal_ifPercent = 0
         this.calculateTotals()
       },
       // --- Deposit Functions ---
-      addDeposit(isCopy = false) {
-        const invoice = this.getActiveInvoice(isCopy)
-        if (invoice.deposit_value !== 0) {
+      addDeposit() {
+        const invoice = this.currentInvoice.totals
+        if (invoice.depositValue !== 0) {
           callWarning('Cannot change deposit', 'Remove existing deposit and try again.')
           return
         }
-        invoice.deposit_value = this.uiDeposit
+        invoice.depositValue = this.uiDeposit
         this.uiDeposit = 0
         this.calculateTotals()
       },
-      changeDepositType(isCopy = false) {
-        const invoice = this.getActiveInvoice(isCopy)
-        if (invoice.deposit_value !== 0) {
+      changeDepositType() {
+        const invoice = this.currentInvoice.totals
+        if (invoice.depositValue !== 0) {
           callWarning('Cannot change deposit', 'Remove existing deposit and try again.')
           return
         }
-        invoice.deposit_type = invoice.deposit_type === 1 ? 0 : 1
-        if (isCopy) {
-          const svgElem = document.getElementById('change-deposit-type-copy')
-          if (svgElem) {
-            svgElem.classList.remove('animate-spin-once')
-            void svgElem.offsetWidth
-            svgElem.classList.add('animate-spin-once')
-          }
-        }
+        invoice.depositType = invoice.depositType === 1 ? 0 : 1
+        // this.$store.edit.currentInvoice.totals = { ...invoice } // Force reactivity
       },
-      removeDeposit(isCopy = false) {
-        const invoice = this.getActiveInvoice(isCopy)
-
-        invoice.deposit_value = 0
+      removeDeposit() {
+        const invoice = this.currentInvoice.totals
+        invoice.depositValue = 0
         invoice.depoVal_ifPercent = 0
         this.calculateTotals()
       },
@@ -1042,11 +1050,6 @@ document.addEventListener('alpine:init', () => {
         }
         document.removeEventListener('invoice:created', eventHandler)
         document.addEventListener('invoice:created', eventHandler)
-      },
-
-      // DRY helper to get isCopy or return invoiceId
-      getActiveInvoice(isCopy = false) {
-        return isCopy ? this.currentInvoice.totals : this.currentInvoice.totals
       },
 
       // Helper to fetch copies for a list of invoice IDs.

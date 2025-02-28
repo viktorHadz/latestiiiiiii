@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const getDb = require('../database')
 const db = getDb()
-
+// ALL ROUTERS NEED CLIENT ID ENSURE THEY HAVE IT
 function gettingData(body) {
   const requiredFields = [
     'clientId',
@@ -26,7 +26,7 @@ function gettingData(body) {
     'original_invoice_id',
     'invoice_number',
   ]
-  console.log('Received body in gettingData:', body)
+  // console.log('Received body in gettingData:', body)
   // Check for missing fields
   const missingFields = requiredFields.filter(field => body[field] === undefined)
   if (missingFields.length > 0) {
@@ -62,7 +62,7 @@ function gettingData(body) {
     date: body.date,
     due_by_date: body.due_by_date,
     remaining_balance: body.remaining_balance,
-    invoiceId: body.invoiceId,
+    invoice_id: body.invoice_id, // Use only invoice_id
     original_invoice_id: body.original_invoice_id,
     invoice_number: body.invoice_number,
   }
@@ -286,48 +286,35 @@ router.delete('/invoice/copy/delete/:invoiceId', (req, res) => {
     res.status(200).json({ message: 'Copied invoice deleted successfully', invoiceId })
   })
 })
-// ==== Invoce Status ==== //
-router.post('/invoice/copy/status/update/:invoiceId', (req, res) => {
-  const { deposit, discount } = req.body
-  const invoiceId = req.params.invoiceId
-  db.run(
-    'UPDATE copied_invoices SET deposit = ?, discount = ? WHERE id = ?',
-    [deposit, discount, invoiceId],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message })
-      res.json({ success: true, invoiceId })
-    },
-  )
-})
+
 // ==== Saving Invocies ==== //
 // Overwrites existing invoice
 router.post('/invoice/save/overwrite', async (req, res) => {
   const invoiceData = gettingData(req.body)
-  const { items, ...invoiceFields } = invoiceData
-
-  // const {
-  //   invoiceId,
-  //   clientId,
-  //   items,
-  //   discountType,
-  //   discountValue,
-  //   discVal_ifPercent,
-  //   vatPercent,
-  //   vat,
-  //   subtotal,
-  //   total,
-  //   depositType,
-  //   depositValue,
-  //   depoVal_ifPercent,
-  //   note,
-  //   totalPreDiscount,
-  //   date,
-  //   due_by_date,
-  //   remaining_balance,
-  // } = req.body
+  const { items } = invoiceData
 
   try {
-    // 1. Update invoice values
+    // Build parameters in the correct order
+    const params = [
+      invoiceData.clientId, // client_id
+      invoiceData.discountType, // discount_type
+      invoiceData.discountValue, // discount_value
+      invoiceData.discVal_ifPercent, // discVal_ifPercent
+      invoiceData.vatPercent, // vat_percent
+      invoiceData.vat, // vat
+      invoiceData.subtotal, // subtotal
+      invoiceData.total, // total
+      invoiceData.depositType, // deposit_type
+      invoiceData.depositValue, // deposit_value
+      invoiceData.depoVal_ifPercent, // depoVal_ifPercent
+      invoiceData.note, // note
+      invoiceData.totalPreDiscount, // total_pre_discount
+      invoiceData.date, // date
+      invoiceData.due_by_date, // due_by_date
+      invoiceData.remaining_balance, // remaining_balance
+      invoiceData.invoice_id, // WHERE id = ?
+    ]
+
     await new Promise((resolve, reject) => {
       db.run(
         `UPDATE invoices SET 
@@ -335,26 +322,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
           vat_percent = ?, vat = ?, subtotal = ?, total = ?, deposit_type = ?, deposit_value = ?, 
           depoVal_ifPercent = ?, note = ?, total_pre_discount = ?, date = ?, due_by_date = ?, remaining_balance = ? 
         WHERE id = ?`,
-        // [
-        //   clientId,
-        //   discountType,
-        //   discountValue,
-        //   discVal_ifPercent,
-        //   vatPercent,
-        //   vat,
-        //   subtotal,
-        //   total,
-        //   depositType,
-        //   depositValue,
-        //   depoVal_ifPercent,
-        //   note,
-        //   totalPreDiscount,
-        //   date,
-        //   invoiceId,
-        //   due_by_date,
-        //   remaining_balance,
-        // ],
-        Object.values(invoiceFields),
+        params,
         function (error) {
           if (error) reject(new Error(`Error updating invoice: ${error.message}`))
           resolve()
@@ -362,7 +330,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
       )
     })
 
-    // 2. Replace all invoice items
+    // Continue with deleting and inserting invoice items (unchanged)
     await new Promise((resolve, reject) => {
       db.run(`DELETE FROM invoice_items WHERE invoice_id = ?`, [invoiceData.invoice_id], function (error) {
         if (error) reject(new Error(`Error deleting old invoice items: ${error.message}`))
@@ -405,6 +373,7 @@ router.post('/invoice/save/overwrite', async (req, res) => {
     }
   }
 })
+// Saves a copy invoice
 router.post('/invoice/save/copy', async (req, res) => {
   try {
     const invoiceData = gettingData(req.body)
@@ -504,6 +473,94 @@ router.post('/invoice/save/copy', async (req, res) => {
   } catch (error) {
     console.error('Error:', error.message) // Log for debugging
     res.status(error.message.includes('not found') ? 400 : 500).json({ error: error.message })
+  }
+})
+// ==== Invoce Status ==== //
+// Update a copied invoice with selected fields and recalc status
+router.post('/invoice/copy/update/:invoiceId', (req, res) => {
+  try {
+    const {
+      clientId,
+      invoice_id,
+      discountType,
+      discountValue,
+      discVal_ifPercent,
+      vatPercent,
+      vat,
+      subtotal,
+      total,
+      depositType,
+      depositValue,
+      depoVal_ifPercent,
+      note,
+      totalPreDiscount,
+      date,
+      due_by_date,
+      remaining_balance,
+    } = req.body
+
+    // Ensure the invoice_id in the URL and body match.
+    if (parseInt(req.params.invoiceId, 10) !== invoice_id) {
+      return res.status(400).json({ error: 'Invoice ID in URL and body do not match.' })
+    }
+
+    // Calculate new status based on remaining_balance and depositValue:
+    let invoice_status
+    if (remaining_balance === 0) {
+      invoice_status = 'paid'
+    } else if (depositValue !== 0) {
+      invoice_status = 'partiallyPaid'
+    } else {
+      invoice_status = 'unpaid'
+    }
+
+    const sql = `
+      UPDATE copied_invoices SET
+        discount_type = ?,
+        discount_value = ?,
+        discVal_ifPercent = ?,
+        vat_percent = ?,
+        vat = ?,
+        subtotal = ?,
+        total = ?,
+        deposit_type = ?,
+        deposit_value = ?,
+        depoVal_ifPercent = ?,
+        note = ?,
+        total_pre_discount = ?,
+        date = ?,
+        due_by_date = ?,
+        remaining_balance = ?,
+        invoice_status = ?
+      WHERE id = ? AND client_id = ?
+    `
+    const params = [
+      discountType,
+      discountValue,
+      discVal_ifPercent,
+      vatPercent,
+      vat,
+      subtotal,
+      total,
+      depositType,
+      depositValue,
+      depoVal_ifPercent,
+      note,
+      totalPreDiscount,
+      date,
+      due_by_date,
+      remaining_balance,
+      invoice_status,
+      invoice_id, // from req.body
+      clientId, // from req.body
+    ]
+
+    db.run(sql, params, function (err) {
+      if (err) return res.status(500).json({ error: err.message })
+      res.json({ success: true, invoiceId: invoice_id })
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
   }
 })
 

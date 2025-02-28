@@ -16,19 +16,31 @@ export default function editorMain() {
       this.fileFetcher('/html/editor/copyEditor.html', '#copy-editor')
       this.fileFetcher('/html/editor/modalEdit.html', '#modal-edit')
     },
+
     fileFetcher(file, target) {
       fetch(file)
         .then(res => res.text())
         .then(html => {
           const targetElement = document.querySelector(target)
+
           targetElement.innerHTML = html
           Alpine.initTree(targetElement)
-          // Ensure Alpine updates dynamically injected content
+          // Alpine updates dynamically injected content
           Alpine.nextTick(() => {
             console.log(`[EditorMain] Loaded ${file}`)
           })
         })
         .catch(err => console.error('Error fetching file:', err))
     },
+
+    // seeLoadedEffect() {
+    //   Alpine.effect(() => {
+    //     if (this.loaded) {
+    //       console.log('El loaded', this.loaded)
+    //     } else {
+    //       console.log('El loaded', this.loaded)
+    //     }
+    //   })
+    // },
   }
 }
