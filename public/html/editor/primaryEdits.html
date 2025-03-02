@@ -1,0 +1,585 @@
+<template x-if="$store.edit.invoiceViewMode === 'editParent'">
+  <div class="fixed inset-0 z-[99] flex items-center justify-center bg-black bg-opacity-50">
+    <!-- Modal Container -->
+    <div class="bg-white dark:bg-vdp shadow-lg w-[80%] max-h-[90%] flex flex-col">
+      <header
+        x-text="'Edit Invoice – ' + $store.edit.currentInvoice.invoice_number"
+        class="p-4 bg-vls3 dark:bg-vdp border-b border-vls/40 w-full text-xl font-medium text-vlp dark:text-vds text-center"></header>
+      <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
+        <!-- Existing Items for Client -->
+        <section>
+          <div
+            x-data="$store.makeTable.make($store.edit.styleAndSample, source = 'styleAndSample')"
+            class="relative p-2 border rounded border-vls/40 mb-4">
+            <div class="flex justify-between w-full items-center">
+              <input
+                id="edit-modal-existing"
+                type="text"
+                placeholder="Search invoice items..."
+                class="srch-style"
+                x-model="searchQuery" />
+              <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">
+                Existing styles and samples
+              </h2>
+            </div>
+            <div class="mt-4">
+              <!-- Header row -->
+              <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+                <div class="w-1/3 pl-4">Name</div>
+                <div class="w-1/5">Type</div>
+                <div class="w-1/6 text-right">Price</div>
+                <div class="w-1/6 text-right">
+                  Time
+                  <span class="text-xs">(min)</span>
+                </div>
+                <div class="w-1/6 pr-4 text-center">Qty</div>
+              </div>
+              <!-- Body -->
+              <div class="overflow-y-auto table-scrollbar" style="max-height: 25vh">
+                <div class="px-0.5 mr-2 mt-4">
+                  <template x-for="item in filteredItems" :key="`existing-${item.id}`">
+                    <div
+                      :id="item.frontendId"
+                      class="w-full flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-0.5">
+                      <div class="w-1/3 pl-4" x-text="item.name"></div>
+                      <div class="w-1/5" x-text="item.type"></div>
+                      <div class="w-1/6 text-right" x-text="item.price ? '£' + item.price.toFixed(2) : '£0.00'"></div>
+                      <div class="w-1/6 text-right" x-text="item.type === 'sample' ? item.time + ' min' : 'N/A'"></div>
+                      <!-- Updated width for Qty column to match the header -->
+                      <div class="flex items-center justify-end w-1/6 text-right pr-4">
+                        <button
+                          @click="$store.edit.addDropdownItem(item);$nextTick(()=> $store.invo.addItemAnimation(item.frontendId));"
+                          class="table-interaction-icon-blue mr-2">
+                          <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                        </button>
+                        <input
+                          :id="'existing' + item.frontendId"
+                          type="number"
+                          min="1"
+                          class="table-input-standard w-14"
+                          x-model.number="item.quantity" />
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Current Invoice Items -->
+          <div
+            x-data="$store.makeTable.make($store.edit.currentInvoice.items)"
+            class="relative p-2 border rounded border-vls/40 mb-4">
+            <div class="flex justify-between w-full items-center">
+              <input
+                id="edit-modal-currentInvo"
+                type="text"
+                placeholder="Search invoice items..."
+                class="srch-style"
+                x-model="searchQuery" />
+              <h2
+                class="font-medium text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
+                x-text="$store.edit.currentInvoice.invoice_number + '\'s items'"></h2>
+            </div>
+            <div class="mt-4">
+              <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+                <div class="w-1/3 pl-4">Name</div>
+                <div class="w-1/6">Type</div>
+                <div class="w-1/6 text-right">Qty</div>
+                <div class="w-1/6 text-right">
+                  Price
+                  <span class="text-xs">(total)</span>
+                </div>
+                <div class="w-1/6 text-center">Actions</div>
+              </div>
+              <div class="overflow-y-auto table-scrollbar" style="max-height: 25vh">
+                <div class="px-0.5 mr-2 mt-4">
+                  <template x-for="item in $store.edit.currentInvoice.items" :key="`current-edit-${item.frontendId}`">
+                    <div
+                      :id="`current-${item.id}-${item.frontendId}`"
+                      class="flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-0.5">
+                      <div class="w-1/3 pl-4 truncate" x-text="item.name"></div>
+                      <div class="w-1/6" x-text="item.type"></div>
+                      <div class="w-1/6 text-right" x-text="item.quantity"></div>
+                      <div
+                        class="w-1/6 text-right"
+                        x-text="
+                          item.type === 'sample'
+                            ? '£' + (item.price * (item.time / 60) * item.quantity).toFixed(2)
+                            : '£' + (item.price * item.quantity).toFixed(2)
+                        "></div>
+                      <div class="flex items-center justify-center space-x-2 w-1/6">
+                        <button
+                          @click="
+                              $store.edit.incrementInvoiceItem(item.frontendId);
+                              $nextTick(() => $store.invo.addItemAnimation(`current-${item.id}-${item.frontendId}`));"
+                          class="table-interaction-icon-blue">
+                          <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                        </button>
+                        <button
+                          @click="$store.edit.decrementInvoiceItem(item.frontendId)"
+                          class="table-interaction-icon-red">
+                          <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
+                        </button>
+                        <button
+                          @click="$store.edit.removeInvoiceItem(item.frontendId)"
+                          class="table-interaction-icon-red">
+                          <svg class="size-5"><use href="/icons/icons.svg#trash" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Discount & Deposit -->
+        <section class="grid grid-cols-2 gap-4 my-4">
+          <div class="p-4 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+            <!-- Discount Component -->
+            <div class="w-1/2 relative mr-4">
+              <span class="absolute top-0 left-0 text-md text-vls2 dark:text-vds3light">Discount:</span>
+              <div class="mt-6">
+                <div class="relative">
+                  <input
+                    id="discountInputEdit"
+                    x-ref="discInputEdit"
+                    x-model.number="$store.edit.uiDiscount"
+                    class="mod-input" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                    <span class="text-base mr-2">
+                      <span x-text="$store.edit.currentInvoice.totals.discountType === 1 ? '%' : '£'"></span>
+                    </span>
+                    <!-- Trash Button -->
+                    <button
+                      @click="$store.edit.removeDiscount();"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      @click="$store.edit.changeDiscountType(); $store.effs.addEff($refs.rotateDisc, 'spin', 500); $nextTick(() => { $refs.discInputEdit.focus() });"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                      <svg x-ref="rotateDisc" class="size-4">
+                        <use href="/icons/icons.svg#rotate" />
+                      </svg>
+                    </button>
+                    <!-- Check Button -->
+                    <button
+                      @click="$store.edit.addDiscount()"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-vda2 dark:!text-vds3light dark:hover:!text-vda2">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Deposit Component -->
+
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-md text-vls2 dark:text-vds3light">Deposit:</span>
+              <div class="mt-6">
+                <div class="relative">
+                  <input
+                    id="depositInputEdit"
+                    x-ref="depoInput"
+                    x-model.number="$store.edit.uiDeposit"
+                    class="mod-input" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                    <span class="text-base mr-2">
+                      <span x-text="$store.edit.currentInvoice.totals.depositType === 1 ? '%' : '£'"></span>
+                    </span>
+                    <!-- Trash Button -->
+                    <button
+                      @click="$store.edit.removeDeposit();"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-red-500 dark:!text-vds3light dark:hover:!text-red-500">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#trash" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      @click="$store.edit.changeDepositType(); $store.effs.addEff($refs.rotateDepo, 'spin', 500); $nextTick(() => { $refs.depoInput.focus() });"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-orange-500 dark:!text-vds3light dark:hover:!text-orange-500">
+                      <svg x-ref="rotateDepo" class="size-4">
+                        <use href="/icons/icons.svg#rotate" />
+                      </svg>
+                    </button>
+                    <!-- Check Button -->
+                    <button
+                      @click="$store.edit.addDeposit()"
+                      class="table-interaction-icon-red !text-vls2 hover:!text-vda2 dark:!text-vds3light dark:hover:!text-vda2">
+                      <svg class="size-4">
+                        <use href="/icons/icons.svg#check-circle" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Discount Component -->
+          <div class="p-4 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">
+            <!-- Date -->
+            <div class="w-1/2 relative mr-4">
+              <span class="absolute top-0 left-0 text-md text-vls2 dark:text-vds3light">Date issued:</span>
+              <div x-data="{}" class="mt-6">
+                <input
+                  x-ref="dueDateInput"
+                  type="text"
+                  x-init="
+                      $store.datePicker.createNew(
+                        $refs.dueDateInput,
+                        'edit',
+                        'currentInvoice.totals.date'
+                      )
+                    "
+                  class="mod-input" />
+              </div>
+            </div>
+            <!-- Due By Date -->
+            <div class="w-1/2 relative">
+              <span class="absolute top-0 left-0 text-md text-vls2 dark:text-vds3light">Due by date:</span>
+              <div x-data="{}" class="mt-6">
+                <input
+                  x-ref="dueDateInput"
+                  type="text"
+                  x-init="
+                      $store.datePicker.createNew(
+                        $refs.dueDateInput,
+                        'edit',
+                        'currentInvoice.totals.due_by_date'
+                      )
+                    "
+                  class="mod-input" />
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Invoice Summary and Cancel/Save Buttons -->
+        <section class="flex mt-4">
+          <div
+            class="w-[30%] flex flex-col gap-2 py-2 px-4 mr-2 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow-md text-vls3 dark:text-vds text-sm">
+            <!-- Invoice Summary -->
+            <h2 class="font-semibold text-base text-center">Invoice Summary</h2>
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between">
+                <span>Subtotal:</span>
+                <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal_pre_discount"></span>
+              </div>
+              <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
+                <div class="flex justify-between items-center">
+                  <span>Discount:</span>
+                  <div class="flex items-center">
+                    <span
+                      x-text="$store.edit.currentInvoice.totals.discountType === 1
+                      ? ($store.edit.currentInvoice.totals.discountValue + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.discountValue)"></span>
+                    <span
+                      x-show="$store.edit.currentInvoice.totals.discountType === 1"
+                      class="text-xs"
+                      x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
+                    <button @click="$store.edit.removeDiscount()" class="text-red-600 hover:text-red-500">
+                      <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </template>
+              <div class="flex justify-between">
+                <span>VAT:</span>
+                <span x-text="'£' + $store.edit.currentInvoice.totals.vat"></span>
+              </div>
+              <div class="flex justify-between">
+                <span>Total:</span>
+                <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
+              </div>
+              <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
+                <div class="flex justify-between items-center">
+                  <span>Deposit:</span>
+                  <div class="flex items-center">
+                    <span
+                      x-text="$store.edit.currentInvoice.totals.depositType === 1
+                      ? ($store.edit.currentInvoice.totals.depositValue + '%')
+                      : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
+                    <span
+                      x-show="$store.edit.currentInvoice.totals.depositType === 1"
+                      class="text-xs"
+                      x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
+                    <button @click="$store.edit.removeDeposit()" class="text-red-600 hover:text-red-500">
+                      <svg class="ml-1 w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </template>
+              <template
+                x-if="$store.edit.currentInvoice.totals.depositValue > 0 || $store.edit.currentInvoice.totals.deposits.length > 0">
+                <div>
+                  <!-- Remaining Balance -->
+                  <div class="flex justify-between font-semibold">
+                    <span>Remaining:</span>
+                    <span x-text="'£' + $store.edit.currentInvoice.totals.remaining_balance"></span>
+                  </div>
+
+                  <!-- Deposits List -->
+                  <div x-show="$store.edit.currentInvoice.totals.deposits.length > 0">
+                    <template x-for="(newDepo, index) in $store.edit.currentInvoice.totals.deposits" :key="newDepo.key">
+                      <div class="flex justify-between font-semibold items-center">
+                        <span x-text="'Deposit ' + (index + 1) + ':'"></span>
+                        <div class="flex items-center">
+                          <span x-text="'£' + newDepo.amount"></span>
+                          <!-- Remove Button -->
+                          <button
+                            @click="$store.edit.removeExtraDeposit(index)"
+                            class="text-red-600 hover:text-red-500 ml-2">
+                            <svg class="w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+          <!-- Custom Style/Sample -->
+          <div
+            class="flex flex-col w-[70%] px-4 bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow items-center justify-start p-2">
+            <p class="font-semibold text-base text-center mb-2">Add Custom Item</p>
+            <div class="flex mb-2 w-full items-center justify-between">
+              <div class="flex justify-around w-full ml-4">
+                <label class="cursor-pointer flex items-center gap-2">
+                  <input type="radio" value="style" x-model="$store.edit.newItem.type" class="form-radio mr-1.5" />
+                  <span>Style</span>
+                </label>
+                <label class="cursor-pointer flex items-center gap-2">
+                  <input type="radio" value="sample" x-model="$store.edit.newItem.type" class="form-radio mr-1.5" />
+                  <span>Sample</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Container with relative positioning -->
+            <div class="w-full relative" style="min-height: 80px">
+              <!-- Adjust min-height as needed -->
+              <!-- Sample Inputs -->
+              <div
+                x-show="$store.edit.newItem.type === 'sample'"
+                x-transition.opacity
+                class="absolute inset-0 w-full flex flex-wrap gap-2 items-center justify-center">
+                <div class="flex flex-col gap-2">
+                  <input
+                    type="text"
+                    x-model="$store.edit.newItem.name"
+                    placeholder="Sample Name"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                  <input
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    x-model.number="$store.edit.newItem.time"
+                    placeholder="Time (min)"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                </div>
+                <div class="flex flex-col gap-2">
+                  <input
+                    type="number"
+                    step="0.01"
+                    x-model.number="$store.edit.newItem.price"
+                    placeholder="Price"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                  <input
+                    type="number"
+                    min="1"
+                    x-model.number="$store.edit.newItem.quantity"
+                    placeholder="Qty"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                </div>
+                <div>
+                  <button @click="$store.edit.addCustomItem()" class="modal-btn-prim flex items-center">
+                    <svg class="w-4 h-4"><use href="/icons/icons.svg#plus-circle" /></svg>
+                    Add Sample
+                  </button>
+                </div>
+              </div>
+              <!-- Style Inputs -->
+              <div
+                x-show="$store.edit.newItem.type === 'style'"
+                x-transition.opacity
+                class="absolute inset-0 w-full flex flex-wrap gap-2 items-center justify-center">
+                <div class="flex flex-col gap-2">
+                  <input
+                    type="text"
+                    x-model="$store.edit.newItem.name"
+                    placeholder="Style Name"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                  <input
+                    type="number"
+                    step="0.01"
+                    x-model.number="$store.edit.newItem.price"
+                    placeholder="Price"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                </div>
+                <div class="flex flex-col gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    x-model.number="$store.edit.newItem.quantity"
+                    placeholder="Qty"
+                    class="modal-input-style !p-1.5 !text-sm" />
+                  <div>
+                    <button @click="$store.edit.addCustomItem()" class="modal-btn-prim flex items-center">
+                      <svg class="w-4 h-4 mr-1"><use href="/icons/icons.svg#plus-circle" /></svg>
+                      Add Style
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- MARK: NOTE -->
+        <section
+          class="my-4"
+          x-data="{ showNoteModal: false, noteText: $store.edit.currentInvoice.totals.note || $store.edit.currentInvoice.totals.note || '' }">
+          <div class="p-4 bg-vlp dark:bg-vdp rounded border border-vls/40 shadow text-sm flex justify-between">
+            <div class="h-[2rem] flex items-center">
+              <span class="font-medium text-vls3 dark:text-vds mr-2">Note:</span>
+              <span
+                class="text-xs text-vls2 dark:text-vds3light"
+                x-text="$store.edit.currentInvoice.totals.note ? $store.edit.currentInvoice.totals.note : 'No note added'"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button @click="showNoteModal = true" class="modal-btn-prim text-xs flex items-center">
+                <svg class="w-4 h-4">
+                  <use href="/icons/icons.svg#pencil" />
+                </svg>
+              </button>
+              <button
+                x-show="noteText.length > 0 && !showNoteModal"
+                x-transition
+                @click="noteText = ''; $store.edit.currentInvoice.totals.note = ''; showNoteModal = false"
+                class="modal-btn-sec text-xs flex items-center">
+                <svg class="w-4 h-4">
+                  <use href="/icons/icons.svg#trash" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <template x-if="showNoteModal">
+            <div class="fixed inset-0 z-[99] flex items-center justify-center bg-black bg-opacity-50">
+              <div class="bg-white dark:bg-vdp rounded shadow-lg p-4 w-1/2">
+                <h3 class="font-medium mb-2">Invoice Note</h3>
+                <textarea
+                  x-model="noteText"
+                  maxlength="220"
+                  placeholder="Enter note (max 220 chars)"
+                  class="modal-input-style p-1 w-full alt-table-scrollbar"
+                  style="height: 12vh; resize: none"
+                  rows="3"></textarea>
+                <div class="flex justify-between mt-4">
+                  <button @click="showNoteModal = false" class="btn-sec">Cancel</button>
+                  <button
+                    @click="$store.edit.currentInvoice.totals.note = noteText; showNoteModal = false"
+                    class="modal-btn-prim text-xs">
+                    Save Note
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </section>
+      </main>
+      <footer class="flex justify-between items-center p-4 bg-vls3 dark:bg-vdp border-t border-vls/40">
+        <div class="flex items-end justify-between gap-2 w-full mb-0.5">
+          <div x-data="tooltip('Close modal and revert any changes', { position: 'top' })">
+            <button @click="$store.edit.cancelEdit();" class="btn-sec">Cancel</button>
+          </div>
+          <div class="flex gap-4">
+            <div x-data="tooltip('Edit and overwrite an existing invoice here.', { position: 'top' })">
+              <button @click="$store.edit.saveEdit({mode: 'overwrite'})" class="modal-btn-prim flex items-center">
+                <svg class="w-4 h-4"><use href="/icons/icons.svg#rotate" /></svg>
+                Overwrite
+              </button>
+            </div>
+            <div
+              x-data="tooltip(`Save a copy of this with a new invoice number e.g. \n${$store.edit.currentInvoice.totals.invoice_number} to ${$store.edit.currentInvoice.totals.invoice_number}.1. Useful for invoicing a paid deposit.`, { position: 'top' })">
+              <div
+                @click="if ($store.edit.currentInvoice.totals.depositValue <= 0) {
+                    callInfo('Cannot save a copy', 'Invoice must contain a deposit.');
+                    return;
+                } else {
+                    $store.edit.saveEdit({ mode: 'copy' })
+                }"
+                class="modal-btn-prim flex items-center"
+                :class="{ 'opacity-50 cursor-not-allowed': $store.edit.currentInvoice.totals.depositValue <= 0, 'cursor-pointer': $store.edit.currentInvoice.totals.depositValue > 0 }">
+                <svg class="size-4">
+                  <use href="/icons/icons2.xml?v=2#docDuplicate" />
+                </svg>
+                Save a Copy
+              </div>
+            </div>
+            <div
+              x-data="tooltip('Mark this invoice as fully paid. The remaining balance must be 0.', { position: 'top' })">
+              <div
+                @click="if ($store.edit.currentInvoice.totals.remaining !== 0) {
+                    callInfo('Cannot mark as complete', 'Remaining balance must be 0.');
+                    return;
+                  } else {
+                    $store.edit.saveEdit({ mode: 'paid' })
+                  }"
+                class="modal-btn-prim flex items-center"
+                :class="{ 'opacity-50 cursor-not-allowed': $store.edit.currentInvoice.totals.remaining_balance !== 0, 'cursor-pointer': $store.edit.currentInvoice.totals.remaining_balance === 0 }">
+                <svg class="size-4">
+                  <use href="/icons/icons2.xml?v=2#docCheck" />
+                </svg>
+                Mark as Paid
+              </div>
+            </div>
+
+            <div x-data="{ open: false }">
+              <div>
+                <button x-ref="button" @click="open = ! open" class="modal-btn-prim flex items-center">
+                  <svg class="size-4">
+                    <use href="/icons/icons2.xml?v=2#docDuplicate" />
+                  </svg>
+                  Extra Deposit
+                </button>
+              </div>
+
+              <div
+                x-show="open === true; $nextTick(() => { $refs.newDepoInput.focus() });"
+                x-anchor.top.offset.5="$refs.button"
+                class="flex flex-col">
+                <input
+                  x-ref="newDepoInput"
+                  type="number"
+                  class="mod-input max-w-32 p-1"
+                  x-model.number="$store.edit.uiNewDeposit" />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                  <button
+                    @click="$store.edit.newDeposit()"
+                    class="table-interaction-icon-red !text-vls2 hover:!text-vda2 dark:!text-vds3light dark:hover:!text-vda2">
+                    <svg class="size-5">
+                      <use href="/icons/icons.svg#check-circle" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="open = false"
+                    class="table-interaction-icon-red !text-vls2 hover:!text-vred-500 dark:!text-vds3light dark:hover:!text-vred-500">
+                    <svg class="size-5">
+                      <use href="/icons/icons.svg#xmark-circle" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</template>

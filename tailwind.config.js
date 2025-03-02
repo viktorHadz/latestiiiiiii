@@ -12,12 +12,12 @@ module.exports = {
         vls: '#8B9197', // Secondary
         vls2: '#2B3440', // Secondary darker
         vls3: '#242C36', // Secondary even darker
-        // vla: '#f28c82', // Good redish
-        // vla: '#4BAEA0', // Good teal blkue
-        // vla: '#4299e1', // Good Blue
         vla: '#54adf7', // Good
         vla2: '#f28c82', // Accent darker
         vla3: '#ef5d5d', // Accent even darker
+        // vla: '#f28c82', // Good redish
+        // vla: '#4BAEA0', // Good teal blkue
+        // vla: '#4299e1', // Good Blue
 
         // MARK: Dark theme
         vdp: '#18181b', // Primary #18181b
@@ -27,13 +27,15 @@ module.exports = {
         vds2: '#525252', // Secondary Light #525252
         vds3light: '#a3a3a3', // Secondary Lighter
         vds3neu700: '#404040', // Secondary Darker
-        vda: '#4BA85F', // Accent VRED 300
-        // vda: '#FE7F76', // Accent VRED 300
-        // vda: '#FEA09A', // Accent VRED 300
+        vda: '#FE7F76', // Original red
+        vda2: '#FEA09A', // Accent VRED 300
+        vda3: '#Ef4444',
+        // vda: '#4BA85F', // Green 1
+        // vda: '#FE7F76', // Original red1
+        // vda: '#FEA09A', // Original red2
         // vda2: '#FE7F76', // Accent Dark - vred 400
-        // vda2: '#ef4444 ', // Accent Dark - vred 400
-        vda2: '#53CF6E ', // Accent Dark - vred 400
-        vda3: '#216430',
+        // vda2: '#ef4444 ', // Blood Red dark apx red-700
+        // vda2: '#53CF6E ', // Green 2
 
         // Custom color definitions
         'vlp-1': {

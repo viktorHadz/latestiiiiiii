@@ -96,48 +96,70 @@ function getDb() {
         `)
         db.run(`CREATE INDEX IF NOT EXISTS idx_invoice_items_invoice_id ON invoice_items(invoice_id)`)
         db.run(`
-        CREATE TABLE IF NOT EXISTS copied_invoices (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          original_invoice_id INTEGER NOT NULL,
-          invoice_number TEXT,
-          client_id INTEGER NOT NULL,
-          discount_type INTEGER NOT NULL DEFAULT 0,
-          discount_value REAL NOT NULL DEFAULT 0,
-          discVal_ifPercent REAL NOT NULL DEFAULT 0,
-          vat_percent REAL NOT NULL DEFAULT 20,
-          subtotal REAL NOT NULL,
-          vat REAL NOT NULL DEFAULT 0,
-          total REAL NOT NULL,
-          deposit_type INTEGER NOT NULL DEFAULT 0,
-          deposit_value REAL NOT NULL DEFAULT 0,
-          depoVal_ifPercent REAL NOT NULL DEFAULT 0,
-          note TEXT,
-          total_pre_discount REAL NOT NULL DEFAULT 0,
-          date TEXT NOT NULL,
-          invoice_status TEXT NOT NULL DEFAULT 'unpaid',
-          remaining_balance REAL NOT NULL DEFAULT 0,
-          due_by_date TEXT NOT NULL,
-          FOREIGN KEY (original_invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
-          FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
-        )
+          CREATE TABLE IF NOT EXISTS copied_invoices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            original_invoice_id INTEGER NOT NULL,
+            invoice_number TEXT,
+            client_id INTEGER NOT NULL,
+            discount_type INTEGER NOT NULL DEFAULT 0,
+            discount_value REAL NOT NULL DEFAULT 0,
+            discVal_ifPercent REAL NOT NULL DEFAULT 0,
+            vat_percent REAL NOT NULL DEFAULT 20,
+            subtotal REAL NOT NULL,
+            vat REAL NOT NULL DEFAULT 0,
+            total REAL NOT NULL,
+            deposit_type INTEGER NOT NULL DEFAULT 0,
+            deposit_value REAL NOT NULL DEFAULT 0,
+            depoVal_ifPercent REAL NOT NULL DEFAULT 0,
+            note TEXT,
+            total_pre_discount REAL NOT NULL DEFAULT 0,
+            date TEXT NOT NULL,
+            invoice_status TEXT NOT NULL DEFAULT 'unpaid',
+            remaining_balance REAL NOT NULL DEFAULT 0,
+            due_by_date TEXT NOT NULL,
+            FOREIGN KEY (original_invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
+            FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+          )
         `)
         db.run(`CREATE INDEX IF NOT EXISTS idx_copied_invoices_client_id ON copied_invoices(client_id)`)
         db.run(`
-        
-        CREATE TABLE IF NOT EXISTS copied_invoice_items (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          price REAL NOT NULL DEFAULT 0,
-          type TEXT,
-          time REAL NOT NULL,
-          quantity REAL NOT NULL DEFAULT 1,
-          total_item_price REAL NOT NULL,
-          invoice_id INTEGER NOT NULL,
-          origin_id INTEGER NOT NULL,
-          FOREIGN KEY (invoice_id) REFERENCES copied_invoices(id) ON DELETE CASCADE
-        )
+          CREATE TABLE IF NOT EXISTS copied_invoice_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            price REAL NOT NULL DEFAULT 0,
+            type TEXT,
+            time REAL NOT NULL,
+            quantity REAL NOT NULL DEFAULT 1,
+            total_item_price REAL NOT NULL,
+            invoice_id INTEGER NOT NULL,
+            origin_id INTEGER NOT NULL,
+            FOREIGN KEY (invoice_id) REFERENCES copied_invoices(id) ON DELETE CASCADE
+          )
         `)
         db.run(`CREATE INDEX IF NOT EXISTS idx_copied_invoice_items_invoice_id ON copied_invoice_items(invoice_id)`)
+        db.run(`
+          CREATE TABLE IF NOT EXISTS deposits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            invoice_id INTEGER NOT NULL,
+            key TEXT NOT NULL,
+            amount REAL NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+          )
+        `)
+        db.run(`CREATE INDEX IF NOT EXISTS idx_deposits_invoice_id ON deposits(invoice_id)`)
+        db.run(`
+          CREATE TABLE IF NOT EXISTS copied_deposits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            copied_invoice_id INTEGER NOT NULL,
+            key TEXT NOT NULL,
+            amount REAL NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (copied_invoice_id) REFERENCES copied_invoices(id) ON DELETE CASCADE
+          )
+        `)
+        db.run(`CREATE INDEX IF NOT EXISTS idx_copied_deposits_invoice_id ON copied_deposits(copied_invoice_id)`)
+
         console.log('Tables are ready (or already exist).')
       })
     })

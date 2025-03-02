@@ -1,4 +1,4 @@
-<div x-data="editView" class="border rounded border-vls/40 p-2 shadow ml-2 h-full bg-vlp dark:bg-vdp2">
+<div class="border rounded border-vls/40 p-2 shadow ml-2 h-full bg-vlp dark:bg-vdp2">
   <!-- When no invoice selected -->
   <template x-if="$store.edit.invoiceViewMode === 'none'">
     <div class="flex items-center justify-center h-full text-center text-vls3 dark:text-vds">
@@ -10,7 +10,7 @@
     <div class="overflow-y-auto h-full p-2 text-vls2 dark:text-vds table-scrollbar">
       <div>
         <div
-          class="mb-2 flex items-center rounded bg-vls2 text-vlp dark:bg-vdp border border-vls/40 shadow p-2 text-base">
+          class="mb-2 flex items-center rounded bg-vls2 text-vlp dark:text-vds dark:bg-vdp border border-vls/40 shadow p-2 text-base">
           <span class="mr-2">Invoice:</span>
           <span x-text="$store.edit.currentInvoice.invoice_number" class="font-medium"></span>
           <div class="flex w-full items-center place-self-end justify-end">
@@ -40,52 +40,49 @@
           </div>
         </div>
         <!-- Invoice Items Table -->
-        <div class="relative p-2 border rounded border-vls/40">
-          <input
-            type="text"
-            placeholder="Search invoice items..."
-            class="srch-style"
-            x-model="$store.edit.currentInvoice.searchQuery" />
-          <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 30vh">
-            <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
-              <thead class="sticky top-0 table-head-style border-clipper">
-                <tr>
-                  <th class="border text-left border-transparent round-left-border p-1.5 text-base w-[50%]">Name</th>
-                  <th class="p-1.5 text-left w-[15%]">Type</th>
-                  <th class="p-1.5 text-right w-[15%]">Qty</th>
-                  <th class="p-1.5 text-right w-[20%] round-right-border">Price</th>
-                </tr>
-              </thead>
-
-              <tbody class="table-body-style table-scrollbar">
-                <template x-for="item in $store.edit.filteredItems" :key="item.id">
-                  <tr class="border-hover-ring-efect">
-                    <td class="p-1 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
-                    <td class="p-1 text-sm" x-text="item.type" style="width: 15"></td>
-                    <td class="p-1 text-right text-sm" x-text="item.quantity" style="width: 15%"></td>
-                    <td
-                      class="p-1 text-right round-right-border text-sm"
-                      x-text="'£' + item.price"
-                      style="width: 20%"></td>
-                  </tr>
+        <div
+          x-data="$store.makeTable.make($store.edit.currentInvoice.items)"
+          class="relative p-2 border rounded border-vls/40">
+          <div class="flex w-full justify-between">
+            <input type="text" placeholder="Search invoice items..." class="srch-style" x-model="searchQuery" />
+            <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">
+              Invoice items
+            </h2>
+          </div>
+          <div class="mt-4">
+            <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+              <div class="w-1/4 pl-4">Name</div>
+              <div class="w-1/4">Type</div>
+              <div class="w-1/4 text-right">Qty</div>
+              <div class="w-1/4 text-right pr-4">Price</div>
+            </div>
+            <div class="overflow-y-auto table-scrollbar" style="max-height: 35vh">
+              <div class="px-0.5 mr-2 mt-4">
+                <template x-for="item in filteredItems" :key="`readOnly-parent-${item.frontendId}`">
+                  <div
+                    class="w-full flex justify-between rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-1.5">
+                    <div class="w-1/4 pl-4" x-text="item.name"></div>
+                    <div class="w-1/4" x-text="item.type"></div>
+                    <div class="w-1/4 text-right" x-text="item.quantity"></div>
+                    <div class="w-1/4 text-right pr-4" x-text="'£' + item.price"></div>
+                  </div>
                 </template>
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
         </div>
-
         <!-- Invoice Summary & Action Buttons -->
         <div class="flex my-2">
           <div
             class="text-sm flex flex-col w-[30%] p-4 gap-4 mr-2 bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
             <h2 class="font-semibold text-base">Invoice Summary</h2>
             <div class="flex justify-between">
-              <span>Subtotal:</span>
+              <span class="text-vls2 dark:text-vds3light">Subtotal:</span>
               <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal_pre_discount"></span>
             </div>
             <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
               <div class="flex justify-between">
-                <span>Discount:</span>
+                <span class="text-vls2 dark:text-vds3light">Discount:</span>
                 <div>
                   <span
                     x-text="$store.edit.currentInvoice.totals.discountType === 1
@@ -98,29 +95,55 @@
               </div>
             </template>
             <div class="flex justify-between">
-              <span>VAT:</span>
+              <span class="text-vls2 dark:text-vds3light">VAT:</span>
               <span x-text="'£' + $store.edit.currentInvoice.totals.vat"></span>
             </div>
             <div class="flex justify-between">
-              <span>Total:</span>
+              <span class="text-vls2 dark:text-vds3light font-semibold">Total:</span>
               <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
             </div>
             <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
-              <div class="flex justify-between">
-                <span>Deposit:</span>
-                <div>
-                  <span
-                    x-text="$store.edit.currentInvoice.totals.depositType === 1 ? ($store.edit.currentInvoice.totals.depositValue + '%') : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
-                  <span
-                    x-show="$store.edit.currentInvoice.totals.depositType === 1"
-                    x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
+              <div class="flex flex-col gap-4">
+                <div class="flex justify-between text-vls2 dark:text-vds3light font-semibold">
+                  <span class="">Deposit:</span>
+                  <div>
+                    <span
+                      x-text="$store.edit.currentInvoice.totals.depositType === 1 ? ($store.edit.currentInvoice.totals.depositValue + '%') : ('£' + $store.edit.currentInvoice.totals.depositValue)"></span>
+                    <span
+                      x-show="$store.edit.currentInvoice.totals.depositType === 1"
+                      x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
+                  </div>
                 </div>
               </div>
             </template>
-            <div class="flex justify-between font-semibold">
-              <span>Remaining:</span>
-              <span x-text="'£' + ($store.edit.currentInvoice.totals.remaining_balance)"></span>
-            </div>
+            <template
+              x-if="$store.edit.currentInvoice.totals.depositValue > 0 || $store.edit.currentInvoice.totals.deposits.length > 0">
+              <div>
+                <!-- Remaining Balance -->
+                <div class="flex justify-between font-semibold text-vls2 dark:text-vds3light">
+                  <span>Remaining:</span>
+                  <span x-text="'£' + $store.edit.currentInvoice.totals.remaining_balance"></span>
+                </div>
+
+                <!-- Deposits List -->
+                <div x-show="$store.edit.currentInvoice.totals.deposits.length > 0">
+                  <template x-for="(newDepo, index) in $store.edit.currentInvoice.totals.deposits" :key="newDepo.key">
+                    <div class="flex justify-between font-semibold items-center text-vls2 dark:text-vds3light">
+                      <span x-text="'Deposit ' + (index + 1) + ':'"></span>
+                      <div class="flex items-center">
+                        <span x-text="'£' + newDepo.amount"></span>
+                        <!-- Remove Button -->
+                        <button
+                          @click="$store.edit.removeExtraDeposit(index)"
+                          class="text-red-600 hover:text-red-500 ml-2">
+                          <svg class="w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
           </div>
           <div
             class="flex w-[70%] p-4 items-end justify-around bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
@@ -187,38 +210,38 @@
         </div>
       </div>
       <!-- Invoice Items Table -->
-      <div class="relative p-2 border rounded border-vls/40">
-        <input
-          type="text"
-          placeholder="Search invoice items..."
-          class="srch-style"
-          x-model="$store.edit.currentInvoice.searchQuery" />
-        <div class="relative py-0 overflow-y-auto table-scrollbar" style="max-height: 30vh">
-          <table class="w-[calc(100%-10px)] table-auto border-separate px-0.5" style="border-spacing: 0 10px">
-            <thead class="sticky top-0 table-head-style border-clipper">
-              <tr>
-                <th class="border text-left border-transparent round-left-border p-1.5 text-base w-[50%]">Name</th>
-                <th class="p-1.5 text-left w-[15%]">Type</th>
-                <th class="p-1.5 text-right w-[15%]">Qty</th>
-                <th class="p-1.5 text-right w-[20%] round-right-border">Price</th>
-              </tr>
-            </thead>
-            <tbody class="table-body-style table-scrollbar">
-              <template x-for="item in $store.edit.filteredItems" :key="item.frontendId">
-                <tr class="border-hover-ring-efect">
-                  <td class="p-1 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
-                  <td class="p-1 text-sm" x-text="item.type" style="width: 15%"></td>
-                  <td class="p-1 text-right text-sm" x-text="item.quantity" style="width: 15%"></td>
-                  <td
-                    class="p-1 text-right round-right-border text-sm"
-                    x-text="'£' + item.price"
-                    style="width: 20%"></td>
-                </tr>
+      <div
+        x-data="$store.makeTable.make($store.edit.currentInvoice.items)"
+        class="relative p-2 border rounded border-vls/40">
+        <div class="flex w-full justify-between">
+          <input type="text" placeholder="Search invoice items..." class="srch-style" x-model="searchQuery" />
+          <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">
+            Invoice items
+          </h2>
+        </div>
+        <div class="mt-4">
+          <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+            <div class="w-1/4 pl-4">Name</div>
+            <div class="w-1/4">Type</div>
+            <div class="w-1/4 text-right">Qty</div>
+            <div class="w-1/4 text-right pr-4">Price</div>
+          </div>
+          <div class="overflow-y-auto table-scrollbar" style="max-height: 30vh">
+            <div class="px-0.5 mr-2 mt-4">
+              <template x-for="item in filteredItems" :key="`readOnly-copy-${item.frontendId}`">
+                <div
+                  class="w-full flex justify-between rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-1.5">
+                  <div class="w-1/4 pl-4" x-text="item.name"></div>
+                  <div class="w-1/4" x-text="item.type"></div>
+                  <div class="w-1/4 text-right" x-text="item.quantity"></div>
+                  <div class="w-1/4 text-right pr-4" x-text="'£' + item.price"></div>
+                </div>
               </template>
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       </div>
+
       <!-- Invoice Summary & Action Buttons -->
       <div class="flex my-2">
         <!-- Summary -->
@@ -262,11 +285,11 @@
                   x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
               </div>
             </div>
+            <div class="flex justify-between font-semibold">
+              <span>Remaining:</span>
+              <span x-text="'£' + ($store.edit.currentInvoice.totals.remaining_balance ?? 0)"></span>
+            </div>
           </template>
-          <div class="flex justify-between font-semibold">
-            <span>Remaining:</span>
-            <span x-text="'£' + ($store.edit.currentInvoice.totals.remaining_balance ?? 0)"></span>
-          </div>
         </div>
         <!-- Action Buttons -->
         <div
@@ -304,10 +327,6 @@
       </template>
     </div>
   </template>
-
-  <!-- Edit Invoice Modal -->
-  <div id="modal-edit"></div>
-
-  <!-- Copy Invoice Editor -->
-  <div id="copy-editor"></div>
+  <div id="primary-edit-modal" x-data="primaryEditsModal()" x-html="html"></div>
+  <div id="copies-edit-modal" x-data="copyEditsModal()" x-html="html"></div>
 </div>

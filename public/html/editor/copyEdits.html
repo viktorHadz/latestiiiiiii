@@ -1,10 +1,6 @@
 <!-- Copy Invoice Edit Modal -->
 <template x-if="$store.edit.invoiceViewMode === 'editCopy'">
-  <div
-    x-data="copyEditor"
-    x-show="$store.edit.invoiceViewMode === 'editCopy'"
-    x-transition
-    class="fixed inset-0 z-[98] flex items-center justify-center w-full h-full bg-black bg-opacity-50">
+  <div class="fixed inset-0 z-[98] flex items-center justify-center w-full h-full bg-black bg-opacity-50">
     <div class="bg-white dark:bg-vdp shadow-lg w-[80%] max-h-[90%] flex flex-col">
       <!-- Header -->
       <header class="flex justify-between items-center p-4 bg-vls2 dark:bg-vdp border-b border-vls/40">
@@ -165,7 +161,7 @@
               </thead>
 
               <tbody class="table-body-style table-scrollbar">
-                <template x-for="item in $store.edit.currentInvoice.items" :key="item.frontendId">
+                <template x-for="item in $store.edit.currentInvoice.items" :key="`editing-copy-${item.frontendId}`">
                   <tr class="border-hover-ring-efect">
                     <td class="p-1 truncate round-left-border text-sm" x-text="item.name" style="width: 50%"></td>
                     <td class="p-1 text-sm" x-text="item.type" style="width: 15"></td>
