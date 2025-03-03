@@ -5,133 +5,54 @@
       <header
         x-text="'Edit Invoice – ' + $store.edit.currentInvoice.invoice_number"
         class="p-4 bg-vls3 dark:bg-vdp border-b border-vls/40 w-full text-xl font-medium text-vlp dark:text-vds text-center"></header>
-      <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
-        <!-- Existing Items for Client -->
+      <main
+        x-data="primaryEditsModal()"
+        x-init="init(); existingGet();"
+        class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
+        <section class="mb-8">
+          <h2 class="text-lg font-semibold mb-2">Existing Items (Styles & Samples)</h2>
+          <input type="text" placeholder="Search existing items..." class="srch-style mb-3" x-model="searchQuery" />
+
+          <!-- Use (item, index) in x-for, combine ID + index so there's no collision. -->
+          <template
+            x-for="(item, index) in existing"
+            :key="item.id ? `existing-${item.id}-${index}` : `existing-noid-${index}`">
+            <div class="flex items-center gap-4 mb-1">
+              <span x-text="item.name"></span>
+              <button @click="addToInvoice(item)" class="px-2 py-1 rounded bg-blue-200 hover:bg-blue-300 text-sm">
+                + Add to Invoice
+              </button>
+            </div>
+          </template>
+        </section>
+
+        <!-- 2) Invoice Items Table -->
         <section>
-          <div
-            x-data="$store.makeTable.make($store.edit.styleAndSample, source = 'styleAndSample')"
-            class="relative p-2 border rounded border-vls/40 mb-4">
-            <div class="flex justify-between w-full items-center">
-              <input
-                id="edit-modal-existing"
-                type="text"
-                placeholder="Search invoice items..."
-                class="srch-style"
-                x-model="searchQuery" />
-              <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">
-                Existing styles and samples
-              </h2>
+          <h2 class="text-lg font-semibold mb-2">Current Invoice Items</h2>
+
+          <!-- 
+            We read directly from Alpine.store('edit').currentInvoice.items 
+            but reference it in the template for convenience. 
+            Each item must have a unique key. We use item.frontendId if set, 
+            or fallback to "invoice-${item.id}" if you like.
+          -->
+          <template
+            x-for="invItem in Alpine.store('edit').currentInvoice.items"
+            :key="invItem.frontendId || `invoice-${invItem.id}`">
+            <div class="flex items-center gap-4 mb-1">
+              <span x-text="invItem.name"></span>
+              <!-- Example remove button if you want -->
+              <button
+                @click="
+                  Alpine.store('edit').currentInvoice.items =
+                    Alpine.store('edit').currentInvoice.items.filter(i => i !== invItem);
+                  Alpine.store('edit').calculateTotals();
+                "
+                class="px-2 py-1 rounded bg-red-200 hover:bg-red-300 text-sm">
+                Remove
+              </button>
             </div>
-            <div class="mt-4">
-              <!-- Header row -->
-              <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
-                <div class="w-1/3 pl-4">Name</div>
-                <div class="w-1/5">Type</div>
-                <div class="w-1/6 text-right">Price</div>
-                <div class="w-1/6 text-right">
-                  Time
-                  <span class="text-xs">(min)</span>
-                </div>
-                <div class="w-1/6 pr-4 text-center">Qty</div>
-              </div>
-              <!-- Body -->
-              <div class="overflow-y-auto table-scrollbar" style="max-height: 25vh">
-                <div class="px-0.5 mr-2 mt-4">
-                  <template x-for="item in filteredItems" :key="`existing-${item.id}`">
-                    <div
-                      :id="item.frontendId"
-                      class="w-full flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-0.5">
-                      <div class="w-1/3 pl-4" x-text="item.name"></div>
-                      <div class="w-1/5" x-text="item.type"></div>
-                      <div class="w-1/6 text-right" x-text="item.price ? '£' + item.price.toFixed(2) : '£0.00'"></div>
-                      <div class="w-1/6 text-right" x-text="item.type === 'sample' ? item.time + ' min' : 'N/A'"></div>
-                      <!-- Updated width for Qty column to match the header -->
-                      <div class="flex items-center justify-end w-1/6 text-right pr-4">
-                        <button
-                          @click="$store.edit.addDropdownItem(item);$nextTick(()=> $store.invo.addItemAnimation(item.frontendId));"
-                          class="table-interaction-icon-blue mr-2">
-                          <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
-                        </button>
-                        <input
-                          :id="'existing' + item.frontendId"
-                          type="number"
-                          min="1"
-                          class="table-input-standard w-14"
-                          x-model.number="item.quantity" />
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Current Invoice Items -->
-          <div
-            x-data="$store.makeTable.make($store.edit.currentInvoice.items)"
-            class="relative p-2 border rounded border-vls/40 mb-4">
-            <div class="flex justify-between w-full items-center">
-              <input
-                id="edit-modal-currentInvo"
-                type="text"
-                placeholder="Search invoice items..."
-                class="srch-style"
-                x-model="searchQuery" />
-              <h2
-                class="font-medium text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda"
-                x-text="$store.edit.currentInvoice.invoice_number + '\'s items'"></h2>
-            </div>
-            <div class="mt-4">
-              <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
-                <div class="w-1/3 pl-4">Name</div>
-                <div class="w-1/6">Type</div>
-                <div class="w-1/6 text-right">Qty</div>
-                <div class="w-1/6 text-right">
-                  Price
-                  <span class="text-xs">(total)</span>
-                </div>
-                <div class="w-1/6 text-center">Actions</div>
-              </div>
-              <div class="overflow-y-auto table-scrollbar" style="max-height: 25vh">
-                <div class="px-0.5 mr-2 mt-4">
-                  <template x-for="item in $store.edit.currentInvoice.items" :key="`current-edit-${item.frontendId}`">
-                    <div
-                      :id="`current-${item.id}-${item.frontendId}`"
-                      class="flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-0.5">
-                      <div class="w-1/3 pl-4 truncate" x-text="item.name"></div>
-                      <div class="w-1/6" x-text="item.type"></div>
-                      <div class="w-1/6 text-right" x-text="item.quantity"></div>
-                      <div
-                        class="w-1/6 text-right"
-                        x-text="
-                          item.type === 'sample'
-                            ? '£' + (item.price * (item.time / 60) * item.quantity).toFixed(2)
-                            : '£' + (item.price * item.quantity).toFixed(2)
-                        "></div>
-                      <div class="flex items-center justify-center space-x-2 w-1/6">
-                        <button
-                          @click="
-                              $store.edit.incrementInvoiceItem(item.frontendId);
-                              $nextTick(() => $store.invo.addItemAnimation(`current-${item.id}-${item.frontendId}`));"
-                          class="table-interaction-icon-blue">
-                          <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
-                        </button>
-                        <button
-                          @click="$store.edit.decrementInvoiceItem(item.frontendId)"
-                          class="table-interaction-icon-red">
-                          <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
-                        </button>
-                        <button
-                          @click="$store.edit.removeInvoiceItem(item.frontendId)"
-                          class="table-interaction-icon-red">
-                          <svg class="size-5"><use href="/icons/icons.svg#trash" /></svg>
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </div>
+          </template>
         </section>
         <!-- Discount & Deposit -->
         <section class="grid grid-cols-2 gap-4 my-4">

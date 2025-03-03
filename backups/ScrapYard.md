@@ -1,3 +1,61 @@
+<div
+            x-data="$store.makeTable.make($store.edit.styleAndSample, 'styleAndSample')"
+            class="relative p-2 border rounded border-vls/40 mb-4">
+            <div class="flex justify-between w-full items-center">
+              <input
+                id="edit-modal-existing"
+                type="text"
+                placeholder="Search invoice items..."
+                class="srch-style"
+                x-model="searchQuery" />
+              <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">
+                Existing styles and samples
+              </h2>
+            </div>
+            <div class="mt-4">
+              <!-- Header row -->
+              <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+                <div class="w-1/3 pl-4">Name</div>
+                <div class="w-1/5">Type</div>
+                <div class="w-1/6 text-right">Price</div>
+                <div class="w-1/6 text-right">
+                  Time
+                  <span class="text-xs">(min)</span>
+                </div>
+                <div class="w-1/6 pr-4 text-center">Qty</div>
+              </div>
+              <!-- Body -->
+              <div class="overflow-y-auto table-scrollbar" style="max-height: 25vh">
+                <div class="px-0.5 mr-2 mt-4">
+                  <template x-for="item in filteredItems" :key="`existing-${item.id}`">
+                    <div
+                      :id="item.frontendId"
+                      class="w-full flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-0.5">
+                      <div class="w-1/3 pl-4" x-text="item.name"></div>
+                      <div class="w-1/5" x-text="item.type"></div>
+                      <div class="w-1/6 text-right" x-text="item.price ? '£' + item.price.toFixed(2) : '£0.00'"></div>
+                      <div class="w-1/6 text-right" x-text="item.type === 'sample' ? item.time + ' min' : 'N/A'"></div>
+                      <!-- Updated width for Qty column to match the header -->
+                      <div class="flex items-center justify-end w-1/6 text-right pr-4">
+                        <button
+                          @click="$store.edit.addDropdownItem(item);$nextTick(()=> $store.invo.addItemAnimation(item.frontendId));"
+                          class="table-interaction-icon-blue mr-2">
+                          <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                        </button>
+                        <input
+                          :id="'existing' + item.frontendId"
+                          type="number"
+                          min="1"
+                          class="table-input-standard w-14"
+                          x-model.number="item.quantity" />
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
 class="fixed z-[99] w-auto block max-w-sm left-1/2 -translate-x-1/2 top-0 sm:mt-6"
 x-cloak >
 <template x-for="(toast, index) in toasts" :key="toast.id">
@@ -167,6 +225,7 @@ Styles removed
 @click="tabButtonClicked('styles')"
 :class="{ 'tab-button-active': tabContentActive('styles') }"
 class="tab-button flex items-center">
+
 <div x-show="sideBar" class="flex items-center p-2">
 <object data-feather="package" class="mr-1.5 w-4"></object>
 
