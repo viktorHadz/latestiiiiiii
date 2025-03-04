@@ -40,9 +40,7 @@
           </div>
         </div>
         <!-- Invoice Items Table -->
-        <div
-          x-data="$store.makeTable.make($store.edit.currentInvoice.items)"
-          class="relative p-2 border rounded border-vls/40">
+        <div x-data="$store.makeTable.make('parentReadOnly')" class="relative p-2 border rounded border-vls/40">
           <div class="flex w-full justify-between">
             <input type="text" placeholder="Search invoice items..." class="srch-style" x-model="searchQuery" />
             <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">

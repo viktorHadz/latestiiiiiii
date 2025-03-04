@@ -70,6 +70,7 @@ document.addEventListener('alpine:init', () => {
         await this.styleAndSample(this.activeClientId)
         console.log('{ Edit Store } ==> Initialised')
       },
+      reRenderKey: 0,
       async fetchInvoiceById(invoiceId, isCopy = false) {
         if (this.editing) {
           console.warn('Attempted invoice change while editing. Resetting edit state before fetching.')
@@ -83,7 +84,7 @@ document.addEventListener('alpine:init', () => {
           const { invoice } = await res.json()
           if (!invoice) throw new Error('Invalid invoice data')
           this.currentInvoice = invoice // Assign directly
-
+          this.reRenderKey = Date.now()
           this.calculateTotals()
         } catch (err) {
           console.error(err)

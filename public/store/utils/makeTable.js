@@ -1,15 +1,23 @@
 document.addEventListener('alpine:init', () => {
   Alpine.store('makeTable', {
-    make(arrayRef, keyPrefix) {
+    make(keyPrefix) {
+      // Return a reactive Alpine component
       return {
+        items: [], // local copy of the store’s items
         searchQuery: '',
         get filteredItems() {
-          const query = this.searchQuery.trim().toLowerCase()
-          return query ? arrayRef.filter(item => item.name.toLowerCase().includes(query)) : arrayRef
+          const q = this.searchQuery.trim().toLowerCase()
+          return q ? this.items.filter(item => item.name.toLowerCase().includes(q)) : this.items
         },
-        getKey(item) {
-          // Include a prefix so we never clash
-          return `${keyPrefix}-${item.id}`
+
+        init() {
+          // Use Alpine.effect to watch for store changes
+          Alpine.effect(() => {
+            // On each render pass, read the store's items
+            const newItems = Alpine.store('edit').currentInvoice.items
+            // Assign them to our local `items` array
+            this.items = newItems
+          })
         },
       }
     },

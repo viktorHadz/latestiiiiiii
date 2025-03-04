@@ -202,15 +202,12 @@ input[type='number'] {
 }
 
 .table-edit-input-style {
-  @apply w-full rounded border border-transparent bg-vlp2/70 px-1 py-0.5 text-vls2/60 transition duration-100;
+  @apply rounded border border-vds3light/60 px-1 py-0.5 text-vls2/60 transition;
   @apply hover:border-vls2 hover:bg-vlp hover:text-vls2;
   @apply focus:border-vls2 focus:bg-vlp focus:text-vls2 focus:outline-none;
-  @apply dark:bg-vdp2 dark:text-vds3light;
-  @apply dark:hover:border-vds dark:hover:bg-vdp3 dark:hover:text-vds;
-  @apply dark:focus:border-vds dark:focus:bg-vdp3 dark:focus:text-vds;
 }
 .dark .table-edit-input-style {
-  @apply dark:bg-vdp2 dark:text-vds3light;
+  @apply dark:bg-vdp2 dark:text-vds3light/40 rounded border border-vds3light;
   @apply dark:hover:border-vds/40 dark:hover:bg-vdp3 dark:hover:text-vds;
   @apply dark:focus:border-vds/80 dark:focus:bg-vdp3 dark:focus:text-vds;
 }

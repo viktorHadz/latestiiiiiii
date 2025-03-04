@@ -19,9 +19,11 @@
             :key="item.id ? `existing-${item.id}-${index}` : `existing-noid-${index}`">
             <div class="flex items-center gap-4 mb-1">
               <span x-text="item.name"></span>
-              <button @click="addToInvoice(item)" class="px-2 py-1 rounded bg-blue-200 hover:bg-blue-300 text-sm">
-                + Add to Invoice
-              </button>
+              <span x-text="item.type"></span>
+              <span x-text="'£'+item.price"></span>
+              <span x-text="item.time"></span>
+              <input type="number" name="quantity" id="inputQty" class="table-edit-input-style" />
+              <button @click="addToInvoice(item)" class="modal-btn-prim">+ Add</button>
             </div>
           </template>
         </section>
@@ -41,6 +43,9 @@
             :key="invItem.frontendId || `invoice-${invItem.id}`">
             <div class="flex items-center gap-4 mb-1">
               <span x-text="invItem.name"></span>
+              <span x-text="invItem.type"></span>
+              <span x-text="'x'+invItem.quantity"></span>
+              <span x-text="'£'+invItem.price"></span>
               <!-- Example remove button if you want -->
               <button
                 @click="
@@ -48,7 +53,7 @@
                     Alpine.store('edit').currentInvoice.items.filter(i => i !== invItem);
                   Alpine.store('edit').calculateTotals();
                 "
-                class="px-2 py-1 rounded bg-red-200 hover:bg-red-300 text-sm">
+                class="modal-btn-prim">
                 Remove
               </button>
             </div>
