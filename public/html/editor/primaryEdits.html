@@ -14,16 +14,24 @@
           <input type="text" placeholder="Search existing items..." class="srch-style mb-3" x-model="searchQuery" />
 
           <!-- Use (item, index) in x-for, combine ID + index so there's no collision. -->
+          <div class="flex items-center gap-4 mb-1 w-full">
+            <span class="w-[40%]">Name</span>
+            <span class="w-[10%]">Type</span>
+            <span class="w-[10%]">Price</span>
+            <span class="w-[10%]">Time</span>
+            <span class="w-[10%]">Actions</span>
+          </div>
+          <hr />
           <template
             x-for="(item, index) in existing"
             :key="item.id ? `existing-${item.id}-${index}` : `existing-noid-${index}`">
-            <div class="flex items-center gap-4 mb-1">
-              <span x-text="item.name"></span>
-              <span x-text="item.type"></span>
-              <span x-text="'£'+item.price"></span>
-              <span x-text="item.time"></span>
-              <input type="number" name="quantity" id="inputQty" class="table-edit-input-style" />
-              <button @click="addToInvoice(item)" class="modal-btn-prim">+ Add</button>
+            <div class="flex items-center gap-4 my-1 w-full">
+              <span x-text="item.name" class="w-[40%]"></span>
+              <span x-text="item.type" class="w-[10%]"></span>
+              <span x-text="'£'+item.price" class="w-[10%]"></span>
+              <span x-text="item.time" class="w-[10%]"></span>
+              <input type="number" name="quantity" id="inputQty" class="table-edit-input-style !w-[10%]" />
+              <button @click="$store.edit.addDropdownItem(item.id)" class="modal-btn-prim">+ Add</button>
             </div>
           </template>
         </section>
@@ -38,24 +46,39 @@
             Each item must have a unique key. We use item.frontendId if set, 
             or fallback to "invoice-${item.id}" if you like.
           -->
+          <div class="flex items-center gap-4 mb-1 w-full">
+            <span class="w-[40%]">Name</span>
+            <span class="w-[10%]">Type</span>
+            <span class="w-[10%]">Qty</span>
+            <div class="w-[10%]">
+              <span>Price</span>
+              <span class="text-xs">(total)</span>
+            </div>
+            <span class="w-[10%]">Actions</span>
+          </div>
+          <hr />
           <template
             x-for="invItem in Alpine.store('edit').currentInvoice.items"
             :key="invItem.frontendId || `invoice-${invItem.id}`">
-            <div class="flex items-center gap-4 mb-1">
-              <span x-text="invItem.name"></span>
-              <span x-text="invItem.type"></span>
-              <span x-text="'x'+invItem.quantity"></span>
-              <span x-text="'£'+invItem.price"></span>
+            <div class="flex items-center gap-4 my-1">
+              <span x-text="invItem.name" class="w-[40%]"></span>
+              <span x-text="invItem.type" class="w-[10%]"></span>
+              <span x-text="'x'+invItem.quantity" class="w-[10%]"></span>
+              <span x-text="'£'+invItem.price" class="w-[10%]"></span>
               <!-- Example remove button if you want -->
-              <button
-                @click="
-                  Alpine.store('edit').currentInvoice.items =
-                    Alpine.store('edit').currentInvoice.items.filter(i => i !== invItem);
-                  Alpine.store('edit').calculateTotals();
-                "
-                class="modal-btn-prim">
-                Remove
-              </button>
+              <button class="modal-btn-prim" class="w-[10%]">+1</button>
+              <button class="modal-btn-prim" class="w-[10%]">-1</button>
+              <div class="w-[10%]">
+                <button
+                  @click="
+                    Alpine.store('edit').currentInvoice.items =
+                      Alpine.store('edit').currentInvoice.items.filter(i => i !== invItem);
+                    Alpine.store('edit').calculateTotals();
+                  "
+                  class="modal-btn-prim">
+                  Remove
+                </button>
+              </div>
             </div>
           </template>
         </section>
