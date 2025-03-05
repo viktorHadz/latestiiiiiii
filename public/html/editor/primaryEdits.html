@@ -7,13 +7,12 @@
         class="p-4 bg-vls3 dark:bg-vdp border-b border-vls/40 w-full text-xl font-medium text-vlp dark:text-vds text-center"></header>
       <main
         x-data="primaryEditsModal()"
-        x-init="init(); existingGet();"
+        x-init="init(); existingGet(); invoiceGet()"
         class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2">
         <section class="mb-8">
           <h2 class="text-lg font-semibold mb-2">Existing Items (Styles & Samples)</h2>
           <input type="text" placeholder="Search existing items..." class="srch-style mb-3" x-model="searchQuery" />
 
-          <!-- Use (item, index) in x-for, combine ID + index so there's no collision. -->
           <div class="flex items-center gap-4 mb-1 w-full">
             <span class="w-[40%]">Name</span>
             <span class="w-[10%]">Type</span>
@@ -22,65 +21,90 @@
             <span class="w-[10%]">Actions</span>
           </div>
           <hr />
-          <template
-            x-for="(item, index) in existing"
-            :key="item.id ? `existing-${item.id}-${index}` : `existing-noid-${index}`">
-            <div class="flex items-center gap-4 my-1 w-full">
-              <span x-text="item.name" class="w-[40%]"></span>
-              <span x-text="item.type" class="w-[10%]"></span>
-              <span x-text="'£'+item.price" class="w-[10%]"></span>
-              <span x-text="item.time" class="w-[10%]"></span>
-              <input type="number" name="quantity" id="inputQty" class="table-edit-input-style !w-[10%]" />
-              <button @click="$store.edit.addDropdownItem(item.id)" class="modal-btn-prim">+ Add</button>
-            </div>
-          </template>
+
+          <!-- Scrollable "table" body container -->
+          <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
+            <template
+              x-for="(item, index) in existing"
+              :key="item.id ? `existing-${item.id}-${index}` : `existing-noid-${index}`">
+              <div
+                class="flex items-center gap-4 my-1 w-full dark:bg-vds3neu700 bg-blue-50 border border-vls/40 rounded alt-table-scrollbar">
+                <span x-text="item.name" class="w-[40%] ml-2"></span>
+                <span x-text="item.type" class="w-[10%]"></span>
+                <span x-text="'£'+item.price" class="w-[10%]"></span>
+                <span x-text="item.time" class="w-[10%]"></span>
+                <input
+                  type="number"
+                  name="quantity"
+                  :id="'inputQty'+index"
+                  class="table-edit-input-style !w-[10%]"
+                  maxlength="9"
+                  value="1"
+                  oninput="if(this.value.length > 9) this.value = this.value.slice(0, 9);" />
+                <button @click="addExistingToInvoice(item)" class="modal-btn-prim">
+                  <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                </button>
+              </div>
+            </template>
+          </div>
         </section>
 
         <!-- 2) Invoice Items Table -->
         <section>
           <h2 class="text-lg font-semibold mb-2">Current Invoice Items</h2>
-
           <!-- 
             We read directly from Alpine.store('edit').currentInvoice.items 
             but reference it in the template for convenience. 
             Each item must have a unique key. We use item.frontendId if set, 
             or fallback to "invoice-${item.id}" if you like.
           -->
+          <input type="text" placeholder="Search existing items..." class="srch-style mb-3" x-model="searchQuery2" />
           <div class="flex items-center gap-4 mb-1 w-full">
             <span class="w-[40%]">Name</span>
             <span class="w-[10%]">Type</span>
             <span class="w-[10%]">Qty</span>
             <div class="w-[10%]">
               <span>Price</span>
-              <span class="text-xs">(total)</span>
+              <span class="text-xs">(item)</span>
+            </div>
+            <div class="w-[10%]">
+              <span>Price</span>
+              <span class="text-xs">(item)</span>
             </div>
             <span class="w-[10%]">Actions</span>
           </div>
           <hr />
-          <template
-            x-for="invItem in Alpine.store('edit').currentInvoice.items"
-            :key="invItem.frontendId || `invoice-${invItem.id}`">
-            <div class="flex items-center gap-4 my-1">
-              <span x-text="invItem.name" class="w-[40%]"></span>
-              <span x-text="invItem.type" class="w-[10%]"></span>
-              <span x-text="'x'+invItem.quantity" class="w-[10%]"></span>
-              <span x-text="'£'+invItem.price" class="w-[10%]"></span>
-              <!-- Example remove button if you want -->
-              <button class="modal-btn-prim" class="w-[10%]">+1</button>
-              <button class="modal-btn-prim" class="w-[10%]">-1</button>
-              <div class="w-[10%]">
-                <button
-                  @click="
+          <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
+            <template x-for="(invItem, index) in invoice" :key="invItem.frontendId || `invoice-${invItem.id}`">
+              <div
+                class="flex items-center gap-4 my-1 w-full dark:bg-vds3neu700 bg-blue-50 border border-vls/40 rounded alt-table-scrollbar">
+                <span x-text="invItem.name" class="w-[40%] ml-2"></span>
+                <span x-text="invItem.type" class="w-[10%]"></span>
+                <span x-text="'x'+invItem.quantity" class="w-[10%]"></span>
+                <span x-text="'£'+invItem.total_item_price" class="w-[10%]"></span>
+                <!-- Example remove button if you want -->
+                <button class="modal-btn-prim" class="w-[10%]">
+                  <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                </button>
+                <button class="modal-btn-prim" class="w-[10%]">
+                  <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
+                </button>
+                <div class="w-[10%]">
+                  <button
+                    @click="
                     Alpine.store('edit').currentInvoice.items =
                       Alpine.store('edit').currentInvoice.items.filter(i => i !== invItem);
                     Alpine.store('edit').calculateTotals();
                   "
-                  class="modal-btn-prim">
-                  Remove
-                </button>
+                    class="modal-btn-prim">
+                    <svg class="size-5">
+                      <use href="/icons/icons.svg#trash" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
-          </template>
+            </template>
+          </div>
         </section>
         <!-- Discount & Deposit -->
         <section class="grid grid-cols-2 gap-4 my-4">

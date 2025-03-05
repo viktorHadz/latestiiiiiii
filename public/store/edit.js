@@ -361,37 +361,6 @@ document.addEventListener('alpine:init', () => {
 
         console.log('invoice state after recalculation:', JSON.stringify(this.currentInvoice, null, 2))
       },
-      addDropdownItem(item) {
-        console.log('[addDropdownItem] Adding item:', item)
-        // Check for existing item using origin_id + type
-        const existingItem = this.currentInvoice.items.find(
-          invItem =>
-            invItem.frontendId === item.frontendId &&
-            invItem.type === item.type &&
-            invItem.origin_id === item.origin_id,
-        )
-
-        const quantity = item.quantity || 1
-
-        if (existingItem) {
-          console.log(`[addDropdownItem] Item already exists, increasing quantity.`)
-          existingItem.quantity += quantity
-        } else {
-          if (item.type === 'sample' && (!item.time || isNaN(item.time) || item.time <= 0)) {
-            callError('Invalid Time', 'Samples require a valid time greater than 0.')
-            return
-          }
-          const newItem = {
-            ...item,
-            quantity: quantity,
-          }
-
-          console.log('[addDropdownItem] Adding new dropdown item:', newItem)
-          this.currentInvoice.items.push(newItem)
-        }
-
-        this.calculateTotals()
-      },
 
       addCustomItem() {
         console.log('[addCustomItem] Adding a new custom item.')
