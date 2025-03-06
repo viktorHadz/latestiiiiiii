@@ -44,7 +44,6 @@ document.addEventListener('alpine:init', () => {
         items: [],
         searchQuery: '',
       },
-      styleAndSample: [],
 
       editing: false,
       editMode: '',
@@ -67,7 +66,6 @@ document.addEventListener('alpine:init', () => {
 
         this.clientChangeEffect()
         await this.fetchInvoiceBookEffect()
-        await this.styleAndSample(this.activeClientId)
         console.log('{ Edit Store } ==> Initialised')
       },
       reRenderKey: 0,
@@ -216,29 +214,6 @@ document.addEventListener('alpine:init', () => {
         } catch (error) {
           console.error('Error refreshing copies for invoice:', invoiceId, error)
         }
-      },
-      // Gets styles and sample used in existing items tables
-      async styleAndSample(clientId) {
-        const res = await fetch(`/editor/existing/items/${clientId}`)
-        if (!res.ok) {
-          throw new Error(`[ Editor ]: Cannot retrieve items. ${res.status}`)
-        }
-        const items = await res.json()
-        // Transform styles - add type and set defaults
-        const formattedStyles = items.styles.map(style => ({
-          ...style,
-          type: 'Style',
-          quantity: 1,
-          time: 'N/A',
-        }))
-        // Transform samples - add type and set defaults
-        const formattedSamples = items.samples.map(sample => ({
-          ...sample,
-          type: 'Sample',
-          quantity: 1,
-        }))
-        this.styleAndSample = [...formattedStyles, ...formattedSamples]
-        console.log('Formatted items:', this.styleAndSample)
       },
 
       // ====== SAVING ======

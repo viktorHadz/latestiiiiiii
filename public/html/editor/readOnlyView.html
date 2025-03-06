@@ -1,0 +1,206 @@
+<div class="border rounded border-vls/40 p-2 shadow ml-2 h-full bg-vlp dark:bg-vdp2">
+  <!-- Show default message when no invoice is selected -->
+  <div
+    x-show="$store.edit.invoiceViewMode === 'none'"
+    class="flex items-center justify-center h-full text-center text-vls3 dark:text-vds">
+    <p class="text-xl">Pick an invoice from the list to view details.</p>
+  </div>
+  <!-- Viewing Parent/Child invoices  -->
+  <div
+    x-show="$store.edit.invoiceViewMode !== 'none'"
+    x-transition
+    class="overflow-y-auto h-full p-2 text-vls2 dark:text-vds table-scrollbar">
+    <div>
+      <div
+        class="mb-2 flex items-center rounded bg-vls2 text-vlp dark:text-vds dark:bg-vdp border border-vls/40 shadow p-2 text-base">
+        <span class="mr-2">Invoice:</span>
+        <span x-text="$store.edit.currentInvoice.invoice_number" class="font-medium"></span>
+        <div class="flex w-full items-center place-self-end justify-end">
+          <span class="mr-2">Date:</span>
+          <span x-text="$store.edit.currentInvoice.totals.date" class="mr-4 font-medium"></span>
+          <p class="mr-2">Due-by-date:</p>
+          <span x-text="$store.edit.currentInvoice.totals.due_by_date" class="font-medium"></span>
+        </div>
+      </div>
+      <!-- Client Details -->
+      <div class="mb-2 flex flex-col justify-between rounded bg-vlp shadow dark:bg-vdp2 border border-vls/40 p-2">
+        <div class="flex justify-between">
+          <p>Client name:</p>
+          <span x-text="$store.clients.selectedClient?.name"></span>
+        </div>
+        <div class="flex justify-between">
+          <p>Company:</p>
+          <span x-text="$store.clients.selectedClient?.company_name"></span>
+        </div>
+        <div class="flex justify-between">
+          <p>Address:</p>
+          <span x-text="$store.clients.selectedClient?.address"></span>
+        </div>
+        <div class="flex justify-between">
+          <p>Email:</p>
+          <span x-text="$store.clients.selectedClient?.email"></span>
+        </div>
+      </div>
+      <!-- Invoice Items Table -->
+      <div x-data="readOnlyView()" x-init="invoiceGet()" class="relative p-2 border rounded border-vls/40">
+        <div class="flex w-full justify-between">
+          <input type="text" placeholder="Search invoice items..." class="srch-style" x-model="searchQuery" />
+          <h2 class="font-medium text-lg text-vls2 dark:text-vds underline decoration-vla dark:decoration-vda">
+            Invoice items
+          </h2>
+        </div>
+        <div class="mt-4">
+          <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+            <div class="w-1/4 pl-4">Name</div>
+            <div class="w-1/4">Type</div>
+            <div class="w-1/4 text-right">Qty</div>
+            <div class="w-1/4 text-right pr-4">Price</div>
+          </div>
+          <div class="overflow-y-auto table-scrollbar" style="max-height: 35vh">
+            <div class="px-0.5 mr-2 mt-4">
+              <template x-for="item in items" :key="item.frontendId">
+                <div
+                  class="w-full flex justify-between rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-3 border-hover-ring-efect p-1.5">
+                  <div class="w-1/4 pl-4" x-text="item.name"></div>
+                  <div class="w-1/4" x-text="item.type"></div>
+                  <div class="w-1/4 text-right" x-text="item.quantity"></div>
+                  <div class="w-1/4 text-right pr-4" x-text="'£' + item.price"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Invoice Summary & Action Buttons -->
+      <div class="flex my-2">
+        <div
+          class="text-sm flex flex-col w-[30%] p-4 gap-4 mr-2 bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
+          <h2 class="font-semibold text-base">Invoice Summary</h2>
+          <div class="flex justify-between">
+            <span class="text-vls2 dark:text-vds3light">Subtotal:</span>
+            <span x-text="'£' + $store.edit.currentInvoice.totals.subtotal_pre_discount"></span>
+          </div>
+          <template x-if="$store.edit.currentInvoice.totals.discountValue > 0">
+            <div class="flex justify-between">
+              <span class="text-vls2 dark:text-vds3light">Discount:</span>
+              <div>
+                <span
+                  x-text="$store.edit.currentInvoice.totals.discountType === 1
+                    ? ($store.edit.currentInvoice.totals.discountValue + '%')
+                    : ('£' + $store.edit.currentInvoice.totals.discountValue)"></span>
+                <span
+                  x-show="$store.edit.currentInvoice.totals.discountType === 1"
+                  x-text="`(£${$store.edit.currentInvoice.totals.discVal_ifPercent})`"></span>
+              </div>
+            </div>
+          </template>
+          <div class="flex justify-between">
+            <span class="text-vls2 dark:text-vds3light">VAT:</span>
+            <span x-text="'£' + $store.edit.currentInvoice.totals.vat"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-vls2 dark:text-vds3light font-semibold">Total:</span>
+            <span class="font-semibold" x-text="'£' + $store.edit.currentInvoice.totals.total"></span>
+          </div>
+          <template x-if="$store.edit.currentInvoice.totals.depositValue > 0">
+            <div class="flex flex-col gap-4">
+              <div class="flex justify-between text-vls2 dark:text-vds3light font-semibold">
+                <span>Deposit:</span>
+                <div>
+                  <span
+                    x-text="$store.edit.currentInvoice.totals.depositType === 1 ? ($store.edit.currentInvoice.totals.depositValue + '%') : ('£' + $store.edit.currentInvoice.totals.depositValue)"
+                    class="text-vds"></span>
+                  <span
+                    x-show="$store.edit.currentInvoice.totals.depositType === 1"
+                    x-text="`(£${$store.edit.currentInvoice.totals.depoVal_ifPercent})`"></span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template x-if="$store.edit.currentInvoice.totals && $store.edit.currentInvoice.totals.depositValue > 0">
+            <div>
+              <!-- Remaining Balance -->
+              <div class="flex justify-between font-semibold text-vls2 dark:text-vds3light">
+                <span>Remaining:</span>
+                <span x-text="'£' + $store.edit.currentInvoice.totals.remaining_balance" class="text-vds"></span>
+              </div>
+              <!-- Deposits List -->
+              <div x-show="$store.edit.currentInvoice.totals.deposits.length > 0">
+                <template x-for="(newDepo, index) in $store.edit.currentInvoice.totals.deposits" :key="newDepo.key">
+                  <div class="flex justify-between font-semibold items-center text-vls2 dark:text-vds3light">
+                    <span x-text="'Deposit ' + (index + 1) + ':'"></span>
+                    <div class="flex items-center">
+                      <span x-text="'£' + newDepo.amount"></span>
+                      <!-- Remove Button -->
+                      <button
+                        @click="$store.edit.removeExtraDeposit(index)"
+                        class="text-red-600 hover:text-red-500 ml-2">
+                        <svg class="w-4 h-4"><use href="/icons/icons.svg#trash" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+        <template x-if="$store.edit.invoiceViewMode === 'viewParent'">
+          <div
+            class="flex w-[70%] p-4 items-end justify-around bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
+            <div class="flex justify-around w-full">
+              <button @click="$store.edit.deleteInvoice()" class="modal-btn-prim">
+                <svg class="size-4 mr-1">
+                  <use href="/icons/icons.svg#trash" />
+                </svg>
+                Delete
+              </button>
+              <button @click="$store.pdfStore.generateInvoice()" class="modal-btn-sec flex items-center">
+                <svg class="size-5 mr-1.5">
+                  <use href="/icons/icons.svg#download-document"></use>
+                </svg>
+                PDF
+              </button>
+              <!-- Button to open full parent edit modal -->
+              <button @click="$store.edit.editInvoice()" class="modal-btn-prim">
+                <svg class="size-4 mr-1">
+                  <use href="/icons/icons.svg#editor" />
+                </svg>
+                Edit Invoice
+              </button>
+            </div>
+          </div>
+        </template>
+        <template x-if="$store.edit.invoiceViewMode === 'viewCopy'">
+          <div
+            class="flex w-[70%] p-4 items-end justify-around bg-vlp rounded border-vls/60 border text-vls3 dark:bg-vdp dark:text-vds dark:border-vls/40 shadow-md dark:shadow">
+            <div class="flex justify-around w-full">
+              <button @click="$store.edit.deleteInvoice()" class="modal-btn-prim flex items-center">
+                <svg class="size-4">
+                  <use href="/icons/icons.svg#trash" />
+                </svg>
+                Delete Copy
+              </button>
+              <button
+                @click="$store.pdfStore.generateInvoice($store.edit.currentInvoice.invoice_id, $store.edit.currentInvoice.isCopy)"
+                class="modal-btn-sec flex items-center">
+                <svg class="size-5 mr-1.5">
+                  <use href="/icons/icons.svg#download-document"></use>
+                </svg>
+                PDF
+              </button>
+              <button @click="$store.edit.editInvoice()" class="modal-btn-prim flex items-center">
+                <svg class="size-4 mr-1">
+                  <use href="/icons/icons.svg#editor" />
+                </svg>
+                Edit Copy
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <div id="primary-edit-modal" x-data="parentEditView()" x-html="html"></div>
+  <div id="copies-edit-modal" x-data="childEditView()" x-html="html"></div>
+</div>

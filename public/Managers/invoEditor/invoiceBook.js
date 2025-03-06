@@ -1,4 +1,4 @@
-export default function editorMain() {
+export default function invoiceBook() {
   return {
     html: '',
     init() {},

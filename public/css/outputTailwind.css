@@ -872,10 +872,6 @@ video {
   margin-top: 0.5rem;
 }
 
-.mt-3 {
-  margin-top: 0.75rem;
-}
-
 .mt-4 {
   margin-top: 1rem;
 }
@@ -1546,8 +1542,14 @@ video {
   border-radius: 0.375rem;
 }
 
-.\!rounded {
-  border-radius: 0.25rem !important;
+.\!rounded-t {
+  border-top-left-radius: 0.25rem !important;
+  border-top-right-radius: 0.25rem !important;
+}
+
+.rounded-b {
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
 }
 
 .rounded-b-md {
@@ -1568,16 +1570,6 @@ video {
 .rounded-t-none {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
-}
-
-.\!rounded-t {
-  border-top-left-radius: 0.25rem !important;
-  border-top-right-radius: 0.25rem !important;
-}
-
-.rounded-b {
-  border-bottom-right-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
 }
 
 .border {
@@ -1628,10 +1620,6 @@ video {
   border-top-width: 8px;
 }
 
-.border-none {
-  border-style: none;
-}
-
 .border-gray-300 {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity, 1));
@@ -1673,10 +1661,6 @@ video {
 .border-vlp {
   --tw-border-opacity: 1;
   border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
-}
-
-.border-vls\/30 {
-  border-color: rgb(139 145 151 / 0.3);
 }
 
 .border-vls\/40 {
@@ -1755,11 +1739,6 @@ video {
 .bg-gray-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1));
-}
-
-.bg-gray-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
 
 .bg-gray-600 {
@@ -3305,7 +3284,7 @@ input[type='number'] {
   --tw-bg-opacity: 1;
   background-color: rgb(63 63 70 / var(--tw-bg-opacity, 1));
   --tw-text-opacity: 1;
-  color: rgb(254 160 154 / var(--tw-text-opacity, 1));
+  color: rgb(254 127 118 / var(--tw-text-opacity, 1));
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
@@ -3315,7 +3294,7 @@ input[type='number'] {
 
 .dark .tab-button-active:hover {
   --tw-text-opacity: 1;
-  color: rgb(254 127 118 / var(--tw-text-opacity, 1));
+  color: rgb(254 160 154 / var(--tw-text-opacity, 1));
 }
 
 /* MARK: Tab Toggler Tabs */
@@ -4429,6 +4408,11 @@ input[type='radio']:hover {
   border-color: rgb(254 160 154 / var(--tw-border-opacity, 1));
 }
 
+.hover\:\!bg-vlp:hover {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
+}
+
 .hover\:bg-blue-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1));
@@ -4488,14 +4472,14 @@ input[type='radio']:hover {
   fill: #8B9197;
 }
 
+.hover\:\!text-\[\#53CF6E\]:hover {
+  --tw-text-opacity: 1 !important;
+  color: rgb(83 207 110 / var(--tw-text-opacity, 1)) !important;
+}
+
 .hover\:\!text-orange-500:hover {
   --tw-text-opacity: 1 !important;
   color: rgb(249 115 22 / var(--tw-text-opacity, 1)) !important;
-}
-
-.hover\:\!text-red-400:hover {
-  --tw-text-opacity: 1 !important;
-  color: rgb(248 113 113 / var(--tw-text-opacity, 1)) !important;
 }
 
 .hover\:\!text-red-500:hover {
@@ -4506,6 +4490,11 @@ input[type='radio']:hover {
 .hover\:\!text-vda2:hover {
   --tw-text-opacity: 1 !important;
   color: rgb(254 160 154 / var(--tw-text-opacity, 1)) !important;
+}
+
+.hover\:\!text-vla:hover {
+  --tw-text-opacity: 1 !important;
+  color: rgb(84 173 247 / var(--tw-text-opacity, 1)) !important;
 }
 
 .hover\:\!text-vla2:hover {
@@ -4782,10 +4771,6 @@ input[type='radio']:hover {
   background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
 }
 
-.dark\:bg-vdp\/70:is(.dark *) {
-  background-color: rgb(24 24 27 / 0.7);
-}
-
 .dark\:bg-vdp2:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(39 39 42 / var(--tw-bg-opacity, 1));
@@ -4920,6 +4905,10 @@ input[type='radio']:hover {
 .dark\:hover\:border-vred-300:hover:is(.dark *) {
   --tw-border-opacity: 1;
   border-color: rgb(254 160 154 / var(--tw-border-opacity, 1));
+}
+
+.dark\:hover\:\!bg-vls\/40:hover:is(.dark *) {
+  background-color: rgb(139 145 151 / 0.4) !important;
 }
 
 .dark\:hover\:bg-neutral-500:hover:is(.dark *) {

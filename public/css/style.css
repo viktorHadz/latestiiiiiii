@@ -303,8 +303,8 @@ input[type='number'] {
   @apply hover:bg-vdp3 hover:text-vda;
 }
 .dark .tab-button-active {
-  @apply flex rounded-md bg-vdp3 text-vda2 transition duration-300;
-  @apply hover:text-vda;
+  @apply flex rounded-md bg-vdp3 text-vda transition duration-300;
+  @apply hover:text-vda2;
 }
 /* MARK: Tab Toggler Tabs */
 .toggler {

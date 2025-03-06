@@ -1,4 +1,4 @@
-<div x-data="editorMain" class="flex flex-col w-full h-full min-h-0">
+<div x-data="invoiceBook" class="flex flex-col w-full h-full min-h-0">
   <!-- Top Bar -->
   <div class="p-2 mb-12 flex justify-between items-center border rounded shadow-md bg-white dark:bg-vdp border-vls/40">
     <button
@@ -39,7 +39,9 @@
                 <!-- Deposit Icon (if deposit exists) -->
                 <div class="gap-2 flex items-center justify-end">
                   <div x-data="tooltip('Contains attached deposit')">
-                    <div @click.stop class="table-interaction-icon-red hover:!text-vda2 hover:!bg-blp">
+                    <div
+                      @click.stop
+                      class="table-interaction-icon-red hover:!text-[#53CF6E] hover:!bg-vlp dark:hover:!bg-vls/40">
                       <svg class="size-5">
                         <use href="/icons/icons.svg#cash-bill" />
                       </svg>
@@ -60,7 +62,7 @@
                   <button
                     x-data="tooltip('See edited invoices', {position: 'top'})"
                     @click.stop="invoice.expanded = !invoice.expanded"
-                    class="transition-transform transform dark:text-vds table-interaction-icon hover:!text-red-400 dark:hover:!text-vda2 self-end"
+                    class="transition-transform transform dark:text-vds table-interaction-icon hover:!text-vla dark:hover:!text-vda2 self-end"
                     :class="{ 'rotate-180': invoice.expanded }">
                     <svg class="size-4">
                       <use href="/icons/icons.svg#chev-down" />
@@ -149,6 +151,6 @@
     </div>
 
     <!-- Edit View Container -->
-    <div id="edit-view" x-data="editView()" x-html="html" class="w-full"></div>
+    <div id="read-only-view" x-data="readOnlyView()" x-html="html" class="w-full"></div>
   </div>
 </div>

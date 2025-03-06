@@ -5,121 +5,81 @@
       <header
         x-text="'Edit Invoice – ' + $store.edit.currentInvoice.invoice_number"
         class="p-4 bg-vls3 dark:bg-vdp border border-vls/40 !rounded-t w-full text-xl font-medium text-vlp dark:text-vds text-center"></header>
-      <main
-        x-data="primaryEditsModal()"
-        x-init="init(); existingGet(); invoiceGet()"
-        class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2 alt-table-scrollbar">
+      <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2 alt-table-scrollbar">
         <section class="mb-8">
-          <div class="flex justify-between items-center">
-            <input type="text" placeholder="Search existing items..." class="srch-style mb-3" x-model="searchQuery" />
-            <h2 class="text-lg font-medium mb-2 text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
-              Existing Items (Styles & Samples)
-            </h2>
-          </div>
-
-          <div class="flex items-center gap-4 mb-1 w-full">
-            <span class="w-[40%] pl-2">Name</span>
-            <span class="w-[10%]">Type</span>
-            <span class="w-[10%]">Price</span>
-            <span class="w-[10%]">Time</span>
-            <span class="w-[10%]">Actions</span>
-          </div>
-          <hr />
-
-          <!-- 
-          Scrollable "table" body container 
-          needs quantity input adding correctly to the invoice
-
-          -->
-          <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
-            <template
-              x-for="(item, index) in existing"
-              :key="item.id ? `existing-${item.id}-${index}` : `existing-noid-${index}`">
-              <div
-                class="flex items-center gap-4 my-1 w-full dark:bg-vds3neu700 bg-blue-50 border border-vls/40 rounded alt-table-scrollbar text-vls2 dark:text-vds3light">
-                <span x-text="item.name" class="w-[40%] ml-2"></span>
-                <span x-text="item.type" class="w-[10%]"></span>
-                <span x-text="'£'+item.price" class="w-[10%]"></span>
-                <span x-text="item.time" class="w-[10%]"></span>
-                <input
-                  type="number"
-                  name="quantity"
-                  :id="'inputQty'+index"
-                  class="table-edit-input-style !w-[10%]"
-                  maxlength="9"
-                  value="1"
-                  oninput="if(this.value.length > 9) this.value = this.value.slice(0, 9);" />
-                <button @click="addExistingToInvoice(item)" class="modal-btn-prim">
-                  <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
-                </button>
-              </div>
-            </template>
-          </div>
-        </section>
-
-        <!-- 2) Invoice Items Table 
-          needs quantity appending to workk 
-        -->
-        <section>
-          <!-- 
-          We read directly from Alpine.store('edit').currentInvoice.items 
-          but reference it in the template for convenience. 
-          Each item must have a unique key. We use item.frontendId if set, 
-          or fallback to "invoice-${item.id}" if you like.
-        -->
-          <div class="flex justify-between items-center">
-            <input type="text" placeholder="Search existing items..." class="srch-style mb-3" x-model="searchQuery2" />
-            <h2 class="text-lg font-medium mb-2 text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
-              Current Invoice Items
-            </h2>
-          </div>
-          <div class="flex items-center gap-4 mb-1 w-full">
-            <span class="w-[40%]">Name</span>
-            <span class="w-[10%]">Type</span>
-            <span class="w-[10%]">Qty</span>
-            <div class="w-[10%]">
-              <span>Price</span>
-              <span class="text-xs">(item)</span>
+          <!-- 🔹 Existing Items Table -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center">
+              <input
+                type="text"
+                placeholder="Search existing items..."
+                class="srch-style mb-3"
+                x-model="searchExisting" />
+              <h2 class="text-lg font-medium mb-2 text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
+                Available Items
+              </h2>
             </div>
-            <div class="w-[10%]">
-              <span>Price</span>
-              <span class="text-xs">(item)</span>
-            </div>
-            <span class="w-[10%]">Actions</span>
-          </div>
-          <hr />
-          <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
-            <template x-for="(invItem, index) in invoice" :key="invItem.frontendId || `invoice-${invItem.id}`">
-              <div
-                class="flex items-center gap-4 my-1 w-full dark:bg-vds3neu700 bg-blue-50 border border-vls/40 rounded alt-table-scrollbar text-vls2 dark:text-vds3light">
-                <span x-text="invItem.name" class="w-[40%] ml-2"></span>
-                <span x-text="invItem.type" class="w-[10%]"></span>
-                <span x-text="'x'+invItem.quantity" class="w-[10%]"></span>
-                <span x-text="'£'+invItem.total_item_price" class="w-[10%]"></span>
-                <!-- Example remove button if you want -->
-                <button class="modal-btn-prim" class="w-[10%]">
-                  <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
-                </button>
-                <button class="modal-btn-prim" class="w-[10%]">
-                  <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
-                </button>
-                <div class="w-[10%]">
-                  <button
-                    @click="
-                    Alpine.store('edit').currentInvoice.items =
-                      Alpine.store('edit').currentInvoice.items.filter(i => i !== invItem);
-                    Alpine.store('edit').calculateTotals();
-                  "
-                    class="modal-btn-prim">
-                    <svg class="size-5">
-                      <use href="/icons/icons.svg#trash" />
-                    </svg>
+
+            <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
+              <template x-for="item in filteredExisting" :key="item.id">
+                <div class="flex items-center gap-4 my-1 w-full">
+                  <span x-text="item.name" class="w-[40%] ml-2"></span>
+                  <span x-text="item.type" class="w-[10%]"></span>
+                  <span x-text="'£'+item.price" class="w-[10%]"></span>
+
+                  <input
+                    class="table-edit-input-style !w-[10%]"
+                    :id="`ii-${item.id}`"
+                    x-model.debounce.300ms="item.quantity"
+                    x-mask="9999"
+                    @focus="$event.target.select()" />
+
+                  <button @click="increaseQty(item)" class="modal-btn-prim">
+                    <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
                   </button>
                 </div>
-              </div>
-            </template>
+              </template>
+            </div>
+          </div>
+
+          <hr />
+
+          <!-- 🔹 Invoice Items Table -->
+          <div>
+            <div class="flex justify-between items-center">
+              <input
+                type="text"
+                placeholder="Search invoice items..."
+                class="srch-style mb-3"
+                x-model="searchInvoice" />
+              <h2 class="text-lg font-medium mb-2 text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
+                Invoice Items
+              </h2>
+            </div>
+
+            <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
+              <template x-for="item in filteredInvoice" :key="item.origin_id">
+                <div class="flex items-center gap-4 my-1 w-full">
+                  <span x-text="item.name" class="w-[40%] ml-2"></span>
+                  <span x-text="item.type" class="w-[10%]"></span>
+                  <span x-text="'£'+item.price" class="w-[10%]"></span>
+                  <span x-text="item.quantity" class="w-[10%]"></span>
+
+                  <button @click="decrementQuantity(item)" class="modal-btn-prim">
+                    <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
+                  </button>
+                  <button @click="incrementQuantity(item)" class="modal-btn-prim">
+                    <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                  </button>
+                  <button @click="removeFromInvoice(item)" class="modal-btn-prim">
+                    <svg class="size-5"><use href="/icons/icons.svg#trash" /></svg>
+                  </button>
+                </div>
+              </template>
+            </div>
           </div>
         </section>
+
         <!-- Discount & Deposit -->
         <section class="grid grid-cols-2 gap-4 my-4">
           <div class="p-4 rounded border border-vls/40 shadow dark:bg-vdp flex justify-between">

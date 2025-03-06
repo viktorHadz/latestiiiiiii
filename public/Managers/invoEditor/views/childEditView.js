@@ -1,11 +1,11 @@
-export default function editView() {
+export default function childEditView() {
   return {
     html: '',
     init() {
-      console.log('[EditView] Initialising.')
-      fetch('/html/editor/editView.html')
+      console.log('[childEditView] Initialising')
+      fetch('/html/editor/childEditView.html')
         .then(res => {
-          if (!res.ok) throw new Error(`editView fetch error: ${res.status}`)
+          if (!res.ok) throw new Error(`Bad html fetch ${res.status}`)
           return res.text()
         })
         .then(html => {

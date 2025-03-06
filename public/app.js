@@ -2,10 +2,10 @@
 import itemEditor from '/Managers/itemEditor.js'
 import clientManager from '/Managers/clientManager.js'
 import invoiceManager2 from '/Managers/invoicing/invoiceManager2.js'
-import editorMain from '/Managers/invoEditor/editorMain.js'
-import editView from './Managers/invoEditor/editView.js'
-import primaryEditsModal from './Managers/invoEditor/primaryEditsModal.js'
-import copyEditsModal from './Managers/invoEditor/copyEditsModal.js'
+import invoiceBook from '/Managers/invoEditor/invoiceBook.js'
+import readOnlyView from './Managers/invoEditor/views/readOnlyView.js'
+import parentEditView from './Managers/invoEditor/views/parentEditView.js'
+import childEditView from './Managers/invoEditor/views/childEditView.js'
 document.addEventListener('alpine:init', () => {
   console.log('[App.js] Alpine initialized')
   Alpine.data('tabManager', () => ({
@@ -70,8 +70,8 @@ document.addEventListener('alpine:init', () => {
         Alpine.data('clientManager', clientManager)
       } else if (tabName === 'invoices2') {
         Alpine.data('invoiceManager2', invoiceManager2)
-      } else if (tabName === 'editorMain') {
-        Alpine.data('editorMain', editorMain)
+      } else if (tabName === 'invoiceBook') {
+        Alpine.data('invoiceBook', invoiceBook)
       }
     },
 
@@ -83,8 +83,8 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('clientManager', clientManager)
   Alpine.data('itemEditor', itemEditor)
   Alpine.data('invoiceManager2', invoiceManager2)
-  Alpine.data('editorMain', editorMain)
-  Alpine.data('editView', editView)
-  Alpine.data('primaryEditsModal', primaryEditsModal)
-  Alpine.data('copyEditsModal', copyEditsModal)
+  Alpine.data('invoiceBook', invoiceBook)
+  Alpine.data('readOnlyView', readOnlyView)
+  Alpine.data('parentEditView', parentEditView)
+  Alpine.data('childEditView', childEditView)
 })
