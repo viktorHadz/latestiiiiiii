@@ -7,75 +7,84 @@
         class="p-4 bg-vls3 dark:bg-vdp border border-vls/40 !rounded-t w-full text-xl font-medium text-vlp dark:text-vds text-center"></header>
       <main class="flex-grow overflow-y-auto p-4 min-h-0 h-full bg-vlp dark:bg-vdp2 alt-table-scrollbar">
         <section class="mb-8">
-          <!-- 🔹 Existing Items Table -->
+          <!-- Existing Items Table -->
           <div class="mb-6">
-            <div class="flex justify-between items-center">
-              <input
-                type="text"
-                placeholder="Search existing items..."
-                class="srch-style mb-3"
-                x-model="searchExisting" />
-              <h2 class="text-lg font-medium mb-2 text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
+            <div class="flex justify-between items-center mb-2">
+              <input type="text" placeholder="Search existing items..." class="srch-style" x-model="searchExisting" />
+              <h2 class="text-lg font-medium text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
                 Available Items
               </h2>
             </div>
-
+            <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+              <div class="w-[46%]">Name</div>
+              <div class="w-[17%]">Type</div>
+              <div class="w-[20%]">Price</div>
+              <div class="">Actions</div>
+            </div>
             <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
-              <template x-for="item in filteredExisting" :key="item.id">
-                <div class="flex items-center gap-4 my-1 w-full">
-                  <span x-text="item.name" class="w-[40%] ml-2"></span>
-                  <span x-text="item.type" class="w-[10%]"></span>
-                  <span x-text="'£'+item.price" class="w-[10%]"></span>
+              <div class="px-0.5 mr-2 mt-2">
+                <template x-for="(item, index) in filteredExisting" :key="index">
+                  <div
+                    class="w-full flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-2 border-hover-ring-efect p-0.5">
+                    <div x-text="item.name" class="w-[40%] ml-2"></div>
+                    <div x-text="item.type" class="w-[10%]"></div>
+                    <div x-text="'£'+item.price" class="w-[10%]"></div>
 
-                  <input
-                    class="table-edit-input-style !w-[10%]"
-                    :id="`ii-${item.id}`"
-                    x-model.debounce.300ms="item.quantity"
-                    x-mask="9999"
-                    @focus="$event.target.select()" />
+                    <input
+                      class="table-edit-input-style !w-[10%]"
+                      :id="`ii-${item.id}+${item.price}`"
+                      x-model.debounce.300ms="item.quantity"
+                      x-mask="9999"
+                      @focus="$event.target.select()" />
 
-                  <button @click="increaseQty(item)" class="modal-btn-prim">
-                    <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
-                  </button>
-                </div>
-              </template>
+                    <button @click="increaseQty(item)" class="table-interaction-icon hover:text-green-500">
+                      <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                    </button>
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
 
-          <hr />
-
-          <!-- 🔹 Invoice Items Table -->
+          <!-- Invoice Items Table -->
           <div>
-            <div class="flex justify-between items-center">
-              <input
-                type="text"
-                placeholder="Search invoice items..."
-                class="srch-style mb-3"
-                x-model="searchInvoice" />
-              <h2 class="text-lg font-medium mb-2 text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
+            <div class="flex justify-between items-center mb-2">
+              <input type="text" placeholder="Search invoice items..." class="srch-style" x-model="searchInvoice" />
+              <h2 class="text-lg font-medium text-vds2 dark:text-vds underline decoration-vla dark:decoration-vda">
                 Invoice Items
               </h2>
             </div>
-
+            <div class="flex rounded bg-vls2 dark:bg-vdp text-vlp p-2">
+              <div class="w-[45%]">Name</div>
+              <div class="w-[15%]">Type</div>
+              <div class="w-[15%]">Price</div>
+              <div class="w-[15%]">Qty</div>
+              <div class="">Actions</div>
+            </div>
             <div class="max-h-[20vh] overflow-y-auto alt-table-scrollbar">
-              <template x-for="item in filteredInvoice" :key="item.origin_id">
-                <div class="flex items-center gap-4 my-1 w-full">
-                  <span x-text="item.name" class="w-[40%] ml-2"></span>
-                  <span x-text="item.type" class="w-[10%]"></span>
-                  <span x-text="'£'+item.price" class="w-[10%]"></span>
-                  <span x-text="item.quantity" class="w-[10%]"></span>
+              <div class="px-0.5 mr-2 mt-4">
+                <template x-for="item in filteredInvoice" :key="item.origin_id">
+                  <div
+                    class="w-full flex justify-between items-center rounded bg-vlp dark:bg-vds3neu700 text-vls2 dark:text-vds text-sm mb-2 border-hover-ring-efect p-0.5">
+                    <div x-text="item.name" class="w-[40%] ml-2"></div>
+                    <div x-text="item.type" class="w-[10%]"></div>
+                    <div x-text="'£'+item.price" class="w-[10%]"></div>
+                    <div x-text="item.quantity" class="w-[10%]"></div>
 
-                  <button @click="decrementQuantity(item)" class="modal-btn-prim">
-                    <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
-                  </button>
-                  <button @click="incrementQuantity(item)" class="modal-btn-prim">
-                    <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
-                  </button>
-                  <button @click="removeFromInvoice(item)" class="modal-btn-prim">
-                    <svg class="size-5"><use href="/icons/icons.svg#trash" /></svg>
-                  </button>
-                </div>
-              </template>
+                    <div class="flex justify-around">
+                      <button @click="decrementQuantity(item)" class="table-interaction-icon hover:text-red-500">
+                        <svg class="size-5"><use href="/icons/icons.svg#minus-circle" /></svg>
+                      </button>
+                      <button @click="incrementQuantity(item)" class="table-interaction-icon hover:text-green-500">
+                        <svg class="size-5"><use href="/icons/icons.svg#plus-circle" /></svg>
+                      </button>
+                      <button @click="removeFromInvoice(item)" class="table-interaction-icon hover:text-red-500">
+                        <svg class="size-5"><use href="/icons/icons.svg#trash" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
         </section>
